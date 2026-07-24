@@ -1,1 +1,15 @@
 /* 공통 스타일 파일 */
+.waiting {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.complete {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.reject {
+  color: #ef4444;
+  font-weight: 600;
+}

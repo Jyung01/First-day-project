@@ -1,1 +1,501 @@
-/* 공통 스타일 파일 */
+/* ===========================
+   Content
+=========================== */
+
+.content {
+  flex: 1;
+  padding: 32px;
+  overflow: auto;
+}
+
+/* ===========================
+   Page Title
+=========================== */
+
+.page-title {
+  margin-bottom: 28px;
+}
+
+.page-title h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.page-title p {
+  color: #94a3b8;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ===========================
+   Summary Card
+=========================== */
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  background: #1e293b;
+
+  border-radius: 16px;
+
+  padding: 26px;
+
+  border: 1px solid #334155;
+
+  transition: 0.25s;
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+
+  border-color: #2563eb;
+}
+
+.summary-card span {
+  display: block;
+
+  color: #94a3b8;
+
+  font-size: 14px;
+
+  margin-bottom: 12px;
+}
+
+.summary-card h3 {
+  font-size: 34px;
+
+  font-weight: 700;
+}
+
+/* ===========================
+   Review Box
+=========================== */
+
+.review-box {
+  background: #1e293b;
+
+  border-radius: 18px;
+
+  padding: 28px;
+
+  border: 1px solid #334155;
+}
+
+/* ===========================
+   Tab
+=========================== */
+
+.review-tab {
+  display: flex;
+
+  gap: 12px;
+
+  margin-bottom: 28px;
+}
+
+.review-tab button {
+  padding: 11px 22px;
+
+  border-radius: 10px;
+
+  background: #0f172a;
+
+  color: #cbd5e1;
+
+  font-size: 14px;
+
+  transition: 0.25s;
+}
+
+.review-tab button:hover {
+  background: #334155;
+}
+
+.review-tab .active {
+  background: #2563eb;
+
+  color: #fff;
+}
+
+/* ===========================
+   Search
+=========================== */
+
+.search-area {
+  display: flex;
+
+  gap: 12px;
+
+  margin-bottom: 30px;
+}
+
+.search-area input {
+  flex: 1;
+
+  height: 46px;
+
+  padding: 0 18px;
+
+  background: #0f172a;
+
+  border: 1px solid #334155;
+
+  border-radius: 10px;
+
+  color: #fff;
+
+  font-size: 15px;
+}
+
+.search-area input::placeholder {
+  color: #64748b;
+}
+
+.search-area button {
+  width: 110px;
+
+  background: #2563eb;
+
+  color: white;
+
+  border-radius: 10px;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  transition: 0.25s;
+}
+
+.search-area button:hover {
+  background: #1d4ed8;
+}
+
+/* ===========================
+   Table
+=========================== */
+
+.table-wrap {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+thead {
+  background: #0f172a;
+}
+
+thead th {
+  padding: 16px;
+
+  text-align: center;
+
+  color: #94a3b8;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  border-bottom: 1px solid #334155;
+}
+
+tbody td {
+  padding: 18px 16px;
+
+  text-align: center;
+
+  border-bottom: 1px solid #334155;
+
+  font-size: 12px;
+}
+
+tbody tr {
+  transition: 0.2s;
+}
+
+tbody tr:hover {
+  background: #273449;
+}
+
+tbody td:nth-child(3) {
+  text-align: left;
+
+  max-width: 350px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+tbody td:last-child a {
+  display: inline-block;
+
+  padding: 7px 16px;
+
+  background: #2563eb;
+
+  color: #fff;
+
+  border-radius: 8px;
+
+  transition: 0.2s;
+}
+
+tbody td:last-child a:hover {
+  background: #1d4ed8;
+}
+
+.review-table th:nth-child(3),
+.review-table td:nth-child(3) {
+  width: 30%;
+  text-align: center;
+}
+
+/* ===========================
+   Pagination
+=========================== */
+
+.pagination {
+  margin-top: 30px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.pagination a {
+  width: 40px;
+
+  height: 40px;
+
+  border-radius: 10px;
+
+  background: #0f172a;
+
+  color: #cbd5e1;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  transition: 0.2s;
+}
+
+.pagination a:hover {
+  background: #334155;
+}
+
+.pagination .active {
+  background: #2563eb;
+
+  color: #fff;
+}
+
+/* ===========================
+   Scrollbar
+=========================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .summary {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    padding: 0 20px;
+  }
+
+  .content {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+
+    border-right: none;
+
+    border-bottom: 1px solid #334155;
+  }
+
+  .header {
+    flex-direction: column;
+
+    height: auto;
+
+    gap: 15px;
+
+    padding: 18px;
+  }
+
+  .top-menu {
+    width: 100%;
+  }
+
+  .top-menu button {
+    flex: 1;
+  }
+
+  .search-area {
+    flex-direction: column;
+  }
+
+  .search-area button {
+    width: 100%;
+
+    height: 46px;
+  }
+
+  .review-tab {
+    flex-wrap: wrap;
+  }
+
+  .footer {
+    flex-direction: column;
+
+    gap: 6px;
+
+    height: auto;
+
+    padding: 18px;
+  }
+}
+
+/* ===========================
+   Search Area
+=========================== */
+
+.search-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.search-area select,
+.search-area input {
+  height: 46px;
+  padding: 0 16px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 10px;
+
+  color: #fff;
+  font-size: 14px;
+}
+
+.search-area select {
+  width: 180px;
+  height: 46px;
+  padding: 0 40px 0 16px;
+
+  background-color: #0f172a;
+  color: #fff;
+
+  border: 1px solid #334155;
+  border-radius: 10px;
+
+  font-size: 14px;
+  cursor: pointer;
+
+  /* 기본 화살표 제거 */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* 직접 화살표 추가 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+.search-area input {
+  flex: 1;
+}
+
+.search-area input::placeholder {
+  color: #64748b;
+}
+
+.search-area button {
+  width: 100px;
+  height: 46px;
+
+  background: #2563eb;
+  color: #fff;
+
+  border: none;
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.search-area button:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+  .search-area {
+    flex-direction: column;
+  }
+
+  .search-area select,
+  .search-area input,
+  .search-area button {
+    width: 100%;
+  }
+}

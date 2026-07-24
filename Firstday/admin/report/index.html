@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>신고 관리</title>
+    <link rel="stylesheet" href="/Firstday/css/admin/common.css" />
+    <link rel="stylesheet" href="/Firstday/css/admin/review/common.css" />
+    <link rel="stylesheet" href="/Firstday/css/admin/report/common.css" />
+
+    <script>
+      const reportData = {
+        all: [
+          {
+            no: "RP-091",
+            type: "채용공고",
+            target: "고액 알바 모집",
+            reason: "허위·사기 의심",
+            writer: "김**",
+            date: "07.22",
+            state: "미처리",
+          },
+          {
+            no: "RP-090",
+            type: "기업리뷰",
+            target: "오픈스튜디오 리뷰",
+            reason: "욕설·비방",
+            writer: "이**",
+            date: "07.22",
+            state: "미처리",
+          },
+          {
+            no: "RP-089",
+            type: "기업",
+            target: "오픈스튜디오",
+            reason: "허위 기업정보",
+            writer: "박**",
+            date: "07.21",
+            state: "미처리",
+          },
+          {
+            no: "RP-088",
+            type: "면접후기",
+            target: "넥스트랩 리뷰",
+            reason: "개인정보 노출",
+            writer: "최**",
+            date: "07.21",
+            state: "처리완료",
+          },
+          {
+            no: "RP-087",
+            type: "기업",
+            target: "샘플컴퍼니",
+            reason: "허위 기업정보",
+            writer: "정**",
+            date: "07.20",
+            state: "처리완료",
+          },
+          {
+            no: "RP-086",
+            type: "채용공고",
+            target: "프로덕트 모집",
+            reason: "중복 공고",
+            writer: "강**",
+            date: "07.20",
+            state: "기각",
+          },
+        ],
+
+        waiting: [],
+        complete: [],
+        reject: [],
+      };
+
+      // 상태별 데이터 생성
+      reportData.waiting = reportData.all.filter((v) => v.state === "미처리");
+
+      reportData.complete = reportData.all.filter(
+        (v) => v.state === "처리완료",
+      );
+
+      reportData.reject = reportData.all.filter((v) => v.state === "기각");
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const reportBody = document.getElementById("reportBody");
+        const tabs = document.querySelectorAll(".tab-btn");
+
+        function render(type) {
+          reportBody.innerHTML = "";
+
+          reportData[type].forEach((item) => {
+            reportBody.innerHTML += `
+          <tr>
+            <td>${item.no}</td>
+            <td>${item.type}</td>
+            <td>${item.target}</td>
+            <td>${item.reason}</td>
+            <td>${item.writer}</td>
+            <td>${item.date}</td>
+            <td class="${
+              item.state === "미처리"
+                ? "waiting"
+                : item.state === "처리완료"
+                  ? "complete"
+                  : "reject"
+            }">
+              ${item.state}
+            </td>
+            <td>
+              <a href="#">처리</a>
+            </td>
+          </tr>
+        `;
+          });
+        }
+
+        // 최초 출력
+        render("all");
+
+        // 탭 클릭 이벤트
+        tabs.forEach((tab) => {
+          tab.addEventListener("click", () => {
+            tabs.forEach((btn) => btn.classList.remove("active"));
+            tab.classList.add("active");
+
+            render(tab.dataset.tab);
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- ================= Header ================= -->
+
+      <header class="header">
+        <div class="logo-box">
+          <h1>첫출근</h1>
+          <span class="admin-badge">관리자</span>
+        </div>
+
+        <nav class="top-menu">
+          <button>서비스 홈</button>
+          <button>로그아웃</button>
+        </nav>
+      </header>
+
+      <!-- ================= Main ================= -->
+
+      <div class="container">
+        <!-- Sidebar -->
+
+        <aside class="sidebar">
+          <div class="menu-title">관리자 메뉴</div>
+
+          <ul class="menu">
+            <li>대시보드</li>
+
+            <span class="group">회원 관리</span>
+
+            <li>회원 관리</li>
+            <li>기업 관리</li>
+
+            <span class="group">채용 관리</span>
+
+            <li>채용공고 관리</li>
+            <li>직무·기술 관리</li>
+            <li>연봉정보 관리</li>
+
+            <span class="group">콘텐츠·고객지원 관리</span>
+
+            <li>후기 관리</li>
+            <li class="active">신고 관리</li>
+            <li>고객센터 관리</li>
+
+            <span class="group">사이트 관리</span>
+
+            <li>배너 관리</li>
+            <li>사이트 설정</li>
+            <li>약관·정책 관리</li>
+          </ul>
+
+          <div class="recent-login">
+            <h4>최근 관리자</h4>
+
+            <p>최고 관리자</p>
+
+            <small>2026.07.22 13:42</small>
+          </div>
+        </aside>
+
+        <!-- ================= Content ================= -->
+
+        <main class="content">
+          <!-- 제목 -->
+
+          <section class="page-title">
+            <h2>신고 관리</h2>
+
+            <p>기업·채용공고·기업리뷰·면접후기 신고를 확인하고 처리합니다.</p>
+          </section>
+
+          <!-- 통계 카드 -->
+
+          <section class="summary">
+            <div class="summary-card">
+              <span>미처리 신고</span>
+              <h3>9건</h3>
+            </div>
+
+            <div class="summary-card">
+              <span>오늘 접수</span>
+              <h3>5건</h3>
+            </div>
+
+            <div class="summary-card">
+              <span>이번 달 처리</span>
+              <h3>64건</h3>
+            </div>
+          </section>
+
+          <!-- 후기 영역 -->
+
+          <section class="review-box">
+            <!-- 탭 -->
+
+            <div class="review-tab">
+              <button class="tab-btn active" data-tab="all">전체</button>
+
+              <button class="tab-btn" data-tab="waiting">미처리</button>
+
+              <button class="tab-btn" data-tab="complete">처리완료</button>
+
+              <button class="tab-btn" data-tab="reject">기각</button>
+            </div>
+
+            <!-- 검색 -->
+
+            <form class="search-area" action="#" method="get">
+              <select name="targetType">
+                <option value="">신고 대상 전체</option>
+                <option value="company">기업</option>
+                <option value="companyReview">기업리뷰</option>
+                <option value="interviewReview">면접후기</option>
+                <option value="jobPosting">채용공고</option>
+              </select>
+
+              <select name="reasonType">
+                <option value="">신고 사유 전체</option>
+                <option value="abuse">욕설·비방</option>
+                <option value="false">허위정보</option>
+                <option value="privacy">개인정보 노출</option>
+                <option value="spam">스팸</option>
+                <option value="duplicate">중복 신고</option>
+              </select>
+
+              <input
+                type="text"
+                name="keyword"
+                placeholder="대상명 · 신고자 검색"
+              />
+
+              <button type="submit">검색</button>
+            </form>
+            <!-- 신고 테이블 -->
+
+            <div class="table-wrap">
+              <table class="report-table">
+                <thead>
+                  <tr>
+                    <th>번호</th>
+                    <th>유형</th>
+                    <th>신고대상</th>
+                    <th>신고사유</th>
+                    <th>신고자</th>
+                    <th>접수일</th>
+                    <th>상태</th>
+                    <th>관리</th>
+                  </tr>
+                </thead>
+
+                <tbody id="reportBody"></tbody>
+              </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+
+            <div class="pagination">
+              <a href="#">&lt;</a>
+
+              <a href="#" class="active">1</a>
+
+              <a href="#">2</a>
+
+              <a href="#">3</a>
+
+              <a href="#">4</a>
+
+              <a href="#">5</a>
+
+              <a href="#">&gt;</a>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <!-- ================= Footer ================= -->
+
+      <footer class="footer">
+        <p>© 2026 첫출근 관리자</p>
+
+        <span>관리자 버전 v1.0.0</span>
+      </footer>
+    </div>
+  </body>
+</html>
