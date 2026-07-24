@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>후기 관리</title>
+    <link rel="stylesheet" href="/Firstday/css/admin/common.css" />
+    <link rel="stylesheet" href="/Firstday/css/admin/review/common.css" />
+    <script>
+      const reviewData = {
+        company: [
+          {
+            no: "CR-3241",
+            company: "원티드랩",
+            title: "성장 기회가 많고 자유로운 분위기",
+            writer: "김**",
+            score: "4.8",
+            report: 0,
+            date: "07.22",
+          },
+
+          {
+            no: "CR-3240",
+            company: "네오플",
+            title: "복지와 연봉이 만족스러웠어요",
+            writer: "이**",
+            score: "4.5",
+            report: 1,
+            date: "07.22",
+          },
+
+          {
+            no: "CR-3239",
+            company: "카카오",
+            title: "협업 문화가 좋아 추천합니다.",
+            writer: "박**",
+            score: "4.7",
+            report: 0,
+            date: "07.21",
+          },
+
+          {
+            no: "CR-3238",
+            company: "토스",
+            title: "기술 스택이 최신이라 좋았어요.",
+            writer: "최**",
+            score: "4.9",
+            report: 0,
+            date: "07.20",
+          },
+        ],
+
+        interview: [
+          {
+            no: "IR-102",
+            company: "당근",
+            title: "React 과제가 출제되었습니다.",
+            writer: "정**",
+            score: "-",
+            report: 0,
+            date: "07.20",
+          },
+
+          {
+            no: "IR-101",
+            company: "라인",
+            title: "1차는 기술면접, 2차는 임원면접",
+            writer: "한**",
+            score: "-",
+            report: 0,
+            date: "07.18",
+          },
+
+          {
+            no: "IR-100",
+            company: "배달의민족",
+            title: "라이브 코딩이 있었습니다.",
+            writer: "김**",
+            score: "-",
+            report: 2,
+            date: "07.17",
+          },
+        ],
+
+        hidden: [
+          {
+            no: "HD-01",
+            company: "ABC소프트",
+            title: "욕설 포함으로 숨김 처리",
+            writer: "익명",
+            score: "1.0",
+            report: 8,
+            date: "07.15",
+          },
+
+          {
+            no: "HD-02",
+            company: "XYZ컴퍼니",
+            title: "허위사실 신고 다수",
+            writer: "익명",
+            score: "2.0",
+            report: 11,
+            date: "07.14",
+          },
+        ],
+      };
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const tbody = document.getElementById("reviewBody");
+        const tabs = document.querySelectorAll(".tab-btn");
+
+        function render(type) {
+          tbody.innerHTML = "";
+
+          reviewData[type].forEach((item) => {
+            tbody.innerHTML += `
+            <tr>
+
+                <td>${item.no}</td>
+
+                <td>${item.company}</td>
+
+                <td>${item.title}</td>
+
+                <td>${item.writer}</td>
+
+                <td>${item.score}</td>
+
+                <td>${item.report}</td>
+
+                <td>${item.date}</td>
+
+                <td>
+                    <a href="#">상세</a>
+                </td>
+
+            </tr>
+        `;
+          });
+        }
+
+        render("company");
+
+        tabs.forEach((tab) => {
+          tab.addEventListener("click", () => {
+            tabs.forEach((btn) => btn.classList.remove("active"));
+
+            tab.classList.add("active");
+
+            render(tab.dataset.tab);
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- ================= Header ================= -->
+
+      <header class="header">
+        <div class="logo-box">
+          <h1>첫출근</h1>
+          <span class="admin-badge">관리자</span>
+        </div>
+
+        <nav class="top-menu">
+          <button>서비스 홈</button>
+          <button>로그아웃</button>
+        </nav>
+      </header>
+
+      <!-- ================= Main ================= -->
+
+      <div class="container">
+        <!-- Sidebar -->
+
+        <aside class="sidebar">
+          <div class="menu-title">관리자 메뉴</div>
+
+          <ul class="menu">
+            <li>대시보드</li>
+
+            <span class="group">회원 관리</span>
+
+            <li>회원 관리</li>
+            <li>기업 관리</li>
+
+            <span class="group">채용 관리</span>
+
+            <li>채용공고 관리</li>
+            <li>직무·기술 관리</li>
+            <li>연봉정보 관리</li>
+
+            <span class="group">콘텐츠·고객지원 관리</span>
+
+            <li class="active">후기 관리</li>
+            <li>신고 관리</li>
+            <li>고객센터 관리</li>
+
+            <span class="group">사이트 관리</span>
+
+            <li>배너 관리</li>
+            <li>사이트 설정</li>
+            <li>약관·정책 관리</li>
+          </ul>
+
+          <div class="recent-login">
+            <h4>최근 관리자</h4>
+
+            <p>최고 관리자</p>
+
+            <small>2026.07.22 13:42</small>
+          </div>
+        </aside>
+
+        <!-- ================= Content ================= -->
+
+        <main class="content">
+          <!-- 제목 -->
+
+          <section class="page-title">
+            <h2>후기 관리</h2>
+
+            <p>기업회원과 면접후기를 승인하고 노출 여부를 관리합니다.</p>
+          </section>
+
+          <!-- 통계 카드 -->
+
+          <section class="summary">
+            <div class="summary-card">
+              <span>기업리뷰</span>
+
+              <h3>2,146건</h3>
+            </div>
+
+            <div class="summary-card">
+              <span>면접후기</span>
+
+              <h3>1,138건</h3>
+            </div>
+
+            <div class="summary-card">
+              <span>승인 대기</span>
+
+              <h3>12건</h3>
+            </div>
+          </section>
+
+          <!-- 후기 영역 -->
+
+          <section class="review-box">
+            <!-- 탭 -->
+
+            <div class="review-tab">
+              <button class="tab-btn active" data-tab="company">
+                기업리뷰
+              </button>
+
+              <button class="tab-btn" data-tab="interview">면접후기</button>
+
+              <button class="tab-btn" data-tab="hidden">숨김후기</button>
+            </div>
+
+            <!-- 검색 -->
+
+            <form class="search-area" action="#" method="get">
+              <input
+                type="text"
+                name="keyword"
+                placeholder="기업명 · 리뷰내용 검색"
+              />
+
+              <button type="submit">검색</button>
+            </form>
+
+            <!-- 리뷰 테이블 -->
+
+            <div class="table-wrap">
+              <table class="review-table">
+                <thead>
+                  <tr>
+                    <th>번호</th>
+                    <th>기업명</th>
+                    <th>기업리뷰 요약</th>
+                    <th>작성자</th>
+                    <th>평점</th>
+                    <th>신고</th>
+                    <th>작성일</th>
+                    <th>관리</th>
+                  </tr>
+                </thead>
+
+                <tbody id="reviewBody">
+                  <tr>
+                    <td>CR-3241</td>
+                    <td>원티드랩</td>
+                    <td>성장 기회가 많아 매우 좋았어요</td>
+                    <td>김**</td>
+                    <td>4.5</td>
+                    <td>0</td>
+                    <td>07.22</td>
+                    <td><a href="#">상세</a></td>
+                  </tr>
+
+                  <tr>
+                    <td>CR-3240</td>
+                    <td>네오플</td>
+                    <td>협업 문화와 복지가 만족스러워요</td>
+                    <td>이**</td>
+                    <td>4.2</td>
+                    <td>1</td>
+                    <td>07.22</td>
+                    <td><a href="#">상세</a></td>
+                  </tr>
+
+                  <tr>
+                    <td>CR-3239</td>
+                    <td>브랜치랩스</td>
+                    <td>업무 체계와 협업이 좋았어요</td>
+                    <td>최**</td>
+                    <td>3.8</td>
+                    <td>0</td>
+                    <td>07.21</td>
+                    <td><a href="#">상세</a></td>
+                  </tr>
+
+                  <tr>
+                    <td>CR-3238</td>
+                    <td>카페24</td>
+                    <td>유연근무가 큰 장점이었습니다</td>
+                    <td>김**</td>
+                    <td>4.0</td>
+                    <td>3</td>
+                    <td>07.21</td>
+                    <td><a href="#">상세</a></td>
+                  </tr>
+
+                  <tr>
+                    <td>CR-3237</td>
+                    <td>여기어때</td>
+                    <td>새로운 기술 도입이 활발해요</td>
+                    <td>정**</td>
+                    <td>4.7</td>
+                    <td>0</td>
+                    <td>07.20</td>
+                    <td><a href="#">상세</a></td>
+                  </tr>
+
+                  <tr>
+                    <td>CR-3236</td>
+                    <td>로켓소프트</td>
+                    <td>복지환경과 급여가 좋아 만족해요</td>
+                    <td>강**</td>
+                    <td>2.1</td>
+                    <td>5</td>
+                    <td>07.20</td>
+                    <td><a href="#">상세</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+
+            <div class="pagination">
+              <a href="#">&lt;</a>
+
+              <a href="#" class="active">1</a>
+
+              <a href="#">2</a>
+
+              <a href="#">3</a>
+
+              <a href="#">4</a>
+
+              <a href="#">5</a>
+
+              <a href="#">&gt;</a>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <!-- ================= Footer ================= -->
+
+      <footer class="footer">
+        <p>© 2026 첫출근 관리자</p>
+
+        <span>관리자 버전 v1.0.0</span>
+      </footer>
+    </div>
+  </body>
+</html>
