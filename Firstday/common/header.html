@@ -6,14 +6,15 @@
     class="site-header"
 >
     <div class="wrap header-inner">
-        <a href="/index.html" th:href="@{/}" class="logo">
-            <span class="logo-icon">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="6" y="3" width="12" height="18" rx="4" fill="white" />
-                    <rect x="10" y="7" width="4" height="10" rx="2" fill="var(--blue-600)" />
-                </svg>
-            </span>
-            첫출근
+        <a href="/index.html" th:href="@{/}" class="header-logo" aria-label="첫출근 메인으로 이동">
+            <!-- 권장 이미지 크기: 160 × 40px / 투명 SVG·PNG -->
+            <img
+                src="/images/header-logo.svg"
+                th:src="@{/images/header-logo.svg}"
+                width="160"
+                height="40"
+                alt="첫출근"
+            />
         </a>
 
         <div class="mega-wrap" id="mega-wrap">

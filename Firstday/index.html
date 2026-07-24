@@ -8,7 +8,86 @@
         <link rel="stylesheet" href="/css/main.css" th:href="@{/css/main.css}" />
     </head>
     <body>
-        <div id="header-placeholder" data-include="/common/header.html" th:replace="~{common/header :: header}"></div>
+        <header
+            data-job-list-url="/job/list.html"
+            th:attr="data-job-list-url=@{/job/list}"
+            th:fragment="header"
+            xmlns:th="http://www.thymeleaf.org"
+            class="site-header"
+        >
+            <div class="wrap header-inner">
+                <a href="/index.html" th:href="@{/}" class="header-logo" aria-label="첫출근 메인으로 이동">
+                    <!-- 권장 이미지 크기: 160 × 40px / 투명 SVG·PNG -->
+                    <img
+                        src="/images/header-logo.svg"
+                        th:src="@{/images/header-logo.svg}"
+                        width="160"
+                        height="40"
+                        alt="첫출근"
+                    />
+                </a>
+
+                <div class="mega-wrap" id="mega-wrap">
+                    <nav class="primary-nav">
+                        <button type="button" class="nav-hamburger" id="mega-btn" aria-label="직무 메뉴 열기">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                        <a href="/job/list.html" th:href="@{/job/list}" class="emph">채용공고</a>
+                        <a href="/company/list.html" th:href="@{/company/list}">기업정보</a>
+                        <a href="/my/resume/list.html" th:href="@{/my/resume/list}">이력서</a>
+                        <a href="/salary/list.html" th:href="@{/salary/list}">연봉정보</a>
+                    </nav>
+
+                    <!-- 메가메뉴 패널 (전체 폭) -->
+                    <div class="mega-panel">
+                        <div class="mega-panel-inner">
+                            <!-- 좌측: 직군 목록 -->
+                            <ul class="mega-sidebar" id="mega-sidebar">
+                                <li data-cat="all">직군 전체</li>
+                                <li data-cat="dev" class="active">개발</li>
+                                <li data-cat="biz">경영·비즈니스</li>
+                                <li data-cat="marketing">마케팅·광고</li>
+                                <li data-cat="design">디자인</li>
+                                <li data-cat="cs">고객서비스·리테일</li>
+                                <li data-cat="sales">영업</li>
+                                <li data-cat="media">미디어</li>
+                                <li data-cat="engineering">엔지니어링·설계</li>
+                                <li data-cat="manufacturing">제조·생산</li>
+                                <li data-cat="finance">금융</li>
+                                <li data-cat="medical">의료·바이오</li>
+                                <li data-cat="edu">교육</li>
+                                <li data-cat="law">법률</li>
+                            </ul>
+
+                            <!-- 우측: 선택된 직군의 직무 목록 -->
+                            <div class="mega-content">
+                                <div class="mega-content-head">
+                                    <span class="mega-cat-name" id="mega-cat-name">개발</span>
+                                    <span class="mega-cat-hint"
+                                        >원하는 직무를 선택하면 해당 조건의 채용공고 목록으로 이동</span
+                                    >
+                                </div>
+                                <div class="mega-job-grid" id="mega-job-grid">
+                                    <!-- JS로 채워짐 -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mega-panel-footer">
+                            출력 기준 · 1차 분류: 직군 · 2차 분류: 직무 · 관리자 카테고리 관리에서 명칭·순서·사용 여부
+                            설정 · 직무 클릭 → 선택 조건이 적용된 채용공고 목록 페이지로 이동
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-right" aria-label="회원 메뉴">
+                    <a href="/auth/login.html" th:href="@{/auth/login}" class="btn btn-ghost">로그인</a>
+                    <a href="/auth/member-type.html" th:href="@{/auth/member-type}" class="btn btn-primary">회원가입</a>
+                </div>
+            </div>
+        </header>
 
         <main>
             <!-- ============ 히어로 배너 (위치코드: MAIN_HERO) ============ -->
@@ -190,10 +269,46 @@
             </div>
         </main>
 
-        <div id="footer-placeholder" data-include="/common/footer.html" th:replace="~{common/footer :: footer}"></div>
+        <!-- ============ 푸터 (공통 영역) ============ -->
+        <footer th:fragment="footer" xmlns:th="http://www.thymeleaf.org" class="site-footer">
+            <div class="wrap footer-inner">
+                <div class="footer-brand">
+                    <a href="/index.html" th:href="@{/}" class="footer-logo" aria-label="첫출근 메인으로 이동">
+                        <!-- 권장 이미지 크기: 190 × 56px / 투명 SVG·PNG -->
+                        <img
+                            src="/images/footer-logo.svg"
+                            th:src="@{/images/footer-logo.svg}"
+                            width="190"
+                            height="56"
+                            alt="첫출근"
+                        />
+                    </a>
+                    <div class="footer-slogan">설레는 첫 출근을 함께 준비합시다.<br />© 2026 FirstWork Inc.</div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">서비스</div>
+                    <a href="/job/list.html" th:href="@{/job/list}">채용공고</a>
+                    <a href="/company/list.html" th:href="@{/company/list}">기업정보</a>
+                    <a href="/my/resume/list.html" th:href="@{/my/resume/list}">이력서</a>
+                    <a href="/salary/list.html" th:href="@{/salary/list}">연봉정보</a>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">고객지원</div>
+                    <a href="/cs/notice/index.html" th:href="@{/cs/notice}">공지사항</a>
+                    <a href="/cs/faq/index.html" th:href="@{/cs/faq}">자주 묻는 질문</a>
+                    <a href="/cs/qna/index.html" th:href="@{/cs/qna}">1:1 문의</a>
+                </div>
+            </div>
+            <div class="wrap footer-bottom">
+                <div>서비스 v1.0.0</div>
+                <div class="legal">
+                    <a href="/policy/terms.html" th:href="@{/policy/terms}">이용약관</a>
+                    <a href="/policy/privacy.html" th:href="@{/policy/privacy}">개인정보처리방침</a>
+                </div>
+            </div>
+        </footer>
 
         <!-- 정적 HTML 확인용 include 스크립트. Thymeleaf 렌더링 시 제거됨 -->
-        <script src="/js/include.js" th:remove="all"></script>
         <script src="/js/common.js" th:src="@{/js/common.js}"></script>
         <script src="/js/main.js" th:src="@{/js/main.js}"></script>
     </body>
