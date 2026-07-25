@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>기업관리 대시보드 | 첫출근</title>
+        <link rel="stylesheet" th:href="@{/css/corp/common.css}" />
+        <link rel="stylesheet" th:href="@{/css/corp/index.css}" />
+    </head>
+    <body class="corp-page">
+        <header th:replace="~{common/corp-header :: corpHeader}"></header>
+
+        <main class="corp-main">
+            <div class="corp-layout">
+                <aside th:replace="~{common/corp-aside :: corpAside}"></aside>
+
+                <section class="dashboard" aria-labelledby="dashboard-title">
+                    <div class="dashboard-heading">
+                        <div>
+                            <h1 id="dashboard-title">기업관리 대시보드</h1>
+                            <p>첫출근랩의 채용 현황과 최근 지원자를 확인하세요.</p>
+                        </div>
+                        <a class="primary-action" href="/corp/job-create.html" th:href="@{/corp/jobs/new}"
+                            >채용공고 등록</a
+                        >
+                    </div>
+
+                    <div class="summary-grid" aria-label="채용 현황 요약">
+                        <article class="summary-card">
+                            <span class="summary-card__label">진행 중 공고</span>
+                            <strong class="summary-card__value">4건</strong>
+                            <span class="summary-card__detail is-blue">마감 임박 1건</span>
+                        </article>
+                        <article class="summary-card">
+                            <span class="summary-card__label">신규 지원자</span>
+                            <strong class="summary-card__value">12명</strong>
+                            <span class="summary-card__detail is-green">오늘 3명</span>
+                        </article>
+                        <article class="summary-card">
+                            <span class="summary-card__label">검토 대기</span>
+                            <strong class="summary-card__value">7명</strong>
+                            <span class="summary-card__detail is-orange">서류 확인 필요</span>
+                        </article>
+                        <article class="summary-card">
+                            <span class="summary-card__label">이번 달 조회</span>
+                            <strong class="summary-card__value">1,284회</strong>
+                            <span class="summary-card__detail is-blue">전월 대비 +18%</span>
+                        </article>
+                    </div>
+
+                    <div class="dashboard-panels">
+                        <section class="panel applicants-panel" aria-labelledby="recent-applicants-title">
+                            <div class="panel__header">
+                                <h2 id="recent-applicants-title">최근 지원자</h2>
+                                <a href="/corp/applicants.html" th:href="@{/corp/applicants}"
+                                    >전체보기 <span aria-hidden="true">→</span></a
+                                >
+                            </div>
+                            <div class="applicant-table" role="table" aria-label="최근 지원자">
+                                <div class="applicant-row applicant-row--head" role="row">
+                                    <span role="columnheader">지원자</span><span role="columnheader">지원 공고</span>
+                                    <span role="columnheader">지원일</span><span role="columnheader">상태</span>
+                                </div>
+                                <a
+                                    class="applicant-row"
+                                    href="/corp/applicant-detail.html"
+                                    th:href="@{/corp/applicants/1}"
+                                    role="row"
+                                >
+                                    <strong role="cell">김민준</strong><span role="cell">백엔드 개발자</span>
+                                    <time datetime="2026-07-22" role="cell">07.22</time>
+                                    <span role="cell"><em class="status-badge">서류검토중</em></span>
+                                </a>
+                                <a
+                                    class="applicant-row"
+                                    href="/corp/applicant-detail.html"
+                                    th:href="@{/corp/applicants/2}"
+                                    role="row"
+                                >
+                                    <strong role="cell">이서연</strong><span role="cell">데이터 엔지니어</span>
+                                    <time datetime="2026-07-22" role="cell">07.22</time>
+                                    <span role="cell"><em class="status-badge">지원완료</em></span>
+                                </a>
+                                <a
+                                    class="applicant-row"
+                                    href="/corp/applicant-detail.html"
+                                    th:href="@{/corp/applicants/3}"
+                                    role="row"
+                                >
+                                    <strong role="cell">박지훈</strong><span role="cell">프론트엔드 개발자</span>
+                                    <time datetime="2026-07-21" role="cell">07.21</time>
+                                    <span role="cell"><em class="status-badge is-interview">면접예정</em></span>
+                                </a>
+                                <a
+                                    class="applicant-row"
+                                    href="/corp/applicant-detail.html"
+                                    th:href="@{/corp/applicants/4}"
+                                    role="row"
+                                >
+                                    <strong role="cell">최유진</strong><span role="cell">백엔드 개발자</span>
+                                    <time datetime="2026-07-21" role="cell">07.21</time>
+                                    <span role="cell"><em class="status-badge">서류합격</em></span>
+                                </a>
+                            </div>
+                        </section>
+
+                        <section class="panel jobs-panel" aria-labelledby="job-status-title">
+                            <div class="panel__header"><h2 id="job-status-title">공고 현황</h2></div>
+                            <ul class="job-status-list">
+                                <li>
+                                    <a href="/corp/job-list.html" th:href="@{/corp/jobs}"
+                                        ><strong>백엔드 개발자</strong><span>D-7</span
+                                        ><em class="is-open">모집중</em></a
+                                    >
+                                </li>
+                                <li>
+                                    <a href="/corp/job-list.html" th:href="@{/corp/jobs}"
+                                        ><strong>데이터 엔지니어</strong><span>D-14</span
+                                        ><em class="is-open">모집중</em></a
+                                    >
+                                </li>
+                                <li>
+                                    <a href="/corp/job-list.html" th:href="@{/corp/jobs}"
+                                        ><strong>서비스 기획자</strong><span>-</span><em>임시저장</em></a
+                                    >
+                                </li>
+                                <li>
+                                    <a href="/corp/job-list.html" th:href="@{/corp/jobs}"
+                                        ><strong>프론트엔드 개발자</strong><span>07.18</span><em>마감</em></a
+                                    >
+                                </li>
+                            </ul>
+                        </section>
+                    </div>
+
+                    <aside class="dashboard-guide">
+                        <strong>운영 안내</strong>
+                        <p>마감 임박 공고와 검토 대기 지원자를 먼저 처리하면 채용 진행이 원활해집니다.</p>
+                    </aside>
+                </section>
+            </div>
+        </main>
+
+        <footer th:replace="~{common/corp-footer :: corpFooter}"></footer>
+    </body>
+</html>

@@ -1,0 +1,67 @@
+<aside class="sidebar" xmlns:th="http://www.thymeleaf.org" th:fragment="adminAside">
+    <div class="menu-title">관리자 메뉴</div>
+
+    <ul class="menu">
+        <li th:classappend="${activeMenu == 'dashboard'} ? ' active' : ''">
+            <a th:href="@{/admin}">대시보드</a>
+        </li>
+
+        <li class="group">회원 관리</li>
+
+        <li th:classappend="${activeMenu == 'member'} ? ' active' : ''">
+            <a th:href="@{/admin/member}">회원 관리</a>
+        </li>
+
+        <li th:classappend="${activeMenu == 'company'} ? ' active' : ''">
+            <a th:href="@{/admin/company}">기업 관리</a>
+        </li>
+
+        <li class="group">채용 관리</li>
+
+        <li th:classappend="${activeMenu == 'job'} ? ' active' : ''">
+            <a th:href="@{/admin/job}">채용공고 관리</a>
+        </li>
+
+        <li th:classappend="${activeMenu == 'jobConfig'} ? ' active' : ''">
+            <a th:href="@{/admin/config/job-category}">직무·기술 관리</a>
+        </li>
+
+        <li th:classappend="${activeMenu == 'salary'} ? ' active' : ''">
+            <a th:href="@{/admin/salary}">연봉정보 관리</a>
+        </li>
+
+        <li class="group">콘텐츠·고객지원 관리</li>
+
+        <li th:classappend="${activeMenu == 'review'} ? ' active' : ''">
+            <a th:href="@{/admin/review}">후기 관리</a>
+        </li>
+
+        <li th:classappend="${activeMenu == 'report'} ? ' active' : ''">
+            <a th:href="@{/admin/report}">신고 관리</a>
+        </li>
+
+        <li th:classappend="${activeMenu == 'cs'} ? ' active' : ''">
+            <a th:href="@{/admin/cs/notice}">고객센터 관리</a>
+        </li>
+
+        <li class="group">사이트 관리</li>
+
+        <li th:classappend="${activeMenu == 'banner'} ? ' active' : ''">
+            <a th:href="@{/admin/banner}">배너 관리</a>
+        </li>
+
+        <li th:classappend="${activeMenu == 'siteSetting'} ? ' active' : ''">
+            <a th:href="@{/admin/config/site-setting}">사이트 설정</a>
+        </li>
+
+        <li th:classappend="${activeMenu == 'policy'} ? ' active' : ''">
+            <a th:href="@{/admin/config/policy}">약관·정책 관리</a>
+        </li>
+    </ul>
+
+    <div class="recent-login">
+        <h4>최근 관리자</h4>
+        <p>최고 관리자</p>
+        <small>2026.07.22 13:42</small>
+    </div>
+</aside>

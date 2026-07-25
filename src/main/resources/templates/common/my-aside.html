@@ -1,0 +1,83 @@
+<aside class="mypage-side" th:fragment="myAside">
+    <div class="mypage-side__profile">
+        <div
+            class="mypage-side__avatar"
+            th:text="${#strings.isEmpty(memberName) ? '김' : #strings.substring(memberName, 0, 1)}"
+        >
+            김
+        </div>
+
+        <div class="mypage-side__info">
+            <p class="mypage-side__name">
+                <span th:text="${#strings.isEmpty(memberName) ? '김첫출' : memberName}"> 김첫출 </span>
+                &nbsp;님
+            </p>
+
+            <p class="mypage-side__type" th:text="${#strings.isEmpty(memberType) ? '개인회원' : memberType}">
+                개인회원
+            </p>
+        </div>
+    </div>
+
+    <nav class="mypage-side__nav">
+        <a th:href="@{/mypage}" class="mypage-side__link" th:classappend="${activeMenu == 'home'} ? ' is-active' : ''">
+            마이페이지 홈
+        </a>
+
+        <a
+            th:href="@{/mypage/applications}"
+            class="mypage-side__link"
+            th:classappend="${activeMenu == 'applications'} ? ' is-active' : ''"
+        >
+            지원 내역
+        </a>
+
+        <a
+            th:href="@{/mypage/interest-jobs}"
+            class="mypage-side__link"
+            th:classappend="${activeMenu == 'interestJobs'} ? ' is-active' : ''"
+        >
+            관심 공고
+        </a>
+
+        <a
+            th:href="@{/mypage/interest-companies}"
+            class="mypage-side__link"
+            th:classappend="${activeMenu == 'interestCompanies'} ? ' is-active' : ''"
+        >
+            관심 기업
+        </a>
+
+        <a
+            th:href="@{/mypage/resumes}"
+            class="mypage-side__link"
+            th:classappend="${activeMenu == 'resumes'} ? ' is-active' : ''"
+        >
+            이력서 관리
+        </a>
+
+        <a
+            th:href="@{/mypage/cover-letters}"
+            class="mypage-side__link"
+            th:classappend="${activeMenu == 'coverLetters'} ? ' is-active' : ''"
+        >
+            자기소개서 관리
+        </a>
+
+        <a
+            th:href="@{/mypage/reviews}"
+            class="mypage-side__link"
+            th:classappend="${activeMenu == 'reviews'} ? ' is-active' : ''"
+        >
+            작성한 후기
+        </a>
+
+        <a
+            th:href="@{/mypage/edit}"
+            class="mypage-side__link"
+            th:classappend="${activeMenu == 'edit'} ? ' is-active' : ''"
+        >
+            개인정보 수정
+        </a>
+    </nav>
+</aside>

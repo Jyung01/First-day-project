@@ -1,0 +1,329 @@
+/* ===================================================
+   기업관리 공통 스타일
+   기업관리 전체 레이아웃, 헤더, 푸터, 사이드바
+=================================================== */
+
+:root {
+    --corp-ink: #131e33;
+    --corp-muted: #5c6b85;
+    --corp-blue: #1d4ed8;
+    --corp-blue-dark: #1e40af;
+    --corp-blue-soft: #eff6ff;
+    --corp-border: #d6deeb;
+    --corp-line: #e2e8f0;
+    --corp-soft: #f8fafc;
+    --corp-green: #1fa673;
+    --corp-orange: #f08c2e;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    font-family:
+        "Pretendard",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+    color: var(--corp-ink);
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+/* 기업관리 전체 페이지 */
+.corp-page {
+    min-width: 320px;
+    min-height: 100vh;
+    color: var(--corp-ink);
+    background: #fff;
+}
+
+/* ---------------- 헤더 ---------------- */
+
+.corp-header {
+    height: 72px;
+    background: #fff;
+    border-bottom: 1px solid var(--corp-line);
+}
+
+.corp-header__inner,
+.corp-footer__inner {
+    width: min(1280px, calc(100% - 48px));
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.corp-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.corp-brand__logo {
+    display: block;
+    width: 160px;
+    height: 40px;
+    object-fit: contain;
+    object-position: left center;
+}
+
+.corp-brand__tag {
+    padding: 6px 10px;
+    color: var(--corp-blue-dark);
+    background: var(--corp-blue-soft);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.corp-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.corp-header__home,
+.corp-header__logout {
+    min-height: 37px;
+    padding: 9px 16px;
+    border-radius: 8px;
+}
+
+.corp-header__home:hover {
+    background: var(--corp-soft);
+}
+
+.corp-header__logout {
+    color: #fff;
+    background: var(--corp-blue);
+}
+
+.corp-header__logout:hover {
+    background: var(--corp-blue-dark);
+}
+
+/* ---------------- 전체 레이아웃 ---------------- */
+
+.corp-main {
+    min-height: 1176px;
+    padding: 33px 0 323px;
+}
+
+.corp-layout {
+    width: min(1280px, calc(100% - 48px));
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 40px;
+}
+
+/* ---------------- 좌측 사이드바 ---------------- */
+
+.corp-sidebar {
+    min-height: 820px;
+    padding: 21px 15px;
+    background: var(--corp-soft);
+    border: 1px solid var(--corp-line);
+    border-radius: 12px;
+}
+
+.company-profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 4px;
+}
+
+.company-profile__logo {
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
+    display: grid;
+    place-items: center;
+    color: var(--corp-blue);
+    background: var(--corp-blue-soft);
+    border-radius: 14px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.company-profile__name,
+.company-profile__type {
+    display: block;
+}
+
+.company-profile__name {
+    margin-bottom: 7px;
+    font-size: 16px;
+}
+
+.company-profile__type {
+    color: var(--corp-muted);
+    font-size: 11px;
+}
+
+.corp-nav {
+    display: grid;
+    gap: 12px;
+    margin-top: 26px;
+}
+
+.corp-nav__item {
+    height: 40px;
+    padding: 11px 14px;
+    color: var(--corp-muted);
+    background: #fff;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.corp-nav__item:hover,
+.corp-nav__item.is-active {
+    color: var(--corp-blue);
+    background: var(--corp-blue-soft);
+}
+
+.corp-nav__item.is-active {
+    font-weight: 700;
+}
+
+.company-visibility {
+    margin-top: 49px;
+    padding: 14px;
+    display: grid;
+    gap: 8px;
+    background: var(--corp-blue-soft);
+    border-radius: 10px;
+}
+
+.company-visibility__label {
+    color: var(--corp-muted);
+    font-size: 11px;
+}
+
+.company-visibility__status {
+    color: var(--corp-blue);
+    font-size: 14px;
+}
+
+.company-visibility__date {
+    margin-top: 5px;
+    color: var(--corp-muted);
+    font-size: 10px;
+}
+
+/* ---------------- 공통 콘텐츠 영역 ---------------- */
+
+.corp-content {
+    min-width: 0;
+}
+
+/* ---------------- 공통 버튼 ---------------- */
+
+.primary-action {
+    width: 130px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: var(--corp-blue);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.primary-action:hover {
+    background: var(--corp-blue-dark);
+}
+
+/* ---------------- 푸터 ---------------- */
+
+.corp-footer {
+    height: 92px;
+    color: var(--corp-muted);
+    background: var(--corp-soft);
+    border-top: 1px solid var(--corp-line);
+    font-size: 13px;
+}
+
+/* ---------------- 반응형 ---------------- */
+
+@media (max-width: 1080px) {
+    .corp-layout {
+        grid-template-columns: 210px minmax(0, 1fr);
+        gap: 24px;
+    }
+}
+
+@media (max-width: 720px) {
+    .corp-header__inner,
+    .corp-footer__inner,
+    .corp-layout {
+        width: min(100% - 32px, 1280px);
+    }
+
+    .corp-brand__tag,
+    .corp-header__home {
+        display: none;
+    }
+
+    .corp-brand__logo {
+        width: 132px;
+        height: 34px;
+    }
+
+    .corp-main {
+        padding: 20px 0 80px;
+    }
+
+    .corp-layout {
+        display: block;
+    }
+
+    .corp-sidebar {
+        min-height: 0;
+        margin-bottom: 24px;
+    }
+
+    .corp-nav {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .company-visibility {
+        margin-top: 20px;
+    }
+
+    .corp-footer__inner {
+        align-items: flex-start;
+        justify-content: center;
+        flex-direction: column;
+        gap: 6px;
+    }
+}

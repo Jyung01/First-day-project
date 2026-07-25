@@ -1,0 +1,234 @@
+/* =========================================================
+   로그인 페이지 전용
+========================================================= */
+
+.login-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(420px, 1.1fr);
+    gap: 70px;
+    align-items: stretch;
+}
+
+/* 왼쪽 안내 영역 */
+
+.login-intro {
+    display: flex;
+    align-items: center;
+    min-height: 570px;
+    padding: 60px 52px;
+    border-radius: 22px;
+    background-color: #eef1ff;
+    box-sizing: border-box;
+}
+
+.login-intro-content {
+    transform: translateY(18px);
+}
+
+.login-intro-title {
+    margin: 0;
+    color: #172033;
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.22;
+    letter-spacing: -1.2px;
+}
+
+.login-intro-description {
+    margin: 34px 0 0;
+    color: #778299;
+    font-size: 16px;
+    line-height: 1.65;
+}
+
+/* 로그인 카드 */
+
+.login-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 570px;
+    padding: 48px 50px;
+}
+
+.login-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    margin-bottom: 28px;
+    padding: 4px;
+    border-radius: 10px;
+    background-color: #f5f7fa;
+}
+
+.login-tab {
+    height: 42px;
+    border: 0;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #727d91;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.login-tab:hover {
+    color: #4f55df;
+}
+
+.login-tab.active {
+    background-color: #ffffff;
+    color: #6266f1;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+.login-form {
+    gap: 20px;
+}
+
+/* 비밀번호 입력 영역 */
+
+.password-input-wrap {
+    position: relative;
+}
+
+.password-input {
+    padding-right: 68px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    padding: 6px;
+    border: 0;
+    background-color: transparent;
+    color: #6266f1;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.password-toggle:hover {
+    text-decoration: underline;
+}
+
+/* 로그인 유지 및 계정 찾기 */
+
+.login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 2px 0 4px;
+}
+
+.login-find-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.login-find-links a {
+    color: #6266f1;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.login-find-links a:hover {
+    text-decoration: underline;
+}
+
+.login-link-divider {
+    color: #b5bdca;
+    font-size: 12px;
+}
+
+/* 회원가입 안내 */
+
+.login-signup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 25px;
+    color: #7c879b;
+    font-size: 13px;
+}
+
+.login-signup-link {
+    color: #6266f1;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.login-signup-link:hover {
+    text-decoration: underline;
+}
+
+/* 반응형 */
+
+@media (max-width: 960px) {
+    .login-container {
+        grid-template-columns: 1fr;
+        max-width: 620px;
+        gap: 28px;
+    }
+
+    .login-intro {
+        min-height: 270px;
+        padding: 42px;
+    }
+
+    .login-intro-content {
+        transform: none;
+    }
+
+    .login-intro-title {
+        font-size: 32px;
+    }
+
+    .login-intro-description {
+        margin-top: 22px;
+    }
+
+    .login-card {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .login-intro {
+        min-height: 230px;
+        padding: 32px 26px;
+        border-radius: 16px;
+    }
+
+    .login-intro-title {
+        font-size: 28px;
+    }
+
+    .login-intro-description {
+        font-size: 14px;
+    }
+
+    .login-card {
+        padding: 32px 24px;
+    }
+
+    .login-options {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .login-signup {
+        gap: 14px;
+    }
+}
