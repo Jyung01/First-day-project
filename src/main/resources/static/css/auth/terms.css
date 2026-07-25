@@ -1,0 +1,324 @@
+/* =========================================================
+   개인회원 / 기업회원 약관 동의 페이지
+========================================================= */
+
+.terms-main {
+    min-height: 660px;
+    padding-top: 36px;
+    padding-bottom: 70px;
+}
+
+.terms-container {
+    max-width: 680px;
+}
+
+.terms-card {
+    padding: 40px 46px 42px;
+}
+
+.terms-header {
+    margin-bottom: 22px;
+}
+
+.terms-header .auth-title {
+    font-size: 28px;
+    letter-spacing: -0.7px;
+}
+
+.terms-header .auth-description {
+    margin-top: 7px;
+}
+
+/* 진행 단계 */
+
+.terms-progress {
+    margin-bottom: 30px;
+}
+
+.terms-progress-text {
+    margin: 0 0 12px;
+    color: #6266f1;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.terms-progress-text strong {
+    font-weight: 700;
+}
+
+.terms-progress-track {
+    width: 100%;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background-color: #e4e8ef;
+}
+
+.terms-progress-bar {
+    display: block;
+    width: 33.333%;
+    height: 100%;
+    border-radius: inherit;
+    background-color: #6266f1;
+}
+
+/* 전체 동의 */
+
+.terms-all {
+    display: flex;
+    align-items: center;
+    min-height: 68px;
+    padding: 0 18px;
+    border: 1px solid #6266f1;
+    border-radius: 11px;
+    background-color: #eff1ff;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.terms-all-text {
+    margin-left: 12px;
+    color: #6266f1;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* 체크박스 */
+
+.terms-checkbox-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+}
+
+.terms-checkbox-box {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border: 1px solid #d6ddea;
+    border-radius: 5px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.terms-checkbox-input:checked + .terms-checkbox-box {
+    border-color: #6266f1;
+    background-color: #6266f1;
+}
+
+.terms-checkbox-input:checked + .terms-checkbox-box::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 7px;
+    width: 4px;
+    height: 8px;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    transform: rotate(45deg);
+}
+
+.terms-checkbox-input:focus-visible + .terms-checkbox-box {
+    box-shadow: 0 0 0 3px rgba(98, 102, 241, 0.16);
+}
+
+/* 약관 목록 */
+
+.terms-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.terms-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 62px;
+    padding: 10px 17px;
+    border: 1px solid #dfe5ee;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+}
+
+.terms-item-label {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.terms-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-left: 12px;
+}
+
+.terms-item-content strong {
+    color: #273044;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.terms-item-content small {
+    color: #929caf;
+    font-size: 11px;
+    line-height: 1;
+}
+
+.terms-view-button {
+    flex-shrink: 0;
+    margin-left: 16px;
+    padding: 8px 2px;
+    border: 0;
+    background-color: transparent;
+    color: #6266f1;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.terms-view-button:hover {
+    text-decoration: underline;
+}
+
+/* 검증 메시지 */
+
+.terms-error {
+    display: none;
+    margin: 12px 2px 0;
+    color: #ff4d5a;
+    font-size: 12px;
+}
+
+.terms-error.is-visible {
+    display: block;
+}
+
+/* 하단 버튼 */
+
+.terms-actions {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 42px;
+}
+
+.terms-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.terms-button-secondary {
+    border: 1px solid #d7deea;
+    background-color: #ffffff;
+    color: #2d3648;
+}
+
+.terms-button-secondary:hover {
+    border-color: #b8c2d4;
+    background-color: #fafbfc;
+}
+
+.terms-button-primary {
+    border: 1px solid #6266f1;
+    background-color: #6266f1;
+    color: #ffffff;
+}
+
+.terms-button-primary:hover {
+    border-color: #5357df;
+    background-color: #5357df;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 768px) {
+    .terms-main {
+        padding-top: 28px;
+        padding-bottom: 55px;
+    }
+
+    .terms-card {
+        padding: 34px 26px 36px;
+    }
+
+    .terms-actions {
+        grid-template-columns: 130px minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .terms-card {
+        padding: 30px 20px 32px;
+    }
+
+    .terms-header .auth-title {
+        font-size: 24px;
+    }
+
+    .terms-all {
+        min-height: 62px;
+        padding: 0 14px;
+    }
+
+    .terms-all-text {
+        font-size: 14px;
+    }
+
+    .terms-item {
+        min-height: 60px;
+        padding: 10px 13px;
+    }
+
+    .terms-item-content strong {
+        font-size: 12px;
+    }
+
+    .terms-actions {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 32px;
+    }
+
+    .terms-button-secondary {
+        order: 2;
+    }
+
+    .terms-button-primary {
+        order: 1;
+    }
+
+    .terms-modal {
+        padding: 12px;
+    }
+
+    .terms-modal-header,
+    .terms-modal-body,
+    .terms-modal-footer {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}

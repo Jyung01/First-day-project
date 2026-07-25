@@ -1,0 +1,97 @@
+/* =========================================================
+   약관 상세 모달
+========================================================= */
+
+.terms-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.terms-modal.is-open {
+    display: flex;
+}
+
+.terms-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.52);
+}
+
+.terms-modal-dialog {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px;
+    max-height: min(680px, calc(100vh - 40px));
+    overflow: hidden;
+    border-radius: 14px;
+    background-color: #ffffff;
+    box-shadow: 0 22px 60px rgba(15, 23, 42, 0.2);
+}
+
+.terms-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 24px;
+    border-bottom: 1px solid #e6eaf0;
+}
+
+.terms-modal-header h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.terms-modal-close {
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #677286;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.terms-modal-close:hover {
+    background-color: #f3f5f8;
+}
+
+.terms-modal-body {
+    overflow-y: auto;
+    min-height: 280px;
+    padding: 24px;
+    color: #4c5669;
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+.terms-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 24px;
+    border-top: 1px solid #e6eaf0;
+}
+
+.terms-modal-confirm {
+    min-width: 100px;
+    height: 42px;
+    border: 0;
+    border-radius: 7px;
+    background-color: #6266f1;
+    color: #ffffff;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}

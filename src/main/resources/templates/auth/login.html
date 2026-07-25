@@ -6,21 +6,185 @@
 
         <title>로그인 | 첫출근</title>
 
-        <link rel="stylesheet" href="/css/common.css" th:href="@{/css/common.css}" />
+        <!-- 사이트 전체 공통 CSS -->
+        <link rel="stylesheet" th:href="@{/css/common.css}" />
+
+        <!-- 로그인·회원가입 공통 CSS -->
+        <link rel="stylesheet" th:href="@{/css/auth/common.css}" />
+
+        <!-- 로그인 페이지 전용 CSS -->
+        <link rel="stylesheet" th:href="@{/css/auth/login.css}" />
     </head>
 
     <body>
         <!-- 공통 헤더 -->
-        <div id="header-placeholder" data-include="/common/header.html" th:replace="~{common/header :: header}"></div>
+        <header th:replace="~{common/header :: header}"></header>
 
-        <main></main>
+        <main class="auth-main">
+            <div class="auth-container login-container">
+                <!-- 왼쪽 안내 영역 -->
+                <section class="login-intro">
+                    <div class="login-intro-content">
+                        <h1 class="login-intro-title">
+                            설레는 첫 출근을<br />
+                            함께 준비해요
+                        </h1>
+
+                        <p class="login-intro-description">
+                            채용공고 탐색부터 이력서와<br />
+                            자기소개서 관리까지 한곳에서 시작하세요.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 오른쪽 로그인 영역 -->
+                <section class="auth-card login-card">
+                    <div class="auth-card-header">
+                        <h2 class="auth-title">로그인</h2>
+                        <p class="auth-description">첫출근 계정으로 서비스를 이용해보세요.</p>
+                    </div>
+
+                    <!-- 회원 유형 선택 -->
+                    <div class="login-tabs" role="tablist" aria-label="회원 유형 선택">
+                        <button
+                            type="button"
+                            class="login-tab active"
+                            data-member-type="personal"
+                            role="tab"
+                            aria-selected="true"
+                        >
+                            개인회원
+                        </button>
+
+                        <button
+                            type="button"
+                            class="login-tab"
+                            data-member-type="company"
+                            role="tab"
+                            aria-selected="false"
+                        >
+                            기업회원
+                        </button>
+                    </div>
+
+                    <!-- 로그인 폼 -->
+                    <form class="auth-form login-form" th:action="@{/login}" method="post">
+                        <!-- 회원 유형 -->
+                        <input type="hidden" id="memberType" name="memberType" value="personal" />
+
+                        <!-- 아이디 -->
+                        <div class="auth-field">
+                            <label for="username" class="auth-label"> 아이디 </label>
+
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                class="auth-input"
+                                placeholder="아이디를 입력해주세요."
+                                autocomplete="username"
+                                required
+                            />
+                        </div>
+
+                        <!-- 비밀번호 -->
+                        <div class="auth-field">
+                            <label for="password" class="auth-label"> 비밀번호 </label>
+
+                            <div class="password-input-wrap">
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="auth-input password-input"
+                                    placeholder="비밀번호를 입력해주세요."
+                                    autocomplete="current-password"
+                                    required
+                                />
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    id="passwordToggle"
+                                    aria-label="비밀번호 표시"
+                                >
+                                    보기
+                                </button>
+                            </div>
+
+                            <!-- 로그인 실패 메시지 -->
+                            <p class="auth-error" th:if="${param.error}">아이디 또는 비밀번호가 올바르지 않습니다.</p>
+                        </div>
+
+                        <!-- 로그인 유지 / 계정 찾기 -->
+                        <div class="login-options">
+                            <label class="auth-checkbox">
+                                <input type="checkbox" name="remember-me" class="auth-checkbox-input" />
+
+                                <span class="auth-checkbox-box"></span>
+                                <span class="auth-checkbox-text"> 로그인 상태 유지 </span>
+                            </label>
+
+                            <div class="login-find-links">
+                                <a th:href="@{/auth/find-id}"> 아이디 찾기 </a>
+
+                                <span class="login-link-divider">·</span>
+
+                                <a th:href="@{/auth/reset-password}"> 비밀번호 재설정 </a>
+                            </div>
+                        </div>
+
+                        <!-- 로그인 버튼 -->
+                        <button type="submit" class="auth-primary-button">로그인</button>
+                    </form>
+
+                    <!-- 회원가입 이동 -->
+                    <div class="login-signup">
+                        <span>아직 회원이 아니신가요?</span>
+
+                        <a th:href="@{/auth/member-type}" class="login-signup-link"> 회원가입 </a>
+                    </div>
+                </section>
+            </div>
+        </main>
 
         <!-- 공통 푸터 -->
-        <div id="footer-placeholder" data-include="/common/footer.html" th:replace="~{common/footer :: footer}"></div>
+        <footer th:replace="~{common/footer :: footer}"></footer>
 
-        <!-- 공통 헤더·푸터 불러오기 -->
-        <script src="/js/include.js" th:remove="all"></script>
+        <!-- 공통 헤더·푸터 JS -->
+        <script th:src="@{/js/common.js}"></script>
 
-        <script src="/js/common.js" th:src="@{/js/common.js}"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const tabs = document.querySelectorAll(".login-tab");
+                const memberTypeInput = document.getElementById("memberType");
+                const passwordInput = document.getElementById("password");
+                const passwordToggle = document.getElementById("passwordToggle");
+
+                // 개인회원 / 기업회원 탭
+                tabs.forEach(function (tab) {
+                    tab.addEventListener("click", function () {
+                        tabs.forEach(function (item) {
+                            item.classList.remove("active");
+                            item.setAttribute("aria-selected", "false");
+                        });
+
+                        tab.classList.add("active");
+                        tab.setAttribute("aria-selected", "true");
+
+                        memberTypeInput.value = tab.dataset.memberType;
+                    });
+                });
+
+                // 비밀번호 보기
+                passwordToggle.addEventListener("click", function () {
+                    const isPassword = passwordInput.type === "password";
+
+                    passwordInput.type = isPassword ? "text" : "password";
+                    passwordToggle.textContent = isPassword ? "숨기기" : "보기";
+                    passwordToggle.setAttribute("aria-label", isPassword ? "비밀번호 숨기기" : "비밀번호 표시");
+                });
+            });
+        </script>
     </body>
 </html>
