@@ -20,12 +20,12 @@
     </div>
 
     <nav class="mypage-side__nav">
-        <a th:href="@{/mypage}" class="mypage-side__link" th:classappend="${activeMenu == 'home'} ? ' is-active' : ''">
+        <a th:href="@{/my}" class="mypage-side__link" th:classappend="${activeMenu == 'home'} ? ' is-active' : ''">
             마이페이지 홈
         </a>
 
         <a
-            th:href="@{/mypage/applications}"
+            th:href="@{/my/applications}"
             class="mypage-side__link"
             th:classappend="${activeMenu == 'applications'} ? ' is-active' : ''"
         >
@@ -33,7 +33,7 @@
         </a>
 
         <a
-            th:href="@{/mypage/interest-jobs}"
+            th:href="@{/my/saved-jobs}"
             class="mypage-side__link"
             th:classappend="${activeMenu == 'interestJobs'} ? ' is-active' : ''"
         >
@@ -41,7 +41,7 @@
         </a>
 
         <a
-            th:href="@{/mypage/interest-companies}"
+            th:href="@{/my/saved-companies}"
             class="mypage-side__link"
             th:classappend="${activeMenu == 'interestCompanies'} ? ' is-active' : ''"
         >
@@ -49,7 +49,7 @@
         </a>
 
         <a
-            th:href="@{/mypage/resumes}"
+            th:href="@{/my/resume}"
             class="mypage-side__link"
             th:classappend="${activeMenu == 'resumes'} ? ' is-active' : ''"
         >
@@ -57,7 +57,7 @@
         </a>
 
         <a
-            th:href="@{/mypage/cover-letters}"
+            th:href="@{/my/cover-letter}"
             class="mypage-side__link"
             th:classappend="${activeMenu == 'coverLetters'} ? ' is-active' : ''"
         >
@@ -65,7 +65,7 @@
         </a>
 
         <a
-            th:href="@{/mypage/reviews}"
+            th:href="@{/my/reviews}"
             class="mypage-side__link"
             th:classappend="${activeMenu == 'reviews'} ? ' is-active' : ''"
         >
@@ -73,7 +73,7 @@
         </a>
 
         <a
-            th:href="@{/mypage/edit}"
+            th:href="@{/my/profile-edit}"
             class="mypage-side__link"
             th:classappend="${activeMenu == 'edit'} ? ' is-active' : ''"
         >
