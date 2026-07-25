@@ -1,0 +1,19 @@
+<header class="header" xmlns:th="http://www.thymeleaf.org" th:fragment="adminHeader">
+    <div class="logo-box">
+        <a th:href="@{/admin}" class="admin-logo">
+            <img
+                th:src="@{/images/common/logo-footer.png}"
+                src="/images/common/logo-footer.png"
+                alt="첫출근 관리자"
+                class="admin-logo__image"
+            />
+        </a>
+
+        <span class="admin-badge">관리자</span>
+    </div>
+
+    <nav class="top-menu">
+        <a th:href="@{/}" class="top-menu__button">서비스 홈</a>
+        <button type="button" class="top-menu__button">로그아웃</button>
+    </nav>
+</header>

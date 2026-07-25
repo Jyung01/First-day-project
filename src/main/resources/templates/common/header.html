@@ -1,0 +1,79 @@
+<header
+        data-job-list-url="/job/list.html"
+        th:attr="data-job-list-url=@{/job/list}"
+        th:fragment="header"
+        xmlns:th="http://www.thymeleaf.org"
+        class="site-header"
+>
+    <div class="wrap header-inner">
+        <a th:href="@{/}" class="header-logo" aria-label="첫출근 메인으로 이동">
+            <!-- 권장 이미지 크기: 160 × 40px / 투명 SVG·PNG -->
+            <img
+                    th:src="@{/images/header-logo.svg}"
+                    width="160"
+                    height="40"
+                    alt="첫출근"
+            />
+        </a>
+
+        <div class="mega-wrap" id="mega-wrap">
+            <nav class="primary-nav">
+                <button type="button" class="nav-hamburger" id="mega-btn" aria-label="직무 메뉴 열기">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <a th:href="@{/job/list}" class="emph">채용공고</a>
+                <a th:href="@{/company/list}">기업정보</a>
+                <a th:href="@{/my/resume/list}">이력서</a>
+                <a th:href="@{/salary/list}">연봉정보</a>
+            </nav>
+
+            <!-- 메가메뉴 패널 (전체 폭) -->
+            <div class="mega-panel">
+                <div class="mega-panel-inner">
+                    <!-- 좌측: 직군 목록 -->
+                    <ul class="mega-sidebar" id="mega-sidebar">
+                        <li data-cat="all">직군 전체</li>
+                        <li data-cat="dev" class="active">개발</li>
+                        <li data-cat="biz">경영·비즈니스</li>
+                        <li data-cat="marketing">마케팅·광고</li>
+                        <li data-cat="design">디자인</li>
+                        <li data-cat="cs">고객서비스·리테일</li>
+                        <li data-cat="sales">영업</li>
+                        <li data-cat="media">미디어</li>
+                        <li data-cat="engineering">엔지니어링·설계</li>
+                        <li data-cat="manufacturing">제조·생산</li>
+                        <li data-cat="finance">금융</li>
+                        <li data-cat="medical">의료·바이오</li>
+                        <li data-cat="edu">교육</li>
+                        <li data-cat="law">법률</li>
+                    </ul>
+
+                    <!-- 우측: 선택된 직군의 직무 목록 -->
+                    <div class="mega-content">
+                        <div class="mega-content-head">
+                            <span class="mega-cat-name" id="mega-cat-name">개발</span>
+                            <span class="mega-cat-hint"
+                            >원하는 직무를 선택하면 해당 조건의 채용공고 목록으로 이동</span
+                            >
+                        </div>
+                        <div class="mega-job-grid" id="mega-job-grid">
+                            <!-- JS로 채워짐 -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mega-panel-footer">
+                    출력 기준 · 1차 분류: 직군 · 2차 분류: 직무 · 관리자 카테고리 관리에서 명칭·순서·사용 여부
+                    설정 · 직무 클릭 → 선택 조건이 적용된 채용공고 목록 페이지로 이동
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right" aria-label="회원 메뉴">
+            <a th:href="@{/auth/login}" class="btn btn-ghost">로그인</a>
+            <a th:href="@{/auth/member-type}" class="btn btn-primary">회원가입</a>
+        </div>
+    </div>
+</header>
