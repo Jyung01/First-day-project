@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>개인회원 가입 완료 | 첫출근</title>
+
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth/complete.css}" />
+</head>
+
+<body>
+<!-- 공통 헤더 -->
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="auth-main complete-main">
+    <div class="auth-container complete-container">
+        <section class="auth-card complete-card">
+            <!-- 완료 아이콘 -->
+            <div class="complete-icon" aria-hidden="true">
+                <span class="complete-check">✓</span>
+            </div>
+
+            <!-- 완료 문구 -->
+            <div class="complete-header">
+                <h1 class="complete-title">
+                    첫출근 가입을 환영해요!
+                </h1>
+
+                <p class="complete-description">
+                    개인회원 가입이 완료되었습니다.<br />
+                    이제 채용공고를 확인하고 지원해보세요.
+                </p>
+            </div>
+
+            <!-- 다음 단계 안내 -->
+            <div class="complete-guide">
+                <strong class="complete-guide-title">
+                    다음으로 추천해요
+                </strong>
+
+                <p class="complete-guide-description">
+                    이력서를 등록하면 관심 공고에 바로 지원할 수 있어요.
+                </p>
+            </div>
+
+            <!-- 이동 버튼 -->
+            <div class="complete-actions complete-actions-personal">
+                <a
+                        th:href="@{/auth/login}"
+                        class="complete-button complete-button-secondary"
+                >
+                    로그인
+                </a>
+
+                <a
+                        th:href="@{/my/resume/form}"
+                        class="complete-button complete-button-primary"
+                >
+                    로그인 후 이력서 등록
+                </a>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- 공통 푸터 -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<script th:src="@{/js/common.js}"></script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>기업회원 정보입력 | 첫출근</title>
+
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth/join-form.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+</head>
+
+<body>
+<!-- 공통 헤더 -->
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="auth-main join-form-main">
+    <div class="auth-container join-form-container">
+        <section class="auth-card join-form-card">
+            <div class="auth-card-header join-form-header">
+                <h1 class="auth-title">기업회원 정보입력</h1>
+
+                <p class="auth-description">
+                    담당자 계정과 기업 기본정보를 입력해주세요.
+                </p>
+            </div>
+
+            <!-- 진행 단계 -->
+            <div class="join-progress">
+                <p class="join-progress-text">
+                    2단계 · <strong>정보입력</strong>
+                </p>
+
+                <div class="join-progress-track">
+                    <span class="join-progress-bar"></span>
+                </div>
+            </div>
+
+            <form
+                    class="join-form"
+                    th:action="@{/auth/company/form}"
+                    method="post"
+                    data-join-form
+                    data-company-form
+            >
+                <h2 class="join-section-title">담당자 계정</h2>
+
+                <!-- 아이디 -->
+                <div class="join-field join-field-full">
+                    <label for="companyMemberId" class="auth-label">
+                        아이디 <span class="join-required">*</span>
+                    </label>
+
+                    <div class="join-input-action">
+                        <input
+                                type="text"
+                                id="companyMemberId"
+                                name="memberId"
+                                class="auth-input"
+                                placeholder="영문, 숫자 6~20자"
+                                minlength="6"
+                                maxlength="20"
+                                autocomplete="username"
+                                required
+                        />
+
+                        <button
+                                type="button"
+                                class="join-outline-button"
+                                data-id-check
+                        >
+                            중복확인
+                        </button>
+                    </div>
+
+                    <p class="join-field-message" data-id-message></p>
+                </div>
+
+                <!-- 비밀번호 -->
+                <div class="join-field-row">
+                    <div class="join-field">
+                        <label for="companyPassword" class="auth-label">
+                            비밀번호 <span class="join-required">*</span>
+                        </label>
+
+                        <input
+                                type="password"
+                                id="companyPassword"
+                                name="password"
+                                class="auth-input"
+                                placeholder="8자 이상"
+                                minlength="8"
+                                autocomplete="new-password"
+                                required
+                                data-password
+                        />
+                    </div>
+
+                    <div class="join-field">
+                        <label
+                                for="companyPasswordConfirm"
+                                class="auth-label"
+                        >
+                            비밀번호 확인
+                            <span class="join-required">*</span>
+                        </label>
+
+                        <input
+                                type="password"
+                                id="companyPasswordConfirm"
+                                class="auth-input"
+                                placeholder="비밀번호 다시 입력"
+                                minlength="8"
+                                autocomplete="new-password"
+                                required
+                                data-password-confirm
+                        />
+                    </div>
+                </div>
+
+                <p
+                        class="join-field-message"
+                        data-password-message
+                ></p>
+
+                <!-- 담당자 이름 / 연락처 -->
+                <div class="join-field-row">
+                    <div class="join-field">
+                        <label for="managerName" class="auth-label">
+                            담당자 이름
+                            <span class="join-required">*</span>
+                        </label>
+
+                        <input
+                                type="text"
+                                id="managerName"
+                                name="managerName"
+                                class="auth-input"
+                                placeholder="이름 입력"
+                                required
+                        />
+                    </div>
+
+                    <div class="join-field">
+                        <label for="managerPhone" class="auth-label">
+                            담당자 연락처
+                            <span class="join-required">*</span>
+                        </label>
+
+                        <input
+                                type="tel"
+                                id="managerPhone"
+                                name="managerPhone"
+                                class="auth-input"
+                                placeholder="010-0000-0000"
+                                inputmode="numeric"
+                                required
+                        />
+                    </div>
+                </div>
+
+                <!-- 담당자 이메일 -->
+                <div class="join-field join-field-full">
+                    <label for="managerEmail" class="auth-label">
+                        담당자 이메일
+                        <span class="join-required">*</span>
+                    </label>
+
+                    <div class="join-input-action">
+                        <input
+                                type="email"
+                                id="managerEmail"
+                                name="managerEmail"
+                                class="auth-input"
+                                placeholder="example@company.com"
+                                autocomplete="email"
+                                required
+                        />
+
+                        <button
+                                type="button"
+                                class="join-outline-button"
+                                data-send-code
+                        >
+                            인증번호 받기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 인증번호 -->
+                <div class="join-verification">
+                    <input
+                            type="text"
+                            class="auth-input"
+                            placeholder="인증번호 6자리"
+                            maxlength="6"
+                            inputmode="numeric"
+                            data-verification-code
+                    />
+
+                    <button
+                            type="button"
+                            class="join-resend-button"
+                            data-resend-code
+                    >
+                        재전송
+                    </button>
+
+                    <button
+                            type="button"
+                            class="join-primary-small-button"
+                            data-confirm-code
+                    >
+                        인증 확인
+                    </button>
+                </div>
+
+                <p
+                        class="join-field-message"
+                        data-email-message
+                ></p>
+
+                <!-- 기업 기본정보 -->
+                <h2 class="join-section-title join-company-section-title">
+                    기업 기본정보
+                </h2>
+
+                <div class="join-field-row">
+                    <div class="join-field">
+                        <label for="companyName" class="auth-label">
+                            기업명 <span class="join-required">*</span>
+                        </label>
+
+                        <input
+                                type="text"
+                                id="companyName"
+                                name="companyName"
+                                class="auth-input"
+                                placeholder="기업명 입력"
+                                required
+                        />
+                    </div>
+
+                    <div class="join-field">
+                        <label for="industry" class="auth-label">
+                            업종 <span class="join-required">*</span>
+                        </label>
+
+                        <select
+                                id="industry"
+                                name="industry"
+                                class="auth-input join-select"
+                                required
+                        >
+                            <option value="">업종 선택</option>
+                            <option value="IT·인터넷">IT·인터넷</option>
+                            <option value="금융">금융</option>
+                            <option value="제조">제조</option>
+                            <option value="유통·무역">유통·무역</option>
+                            <option value="서비스">서비스</option>
+                            <option value="교육">교육</option>
+                            <option value="의료">의료</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 기업 규모 -->
+                <div class="join-field join-company-size-field">
+                    <label for="companySize" class="auth-label">
+                        기업 규모 <span class="join-required">*</span>
+                    </label>
+
+                    <select
+                            id="companySize"
+                            name="companySize"
+                            class="auth-input join-select"
+                            required
+                    >
+                        <option value="">규모 선택</option>
+                        <option value="STARTUP">스타트업</option>
+                        <option value="SMALL">중소기업</option>
+                        <option value="MEDIUM">중견기업</option>
+                        <option value="LARGE">대기업</option>
+                        <option value="PUBLIC">공공기관</option>
+                        <option value="FOREIGN">외국계기업</option>
+                    </select>
+                </div>
+
+                <!-- 기업 주소 -->
+                <fieldset class="join-address">
+                    <legend>
+                        기업 주소
+                        <span class="join-required">*</span>
+                    </legend>
+
+                    <div class="join-postcode-row">
+                        <input
+                                type="text"
+                                id="companyPostcode"
+                                name="postcode"
+                                class="auth-input"
+                                placeholder="우편번호"
+                                readonly
+                                required
+                        />
+
+                        <button
+                                type="button"
+                                class="join-address-button"
+                                data-address-search
+                        >
+                            주소 찾기
+                        </button>
+                    </div>
+
+                    <input
+                            type="text"
+                            id="companyAddress"
+                            name="address"
+                            class="auth-input"
+                            placeholder="주소 찾기 선택 시 기본주소 자동 입력"
+                            readonly
+                            required
+                    />
+
+                    <input
+                            type="text"
+                            id="companyAddressDetail"
+                            name="addressDetail"
+                            class="auth-input"
+                            placeholder="상세주소 입력"
+                    />
+
+                    <p class="join-help">
+                        Kakao Postcode 연동 · 우편번호와 기본주소는 검색
+                        결과로 입력됩니다.
+                    </p>
+                </fieldset>
+
+                <!-- 하단 버튼 -->
+                <div class="join-form-actions">
+                    <a
+                            th:href="@{/auth/corporate-terms}"
+                            class="join-secondary-button"
+                            data-signup-cancel
+                    >
+                        이전
+                    </a>
+
+                    <button
+                            type="submit"
+                            class="join-submit-button"
+                    >
+                        기업 신청
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<!-- 공통 푸터 -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 공통 확인 모달 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/auth/join-form.js}"></script>
+</body>
+</html>

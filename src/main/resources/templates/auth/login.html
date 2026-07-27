@@ -14,6 +14,8 @@
 
         <!-- 로그인 페이지 전용 CSS -->
         <link rel="stylesheet" th:href="@{/css/auth/login.css}" />
+
+        <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
     </head>
 
     <body>
@@ -151,6 +153,11 @@
         <!-- 공통 푸터 -->
         <footer th:replace="~{common/footer :: footer}"></footer>
 
+        <!-- 공통 확인 모달 -->
+        <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+        <script th:src="@{/js/modal.js}"></script>
+
         <!-- 공통 헤더·푸터 JS -->
         <script th:src="@{/js/common.js}"></script>
 
@@ -184,6 +191,31 @@
                     passwordToggle.textContent = isPassword ? "숨기기" : "보기";
                     passwordToggle.setAttribute("aria-label", isPassword ? "비밀번호 숨기기" : "비밀번호 표시");
                 });
+
+                function showRestrictedAccountModal() {
+                    showConfirmModal({
+                        iconClass: "danger",
+                        iconHtml: '<i class="fa-solid fa-exclamation"></i>',
+
+                        title: "이용이 제한된 계정입니다",
+                        message:
+                            "관리자에 의해 이용이 제한된 계정입니다.\n자세한 내용은 고객센터에 문의해주세요.",
+
+                        leftText: "닫기",
+                        rightText: "고객센터",
+
+                        leftClass: "btn-outline",
+                        rightClass: "btn-primary",
+
+                        onLeft: function () {
+                            // 모달만 닫기
+                        },
+
+                        onRight: function () {
+                            window.location.href = "/cs/notice";
+                        }
+                    });
+                }
             });
         </script>
     </body>

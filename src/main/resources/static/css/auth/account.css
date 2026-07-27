@@ -1,0 +1,221 @@
+/* =========================================================
+   아이디 찾기 / 비밀번호 재설정
+========================================================= */
+
+.account-main {
+    min-height: 630px;
+    padding-top: 58px;
+    padding-bottom: 90px;
+}
+
+.account-container {
+    max-width: 570px;
+}
+
+.account-card {
+    padding: 42px 40px 38px;
+}
+
+.account-card-reset {
+    max-width: 570px;
+}
+
+.account-header {
+    margin-bottom: 36px;
+}
+
+.account-header .auth-title {
+    font-size: 28px;
+    letter-spacing: -0.7px;
+}
+
+.account-header .auth-description {
+    margin-top: 9px;
+}
+
+/* 폼 */
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.account-submit-button {
+    margin-top: 8px;
+}
+
+.account-input-action {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 150px;
+    gap: 12px;
+}
+
+.account-outline-button {
+    height: 52px;
+    border: 1px solid #d6dde9;
+    border-radius: 9px;
+    background-color: #ffffff;
+    color: #30394c;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.account-outline-button:hover {
+    border-color: #6266f1;
+    color: #5156df;
+    background-color: #f8f8ff;
+}
+
+/* 메시지 */
+
+.account-message {
+    display: none;
+    margin: -12px 0 0;
+    color: #ef4444;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.account-message.is-visible {
+    display: block;
+}
+
+.account-message.is-success {
+    display: block;
+    color: #5156df;
+}
+
+/* 아이디 조회 결과 */
+
+.account-result {
+    margin-top: 24px;
+    padding: 19px 20px;
+    border-radius: 10px;
+    background-color: #eef1ff;
+    text-align: left;
+}
+
+.account-result[hidden] {
+    display: none;
+}
+
+.account-result-title {
+    display: block;
+    margin-bottom: 10px;
+    color: #6266f1;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.account-result-value {
+    margin: 0;
+    color: #273044;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.account-result-divider {
+    margin: 0 6px;
+    color: #a2aabd;
+}
+
+/* 로그인 이동 */
+
+.account-bottom-link {
+    display: block;
+    width: fit-content;
+    margin: 28px auto 0;
+    color: #6266f1;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.account-bottom-link:hover {
+    text-decoration: underline;
+}
+
+/* 비밀번호 보기 */
+
+.account-password-wrap {
+    position: relative;
+}
+
+.account-password-wrap .auth-input {
+    padding-right: 64px;
+}
+
+.account-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    padding: 5px;
+    border: 0;
+    background-color: transparent;
+    color: #6266f1;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.account-password-toggle:hover {
+    text-decoration: underline;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 768px) {
+    .account-main {
+        padding-top: 36px;
+        padding-bottom: 65px;
+    }
+
+    .account-card {
+        padding: 36px 28px 34px;
+    }
+}
+
+@media (max-width: 520px) {
+    .account-input-action {
+        grid-template-columns: 1fr;
+    }
+
+    .account-outline-button {
+        height: 46px;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-main {
+        padding-top: 26px;
+        padding-bottom: 48px;
+    }
+
+    .account-card {
+        padding: 31px 20px 30px;
+    }
+
+    .account-header {
+        margin-bottom: 30px;
+    }
+
+    .account-header .auth-title {
+        font-size: 24px;
+    }
+
+    .account-form {
+        gap: 19px;
+    }
+
+    .account-result {
+        padding: 17px;
+    }
+}

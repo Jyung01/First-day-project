@@ -1,0 +1,222 @@
+/* =========================================================
+   개인회원 / 기업회원 가입 완료 페이지
+========================================================= */
+
+.complete-main {
+    display: flex;
+    min-height: 640px;
+    align-items: flex-start;
+    padding-top: 68px;
+    padding-bottom: 90px;
+}
+
+.complete-container {
+    max-width: 560px;
+}
+
+.complete-card {
+    display: flex;
+    min-height: 480px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 54px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* 완료 아이콘 */
+
+.complete-icon {
+    display: flex;
+    width: 88px;
+    height: 88px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    border-radius: 50%;
+    background-color: #eff1ff;
+}
+
+.complete-check {
+    color: #6266f1;
+    font-size: 50px;
+    font-weight: 400;
+    line-height: 1;
+    transform: translateY(-2px);
+}
+
+/* 완료 문구 */
+
+.complete-header {
+    width: 100%;
+}
+
+.complete-title {
+    margin: 0;
+    color: #172033;
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.7px;
+}
+
+.complete-description {
+    margin: 16px 0 0;
+    color: #7c879b;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* 안내 박스 */
+
+.complete-guide {
+    width: 100%;
+    margin-top: 42px;
+    padding: 18px 20px;
+    border-radius: 10px;
+    background-color: #f7f8fb;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.complete-guide-title {
+    display: block;
+    margin-bottom: 10px;
+    color: #6266f1;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.complete-guide-description {
+    margin: 0;
+    color: #3d4659;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* 하단 버튼 */
+
+.complete-actions {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 26px;
+}
+
+.complete-actions-personal {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.complete-button {
+    display: flex;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition:
+            border-color 0.2s ease,
+            background-color 0.2s ease,
+            color 0.2s ease,
+            transform 0.1s ease;
+}
+
+.complete-button:active {
+    transform: translateY(1px);
+}
+
+.complete-button-secondary {
+    border: 1px solid #d7deea;
+    background-color: #ffffff;
+    color: #2e3749;
+}
+
+.complete-button-secondary:hover {
+    border-color: #b7c0cf;
+    background-color: #fafbfc;
+}
+
+.complete-button-primary {
+    border: 1px solid #6266f1;
+    background-color: #6266f1;
+    color: #ffffff;
+}
+
+.complete-button-primary:hover {
+    border-color: #5357df;
+    background-color: #5357df;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 768px) {
+    .complete-main {
+        min-height: 580px;
+        padding-top: 44px;
+        padding-bottom: 65px;
+    }
+
+    .complete-container {
+        max-width: 520px;
+    }
+
+    .complete-card {
+        min-height: 440px;
+        padding: 42px 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .complete-main {
+        padding-top: 28px;
+        padding-bottom: 48px;
+    }
+
+    .complete-card {
+        min-height: auto;
+        padding: 38px 22px;
+    }
+
+    .complete-icon {
+        width: 76px;
+        height: 76px;
+        margin-bottom: 26px;
+    }
+
+    .complete-check {
+        font-size: 43px;
+    }
+
+    .complete-title {
+        font-size: 23px;
+    }
+
+    .complete-description {
+        font-size: 13px;
+    }
+
+    .complete-guide {
+        margin-top: 32px;
+        padding: 17px;
+    }
+
+    .complete-actions-personal {
+        grid-template-columns: 1fr;
+    }
+
+    .complete-actions-personal .complete-button-primary {
+        order: 1;
+    }
+
+    .complete-actions-personal .complete-button-secondary {
+        order: 2;
+    }
+}

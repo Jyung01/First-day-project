@@ -1,1 +1,374 @@
-/* 공통 스타일 파일 */
+/* =========================================================
+   공통 모달
+   confirm-modal / form-modal / select-modal
+========================================================= */
+
+/* 모달 배경 */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background-color: rgba(15, 23, 42, 0.52);
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+/* 모달 본체 */
+
+.modal-overlay .modal {
+    width: 100%;
+    max-width: 520px;
+
+    padding: 34px 32px 28px;
+
+    border: 1px solid #e3e7ef;
+    border-radius: 16px;
+
+    background-color: #ffffff;
+    box-shadow: 0 22px 60px rgba(15, 23, 42, 0.18);
+
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* 아이콘 */
+
+.modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 64px;
+    height: 64px;
+
+    margin: 0 auto 22px;
+
+    border-radius: 50%;
+
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* 기본 경고 */
+
+.modal-icon.warning {
+    background-color: #fff7e8;
+    color: #f59e0b;
+}
+
+/* 성공 */
+
+.modal-icon.success {
+    background-color: #ecfdf3;
+    color: #22c55e;
+}
+
+/* 정보 */
+
+.modal-icon.info {
+    background-color: #eef1ff;
+    color: #6266f1;
+}
+
+/* 위험 */
+
+.modal-icon.danger {
+    background-color: #fff0f0;
+    color: #ef4444;
+}
+
+/* 제목 */
+
+.modal-overlay .modal h2 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.4;
+    letter-spacing: -0.4px;
+}
+
+/* 설명 */
+
+#modalMessage {
+    margin: 12px 0 0;
+
+    color: #7b869a;
+
+    font-size: 13px;
+    line-height: 1.65;
+
+    white-space: pre-line;
+}
+
+/* 추가 콘텐츠 */
+
+#modalExtra {
+    margin-top: 20px;
+}
+
+#modalExtra:empty {
+    display: none;
+}
+
+/* 하단 버튼 */
+
+.modal-footer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+
+    margin-top: 30px;
+}
+
+.modal-footer.one-button {
+    grid-template-columns: 1fr;
+}
+
+/* 공통 버튼 */
+
+.modal-footer .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 46px;
+
+    padding: 0 16px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+    box-sizing: border-box;
+
+    transition:
+            border-color 0.2s ease,
+            background-color 0.2s ease,
+            color 0.2s ease,
+            transform 0.1s ease;
+}
+
+.modal-footer .btn:active {
+    transform: translateY(1px);
+}
+
+/* 테두리 버튼 */
+
+.modal-footer .btn-outline {
+    border: 1px solid #d7deea;
+    background-color: #ffffff;
+    color: #30394c;
+}
+
+.modal-footer .btn-outline:hover {
+    border-color: #b8c2d4;
+    background-color: #fafbfc;
+}
+
+/* 기본 강조 버튼 */
+
+.modal-footer .btn-primary {
+    border: 1px solid #6266f1;
+    background-color: #6266f1;
+    color: #ffffff;
+}
+
+.modal-footer .btn-primary:hover {
+    border-color: #5357df;
+    background-color: #5357df;
+}
+
+/* 위험 버튼 */
+
+.modal-footer .btn-danger {
+    border: 1px solid #ef4444;
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+.modal-footer .btn-danger:hover {
+    border-color: #dc2626;
+    background-color: #dc2626;
+}
+
+/* 성공 버튼 */
+
+.modal-footer .btn-success {
+    border: 1px solid #22c55e;
+    background-color: #22c55e;
+    color: #ffffff;
+}
+
+.modal-footer .btn-success:hover {
+    border-color: #16a34a;
+    background-color: #16a34a;
+}
+
+/* =========================================================
+   Form Modal 공통
+========================================================= */
+
+.modal-form-body {
+    margin-top: 22px;
+    text-align: left;
+}
+
+.modal-form-body .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    margin-bottom: 16px;
+}
+
+.modal-form-body label {
+    color: #293246;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.modal-form-body input,
+.modal-form-body select,
+.modal-form-body textarea {
+    width: 100%;
+
+    padding: 0 14px;
+
+    border: 1px solid #d7deea;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+    color: #172033;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    outline: none;
+    box-sizing: border-box;
+}
+
+.modal-form-body input,
+.modal-form-body select {
+    height: 44px;
+}
+
+.modal-form-body textarea {
+    min-height: 120px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    resize: vertical;
+}
+
+.modal-form-body input:focus,
+.modal-form-body select:focus,
+.modal-form-body textarea:focus {
+    border-color: #6266f1;
+    box-shadow: 0 0 0 3px rgba(98, 102, 241, 0.12);
+}
+
+/* =========================================================
+   Select Modal 공통
+========================================================= */
+
+.modal-select-body {
+    margin-top: 22px;
+    text-align: left;
+}
+
+.modal-select-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-select-item {
+    display: flex;
+    align-items: center;
+
+    min-height: 48px;
+
+    padding: 0 14px;
+
+    border: 1px solid #dfe5ee;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+
+    cursor: pointer;
+}
+
+.modal-select-item:hover {
+    border-color: #b8bbff;
+    background-color: #f8f8ff;
+}
+
+.modal-select-item input {
+    width: 16px;
+    height: 16px;
+
+    margin-right: 10px;
+
+    accent-color: #6266f1;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 560px) {
+    .modal-overlay {
+        padding: 14px;
+    }
+
+    .modal-overlay .modal {
+        max-width: 100%;
+        padding: 30px 22px 24px;
+        border-radius: 14px;
+    }
+
+    .modal-icon {
+        width: 58px;
+        height: 58px;
+
+        margin-bottom: 20px;
+
+        font-size: 27px;
+    }
+
+    .modal-overlay .modal h2 {
+        font-size: 19px;
+    }
+
+    #modalMessage {
+        font-size: 12px;
+    }
+
+    .modal-footer {
+        gap: 10px;
+        margin-top: 26px;
+    }
+}
+
+@media (max-width: 400px) {
+    .modal-footer {
+        grid-template-columns: 1fr;
+    }
+}

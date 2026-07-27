@@ -1,0 +1,366 @@
+/* =========================================================
+   공통 직무 선택 모달
+   회원가입 / 마이페이지 공통 사용
+========================================================= */
+
+.job-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.job-modal.is-open {
+    display: flex;
+}
+
+.job-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.55);
+}
+
+.job-modal-dialog {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 720px;
+    overflow: hidden;
+    border-radius: 16px;
+    background-color: #ffffff;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+}
+
+/* 모달 헤더 */
+
+.job-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 24px 26px 20px;
+    border-bottom: 1px solid #e6eaf0;
+}
+
+.job-modal-header h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.job-modal-header p {
+    margin: 7px 0 0;
+    color: #828da1;
+    font-size: 13px;
+}
+
+.job-modal-close {
+    display: flex;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background-color: transparent;
+    color: #687386;
+    font-size: 27px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.job-modal-close:hover {
+    background-color: #f2f4f7;
+}
+
+/* 직무 목록 */
+
+.job-modal-content {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    min-height: 340px;
+    border-bottom: 1px solid #e6eaf0;
+}
+
+.job-primary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 16px 10px;
+    border-right: 1px solid #e6eaf0;
+    background-color: #f7f8fb;
+}
+
+.job-primary-button {
+    width: 100%;
+    height: 42px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 7px;
+    background-color: transparent;
+    color: #566176;
+    font-family: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.job-primary-button:hover {
+    background-color: #eceef5;
+}
+
+.job-primary-button.is-active {
+    background-color: #6266f1;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.job-secondary-area {
+    padding: 18px 20px;
+}
+
+.job-secondary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.job-secondary-header > strong {
+    color: #273044;
+    font-size: 15px;
+}
+
+.job-secondary-header > span {
+    color: #8a94a7;
+    font-size: 12px;
+}
+
+.job-secondary-header > span strong {
+    color: #6266f1;
+}
+
+.job-secondary-list {
+    display: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.job-secondary-list.is-active {
+    display: grid;
+}
+
+.job-option {
+    position: relative;
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    padding: 0 13px;
+    border: 1px solid #dfe5ee;
+    border-radius: 8px;
+    background-color: #ffffff;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.job-option:hover {
+    border-color: #b8bbff;
+    background-color: #f8f8ff;
+}
+
+.job-option:has(input:checked) {
+    border-color: #6266f1;
+    background-color: #f0f2ff;
+}
+
+.job-option input {
+    width: 16px;
+    height: 16px;
+    margin: 0 9px 0 0;
+    accent-color: #6266f1;
+}
+
+.job-option span {
+    color: #3c4659;
+    font-size: 12px;
+}
+
+.job-option:has(input:checked) span {
+    color: #5156df;
+    font-weight: 700;
+}
+
+/* 선택된 직무 */
+
+.job-modal-selected {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: 66px;
+    padding: 14px 26px;
+    border-bottom: 1px solid #e6eaf0;
+    box-sizing: border-box;
+}
+
+.job-modal-selected-label {
+    flex-shrink: 0;
+    padding-top: 6px;
+    color: #3f485a;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.job-modal-selected-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.job-modal-selected-empty {
+    padding-top: 6px;
+    color: #9aa4b5;
+    font-size: 12px;
+}
+
+.job-modal-chip {
+    display: inline-flex;
+    height: 29px;
+    align-items: center;
+    gap: 6px;
+    padding: 0 9px;
+    border-radius: 6px;
+    background-color: #f0f2ff;
+    color: #5156df;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.job-modal-chip button {
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    color: #7f83d8;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* 메시지 */
+
+.job-modal-message {
+    display: none;
+    margin: 10px 26px 0;
+    color: #ff4d5a;
+    font-size: 12px;
+}
+
+.job-modal-message.is-visible {
+    display: block;
+}
+
+/* 하단 버튼 */
+
+.job-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 18px 26px;
+}
+
+.job-modal-cancel,
+.job-modal-confirm {
+    min-width: 108px;
+    height: 42px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.job-modal-cancel {
+    border: 1px solid #d5dce7;
+    background-color: #ffffff;
+    color: #465064;
+}
+
+.job-modal-confirm {
+    border: 1px solid #6266f1;
+    background-color: #6266f1;
+    color: #ffffff;
+}
+
+.job-modal-confirm:hover {
+    border-color: #5357df;
+    background-color: #5357df;
+}
+
+/* 반응형 */
+
+@media (max-width: 640px) {
+    .job-modal {
+        padding: 12px;
+    }
+
+    .job-modal-dialog {
+        max-height: calc(100vh - 24px);
+        overflow-y: auto;
+    }
+
+    .job-modal-content {
+        grid-template-columns: 1fr;
+    }
+
+    .job-primary-list {
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 12px;
+        border-right: 0;
+        border-bottom: 1px solid #e6eaf0;
+    }
+
+    .job-primary-button {
+        width: auto;
+        min-width: max-content;
+        padding: 0 15px;
+        text-align: center;
+    }
+
+    .job-secondary-list {
+        grid-template-columns: 1fr;
+    }
+
+    .job-modal-selected {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .job-modal-header {
+        padding: 20px 18px 17px;
+    }
+
+    .job-secondary-area {
+        padding: 16px;
+    }
+
+    .job-modal-selected {
+        padding: 13px 18px;
+    }
+
+    .job-modal-footer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 16px 18px;
+    }
+
+    .job-modal-cancel,
+    .job-modal-confirm {
+        width: 100%;
+        min-width: 0;
+    }
+}
