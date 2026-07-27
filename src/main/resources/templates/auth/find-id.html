@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>아이디 찾기 | 첫출근</title>
+
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth/account.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+</head>
+
+<body>
+<!-- 공통 헤더 -->
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="auth-main account-main">
+    <div class="auth-container account-container">
+        <section class="auth-card account-card">
+            <div class="auth-card-header account-header">
+                <h1 class="auth-title">아이디 찾기</h1>
+
+                <p class="auth-description">
+                    가입할 때 입력한 정보로 아이디를 확인할 수 있어요.
+                </p>
+            </div>
+
+            <form
+                    class="account-form"
+                    data-find-id-form
+                    novalidate
+            >
+                <!-- 이름 -->
+                <div class="auth-field">
+                    <label for="findName" class="auth-label">
+                        이름
+                    </label>
+
+                    <input
+                            type="text"
+                            id="findName"
+                            name="name"
+                            class="auth-input"
+                            placeholder="이름을 입력해주세요"
+                            autocomplete="name"
+                            required
+                            data-find-name
+                    />
+                </div>
+
+                <!-- 이메일 -->
+                <div class="auth-field">
+                    <label for="findEmail" class="auth-label">
+                        이메일
+                    </label>
+
+                    <input
+                            type="email"
+                            id="findEmail"
+                            name="email"
+                            class="auth-input"
+                            placeholder="example@email.com"
+                            autocomplete="email"
+                            required
+                            data-find-email
+                    />
+                </div>
+
+                <p
+                        class="account-message"
+                        data-find-message
+                        aria-live="polite"
+                ></p>
+
+                <button
+                        type="submit"
+                        class="auth-primary-button account-submit-button"
+                >
+                    아이디 찾기
+                </button>
+            </form>
+
+            <!-- 조회 성공 결과 -->
+            <div
+                    class="account-result"
+                    data-find-result
+                    hidden
+            >
+                <strong class="account-result-title">
+                    아이디 확인 결과
+                </strong>
+
+                <p class="account-result-value">
+                    <span data-masked-id>fir*****</span>
+                    <span class="account-result-divider">·</span>
+                    가입일
+                    <span data-joined-date>2026.07.20</span>
+                </p>
+            </div>
+
+            <a
+                    th:href="@{/auth/login}"
+                    class="account-bottom-link"
+            >
+                로그인으로 돌아가기
+            </a>
+        </section>
+    </div>
+</main>
+
+<!-- 공통 푸터 -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 공통 확인 모달 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/auth/account.js}"></script>
+</body>
+</html>

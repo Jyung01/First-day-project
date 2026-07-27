@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>기업회원 가입 완료 | 첫출근</title>
+
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth/complete.css}" />
+</head>
+
+<body>
+<!-- 공통 헤더 -->
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="auth-main complete-main">
+    <div class="auth-container complete-container">
+        <section class="auth-card complete-card">
+            <!-- 완료 아이콘 -->
+            <div class="complete-icon" aria-hidden="true">
+                <span class="complete-check">✓</span>
+            </div>
+
+            <!-- 완료 문구 -->
+            <div class="complete-header">
+                <h1 class="complete-title">
+                    기업회원 가입 신청 완료
+                </h1>
+
+                <p class="complete-description">
+                    가입 신청이 정상적으로 접수되었습니다.<br />
+                    승인 완료 후 기업관리 기능을 사용할 수 있어요.
+                </p>
+            </div>
+
+            <!-- 현재 상태 -->
+            <div class="complete-guide">
+                <strong class="complete-guide-title">
+                    현재 상태
+                </strong>
+
+                <p class="complete-guide-description">
+                    승인 대기 · 승인 결과는 로그인 후 확인
+                </p>
+            </div>
+
+            <!-- 로그인 이동 -->
+            <div class="complete-actions">
+                <a
+                        th:href="@{/auth/login}"
+                        class="complete-button complete-button-primary"
+                >
+                    로그인 페이지로 이동
+                </a>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- 공통 푸터 -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<script th:src="@{/js/common.js}"></script>
+</body>
+</html>
