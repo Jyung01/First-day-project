@@ -1,0 +1,483 @@
+<div
+    xmlns:th="http://www.thymeleaf.org"
+    class="skill-modal"
+    data-skill-modal
+    aria-hidden="true"
+    th:fragment="skillSelectModal"
+>
+    <!-- 배경 -->
+    <div class="skill-modal-backdrop" data-skill-modal-close></div>
+
+    <!-- 모달 본체 -->
+    <section class="skill-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="skillModalTitle">
+        <!-- 헤더 -->
+        <div class="skill-modal-header">
+            <div>
+                <h2 id="skillModalTitle">기술 선택</h2>
+
+                <p>공통 기술 DB에서 최대 10개를 선택할 수 있습니다.</p>
+            </div>
+
+            <button type="button" class="skill-modal-close" data-skill-modal-close aria-label="기술 선택 모달 닫기">
+                ×
+            </button>
+        </div>
+
+        <div class="skill-modal-body">
+            <!-- 선택된 기술 -->
+            <section class="skill-modal-selected-section">
+                <div class="skill-modal-section-heading">
+                    <strong>선택한 기술</strong>
+
+                    <span>
+                        <strong data-skill-modal-count>0</strong>
+                        / 10
+                    </span>
+                </div>
+
+                <div class="skill-modal-selected-list" data-skill-modal-selected-list>
+                    <p class="skill-modal-selected-empty">선택한 기술이 없습니다.</p>
+                </div>
+            </section>
+
+            <!-- 검색 -->
+            <div class="skill-modal-search">
+                <span class="skill-modal-search-icon" aria-hidden="true"> ⌕ </span>
+
+                <input
+                    type="search"
+                    class="skill-modal-search-input"
+                    placeholder="기술명 검색 (예: Java, React, Docker)"
+                    autocomplete="off"
+                    data-skill-search
+                />
+            </div>
+
+            <!-- 카테고리 및 기술 목록 -->
+            <div class="skill-modal-content">
+                <!-- 카테고리 -->
+                <nav class="skill-category-list" aria-label="기술 분류">
+                    <strong class="skill-category-heading"> 기술 분류 </strong>
+
+                    <button type="button" class="skill-category-button is-active" data-skill-category="backend">
+                        <span>백엔드</span>
+                        <span aria-hidden="true">›</span>
+                    </button>
+
+                    <button type="button" class="skill-category-button" data-skill-category="frontend">
+                        <span>프론트엔드</span>
+                        <span aria-hidden="true">›</span>
+                    </button>
+
+                    <button type="button" class="skill-category-button" data-skill-category="database">
+                        <span>데이터베이스</span>
+                        <span aria-hidden="true">›</span>
+                    </button>
+
+                    <button type="button" class="skill-category-button" data-skill-category="infra">
+                        <span>인프라·클라우드</span>
+                        <span aria-hidden="true">›</span>
+                    </button>
+
+                    <button type="button" class="skill-category-button" data-skill-category="data-ai">
+                        <span>데이터·AI</span>
+                        <span aria-hidden="true">›</span>
+                    </button>
+
+                    <button type="button" class="skill-category-button" data-skill-category="etc">
+                        <span>협업·기타</span>
+                        <span aria-hidden="true">›</span>
+                    </button>
+                </nav>
+
+                <!-- 기술 목록 -->
+                <section class="skill-option-area">
+                    <div class="skill-option-heading">
+                        <div>
+                            <strong data-skill-category-title> 백엔드 기술 </strong>
+
+                            <p data-skill-category-description>클릭하면 위 선택 영역에 추가됩니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="skill-option-list" data-skill-option-list>
+                        <!-- Java -->
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="java"
+                        >
+                            <input type="checkbox" value="1" data-skill-option data-skill-name="Java" />
+
+                            <span>Java</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="spring boot"
+                        >
+                            <input type="checkbox" value="2" data-skill-option data-skill-name="Spring Boot" />
+
+                            <span>Spring Boot</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="jpa"
+                        >
+                            <input type="checkbox" value="7" data-skill-option data-skill-name="JPA" />
+
+                            <span>JPA</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="mybatis"
+                        >
+                            <input type="checkbox" value="3" data-skill-option data-skill-name="MyBatis" />
+
+                            <span>MyBatis</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="kotlin"
+                        >
+                            <input type="checkbox" value="8" data-skill-option data-skill-name="Kotlin" />
+
+                            <span>Kotlin</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="node.js"
+                        >
+                            <input type="checkbox" value="9" data-skill-option data-skill-name="Node.js" />
+
+                            <span>Node.js</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="django"
+                        >
+                            <input type="checkbox" value="10" data-skill-option data-skill-name="Django" />
+
+                            <span>Django</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="flask"
+                        >
+                            <input type="checkbox" value="11" data-skill-option data-skill-name="Flask" />
+
+                            <span>Flask</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="spring security"
+                        >
+                            <input type="checkbox" value="12" data-skill-option data-skill-name="Spring Security" />
+
+                            <span>Spring Security</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="spring batch"
+                        >
+                            <input type="checkbox" value="13" data-skill-option data-skill-name="Spring Batch" />
+
+                            <span>Spring Batch</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="gradle"
+                        >
+                            <input type="checkbox" value="14" data-skill-option data-skill-name="Gradle" />
+
+                            <span>Gradle</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="backend"
+                            data-skill-search-name="maven"
+                        >
+                            <input type="checkbox" value="15" data-skill-option data-skill-name="Maven" />
+
+                            <span>Maven</span>
+                        </label>
+
+                        <!-- 프론트엔드 -->
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="frontend"
+                            data-skill-search-name="javascript"
+                            hidden
+                        >
+                            <input type="checkbox" value="101" data-skill-option data-skill-name="JavaScript" />
+
+                            <span>JavaScript</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="frontend"
+                            data-skill-search-name="typescript"
+                            hidden
+                        >
+                            <input type="checkbox" value="102" data-skill-option data-skill-name="TypeScript" />
+
+                            <span>TypeScript</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="frontend"
+                            data-skill-search-name="react"
+                            hidden
+                        >
+                            <input type="checkbox" value="103" data-skill-option data-skill-name="React" />
+
+                            <span>React</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="frontend"
+                            data-skill-search-name="vue"
+                            hidden
+                        >
+                            <input type="checkbox" value="104" data-skill-option data-skill-name="Vue" />
+
+                            <span>Vue</span>
+                        </label>
+
+                        <!-- 데이터베이스 -->
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="database"
+                            data-skill-search-name="mysql"
+                            hidden
+                        >
+                            <input type="checkbox" value="4" data-skill-option data-skill-name="MySQL" />
+
+                            <span>MySQL</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="database"
+                            data-skill-search-name="postgresql"
+                            hidden
+                        >
+                            <input type="checkbox" value="201" data-skill-option data-skill-name="PostgreSQL" />
+
+                            <span>PostgreSQL</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="database"
+                            data-skill-search-name="redis"
+                            hidden
+                        >
+                            <input type="checkbox" value="202" data-skill-option data-skill-name="Redis" />
+
+                            <span>Redis</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="database"
+                            data-skill-search-name="mongodb"
+                            hidden
+                        >
+                            <input type="checkbox" value="203" data-skill-option data-skill-name="MongoDB" />
+
+                            <span>MongoDB</span>
+                        </label>
+
+                        <!-- 인프라·클라우드 -->
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="infra"
+                            data-skill-search-name="aws"
+                            hidden
+                        >
+                            <input type="checkbox" value="5" data-skill-option data-skill-name="AWS" />
+
+                            <span>AWS</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="infra"
+                            data-skill-search-name="docker"
+                            hidden
+                        >
+                            <input type="checkbox" value="6" data-skill-option data-skill-name="Docker" />
+
+                            <span>Docker</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="infra"
+                            data-skill-search-name="kubernetes"
+                            hidden
+                        >
+                            <input type="checkbox" value="301" data-skill-option data-skill-name="Kubernetes" />
+
+                            <span>Kubernetes</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="infra"
+                            data-skill-search-name="linux"
+                            hidden
+                        >
+                            <input type="checkbox" value="302" data-skill-option data-skill-name="Linux" />
+
+                            <span>Linux</span>
+                        </label>
+
+                        <!-- 데이터·AI -->
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="data-ai"
+                            data-skill-search-name="python"
+                            hidden
+                        >
+                            <input type="checkbox" value="401" data-skill-option data-skill-name="Python" />
+
+                            <span>Python</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="data-ai"
+                            data-skill-search-name="tensorflow"
+                            hidden
+                        >
+                            <input type="checkbox" value="402" data-skill-option data-skill-name="TensorFlow" />
+
+                            <span>TensorFlow</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="data-ai"
+                            data-skill-search-name="pytorch"
+                            hidden
+                        >
+                            <input type="checkbox" value="403" data-skill-option data-skill-name="PyTorch" />
+
+                            <span>PyTorch</span>
+                        </label>
+
+                        <!-- 협업·기타 -->
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="etc"
+                            data-skill-search-name="git"
+                            hidden
+                        >
+                            <input type="checkbox" value="501" data-skill-option data-skill-name="Git" />
+
+                            <span>Git</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="etc"
+                            data-skill-search-name="github"
+                            hidden
+                        >
+                            <input type="checkbox" value="502" data-skill-option data-skill-name="GitHub" />
+
+                            <span>GitHub</span>
+                        </label>
+
+                        <label
+                            class="skill-option"
+                            data-skill-option-item
+                            data-skill-category-name="etc"
+                            data-skill-search-name="figma"
+                            hidden
+                        >
+                            <input type="checkbox" value="503" data-skill-option data-skill-name="Figma" />
+
+                            <span>Figma</span>
+                        </label>
+                    </div>
+
+                    <p class="skill-option-empty" data-skill-option-empty hidden>검색 결과가 없습니다.</p>
+
+                    <p class="skill-option-guide">
+                        기술명은 직접 입력하지 않으며, 공통 기술 DB에 등록된 항목만 선택합니다.
+                    </p>
+                </section>
+            </div>
+
+            <!-- 안내 및 버튼 -->
+            <div class="skill-modal-footer">
+                <p>선택 기술은 이력서 저장 후 메인페이지 AI 추천 공고의 기술 일치도에 반영됩니다.</p>
+
+                <div class="skill-modal-actions">
+                    <button type="button" class="skill-modal-cancel" data-skill-modal-cancel>취소</button>
+
+                    <button type="button" class="skill-modal-confirm" data-skill-modal-confirm>
+                        선택 완료 (<span data-skill-confirm-count>0</span>)
+                    </button>
+                </div>
+            </div>
+
+            <p class="skill-modal-message" data-skill-modal-message aria-live="polite"></p>
+        </div>
+    </section>
+</div>

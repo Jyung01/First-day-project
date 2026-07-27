@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>개인정보 수정 | 첫출근</title>
+
+        <!-- 사이트 공통 -->
+        <link rel="stylesheet" th:href="@{/css/common.css}" />
+
+        <!-- 마이페이지 공통 -->
+        <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+
+        <!-- 개인정보 수정 -->
+        <link rel="stylesheet" th:href="@{/css/my/profile-edit.css}" />
+
+        <!-- 공통 확인 모달 -->
+        <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+
+        <!-- 직무 선택 모달 -->
+        <link rel="stylesheet" th:href="@{/css/modal/common/job-select-modal.css}" />
+
+        <!-- 비밀번호 변경 모달 -->
+        <link rel="stylesheet" th:href="@{/css/modal/my/password-change-modal.css}" />
+    </head>
+
+    <body>
+        <!-- 공통 헤더 -->
+        <header th:replace="~{common/header :: header}"></header>
+
+        <main class="mypage">
+            <div class="wrap mypage-layout">
+                <!-- 마이페이지 공통 사이드바 -->
+                <aside th:replace="~{common/my-aside :: myAside}"></aside>
+
+                <!-- 개인정보 수정 콘텐츠 -->
+                <section class="mypage-content profile-edit-content">
+                    <div class="profile-edit-heading">
+                        <h1 class="profile-edit-title">개인정보 수정</h1>
+
+                        <p class="profile-edit-description">메인페이지 AI 추천 공고에 사용할 희망 직무를 설정합니다.</p>
+                    </div>
+
+                    <form
+                        class="profile-edit-form"
+                        th:action="@{/my/profile-edit}"
+                        method="post"
+                        enctype="multipart/form-data"
+                        data-profile-edit-form
+                    >
+                        <!-- 프로필 이미지 -->
+                        <section class="profile-edit-card">
+                            <div class="profile-image-area">
+                                <div class="profile-image-preview" data-profile-image-preview>
+                                    <!-- 등록된 이미지가 있을 때 -->
+                                    <img
+                                        th:if="${profileImageUrl != null}"
+                                        th:src="${profileImageUrl}"
+                                        alt="프로필 이미지"
+                                        data-profile-image
+                                    />
+
+                                    <!-- 등록된 이미지가 없을 때 -->
+                                    <span
+                                        th:unless="${profileImageUrl != null}"
+                                        th:text="${#strings.isEmpty(memberName)
+                                            ? '김'
+                                            : #strings.substring(memberName, 0, 1)}"
+                                        data-profile-initial
+                                    >
+                                        김
+                                    </span>
+                                </div>
+
+                                <div class="profile-image-control">
+                                    <label for="profileImage" class="profile-image-button"> 이미지 변경 </label>
+
+                                    <input
+                                        type="file"
+                                        id="profileImage"
+                                        name="profileImage"
+                                        accept=".jpg,.jpeg,.png"
+                                        hidden
+                                        data-profile-image-input
+                                    />
+
+                                    <p class="profile-image-help">권장 400×400px · JPG·PNG · 출력 80×80px</p>
+
+                                    <p class="profile-field-message" data-profile-image-message aria-live="polite"></p>
+                                </div>
+                            </div>
+
+                            <!-- 이름 / 이메일 -->
+                            <div class="profile-form-row">
+                                <div class="profile-field">
+                                    <label for="memberName" class="profile-label"> 이름 </label>
+
+                                    <input
+                                        type="text"
+                                        id="memberName"
+                                        name="memberName"
+                                        class="profile-input"
+                                        th:value="${memberName}"
+                                        value="김첫출"
+                                        required
+                                    />
+                                </div>
+
+                                <div class="profile-field">
+                                    <label for="email" class="profile-label"> 이메일 </label>
+
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        class="profile-input"
+                                        th:value="${email}"
+                                        value="user@firstwork.co.kr"
+                                        readonly
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- 휴대전화 / 희망 직무 -->
+                            <div class="profile-form-row">
+                                <div class="profile-field">
+                                    <label for="phone" class="profile-label"> 휴대전화 </label>
+
+                                    <input
+                                        type="tel"
+                                        id="phone"
+                                        name="phone"
+                                        class="profile-input"
+                                        th:value="${phone}"
+                                        value="010-1234-5678"
+                                        maxlength="13"
+                                        inputmode="numeric"
+                                        data-profile-phone
+                                        required
+                                    />
+                                </div>
+
+                                <div class="profile-field">
+                                    <div class="profile-label-row">
+                                        <span class="profile-label"> 희망 직무 (최대 3개) </span>
+
+                                        <span class="profile-job-count" data-job-selection-count> 3/3 </span>
+                                    </div>
+
+                                    <div class="profile-job-box">
+                                        <!-- 선택 직무 표시 -->
+                                        <div class="job-selected-list" data-job-selected-list>
+                                            <!-- DB 연결 전 예시 -->
+                                            <span
+                                                class="job-selected-chip"
+                                                data-initial-job-id="101"
+                                                data-initial-job-name="백엔드 개발"
+                                            >
+                                                백엔드 개발
+
+                                                <button type="button" aria-label="백엔드 개발 삭제">×</button>
+                                            </span>
+
+                                            <span
+                                                class="job-selected-chip"
+                                                data-initial-job-id="103"
+                                                data-initial-job-name="서버 개발"
+                                            >
+                                                서버 개발
+
+                                                <button type="button" aria-label="서버 개발 삭제">×</button>
+                                            </span>
+
+                                            <span
+                                                class="job-selected-chip"
+                                                data-initial-job-id="106"
+                                                data-initial-job-name="데이터 엔지니어"
+                                            >
+                                                데이터 엔지니어
+
+                                                <button type="button" aria-label="데이터 엔지니어 삭제">×</button>
+                                            </span>
+
+                                            <!-- 서버 연결 후 사용 예시
+                                    <span
+                                        class="job-selected-chip"
+                                        th:each="job : ${desiredJobs}"
+                                        th:attr="
+                                            data-initial-job-id=${job.id},
+                                            data-initial-job-name=${job.name}
+                                        "
+                                    >
+                                        <span th:text="${job.name}">
+                                            백엔드 개발
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            th:attr="aria-label=${job.name + ' 삭제'}"
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
+                                    -->
+                                        </div>
+
+                                        <!-- 서버 전달용 직무 ID -->
+                                        <div data-job-hidden-inputs>
+                                            <input
+                                                type="hidden"
+                                                name="desiredJobIds"
+                                                value="101"
+                                                data-job-name="백엔드 개발"
+                                            />
+
+                                            <input
+                                                type="hidden"
+                                                name="desiredJobIds"
+                                                value="103"
+                                                data-job-name="서버 개발"
+                                            />
+
+                                            <input
+                                                type="hidden"
+                                                name="desiredJobIds"
+                                                value="106"
+                                                data-job-name="데이터 엔지니어"
+                                            />
+                                        </div>
+
+                                        <button type="button" class="profile-job-select-button" data-job-modal-open>
+                                            직무 선택
+                                        </button>
+                                    </div>
+
+                                    <p class="profile-field-message" data-job-message></p>
+                                </div>
+                            </div>
+
+                            <!-- 주소 -->
+                            <fieldset class="profile-address">
+                                <legend class="profile-label">주소</legend>
+
+                                <div class="profile-postcode-row">
+                                    <input
+                                        type="text"
+                                        id="postcode"
+                                        name="postcode"
+                                        class="profile-input"
+                                        th:value="${postcode}"
+                                        value="06236"
+                                        placeholder="우편번호"
+                                        readonly
+                                    />
+
+                                    <button type="button" class="profile-outline-button" data-address-search>
+                                        주소 검색
+                                    </button>
+                                </div>
+
+                                <input
+                                    type="text"
+                                    id="address"
+                                    name="address"
+                                    class="profile-input"
+                                    th:value="${address}"
+                                    value="서울특별시 강남구 테헤란로 123"
+                                    placeholder="기본주소"
+                                    readonly
+                                />
+
+                                <input
+                                    type="text"
+                                    id="addressDetail"
+                                    name="addressDetail"
+                                    class="profile-input"
+                                    th:value="${addressDetail}"
+                                    placeholder="상세주소 입력"
+                                />
+                            </fieldset>
+
+                            <p class="profile-field-message" data-profile-form-message aria-live="polite"></p>
+
+                            <!-- 하단 버튼 -->
+                            <div class="profile-form-actions">
+                                <div class="profile-account-actions">
+                                    <button type="button" class="profile-outline-button" data-password-change-open>
+                                        비밀번호 변경
+                                    </button>
+
+                                    <button type="button" class="profile-outline-button" data-withdraw>
+                                        회원 탈퇴
+                                    </button>
+                                </div>
+
+                                <button type="submit" class="profile-save-button">변경사항 저장</button>
+                            </div>
+                        </section>
+                    </form>
+                </section>
+            </div>
+        </main>
+
+        <!-- 희망 직무 선택 모달 -->
+        <div th:replace="~{modal/common/job-select-modal :: jobSelectModal}"></div>
+
+        <!-- 공통 확인 모달 -->
+        <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+        <!-- 비밀번호 변경 모달 -->
+        <div th:replace="~{modal/my/password-change-modal :: passwordChangeModal}"></div>
+
+        <script th:src="@{/js/common.js}"></script>
+
+        <!-- 공통 확인 모달 -->
+        <script th:src="@{/js/modal.js}"></script>
+
+        <!-- 개인정보 수정 -->
+        <script th:src="@{/js/my/profile-edit.js}"></script>
+
+        <!-- 희망 직무 선택 -->
+        <script th:src="@{/js/modal/job-select-modal.js}"></script>
+
+        <!-- 비밀번호 변경 모달 -->
+        <script th:src="@{/js/modal/my/password-change-modal.js}"></script>
+    </body>
+</html>
