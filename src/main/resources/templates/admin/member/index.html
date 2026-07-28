@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>회원 관리 | 첫출근 관리자</title>
+
+        <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+        <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
+        <link rel="stylesheet" th:href="@{/css/admin/management.css}" />
+    </head>
+
+    <body>
+        <div class="wrapper">
+            <!-- 관리자 헤더 -->
+            <header th:replace="~{common/admin-header :: adminHeader}"></header>
+
+            <div class="container">
+                <!-- 관리자 사이드바 -->
+                <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+
+                <!-- 회원 관리 콘텐츠 -->
+                <main class="content management-content">
+                    <section class="management-heading">
+                        <h1>회원 관리</h1>
+
+                        <p>개인회원 계정과 이용 상태를 관리합니다.</p>
+                    </section>
+
+                    <!-- 통계 -->
+                    <section class="management-stats">
+                        <article class="management-stat-card">
+                            <span>전체 회원</span>
+                            <strong>12,842명</strong>
+                            <small>개인회원 합계</small>
+                        </article>
+
+                        <article class="management-stat-card">
+                            <span>오늘 가입</span>
+                            <strong>38명</strong>
+                            <small>전일 대비 +6</small>
+                        </article>
+
+                        <article class="management-stat-card">
+                            <span>이용 정지</span>
+                            <strong>7명</strong>
+                            <small>관리자 조치 계정</small>
+                        </article>
+                    </section>
+
+                    <!-- 회원 목록 -->
+                    <section class="management-panel">
+                        <div class="management-tabs" role="tablist" aria-label="회원 상태">
+                            <button type="button" class="management-tab is-active" data-member-status="ALL">
+                                전체
+                            </button>
+
+                            <button type="button" class="management-tab" data-member-status="ACTIVE">정상</button>
+
+                            <button type="button" class="management-tab" data-member-status="SUSPENDED">
+                                이용정지
+                            </button>
+                        </div>
+
+                        <form class="management-search" data-member-search-form>
+                            <select class="management-select" name="provider">
+                                <option value="">가입 경로 전체</option>
+                                <option value="EMAIL">이메일</option>
+                                <option value="KAKAO">카카오</option>
+                                <option value="NAVER">네이버</option>
+                                <option value="GOOGLE">구글</option>
+                            </select>
+
+                            <input
+                                type="search"
+                                class="management-search-input"
+                                name="keyword"
+                                placeholder="이름 · 이메일 검색"
+                                data-member-keyword
+                            />
+
+                            <button type="submit" class="management-search-button">검색</button>
+
+                            <span class="management-total"> 총 12,842건 </span>
+                        </form>
+
+                        <div class="management-table-wrap">
+                            <table class="management-table">
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>가입 경로</th>
+                                        <th>이름</th>
+                                        <th>이메일</th>
+                                        <th>가입일</th>
+                                        <th>상태</th>
+                                        <th>최근 로그인</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr data-member-row data-status="ACTIVE">
+                                        <td>12842</td>
+                                        <td>이메일</td>
+                                        <td>김민준</td>
+                                        <td>minjun@email.com</td>
+                                        <td>07.22</td>
+                                        <td>
+                                            <span class="status-text is-active"> 정상 </span>
+                                        </td>
+                                        <td>07.22 11:20</td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                class="management-detail-link"
+                                                data-member-detail-open
+                                                data-member-id="12842"
+                                                data-member-number="12842"
+                                                data-member-type="개인회원"
+                                                data-member-name="김민준"
+                                                data-member-email="minjun@email.com"
+                                                data-member-created-at="2026.07.22"
+                                                data-member-last-login="2026.07.22 11:20"
+                                                data-member-status="ACTIVE"
+                                            >
+                                                상세
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    <tr data-member-row data-status="ACTIVE">
+                                        <td>12841</td>
+                                        <td>카카오</td>
+                                        <td>정하늘</td>
+                                        <td>haneul@email.com</td>
+                                        <td>07.22</td>
+                                        <td>
+                                            <span class="status-text is-active"> 정상 </span>
+                                        </td>
+                                        <td>07.22 10:54</td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                class="management-detail-link"
+                                                data-member-detail-open
+                                                data-member-id="12842"
+                                                data-member-number="12842"
+                                                data-member-type="개인회원"
+                                                data-member-name="김민준"
+                                                data-member-email="minjun@email.com"
+                                                data-member-created-at="2026.07.22"
+                                                data-member-last-login="2026.07.22 11:20"
+                                                data-member-status="ACTIVE"
+                                            >
+                                                상세
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    <tr data-member-row data-status="SUSPENDED">
+                                        <td>12840</td>
+                                        <td>이메일</td>
+                                        <td>박지훈</td>
+                                        <td>jihoon@email.com</td>
+                                        <td>07.21</td>
+                                        <td>
+                                            <span class="status-text is-suspended"> 이용정지 </span>
+                                        </td>
+                                        <td>07.21 18:12</td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                class="management-detail-link"
+                                                data-member-detail-open
+                                                data-member-id="12842"
+                                                data-member-number="12842"
+                                                data-member-type="개인회원"
+                                                data-member-name="김민준"
+                                                data-member-email="minjun@email.com"
+                                                data-member-created-at="2026.07.22"
+                                                data-member-last-login="2026.07.22 11:20"
+                                                data-member-status="ACTIVE"
+                                            >
+                                                상세
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p class="management-empty" data-member-empty hidden>조건에 맞는 회원이 없습니다.</p>
+
+                        <nav class="management-pagination" aria-label="회원 목록 페이지">
+                            <a href="#" aria-label="이전 페이지">‹</a>
+                            <a href="#" class="is-current">1</a>
+                            <a href="#">2</a>
+                            <a href="#">3</a>
+                            <a href="#">4</a>
+                            <a href="#">5</a>
+                            <a href="#" aria-label="다음 페이지">›</a>
+                        </nav>
+                    </section>
+                </main>
+            </div>
+
+            <!-- 관리자 푸터 -->
+            <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+        </div>
+
+        <div th:replace="~{modal/admin/member-detail :: memberDetailModal}"></div>
+
+        <script th:src="@{/js/modal/admin/member-detail.js}"></script>
+        <script th:src="@{/js/admin/member-list.js}"></script>
+    </body>
+</html>

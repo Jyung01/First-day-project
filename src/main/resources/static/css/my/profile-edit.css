@@ -1,0 +1,409 @@
+/* =========================================================
+   MY-07 개인정보 수정
+========================================================= */
+
+.profile-edit-content {
+    min-width: 0;
+}
+
+.profile-edit-heading {
+    margin-bottom: 22px;
+}
+
+.profile-edit-title {
+    margin: 0;
+    color: var(--ink-900);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.7px;
+}
+
+.profile-edit-description {
+    margin: 7px 0 0;
+    color: var(--ink-500);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   카드
+========================================================= */
+
+.profile-edit-card {
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background-color: var(--paper);
+}
+
+.profile-image-area {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.profile-image-preview {
+    display: flex;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background-color: var(--lilac);
+    color: var(--blue-600);
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.profile-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-image-control {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.profile-image-button {
+    display: inline-flex;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background-color: var(--paper);
+    color: var(--ink-800);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.profile-image-button:hover {
+    border-color: var(--blue-600);
+    color: var(--blue-600);
+}
+
+.profile-image-help {
+    margin: 0;
+    color: var(--ink-500);
+    font-size: 11px;
+}
+
+/* =========================================================
+   폼
+========================================================= */
+
+.profile-form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    margin-bottom: 22px;
+}
+
+.profile-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.profile-label {
+    color: var(--ink-800);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.profile-input {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background-color: var(--paper);
+    color: var(--ink-900);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.profile-input::placeholder {
+    color: var(--ink-400);
+}
+
+.profile-input:focus {
+    border-color: var(--blue-600);
+    box-shadow: 0 0 0 3px rgba(98, 102, 241, 0.1);
+}
+
+.profile-input[readonly] {
+    background-color: var(--bg-soft);
+    color: var(--ink-600);
+}
+
+/* =========================================================
+   희망 직무
+========================================================= */
+
+.profile-job-count {
+    color: var(--blue-600);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.profile-job-box {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 96px;
+    gap: 10px;
+}
+
+.job-selected-list {
+    display: flex;
+    min-height: 46px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 7px 9px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background-color: var(--paper);
+    box-sizing: border-box;
+}
+
+.job-selected-empty {
+    margin: 0;
+    color: var(--ink-400);
+    font-size: 11px;
+}
+
+.job-selected-chip {
+    display: inline-flex;
+    height: 28px;
+    align-items: center;
+    gap: 5px;
+    padding: 0 7px 0 9px;
+    border-radius: 999px;
+    background-color: #eef1ff;
+    color: var(--blue-600);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.job-selected-chip button {
+    display: inline-flex;
+    width: 17px;
+    height: 17px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: transparent;
+    color: #7b80dc;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.job-selected-chip button:hover {
+    background-color: #dde0ff;
+}
+
+.profile-job-select-button {
+    height: 46px;
+    border: 1px solid var(--blue-600);
+    border-radius: 8px;
+    background-color: var(--blue-600);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.profile-job-select-button:hover {
+    filter: brightness(0.94);
+}
+
+/* =========================================================
+   주소
+========================================================= */
+
+.profile-address {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.profile-address legend {
+    margin-bottom: 8px;
+}
+
+.profile-postcode-row {
+    display: grid;
+    grid-template-columns: 220px 160px;
+    gap: 12px;
+}
+
+/* =========================================================
+   버튼
+========================================================= */
+
+.profile-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 76px;
+}
+
+.profile-account-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.profile-outline-button,
+.profile-save-button {
+    display: inline-flex;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.profile-outline-button {
+    border: 1px solid var(--line);
+    background-color: var(--paper);
+    color: var(--ink-800);
+}
+
+.profile-outline-button:hover {
+    border-color: var(--blue-600);
+    color: var(--blue-600);
+}
+
+.profile-save-button {
+    min-width: 300px;
+    border: 1px solid var(--blue-600);
+    background-color: var(--blue-600);
+    color: #ffffff;
+}
+
+.profile-save-button:hover {
+    filter: brightness(0.94);
+}
+
+/* =========================================================
+   메시지
+========================================================= */
+
+.profile-field-message {
+    display: none;
+    margin: 0;
+    color: #ef4444;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.profile-field-message.is-visible {
+    display: block;
+}
+
+.profile-field-message.is-success {
+    display: block;
+    color: var(--blue-600);
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 1024px) {
+    .profile-form-row {
+        gap: 18px;
+    }
+
+    .profile-save-button {
+        min-width: 240px;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-edit-card {
+        padding: 24px;
+    }
+
+    .profile-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-form-actions {
+        align-items: stretch;
+        flex-direction: column;
+        margin-top: 48px;
+    }
+
+    .profile-account-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .profile-save-button {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .profile-edit-card {
+        padding: 20px 16px;
+    }
+
+    .profile-image-area {
+        align-items: flex-start;
+    }
+
+    .profile-image-control {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .profile-job-box {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-postcode-row {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-account-actions {
+        grid-template-columns: 1fr;
+    }
+}

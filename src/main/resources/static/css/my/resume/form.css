@@ -1,0 +1,643 @@
+/* =========================================================
+   DOC-02 이력서 작성·수정
+========================================================= */
+
+.resume-form-content {
+    min-width: 0;
+}
+
+.resume-form-heading {
+    margin-bottom: 20px;
+}
+
+.resume-form-title {
+    margin: 0;
+    color: var(--ink-900);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.7px;
+}
+
+.resume-form-description {
+    margin: 7px 0 0;
+    color: var(--ink-500);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   탭
+========================================================= */
+
+.resume-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 7px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background-color: var(--paper);
+}
+
+.resume-tab {
+    height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background-color: var(--paper);
+    color: var(--ink-700);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.resume-tab:hover {
+    border-color: var(--blue-600);
+    color: var(--blue-600);
+}
+
+.resume-tab.is-active {
+    border-color: var(--blue-600);
+    background-color: var(--blue-600);
+    color: #ffffff;
+}
+
+/* =========================================================
+   탭 패널
+========================================================= */
+
+.resume-panel {
+    padding: 26px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background-color: var(--paper);
+}
+
+.resume-panel[hidden] {
+    display: none;
+}
+
+.resume-panel-header,
+.resume-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.resume-panel-header h2,
+.resume-section-heading h2 {
+    margin: 0;
+    color: var(--ink-900);
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.resume-required-badge {
+    display: inline-flex;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    border-radius: 999px;
+    background-color: #fff0f0;
+    color: #ef4444;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   필드
+========================================================= */
+
+.resume-basic-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.resume-field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.resume-field-grid-three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.resume-field-grid-four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.resume-field-grid-five {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.resume-field {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.resume-field-full {
+    width: 100%;
+}
+
+.resume-field > label {
+    color: var(--ink-800);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.required {
+    color: #ef4444;
+}
+
+.resume-label-option {
+    color: var(--ink-500);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.resume-input,
+.resume-textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background-color: var(--paper);
+    color: var(--ink-900);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.resume-input {
+    height: 46px;
+    padding: 0 14px;
+}
+
+.resume-textarea {
+    min-height: 100px;
+    padding: 13px 14px;
+    line-height: 1.7;
+    resize: vertical;
+}
+
+.resume-summary-textarea {
+    min-height: 110px;
+    padding-bottom: 30px;
+}
+
+.resume-project-textarea {
+    min-height: 115px;
+}
+
+.resume-input::placeholder,
+.resume-textarea::placeholder {
+    color: var(--ink-400);
+}
+
+.resume-input:hover,
+.resume-textarea:hover {
+    border-color: #b9c2d2;
+}
+
+.resume-input:focus,
+.resume-textarea:focus {
+    border-color: var(--blue-600);
+    box-shadow: 0 0 0 3px rgba(98, 102, 241, 0.1);
+}
+
+.resume-input[readonly] {
+    background-color: var(--bg-soft);
+    color: var(--ink-600);
+}
+
+.resume-input.is-error,
+.resume-textarea.is-error {
+    border-color: #ef4444;
+}
+
+.resume-select {
+    cursor: pointer;
+}
+
+.resume-text-counter {
+    position: absolute;
+    right: 12px;
+    bottom: 9px;
+    color: var(--ink-400);
+    font-size: 10px;
+}
+
+.resume-field-message {
+    display: none;
+    margin: 0;
+    color: #ef4444;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.resume-field-message.is-visible {
+    display: block;
+}
+
+/* =========================================================
+   기본정보 등록 현황
+========================================================= */
+
+.resume-summary-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 26px;
+}
+
+.resume-summary-link {
+    display: flex;
+    min-height: 54px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 8px;
+    background-color: var(--bg-soft);
+    color: var(--ink-700);
+    font-family: inherit;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.resume-summary-link span:first-child {
+    font-weight: 700;
+}
+
+.resume-summary-link span:last-child {
+    color: var(--blue-600);
+}
+
+.resume-summary-link:hover {
+    background-color: #eef1ff;
+}
+
+/* =========================================================
+   반복 입력 카드
+========================================================= */
+
+.resume-repeat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.resume-repeat-card {
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background-color: var(--paper);
+}
+
+.resume-repeat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.resume-repeat-header h3 {
+    margin: 0;
+    color: var(--ink-900);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.resume-remove-button {
+    padding: 5px 8px;
+    border: 0;
+    background-color: transparent;
+    color: #ef4444;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.resume-remove-button:hover {
+    text-decoration: underline;
+}
+
+.resume-repeat-card .resume-field-grid + .resume-field-grid,
+.resume-repeat-card .resume-field-grid + .resume-field,
+.resume-repeat-card .resume-field + .resume-field-grid {
+    margin-top: 16px;
+}
+
+.resume-subsection-action {
+    display: flex;
+    justify-content: flex-end;
+    margin: 24px 0 12px;
+}
+
+/* =========================================================
+   추가 버튼
+========================================================= */
+
+.resume-add-button,
+.resume-outline-add-button {
+    display: inline-flex;
+    min-width: 150px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 17px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.resume-add-button {
+    border: 1px solid var(--blue-600);
+    background-color: var(--blue-600);
+    color: #ffffff;
+}
+
+.resume-outline-add-button {
+    border: 1px solid var(--line);
+    background-color: var(--paper);
+    color: var(--ink-700);
+}
+
+.resume-add-button:hover {
+    filter: brightness(0.94);
+}
+
+.resume-outline-add-button:hover {
+    border-color: var(--blue-600);
+    color: var(--blue-600);
+}
+
+/* =========================================================
+   기술 선택
+========================================================= */
+
+.resume-skill-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 12px;
+}
+
+.resume-skill-chip {
+    display: inline-flex;
+    min-width: 100px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 14px;
+    border: 1px solid var(--blue-600);
+    border-radius: 999px;
+    background-color: #f5f5ff;
+    color: var(--blue-600);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.resume-skill-chip span {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.resume-skill-chip:hover {
+    background-color: #e9eaff;
+}
+
+.resume-project-list {
+    margin-top: 22px;
+}
+
+/* =========================================================
+   기술 선택 결과
+========================================================= */
+
+.resume-skill-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.resume-skill-label-row > label {
+    color: var(--ink-800);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.resume-skill-count {
+    color: var(--blue-600);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.resume-skill-selection-box {
+    display: flex;
+    min-height: 94px;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background-color: var(--paper);
+    box-sizing: border-box;
+}
+
+.resume-skill-selection-box .resume-skill-chips {
+    min-height: 32px;
+    margin-top: 0;
+}
+
+.resume-skill-empty {
+    margin: 4px 0;
+    color: var(--ink-400);
+    font-size: 11px;
+}
+
+.resume-skill-empty[hidden] {
+    display: none;
+}
+
+.resume-skill-open-button {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--blue-600);
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: var(--blue-600);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.resume-skill-open-button:hover {
+    background-color: #f3f4ff;
+}
+
+/* =========================================================
+   하단 버튼
+========================================================= */
+
+.resume-panel-actions {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.resume-panel-actions-end {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.resume-secondary-button,
+.resume-primary-button {
+    display: flex;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 22px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.resume-secondary-button {
+    border: 1px solid var(--line);
+    background-color: var(--paper);
+    color: var(--ink-700);
+}
+
+.resume-primary-button {
+    min-width: 380px;
+    border: 1px solid var(--blue-600);
+    background-color: var(--blue-600);
+    color: #ffffff;
+}
+
+.resume-secondary-button:hover {
+    border-color: var(--blue-600);
+    color: var(--blue-600);
+}
+
+.resume-primary-button:hover {
+    filter: brightness(0.94);
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 1100px) {
+    .resume-field-grid-five {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .resume-field-grid-four {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .resume-field-grid-three {
+        grid-template-columns: 1fr;
+    }
+
+    .resume-primary-button {
+        min-width: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .resume-tabs {
+        grid-template-columns: 1fr;
+    }
+
+    .resume-panel {
+        padding: 22px;
+    }
+
+    .resume-field-grid,
+    .resume-field-grid-four,
+    .resume-field-grid-five {
+        grid-template-columns: 1fr;
+    }
+
+    .resume-summary-link {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .resume-panel-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .resume-panel-actions-end {
+        display: block;
+    }
+
+    .resume-primary-button,
+    .resume-secondary-button {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .resume-form-title {
+        font-size: 24px;
+    }
+
+    .resume-panel {
+        padding: 18px 15px;
+    }
+
+    .resume-panel-header,
+    .resume-section-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .resume-add-button,
+    .resume-outline-add-button {
+        width: 100%;
+    }
+
+    .resume-repeat-card {
+        padding: 17px 14px;
+    }
+}

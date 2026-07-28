@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>기업 관리 | 첫출근 관리자</title>
+
+        <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+        <link rel="stylesheet" th:href="@{/css/admin/management.css}" />
+        <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
+    </head>
+
+    <body>
+        <div class="wrapper">
+            <!-- 관리자 헤더 -->
+            <header th:replace="~{common/admin-header :: adminHeader}"></header>
+
+            <div class="container">
+                <!-- 관리자 사이드바 -->
+                <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+
+                <!-- 기업 관리 콘텐츠 -->
+                <main class="content management-content">
+                    <section class="management-heading">
+                        <h1>기업 관리</h1>
+
+                        <p>기업 가입 심사와 승인 상태, 공개 정보를 관리합니다.</p>
+                    </section>
+
+                    <!-- 통계 -->
+                    <section class="management-stats">
+                        <article class="management-stat-card">
+                            <span>승인 대기</span>
+                            <strong>6건</strong>
+                            <small>신규 4 · 재심사 2</small>
+                        </article>
+
+                        <article class="management-stat-card">
+                            <span>승인 기업</span>
+                            <strong>126개</strong>
+                            <small>현재 공개 중</small>
+                        </article>
+
+                        <article class="management-stat-card">
+                            <span>반려 기업</span>
+                            <strong>3건</strong>
+                            <small>수정·재심사 가능</small>
+                        </article>
+                    </section>
+
+                    <!-- 기업 목록 -->
+                    <section class="management-panel">
+                        <div class="management-tabs" role="tablist" aria-label="기업 승인 상태">
+                            <button type="button" class="management-tab" data-company-status="ALL">전체</button>
+
+                            <button type="button" class="management-tab is-active" data-company-status="PENDING">
+                                승인 대기
+                            </button>
+
+                            <button type="button" class="management-tab" data-company-status="APPROVED">승인</button>
+
+                            <button type="button" class="management-tab" data-company-status="REJECTED">반려</button>
+
+                            <button type="button" class="management-tab" data-company-status="SUSPENDED">
+                                이용정지
+                            </button>
+                        </div>
+
+                        <form class="management-search" data-company-search-form>
+                            <select class="management-select" name="reviewType">
+                                <option value="">심사 유형 전체</option>
+                                <option value="NEW">신규 심사</option>
+                                <option value="REVIEW">재심사</option>
+                            </select>
+
+                            <input
+                                type="search"
+                                class="management-search-input"
+                                name="keyword"
+                                placeholder="기업명 · 사업자번호 검색"
+                                data-company-keyword
+                            />
+
+                            <button type="submit" class="management-search-button">검색</button>
+
+                            <span class="management-total"> 총 6건 </span>
+                        </form>
+
+                        <div class="management-table-wrap">
+                            <table class="management-table">
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>기업명</th>
+                                        <th>사업자번호</th>
+                                        <th>담당자</th>
+                                        <th>신청일</th>
+                                        <th>심사유형</th>
+                                        <th>상태</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr data-company-row data-status="PENDING">
+                                        <td>C-0129</td>
+                                        <td>코드웨이브</td>
+                                        <td>120-88-12345</td>
+                                        <td>김태웅</td>
+                                        <td>07.22</td>
+                                        <td>신규 심사</td>
+                                        <td>
+                                            <span class="status-text is-pending"> 승인 대기 </span>
+                                        </td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                class="management-detail-link"
+                                                data-company-approval-open
+                                                data-company-id="C-0129"
+                                                data-company-name="코드웨이브 주식회사"
+                                                data-review-type="신규 심사"
+                                                data-business-number="120-88-12345"
+                                                data-representative="김대표"
+                                                data-manager="김태웅"
+                                            >
+                                                심사
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    <tr data-company-row data-status="PENDING">
+                                        <td>C-0128</td>
+                                        <td>넥스트랩</td>
+                                        <td>220-19-28475</td>
+                                        <td>이인서</td>
+                                        <td>07.22</td>
+                                        <td>재심사</td>
+                                        <td>
+                                            <span class="status-text is-pending"> 승인 대기 </span>
+                                        </td>
+                                        <td>
+                                            <a
+                                                th:href="@{/admin/company/detail(id='C-0128')}"
+                                                class="management-detail-link"
+                                            >
+                                                재심사
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                    <tr data-company-row data-status="PENDING">
+                                        <td>C-0127</td>
+                                        <td>브릿지웍스</td>
+                                        <td>314-02-88421</td>
+                                        <td>박담당</td>
+                                        <td>07.21</td>
+                                        <td>신규 심사</td>
+                                        <td>
+                                            <span class="status-text is-pending"> 승인 대기 </span>
+                                        </td>
+                                        <td>
+                                            <a
+                                                th:href="@{/admin/company/detail(id='C-0127')}"
+                                                class="management-detail-link"
+                                            >
+                                                심사
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p class="management-empty" data-company-empty hidden>조건에 맞는 기업이 없습니다.</p>
+
+                        <nav class="management-pagination" aria-label="기업 목록 페이지">
+                            <a href="#" aria-label="이전 페이지">‹</a>
+                            <a href="#" class="is-current">1</a>
+                            <a href="#">2</a>
+                            <a href="#">3</a>
+                            <a href="#">4</a>
+                            <a href="#">5</a>
+                            <a href="#" aria-label="다음 페이지">›</a>
+                        </nav>
+                    </section>
+                </main>
+            </div>
+
+            <!-- 관리자 푸터 -->
+            <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+        </div>
+
+        <div th:replace="~{modal/admin/company-approval :: companyApprovalModal}"></div>
+
+        <script th:src="@{/js/modal/admin/company-approval.js}"></script>
+        <script th:src="@{/js/admin/company-list.js}"></script>
+    </body>
+</html>

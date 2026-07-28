@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>반려 기업정보 수정 | 첫출근</title>
+
+        <!-- 기업관리 공통 -->
+        <link rel="stylesheet" th:href="@{/css/corp/common.css}" />
+
+        <!-- 기존 기업정보 폼 공통 -->
+        <link rel="stylesheet" th:href="@{/css/corp/company-info.css}" />
+
+        <!-- 반려 화면 전용 -->
+        <link rel="stylesheet" th:href="@{/css/corp/company-info-rejected.css}" />
+
+        <!-- 공통 모달 -->
+        <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    </head>
+
+    <body class="corp-page">
+        <!-- 기업관리 헤더 -->
+        <header th:replace="~{common/corp-header :: corpHeader}"></header>
+
+        <main class="corp-main rejected-company-main">
+            <div class="corp-layout">
+                <!-- 기업관리 사이드바 -->
+                <aside th:replace="~{common/corp-aside :: corpAside}"></aside>
+
+                <section class="corp-content rejected-company-content" aria-labelledby="rejectedCompanyTitle">
+                    <!-- 페이지 제목 -->
+                    <div class="rejected-company-heading">
+                        <div>
+                            <h1 id="rejectedCompanyTitle">반려 기업정보 수정</h1>
+
+                            <p>반려 사유에 해당하는 정보를 수정한 뒤 재심사를 요청합니다.</p>
+                        </div>
+
+                        <div class="rejected-company-heading-actions">
+                            <button
+                                type="submit"
+                                form="rejectedCompanyForm"
+                                class="rejected-save-button"
+                                name="submitMode"
+                                value="save"
+                            >
+                                수정 저장
+                            </button>
+
+                            <button type="button" class="rejected-review-button" data-review-request>
+                                재심사 요청
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 승인 반려 사유 -->
+                    <section class="rejection-reason" aria-labelledby="rejectionReasonTitle">
+                        <h2 id="rejectionReasonTitle">승인 반려 사유</h2>
+
+                        <p th:text="${rejectionReason}">
+                            사업자등록번호와 사업자명 및 설립일 정보가 제출된 정보와 일치하지 않습니다.
+                        </p>
+
+                        <span> 확인할 항목: 기업명 · 사업자등록번호 · 대표자명 </span>
+                    </section>
+
+                    <form
+                        id="rejectedCompanyForm"
+                        class="company-info-form"
+                        th:action="@{/corp/company-info-rejected}"
+                        method="post"
+                        enctype="multipart/form-data"
+                        data-rejected-company-form
+                        novalidate
+                    >
+                        <!-- 기본정보 -->
+                        <section class="company-info-card">
+                            <h2 class="company-info-section-title">기본 정보</h2>
+
+                            <div class="company-basic-layout">
+                                <!-- 기업 로고 -->
+                                <div class="company-logo-area">
+                                    <div class="company-logo-preview" data-company-logo-preview>
+                                        <img
+                                            th:if="${companyLogoUrl != null}"
+                                            th:src="${companyLogoUrl}"
+                                            alt="기업 로고"
+                                        />
+
+                                        <span th:unless="${companyLogoUrl != null}"> 첫 </span>
+                                    </div>
+
+                                    <label for="companyLogo" class="company-logo-change-button"> 로고 변경 </label>
+
+                                    <input
+                                        type="file"
+                                        id="companyLogo"
+                                        name="companyLogo"
+                                        accept=".jpg,.jpeg,.png"
+                                        hidden
+                                        data-company-logo-input
+                                    />
+
+                                    <p class="company-field-message" data-company-logo-message></p>
+                                </div>
+
+                                <div class="company-basic-fields">
+                                    <!-- 반려 대상 -->
+                                    <div class="company-field-grid">
+                                        <div class="company-field">
+                                            <label for="companyName"> 기업명 </label>
+
+                                            <input
+                                                type="text"
+                                                id="companyName"
+                                                name="companyName"
+                                                class="company-input is-rejected"
+                                                value="첫출근랩"
+                                                required
+                                            />
+
+                                            <p class="rejected-field-help">반려 사유와 관련된 항목입니다.</p>
+                                        </div>
+
+                                        <div class="company-field">
+                                            <label for="businessNumber"> 사업자등록번호 </label>
+
+                                            <input
+                                                type="text"
+                                                id="businessNumber"
+                                                name="businessNumber"
+                                                class="company-input is-rejected"
+                                                value="123-45-67890"
+                                                maxlength="12"
+                                                required
+                                                data-business-number
+                                            />
+
+                                            <p class="rejected-field-help">숫자 10자리를 확인해주세요.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="company-field-grid">
+                                        <div class="company-field">
+                                            <label for="representativeName"> 대표자명 </label>
+
+                                            <input
+                                                type="text"
+                                                id="representativeName"
+                                                name="representativeName"
+                                                class="company-input is-rejected"
+                                                value="김첫출"
+                                                required
+                                            />
+
+                                            <p class="rejected-field-help">사업자등록 정보와 동일해야 합니다.</p>
+                                        </div>
+
+                                        <div class="company-field">
+                                            <label for="establishedDate"> 설립일 </label>
+
+                                            <input
+                                                type="date"
+                                                id="establishedDate"
+                                                name="establishedDate"
+                                                class="company-input"
+                                                value="2021-03-15"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- 공개정보 -->
+                        <section class="company-info-card">
+                            <h2 class="company-info-section-title">공개 정보</h2>
+
+                            <div class="company-field-grid">
+                                <div class="company-field">
+                                    <label for="companySize"> 기업 규모 </label>
+
+                                    <select id="companySize" name="companySize" class="company-input company-select">
+                                        <option value="">기업 규모 선택</option>
+                                        <option value="SMALL" selected>중소기업</option>
+                                        <option value="MEDIUM">중견기업</option>
+                                        <option value="LARGE">대기업</option>
+                                    </select>
+                                </div>
+
+                                <div class="company-field">
+                                    <label for="industry">업종</label>
+
+                                    <select id="industry" name="industry" class="company-input company-select">
+                                        <option value="">업종 선택</option>
+                                        <option value="IT_SOFTWARE" selected>IT·소프트웨어</option>
+                                        <option value="MANUFACTURING">제조</option>
+                                        <option value="SERVICE">서비스</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="company-field-grid">
+                                <div class="company-field">
+                                    <label for="homepage"> 홈페이지 </label>
+
+                                    <input
+                                        type="url"
+                                        id="homepage"
+                                        name="homepage"
+                                        class="company-input"
+                                        value="https://firstwork.example"
+                                    />
+                                </div>
+
+                                <div class="company-field">
+                                    <label for="companyPhone"> 대표 연락처 </label>
+
+                                    <input
+                                        type="tel"
+                                        id="companyPhone"
+                                        name="companyPhone"
+                                        class="company-input"
+                                        value="02-1234-5678"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="company-field-grid">
+                                <div class="company-field">
+                                    <label for="address"> 주소 </label>
+
+                                    <input
+                                        type="text"
+                                        id="address"
+                                        name="address"
+                                        class="company-input"
+                                        value="서울특별시 강남구 테헤란로 123"
+                                        readonly
+                                    />
+                                </div>
+
+                                <div class="company-field">
+                                    <label for="shortDescription"> 기업 한 줄 소개 </label>
+
+                                    <input
+                                        type="text"
+                                        id="shortDescription"
+                                        name="shortDescription"
+                                        class="company-input"
+                                        value="기술로 더 나은 채용 경험을 만드는 기업입니다."
+                                        maxlength="100"
+                                    />
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- 기업 소개 -->
+                        <section class="company-info-card">
+                            <div class="company-field">
+                                <label for="benefits"> 기업 소개·복지 </label>
+
+                                <textarea id="benefits" name="benefits" class="company-textarea" maxlength="1000">
+자유로운 협업 문화 · 교육비 지원 · 유연근무제 · 최신 장비 제공</textarea
+                                >
+                            </div>
+                        </section>
+
+                        <p
+                            class="company-field-message rejected-form-message"
+                            data-rejected-form-message
+                            aria-live="polite"
+                        ></p>
+
+                        <!-- 실제 제출용 -->
+                        <input type="hidden" name="submitMode" value="save" data-submit-mode-input />
+                    </form>
+                </section>
+            </div>
+        </main>
+
+        <!-- 기업관리 푸터 -->
+        <footer th:replace="~{common/corp-footer :: corpFooter}"></footer>
+
+        <!-- 공통 확인 모달 -->
+        <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+        <script th:src="@{/js/modal.js}"></script>
+        <script th:src="@{/js/corp/company-info-rejected.js}"></script>
+    </body>
+</html>

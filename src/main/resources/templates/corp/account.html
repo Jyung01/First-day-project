@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>기업회원 계정관리 | 첫출근</title>
+
+        <!-- 기업관리 공통 -->
+        <link rel="stylesheet" th:href="@{/css/corp/common.css}" />
+
+        <!-- 계정관리 -->
+        <link rel="stylesheet" th:href="@{/css/corp/account.css}" />
+
+        <!-- 공통 모달 -->
+        <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    </head>
+
+    <body class="corp-page">
+        <!-- 기업관리 헤더 -->
+        <header th:replace="~{common/corp-header :: corpHeader}"></header>
+
+        <main class="corp-main corp-account-main">
+            <div class="corp-layout">
+                <!-- 기업관리 사이드바 -->
+                <aside th:replace="~{common/corp-aside :: corpAside}"></aside>
+
+                <!-- 계정관리 콘텐츠 -->
+                <section class="corp-content corp-account-content" aria-labelledby="corpAccountTitle">
+                    <!-- 페이지 제목 -->
+                    <div class="corp-account-heading">
+                        <h1 id="corpAccountTitle">기업회원 계정관리</h1>
+
+                        <p>로그인 정보와 채용 담당자 정보를 관리합니다.</p>
+                    </div>
+
+                    <!-- 로그인 정보 -->
+                    <section class="corp-account-card">
+                        <h2 class="corp-account-card-title">로그인 정보</h2>
+
+                        <div class="corp-login-info">
+                            <div class="corp-account-field">
+                                <label for="corpLoginId"> 아이디 </label>
+
+                                <div class="corp-login-id-row">
+                                    <input
+                                        type="text"
+                                        id="corpLoginId"
+                                        class="corp-account-input"
+                                        th:value="${loginId}"
+                                        value="corp@firstwork.co.kr"
+                                        readonly
+                                    />
+
+                                    <p>아이디는 변경할 수 없습니다.</p>
+                                </div>
+                            </div>
+
+                            <div class="corp-password-row">
+                                <button type="button" class="corp-account-outline-button" data-corp-password-open>
+                                    비밀번호 변경
+                                </button>
+
+                                <span> 마지막 변경 2026.06.30 </span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 채용 담당자 정보 -->
+                    <section class="corp-account-card">
+                        <h2 class="corp-account-card-title">채용 담당자 정보</h2>
+
+                        <form class="corp-manager-form" data-corp-manager-form novalidate>
+                            <div class="corp-account-grid">
+                                <div class="corp-account-field">
+                                    <label for="managerName"> 담당자 이름 </label>
+
+                                    <input
+                                        type="text"
+                                        id="managerName"
+                                        name="managerName"
+                                        class="corp-account-input"
+                                        th:value="${managerName}"
+                                        value="김담당"
+                                        maxlength="30"
+                                        required
+                                    />
+                                </div>
+
+                                <div class="corp-account-field">
+                                    <label for="managerDepartment"> 부서·직책 </label>
+
+                                    <input
+                                        type="text"
+                                        id="managerDepartment"
+                                        name="managerDepartment"
+                                        class="corp-account-input"
+                                        th:value="${managerDepartment}"
+                                        value="인사팀 매니저"
+                                        maxlength="50"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="corp-account-grid">
+                                <div class="corp-account-field">
+                                    <label for="managerEmail"> 이메일 </label>
+
+                                    <input
+                                        type="email"
+                                        id="managerEmail"
+                                        name="managerEmail"
+                                        class="corp-account-input"
+                                        th:value="${managerEmail}"
+                                        value="recruit@firstwork.co.kr"
+                                        required
+                                    />
+                                </div>
+
+                                <div class="corp-account-field">
+                                    <label for="managerPhone"> 휴대전화 </label>
+
+                                    <input
+                                        type="tel"
+                                        id="managerPhone"
+                                        name="managerPhone"
+                                        class="corp-account-input"
+                                        th:value="${managerPhone}"
+                                        value="010-9876-5432"
+                                        inputmode="numeric"
+                                        maxlength="13"
+                                        required
+                                        data-corp-manager-phone
+                                    />
+                                </div>
+                            </div>
+
+                            <p class="corp-account-message" data-corp-manager-message aria-live="polite"></p>
+
+                            <div class="corp-manager-actions">
+                                <button type="submit" class="corp-account-primary-button">변경사항 저장</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- 보안 안내 -->
+                    <section class="corp-account-security">
+                        <h2>보안 안내</h2>
+
+                        <p>
+                            담당자 정보는 지원자 문의와 채용 운영에 사용됩니다. 공용 계정보다 담당자별 안전한 비밀번호
+                            사용을 권장합니다.
+                        </p>
+                    </section>
+
+                    <!-- 기업회원 탈퇴 -->
+                    <section class="corp-withdraw-section">
+                        <div>
+                            <h2>기업회원 탈퇴</h2>
+
+                            <p>탈퇴 시 기업 페이지는 즉시 비공개되고 모집 중인 공고는 자동 마감됩니다.</p>
+
+                            <p>기존 지원 내역과 제출 문서는 관련 정책에 따라 일정 기간 보관됩니다.</p>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="corp-withdraw-button"
+                            data-corp-withdraw
+                            data-active-job-count="1"
+                            data-applicant-count="3"
+                        >
+                            기업회원 탈퇴
+                        </button>
+                    </section>
+
+                    <!-- 승인 반려 안내 테스트 버튼
+                         실제 구현에서는 서버 상태에 따라 자동 실행 -->
+                    <button type="button" class="corp-rejection-test-button" data-corp-rejection-guide hidden>
+                        승인 반려 안내 테스트
+                    </button>
+                </section>
+            </div>
+        </main>
+
+        <!-- 기업관리 푸터 -->
+        <footer th:replace="~{common/corp-footer :: corpFooter}"></footer>
+
+        <!-- 공통 확인 모달 -->
+        <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+        <!-- 공통 폼 모달 -->
+        <div th:replace="~{modal/common/form-modal :: formModal}"></div>
+
+        <script th:src="@{/js/modal.js}"></script>
+        <script th:src="@{/js/corp/account.js}"></script>
+
+        <!-- 실제 구현 시 서버가 승인 반려 상태이면 자동 표시 -->
+        <script th:if="${showRejectionGuide}">
+            document.addEventListener("DOMContentLoaded", function () {
+                if (typeof window.showCorpRejectionGuide === "function") {
+                    window.showCorpRejectionGuide();
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>기업정보 관리 | 첫출근</title>
+
+        <!-- 기업관리 공통 -->
+        <link rel="stylesheet" th:href="@{/css/corp/common.css}" />
+
+        <!-- 기업정보 관리 -->
+        <link rel="stylesheet" th:href="@{/css/corp/company-info.css}" />
+
+        <!-- 공통 확인 모달 -->
+        <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    </head>
+
+    <body class="corp-page">
+        <!-- 기업관리 공통 헤더 -->
+        <header th:replace="~{common/corp-header :: corpHeader}"></header>
+
+        <main class="corp-main company-info-main">
+            <div class="corp-layout">
+                <!-- 기업관리 공통 사이드바 -->
+                <aside th:replace="~{common/corp-aside :: corpAside}"></aside>
+
+                <!-- 기업정보 관리 -->
+                <section class="corp-content company-info-content" aria-labelledby="companyInfoTitle">
+                    <!-- 페이지 제목 -->
+                    <div class="company-info-heading">
+                        <div>
+                            <h1 id="companyInfoTitle">기업정보 관리</h1>
+
+                            <p>구직자에게 공개되는 기업정보를 관리합니다.</p>
+                        </div>
+
+                        <button type="submit" form="companyInfoForm" class="company-info-save-top">
+                            변경사항 저장
+                        </button>
+                    </div>
+
+                    <form
+                        id="companyInfoForm"
+                        class="company-info-form"
+                        th:action="@{/corp/company-info}"
+                        method="post"
+                        enctype="multipart/form-data"
+                        data-company-info-form
+                        novalidate
+                    >
+                        <!-- =================================================
+                             기본 정보
+                        ================================================== -->
+                        <section class="company-info-card">
+                            <h2 class="company-info-section-title">기본 정보</h2>
+
+                            <div class="company-basic-layout">
+                                <!-- 기업 로고 -->
+                                <div class="company-logo-area">
+                                    <div class="company-logo-preview" data-company-logo-preview>
+                                        <!-- 등록된 로고가 있을 때 -->
+                                        <img
+                                            th:if="${companyLogoUrl != null}"
+                                            th:src="${companyLogoUrl}"
+                                            alt="기업 로고"
+                                            data-company-logo-image
+                                        />
+
+                                        <!-- 등록된 로고가 없을 때 -->
+                                        <span th:unless="${companyLogoUrl != null}" data-company-logo-initial>
+                                            첫
+                                        </span>
+                                    </div>
+
+                                    <label for="companyLogo" class="company-logo-change-button"> 로고 변경 </label>
+
+                                    <input
+                                        type="file"
+                                        id="companyLogo"
+                                        name="companyLogo"
+                                        accept=".jpg,.jpeg,.png"
+                                        hidden
+                                        data-company-logo-input
+                                    />
+
+                                    <p class="company-field-message" data-company-logo-message aria-live="polite"></p>
+                                </div>
+
+                                <!-- 기본정보 필드 -->
+                                <div class="company-basic-fields">
+                                    <div class="company-field-grid">
+                                        <div class="company-field">
+                                            <label for="companyName"> 기업명 </label>
+
+                                            <input
+                                                type="text"
+                                                id="companyName"
+                                                name="companyName"
+                                                class="company-input"
+                                                th:value="${companyName}"
+                                                value="첫출근랩"
+                                                maxlength="100"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div class="company-field">
+                                            <label for="managerName"> 담당자 </label>
+
+                                            <input
+                                                type="text"
+                                                id="managerName"
+                                                name="managerName"
+                                                class="company-input"
+                                                th:value="${managerName}"
+                                                value="김지웅"
+                                                readonly
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="company-field-grid">
+                                        <div class="company-field">
+                                            <label for="businessNumber"> 사업자등록번호 </label>
+
+                                            <input
+                                                type="text"
+                                                id="businessNumber"
+                                                name="businessNumber"
+                                                class="company-input"
+                                                th:value="${businessNumber}"
+                                                value="123-45-67890"
+                                                readonly
+                                            />
+                                        </div>
+
+                                        <div class="company-field">
+                                            <label for="approvalStatus"> 인증 정보 </label>
+
+                                            <input
+                                                type="text"
+                                                id="approvalStatus"
+                                                class="company-input"
+                                                th:value="${approvalStatus}"
+                                                value="인증 완료"
+                                                readonly
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="company-field-grid">
+                                        <div class="company-field">
+                                            <label for="representativeName"> 대표자명 </label>
+
+                                            <input
+                                                type="text"
+                                                id="representativeName"
+                                                name="representativeName"
+                                                class="company-input"
+                                                th:value="${representativeName}"
+                                                value="김첫출"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div class="company-field">
+                                            <label for="establishedDate"> 설립일 </label>
+
+                                            <input
+                                                type="date"
+                                                id="establishedDate"
+                                                name="establishedDate"
+                                                class="company-input"
+                                                th:value="${establishedDate}"
+                                                value="2021-03-15"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- =================================================
+                             공개 정보
+                        ================================================== -->
+                        <section class="company-info-card">
+                            <h2 class="company-info-section-title">공개 정보</h2>
+
+                            <div class="company-field-grid">
+                                <div class="company-field">
+                                    <label for="companySize"> 기업 규모 </label>
+
+                                    <select id="companySize" name="companySize" class="company-input company-select">
+                                        <option value="">기업 규모 선택</option>
+                                        <option value="STARTUP">스타트업</option>
+                                        <option value="SMALL" selected>중소기업</option>
+                                        <option value="MEDIUM">중견기업</option>
+                                        <option value="LARGE">대기업</option>
+                                        <option value="PUBLIC">공공기관</option>
+                                        <option value="FOREIGN">외국계기업</option>
+                                    </select>
+                                </div>
+
+                                <div class="company-field">
+                                    <label for="industry"> 업종 </label>
+
+                                    <select id="industry" name="industry" class="company-input company-select">
+                                        <option value="">업종 선택</option>
+                                        <option value="IT_SOFTWARE" selected>IT·소프트웨어</option>
+                                        <option value="MANUFACTURING">제조</option>
+                                        <option value="FINANCE">금융</option>
+                                        <option value="DISTRIBUTION">유통·무역</option>
+                                        <option value="EDUCATION">교육</option>
+                                        <option value="MEDICAL">의료</option>
+                                        <option value="SERVICE">서비스</option>
+                                        <option value="ETC">기타</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="company-field-grid">
+                                <div class="company-field">
+                                    <label for="homepage"> 홈페이지 </label>
+
+                                    <input
+                                        type="url"
+                                        id="homepage"
+                                        name="homepage"
+                                        class="company-input"
+                                        th:value="${homepage}"
+                                        value="https://firstwork.example"
+                                        placeholder="https://example.com"
+                                    />
+                                </div>
+
+                                <div class="company-field">
+                                    <label for="companyPhone"> 대표 연락처 </label>
+
+                                    <input
+                                        type="tel"
+                                        id="companyPhone"
+                                        name="companyPhone"
+                                        class="company-input"
+                                        th:value="${companyPhone}"
+                                        value="02-1234-5678"
+                                        maxlength="13"
+                                        inputmode="numeric"
+                                        data-company-phone
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- 주소 -->
+                            <fieldset class="company-address">
+                                <legend>주소</legend>
+
+                                <div class="company-postcode-row">
+                                    <input
+                                        type="text"
+                                        id="postcode"
+                                        name="postcode"
+                                        class="company-input"
+                                        th:value="${postcode}"
+                                        value="06236"
+                                        placeholder="우편번호"
+                                        readonly
+                                    />
+
+                                    <button type="button" class="company-outline-button" data-company-address-search>
+                                        주소 검색
+                                    </button>
+                                </div>
+
+                                <input
+                                    type="text"
+                                    id="address"
+                                    name="address"
+                                    class="company-input"
+                                    th:value="${address}"
+                                    value="서울특별시 강남구 테헤란로 123"
+                                    placeholder="기본주소"
+                                    readonly
+                                />
+
+                                <input
+                                    type="text"
+                                    id="addressDetail"
+                                    name="addressDetail"
+                                    class="company-input"
+                                    th:value="${addressDetail}"
+                                    placeholder="상세주소 입력"
+                                />
+                            </fieldset>
+
+                            <!-- 기업 한 줄 소개 -->
+                            <div class="company-field company-field-full">
+                                <label for="shortDescription"> 기업 한 줄 소개 </label>
+
+                                <input
+                                    type="text"
+                                    id="shortDescription"
+                                    name="shortDescription"
+                                    class="company-input"
+                                    th:value="${shortDescription}"
+                                    value="기술로 더 나은 채용 경험을 만드는 기업입니다."
+                                    maxlength="100"
+                                    placeholder="기업을 한 문장으로 소개해주세요"
+                                />
+
+                                <div class="company-character-count">
+                                    <span data-company-count="shortDescription"> 0 </span>
+                                    / 100
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- =================================================
+                             기업 소개·복지
+                        ================================================== -->
+                        <section class="company-info-card">
+                            <div class="company-field company-field-full">
+                                <label for="benefits"> 기업 소개·복지 </label>
+
+                                <textarea
+                                    id="benefits"
+                                    name="benefits"
+                                    class="company-textarea"
+                                    th:text="${benefits}"
+                                    maxlength="1000"
+                                    placeholder="기업 소개와 복지 정보를 입력해주세요"
+                                >
+자유로운 협업 문화 · 교육비 지원 · 유연근무제 · 최신 장비 제공</textarea
+                                >
+
+                                <div class="company-character-count">
+                                    <span data-company-count="benefits"> 0 </span>
+                                    / 1000
+                                </div>
+                            </div>
+                        </section>
+
+                        <p
+                            class="company-field-message company-form-message"
+                            data-company-form-message
+                            aria-live="polite"
+                        ></p>
+
+                        <!-- 모바일용 저장 버튼 -->
+                        <button type="submit" class="company-info-save-bottom">변경사항 저장</button>
+                    </form>
+                </section>
+            </div>
+        </main>
+
+        <!-- 기업관리 공통 푸터 -->
+        <footer th:replace="~{common/corp-footer :: corpFooter}"></footer>
+
+        <!-- 저장 완료 모달 -->
+        <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+        <script th:src="@{/js/modal.js}"></script>
+        <script th:src="@{/js/corp/company-info.js}"></script>
+    </body>
+</html>

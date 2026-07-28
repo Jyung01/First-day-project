@@ -11,40 +11,39 @@ document.addEventListener("DOMContentLoaded", function () {
     const confirmButton = modal.querySelector("[data-job-modal-confirm]");
 
     const primaryButtons = modal.querySelectorAll("[data-job-primary]");
-    const secondaryLists = modal.querySelectorAll(
-        "[data-job-secondary-list]"
-    );
-    const secondaryTitle = modal.querySelector(
-        "[data-job-secondary-title]"
-    );
+    const secondaryLists = modal.querySelectorAll("[data-job-secondary-list]");
+    const secondaryTitle = modal.querySelector("[data-job-secondary-title]");
 
-    const optionCheckboxes = Array.from(
-        modal.querySelectorAll("[data-job-option]")
-    );
+    const optionCheckboxes = Array.from(modal.querySelectorAll("[data-job-option]"));
 
     const modalCount = modal.querySelector("[data-job-modal-count]");
-    const modalSelectedList = modal.querySelector(
-        "[data-job-modal-selected-list]"
-    );
+    const modalSelectedList = modal.querySelector("[data-job-modal-selected-list]");
     const modalMessage = modal.querySelector("[data-job-modal-message]");
 
-    const pageSelectedList = document.querySelector(
-        "[data-job-selected-list]"
-    );
-    const pageSelectedEmpty = document.querySelector(
-        "[data-job-selected-empty]"
-    );
-    const hiddenInputsContainer = document.querySelector(
-        "[data-job-hidden-inputs]"
-    );
-    const pageSelectionCount = document.querySelector(
-        "[data-job-selection-count]"
-    );
+    const pageSelectedList = document.querySelector("[data-job-selected-list]");
+    const pageSelectedEmpty = document.querySelector("[data-job-selected-empty]");
+    const hiddenInputsContainer = document.querySelector("[data-job-hidden-inputs]");
+    const pageSelectionCount = document.querySelector("[data-job-selection-count]");
     const pageJobMessage = document.querySelector("[data-job-message]");
 
     const maximumSelection = 3;
 
-    let confirmedJobs = [];
+    function readInitialJobs() {
+        const hiddenInputs = Array.from(
+            document.querySelectorAll("[data-job-hidden-inputs] input[name='desiredJobIds']"),
+        );
+
+        return hiddenInputs.map(function (input) {
+            const matchingChip = document.querySelector(`[data-initial-job-id="${input.value}"]`);
+
+            return {
+                id: input.value,
+                name: input.dataset.jobName || matchingChip?.dataset.initialJobName || input.value,
+            };
+        });
+    }
+
+    let confirmedJobs = readInitialJobs();
     let temporaryJobs = [];
 
     function findOption(jobId) {
@@ -56,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function getJobFromCheckbox(checkbox) {
         return {
             id: checkbox.value,
-            name: checkbox.dataset.jobName
+            name: checkbox.dataset.jobName,
         };
     }
 
@@ -102,10 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 removeButton.type = "button";
                 removeButton.textContent = "×";
-                removeButton.setAttribute(
-                    "aria-label",
-                    job.name + " 선택 해제"
-                );
+                removeButton.setAttribute("aria-label", job.name + " 선택 해제");
 
                 removeButton.addEventListener("click", function () {
                     removeTemporaryJob(job.id);
@@ -139,9 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (temporaryJobs.length >= maximumSelection) {
-            showModalMessage(
-                "희망 직무는 최대 3개까지 선택할 수 있습니다."
-            );
+            showModalMessage("희망 직무는 최대 3개까지 선택할 수 있습니다.");
 
             const checkbox = findOption(job.id);
 
@@ -194,10 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 removeButton.type = "button";
                 removeButton.textContent = "×";
-                removeButton.setAttribute(
-                    "aria-label",
-                    job.name + " 삭제"
-                );
+                removeButton.setAttribute("aria-label", job.name + " 삭제");
 
                 removeButton.addEventListener("click", function () {
                     confirmedJobs = confirmedJobs.filter(function (item) {
@@ -219,16 +210,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (pageSelectionCount) {
-            pageSelectionCount.textContent =
-                confirmedJobs.length + "/" + maximumSelection;
+            pageSelectionCount.textContent = confirmedJobs.length + "/" + maximumSelection;
         }
 
         if (pageJobMessage) {
             pageJobMessage.textContent = "";
-            pageJobMessage.classList.remove(
-                "is-visible",
-                "is-success"
-            );
+            pageJobMessage.classList.remove("is-visible", "is-success");
         }
     }
 
@@ -259,17 +246,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const selectedCategory = button.dataset.jobPrimary;
 
             primaryButtons.forEach(function (item) {
-                item.classList.toggle(
-                    "is-active",
-                    item === button
-                );
+                item.classList.toggle("is-active", item === button);
             });
 
             secondaryLists.forEach(function (list) {
-                list.classList.toggle(
-                    "is-active",
-                    list.dataset.jobSecondaryList === selectedCategory
-                );
+                list.classList.toggle("is-active", list.dataset.jobSecondaryList === selectedCategory);
             });
 
             if (secondaryTitle) {
@@ -310,10 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.addEventListener("keydown", function (event) {
-        if (
-            event.key === "Escape" &&
-            modal.classList.contains("is-open")
-        ) {
+        if (event.key === "Escape" && modal.classList.contains("is-open")) {
             closeModal();
         }
     });

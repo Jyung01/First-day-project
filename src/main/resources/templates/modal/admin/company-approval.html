@@ -1,0 +1,143 @@
+<div
+    xmlns:th="http://www.thymeleaf.org"
+    th:fragment="companyApprovalModal"
+    class="admin-modal"
+    data-company-approval-modal
+    aria-hidden="true"
+>
+    <div class="admin-modal__backdrop" data-company-approval-close></div>
+
+    <section
+        class="admin-modal__dialog admin-modal__dialog--company"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="companyApprovalModalTitle"
+    >
+        <header class="admin-modal__header">
+            <h2 id="companyApprovalModalTitle">기업 승인·반려</h2>
+
+            <button
+                type="button"
+                class="admin-modal__close"
+                data-company-approval-close
+                aria-label="기업 승인 심사 닫기"
+            >
+                ×
+            </button>
+        </header>
+
+        <form class="admin-company-approval-form" data-company-approval-form novalidate>
+            <div class="admin-modal__body">
+                <h3 class="admin-company-name" data-company-name>코드웨이브 주식회사 · 신규 심사</h3>
+
+                <div class="admin-company-summary">
+                    <p>
+                        사업자번호
+                        <strong data-company-business-number> 120-88-12345 </strong>
+
+                        <span aria-hidden="true">·</span>
+
+                        대표자
+                        <strong data-company-representative> 김대표 </strong>
+
+                        <span aria-hidden="true">·</span>
+
+                        담당자
+                        <strong data-company-manager> 김채용 </strong>
+                    </p>
+
+                    <p>입력 누락·형식 오류·부적절한 기업정보 여부만 검토합니다.</p>
+                </div>
+
+                <fieldset class="admin-approval-fieldset">
+                    <legend>처리 결과</legend>
+
+                    <div class="admin-approval-options">
+                        <label class="admin-approval-option">
+                            <input type="radio" name="approvalResult" value="APPROVED" data-approval-result />
+
+                            <span>승인</span>
+                        </label>
+
+                        <label class="admin-approval-option">
+                            <input type="radio" name="approvalResult" value="REJECTED" data-approval-result />
+
+                            <span>반려</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="admin-approval-fieldset" data-rejection-reason-section disabled>
+                    <legend>반려 사유 선택</legend>
+
+                    <div class="admin-approval-options">
+                        <label class="admin-approval-option">
+                            <input
+                                type="radio"
+                                name="rejectionReason"
+                                value="MISSING_INFORMATION"
+                                data-rejection-reason
+                            />
+
+                            <span>입력 누락</span>
+                        </label>
+
+                        <label class="admin-approval-option">
+                            <input type="radio" name="rejectionReason" value="FORMAT_ERROR" data-rejection-reason />
+
+                            <span>형식 오류</span>
+                        </label>
+
+                        <label class="admin-approval-option">
+                            <input
+                                type="radio"
+                                name="rejectionReason"
+                                value="INAPPROPRIATE_INFORMATION"
+                                data-rejection-reason
+                            />
+
+                            <span>부적절한 기업정보</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="admin-approval-message">
+                    <label for="companyApprovalMessage"> 관리자 안내 </label>
+
+                    <textarea
+                        id="companyApprovalMessage"
+                        name="approvalMessage"
+                        class="admin-approval-textarea"
+                        maxlength="500"
+                        placeholder="기업회원에게 전달할 안내를 입력해주세요"
+                        data-approval-message
+                    ></textarea>
+
+                    <span class="admin-approval-count"> <span data-approval-message-count>0</span>/500 </span>
+                </div>
+
+                <div class="admin-modal__guide">선택한 사유와 안내는 기업의 반려 정보 수정 화면에 표시됩니다.</div>
+
+                <p class="admin-modal__error" data-company-approval-error aria-live="polite"></p>
+            </div>
+
+            <footer class="admin-modal__footer">
+                <button
+                    type="button"
+                    class="admin-modal-button admin-modal-button--outline"
+                    data-company-approval-close
+                >
+                    취소
+                </button>
+
+                <button
+                    type="submit"
+                    class="admin-modal-button admin-modal-button--danger"
+                    data-company-approval-submit
+                >
+                    처리
+                </button>
+            </footer>
+        </form>
+    </section>
+</div>
