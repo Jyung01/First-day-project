@@ -5,15 +5,15 @@
   <title>채용공고 검색 | 첫출근</title>
   <link rel="stylesheet" th:href="@{/css/common.css}" href="/css/common.css"><link rel="stylesheet" th:href="@{/css/job/common.css}" href="/css/job/common.css">
 </head>
-<body>
+<body class="job-header-active">
 <header th:replace="~{common/header :: header}"></header>
 <main class="job-page">
   <section class="job-hero"><div class="job-container">
     <div class="job-hero-top"><div><h1>채용공고</h1><p>검색 조건에 맞는 공고를 모아봤어요.</p></div><form class="job-search" th:action="@{/job/search}"><input name="keyword" value="백엔드" aria-label="검색어"><button>검색</button></form></div>
-    <div class="job-filter-row"><select><option>백엔드</option></select><select><option>서울</option></select><select><option>신입</option></select><select><option>학력 전체</option></select><select><option>기술스택</option></select><div class="job-sort"><button class="active">최신순</button><button>마감순</button><button>조회순</button></div></div>
+    <div th:replace="~{job/fragments/filter :: filterBar}"></div>
   </div></section>
+  <div th:replace="~{job/fragments/filter :: activeFilters}"></div>
   <section class="job-content"><div class="job-container">
-    <div class="active-filters"><strong>적용된 필터</strong><button class="filter-chip">백엔드 ×</button><button class="filter-chip">서울 ×</button><button class="filter-chip">신입 ×</button><button class="filter-reset">전체 초기화</button></div>
     <div class="job-banner"><strong>JOB_LIST</strong>검색 결과에서도 동일한 배너 영역을 사용합니다.</div>
     <div class="job-section-head"><h2>‘백엔드’ 검색 결과</h2><span>총 42건</span></div>
     <div class="job-card-grid">

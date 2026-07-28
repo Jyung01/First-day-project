@@ -7,7 +7,7 @@
   <link rel="stylesheet" th:href="@{/css/common.css}" href="/css/common.css">
   <link rel="stylesheet" th:href="@{/css/job/common.css}" href="/css/job/common.css">
 </head>
-<body>
+<body class="job-header-active">
 <header th:replace="~{common/header :: header}"></header>
 <main class="job-page">
   <section class="job-hero">
@@ -19,16 +19,10 @@
           <button type="submit">검색</button>
         </form>
       </div>
-      <div class="job-filter-row">
-        <select aria-label="직무"><option>직무 전체</option><option>백엔드</option><option>프론트엔드</option></select>
-        <select aria-label="지역"><option>지역 전체</option><option>서울</option><option>경기</option></select>
-        <select aria-label="경력"><option>경력 전체</option><option>신입</option><option>경력</option></select>
-        <select aria-label="학력"><option>학력 전체</option><option>학력무관</option><option>대졸 이상</option></select>
-        <select aria-label="기술스택"><option>기술스택</option><option>Java</option><option>Spring</option></select>
-        <div class="job-sort"><button class="active" type="button">최신순</button><button type="button">마감순</button><button type="button">조회순</button></div>
-      </div>
+      <div th:replace="~{job/fragments/filter :: filterBar}"></div>
     </div>
   </section>
+  <div th:replace="~{job/fragments/filter :: activeFilters}"></div>
   <section class="job-content">
     <div class="job-container">
       <div class="job-banner"><strong>JOB_LIST</strong>관리자 등록 채용공고 목록 배너 · 권장 1280 × 120</div>
