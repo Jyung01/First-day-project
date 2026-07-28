@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>연봉정보 등록</title>
+    <!-- 메인 헤더 푸터 css -->
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <!-- 연봉정보 등록/수정 공통 폼 css -->
+    <link rel="stylesheet" th:href="@{/css/salary/form-common.css}"/>
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/salary-create.css}"/>
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const submitBtn = document.querySelector(".submit-btn");
+
+            submitBtn.addEventListener("click", (e) => {
+
+                e.preventDefault();
+
+                showConfirmModal({
+
+                    iconClass: "info",
+                    iconHtml: '<i class="fa-solid fa-question"></i>',
+
+                    title: "입력한 연봉정보를 등록할까요?",
+
+                    message: "입력 내용과 본인이 실제 근무한 기업인지 다시 확인해주세요.",
+
+                    extraHtml: `
+        <div class="salary-summary">
+
+            <div class="summary-row">
+                <span>기업</span>
+                <strong>네이버클라우드</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>직무 · 경력</span>
+                <strong>백엔드 개발 · 3년</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>세전 연봉</span>
+                <strong class="point">5,200만원</strong>
+
+                <span>기준연도</span>
+                <strong>2026년</strong>
+            </div>
+
+        </div>
+
+        <p class="modal-desc">
+            등록 후 내 연봉정보 목록에서 수정할 수 있으며
+            개별 금액은 공개되지 않습니다.
+        </p>
+    `,
+
+                    leftText: "취소",
+                    rightText: "등록하기",
+
+                    leftClass: "btn-outline",
+                    rightClass: "btn-primary",
+
+                    onRight() {
+
+                        const form = document.querySelector(".salary-form");
+
+                        const formData = new FormData(form);
+
+                        fetch("/salary/register", {      // TODO : 등록 API 주소 변경
+                            method: "POST",
+                            body: formData
+                        })
+                            .then(response => {
+
+                                if (!response.ok) {
+                                    throw new Error("등록 실패");
+                                }
+
+                                return response.json();      // TODO : 응답 형식에 맞게 수정
+
+                            })
+                            .then(data => {
+
+                                showConfirmModal({
+                                    iconClass: "success",
+                                    iconHtml: '<i class="fa-solid fa-check"></i>',
+
+                                    title: "연봉정보가 등록되었습니다.",
+
+                                    message:
+                                        "소중한 정보를 등록해주셔서 감사합니다.\n조건별 데이터가 3건 이상 모이면 익명 평균값에 반영됩니다.",
+
+                                    extraHtml: `
+    <div class="modal-guide">
+        <strong>상세 보기</strong>&nbsp;→&nbsp;등록한 기업의 연봉 상세 화면으로 이동
+    </div>
+`,
+
+                                    leftText: "닫기",
+                                    rightText: "기업별 연봉 상세 보기",
+
+                                    leftClass: "btn-outline",
+                                    rightClass: "btn-primary",
+
+                                    onRight() {
+
+                                        location.href = "/salary/detail/1"; // TODO : 등록한 기업 상세페이지
+
+                                    }
+
+                                });
+
+                            })
+                            .catch(error => {
+
+                                console.error(error);
+
+                                showConfirmModal({
+
+                                    iconClass: "danger",
+                                    iconHtml: "!",
+
+                                    title: "등록에 실패했습니다.",
+
+                                    message:
+                                        "잠시 후 다시 시도해주세요.",
+
+                                    rightText: "확인",
+                                    rightClass: "btn-primary"
+
+                                });
+
+                            });
+
+                    }
+
+                });
+
+            });
+
+        });
+    </script>
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="salary-register-page">
+    <section class="register-container">
+        <div class="register-header">
+            <div>
+                <h1>연봉정보 등록</h1>
+
+                <p>
+                    현재 또는 과거에 실제 근무한 기업의 연봉정보를 익명 통계로
+                    등록합니다.
+                </p>
+            </div>
+
+            <a href="#" class="register-policy"> 개인정보 · 로그인 완료 </a>
+        </div>
+
+        <form action="#" method="post" class="salary-form">
+            <div class="register-notice">
+                <div class="notice-icon">✓</div>
+
+                <div class="notice-content">
+                    <strong> 등록한 연봉은 개발 통계에만 활용됩니다. </strong>
+
+                    <p>
+                        동일 조건의 데이터가 3건 이상 모이면 평균으로 반영되며, 내
+                        연봉정보는 익명으로 처리됩니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="companyName"> 기업 <span>*</span> </label>
+
+                    <div class="company-search">
+                        <input
+                                type="text"
+                                id="companyName"
+                                name="companyName"
+                                placeholder="현재 또는 과거에 근무한 기업을 검색하세요"
+                        />
+
+                        <button type="button">기업 검색</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="employmentStatus"> 재직 상태 <span>*</span> </label>
+
+                    <select id="employmentStatus" name="employmentStatus">
+                        <option value="">현재 재직 중</option>
+
+                        <option>퇴사</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="job"> 직무 <span>*</span> </label>
+
+                    <select id="job" name="job">
+                        <option>백엔드 개발</option>
+
+                        <option>프론트엔드 개발</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="career"> 총 경력 <span>*</span> </label>
+
+                    <select id="career" name="career">
+                        <option>3년</option>
+
+                        <option>4년</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="employmentType"> 고용 형태 <span>*</span> </label>
+
+                    <select id="employmentType" name="employmentType">
+                        <option>정규직</option>
+
+                        <option>계약직</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="salaryYear"> 연봉 기준연도 <span>*</span> </label>
+
+                    <select id="salaryYear" name="salaryYear">
+                        <option>2026년</option>
+
+                        <option>2025년</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="salary"> 세전 연봉 <span>*</span> </label>
+
+                    <div class="salary-input">
+                        <input
+                                type="number"
+                                id="salary"
+                                name="salary"
+                                placeholder="5,200"
+                        />
+
+                        <span>만원</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bonus"> 성과금 </label>
+
+                    <div class="salary-input">
+                        <input
+                                type="number"
+                                id="bonus"
+                                name="bonus"
+                                placeholder="선택 입력"
+                        />
+
+                        <span>만원</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="register-guide">
+                <p>
+                    · 세금 공제 전의 연봉을 입력해주세요. · 성과급은 실제 수령액이
+                    평균 연봉에는 포함되지 않습니다.
+                </p>
+
+                <p>
+                    · 비정상적으로 크거나 작은 값은 관리자 검토 후 제외될 수 있습니다.
+                </p>
+            </div>
+
+            <div class="agree-wrap">
+                <label class="agree-check">
+                    <input type="checkbox" name="agree"/>
+
+                    <span>
+                본인이 실제 근무한 기업의 연봉정보이며, 익명 통계 활용에
+                동의합니다. <span class="required">*</span>
+              </span>
+                </label>
+
+                <p class="agree-warning">
+                    필수 동의를 입력하고 등록 내용을 확인해주세요.
+                </p>
+            </div>
+
+            <div class="register-btn-group">
+                <button type="button" class="cancel-btn">취소</button>
+
+                <button type="submit" class="submit-btn">등록 내용 확인</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+
+<!-- 모달 불러오기 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+<!-- 공통 헤더·푸터 불러오기 -->
+<script th:src="@{../js/common.js}"></script>
+</body>
+</html>

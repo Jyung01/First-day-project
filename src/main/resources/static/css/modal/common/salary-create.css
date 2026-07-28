@@ -1,0 +1,103 @@
+/* 연봉 요약 */
+
+.salary-summary{
+
+    margin-top:20px;
+
+    padding:18px 20px;
+
+    border-radius:8px;
+
+    background:#F5F7FC;
+
+    text-align:left;
+}
+
+.summary-row{
+
+    display:grid;
+
+    grid-template-columns:70px 1fr 70px 80px;
+
+    align-items:center;
+
+    gap:10px;
+
+    min-height:34px;
+}
+
+.summary-row + .summary-row{
+
+    margin-top:8px;
+}
+
+.summary-row span{
+
+    font-size:12px;
+
+    color:#7B869A;
+}
+
+.summary-row strong{
+
+    font-size:13px;
+
+    font-weight:700;
+
+    color:#172033;
+}
+
+.summary-row .point{
+
+    color:#6266F1;
+
+    font-size:20px;
+}
+
+/* 안내문 */
+
+.modal-desc{
+
+    margin-top:18px;
+
+    color:#7B869A;
+
+    font-size:12px;
+
+    line-height:1.7;
+
+    text-align:left;
+}
+
+.modal-guide{
+
+    display:flex;
+
+    align-items:center;
+
+    min-height:56px;
+
+    margin-top:20px;
+
+    padding:0 16px;
+
+    border-radius:8px;
+
+    background:#F5F7FC;
+
+    color:#6B7280;
+
+    font-size:12px;
+
+    text-align:left;
+
+    line-height:1.6;
+}
+
+.modal-guide strong{
+
+    color:#172033;
+
+    font-weight:700;
+}
+

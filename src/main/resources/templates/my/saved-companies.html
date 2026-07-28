@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>마이페이지 - 관심공고</title>
+    <!-- 메인 헤더 푸터 css -->
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <!-- 마이페이지 공통 css -->
+    <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+    <!-- 마이페이지 관심공고 css   -->
+    <link rel="stylesheet" th:href="@{/css/my/saved-jobs.css}" />
+    <!-- 마이페이지 관심기업 css-->
+    <link rel="stylesheet"  th:href="@{/css/my/saved-companies.css}" />
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+    <!-- 하트 이모티콘 cdn -->
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 탭 메뉴
+            const tabs = document.querySelectorAll(".job-tab");
+            const cards = document.querySelectorAll(".saved-job-card");
+
+            tabs.forEach((tab) => {
+                tab.addEventListener("click", () => {
+                    // active 변경
+                    tabs.forEach((t) => t.classList.remove("active"));
+                    tab.classList.add("active");
+
+                    const status = tab.dataset.status;
+
+                    cards.forEach((card) => {
+                        if (status === "all") {
+                            card.classList.remove("hide");
+                        } else {
+                            if (card.dataset.status === status) {
+                                card.classList.remove("hide");
+                            } else {
+                                card.classList.add("hide");
+                            }
+                        }
+                    });
+                });
+            });
+
+            // 공고 좋아요 기능
+            document.querySelectorAll(".favorite-btn").forEach((btn) => {
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    // 관심 안 된 상태
+                    if (!btn.classList.contains("active")) {
+                        btn.classList.add("active");
+
+                        // 스프링에서는 여기서 관심등록 API 호출
+                        // fetch(...)
+
+                        return;
+                    }
+
+                    // 관심된 상태 -> 해제 모달
+                    showConfirmModal({
+                        iconClass: "info",
+                        iconHtml: '<i class="fa-solid fa-exclamation"></i>',
+
+                        title: "관심 기업에서 해제할까요?",
+                        message:
+                            "선택한 기업을 관심 기업 목록에서 삭제합니다.\n목록에서 즉시 사라집니다.",
+
+                        leftText: "취소",
+                        rightText: "관심 해제",
+
+                        leftClass: "btn-outline",
+
+                        onRight: async () => {
+                            btn.classList.remove("active");
+
+                            // 관심공고 페이지라면 카드 제거
+                            // btn.closest(".saved-job-card")?.remove();
+
+                            // 스프링에서는 여기서 fetch 호출
+                            // await fetch(`/my/saved-jobs/${jobId}`, {
+                            //     method: "DELETE",
+                            // });
+                            //
+                        },
+                    });
+                });
+            });
+            // document.querySelectorAll(".favorite-btn").forEach((btn) => {
+            //     btn.addEventListener("click", () => {
+            //         btn.classList.toggle("active");
+            //     });
+            // });
+        });
+    </script>
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+<main class="mypage">
+    <div class="wrap">
+        <div class="mypage-layout">
+            <!-- 좌측 사이드바 -->
+            <aside th:replace="~{common/my-aside :: myAside}"></aside>
+
+            <!-- 오른쪽 -->
+            <section class="mypage-content">
+                <div class="page-header">
+                    <h2>관심 기업</h2>
+                    <p>관심 등록한 기업의 정보를 확인할 수 있습니다.</p>
+                </div>
+
+                <div class="page-filter">
+                    <div class="company-count">총 <strong>6개 기업</strong></div>
+
+                    <div class="company-sort-wrap">
+                        <select class="company-sort">
+                            <option>최근 등록순</option>
+                            <option>기업명순</option>
+                            <!-- <option>진행 공고순</option> -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="saved-company-list">
+                    <!-- 카드 -->
+                    <div class="saved-company-card">
+                        <button class="favorite-btn active">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+
+                        <div class="company-header">
+                            <div class="company-logo">N</div>
+
+                            <div class="company-info">
+                                <h3>네이버클라우드</h3>
+
+                                <span>IT · 클라우드</span>
+
+                                <p>진행 공고 12건</p>
+                            </div>
+                        </div>
+
+                        <button class="btn-outline">기업 상세 보기</button>
+                    </div>
+
+                    <!-- 반복 -->
+                    <div class="saved-company-card">
+                        <button class="favorite-btn active">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+
+                        <div class="company-header">
+                            <div class="company-logo">N</div>
+
+                            <div class="company-info">
+                                <h3>네이버클라우드</h3>
+
+                                <span>IT · 클라우드</span>
+
+                                <p>진행 공고 12건</p>
+                            </div>
+                        </div>
+
+                        <button class="btn-outline">기업 상세 보기</button>
+                    </div>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button>&lt;</button>
+
+                    <button class="active">1</button>
+
+                    <button>2</button>
+
+                    <button>3</button>
+
+                    <button>4</button>
+
+                    <button>5</button>
+
+                    <button>&gt;</button>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<!-- 모달 불러오기 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+<!-- 공통 헤더·푸터 불러오기 -->
+<script th:src="@{../js/common.js}"></script>
+</body>
+</html>

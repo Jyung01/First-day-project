@@ -1,0 +1,565 @@
+/* 공통 스타일 파일 */
+/* 페이지 배경 */
+body{
+    background:#F7F8FC;
+}
+/* =========================
+    Register Page
+========================= */
+
+.salary-register-page{
+
+    max-width:1000px;
+
+    margin:40px auto 80px;
+
+    padding:0 20px;
+}
+
+.register-container{
+
+    background:#fff;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:16px;
+
+    padding:32px;
+}
+
+
+/* =========================
+    Header
+========================= */
+
+.register-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    margin-bottom:24px;
+}
+
+.register-header h1{
+
+    font-size:32px;
+
+    font-weight:700;
+
+    color:#111827;
+
+    margin-bottom:6px;
+}
+
+.register-header p{
+
+    font-size:14px;
+
+    color:#6B7280;
+}
+
+.register-policy{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    height:32px;
+
+    padding:0 16px;
+
+    border-radius:999px;
+
+    background:#F3F0FF;
+
+    color:#6366F1;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    text-decoration:none;
+}
+
+
+/* =========================
+    Form
+========================= */
+
+.salary-form{
+
+    width:100%;
+}
+
+
+/* =========================
+    Notice
+========================= */
+
+.register-notice{
+
+    display:flex;
+
+    gap:14px;
+
+    align-items:flex-start;
+
+    padding:18px 20px;
+
+    margin-bottom:24px;
+
+    border-radius:10px;
+
+    background:#EEF2FF;
+}
+
+.notice-icon{
+
+    width:24px;
+
+    height:24px;
+
+    border-radius:50%;
+
+    background:#6366F1;
+
+    color:#fff;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:13px;
+
+    flex-shrink:0;
+}
+
+.notice-content strong{
+
+    display:block;
+
+    margin-bottom:4px;
+
+    font-size:14px;
+
+    color:#111827;
+}
+
+.notice-content p{
+
+    font-size:13px;
+
+    color:#6B7280;
+
+    line-height:1.7;
+}
+
+
+/* =========================
+    Grid
+========================= */
+
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:18px 20px;
+
+    margin-bottom:20px;
+}
+
+.form-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+}
+
+.form-group label{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    color:#374151;
+}
+
+.form-group label span{
+
+    color:#EF4444;
+}
+/* =========================
+    Input / Select
+========================= */
+
+.form-group input,
+.form-group select{
+
+    width:100%;
+
+    height:40px;
+
+    padding:0 12px;
+
+    border:1px solid #D1D5DB;
+
+    border-radius:6px;
+
+    background:#fff;
+
+    font-size:13px;
+
+    color:#111827;
+
+    outline:none;
+
+    transition:border-color .2s, box-shadow .2s;
+}
+
+.form-group input::placeholder{
+
+    color:#9CA3AF;
+}
+
+.form-group input:focus,
+.form-group select:focus{
+
+    border-color:#6366F1;
+
+    box-shadow:0 0 0 3px rgba(99,102,241,.12);
+}
+
+
+/* =========================
+    Select Arrow
+========================= */
+
+.form-group select{
+
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+
+    padding-right:34px;
+
+    background-color:#fff;
+
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+
+    background-repeat:no-repeat;
+
+    background-position:right 12px center;
+}
+
+
+/* =========================
+    Company Search
+========================= */
+
+.company-search{
+
+    display:flex;
+
+    gap:8px;
+}
+
+.company-search input{
+
+    flex:1;
+}
+
+.company-search button{
+
+    width:90px;
+
+    height:40px;
+
+    border:1px solid #D1D5DB;
+
+    border-radius:6px;
+
+    background:#fff;
+
+    color:#374151;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.company-search button:hover{
+
+    border-color:#6366F1;
+
+    color:#6366F1;
+}
+
+
+/* =========================
+    Salary Input
+========================= */
+
+.salary-input{
+
+    display:flex;
+
+    align-items:center;
+}
+
+.salary-input input{
+
+    border-radius:6px 0 0 6px;
+
+    border-right:none;
+}
+
+.salary-input span{
+
+    width:48px;
+
+    height:40px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    border:1px solid #D1D5DB;
+
+    border-left:none;
+
+    border-radius:0 6px 6px 0;
+
+    background:#F9FAFB;
+
+    color:#6B7280;
+
+    font-size:12px;
+}
+
+/* =========================
+    Guide
+========================= */
+
+.register-guide{
+
+    padding:18px 20px;
+
+    margin-bottom:24px;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:8px;
+
+    background:#F9FAFB;
+}
+
+.register-guide p{
+
+    font-size:13px;
+
+    color:#6B7280;
+
+    line-height:1.8;
+}
+
+.register-guide p + p{
+
+    margin-top:6px;
+}
+
+
+/* =========================
+    Agree
+========================= */
+
+.agree-wrap{
+
+    margin-bottom:32px;
+}
+
+.agree-check{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:10px;
+
+    cursor:pointer;
+}
+
+.agree-check input{
+
+    margin-top:3px;
+
+    width:16px;
+
+    height:16px;
+}
+
+.agree-check span{
+
+    font-size:14px;
+
+    color:#374151;
+
+    line-height:1.6;
+}
+
+.agree-check .required{
+
+    color:#EF4444;
+}
+
+.agree-warning{
+
+    margin-top:8px;
+
+    margin-left:26px;
+
+    font-size:12px;
+
+    color:#EF4444;
+}
+
+
+/* =========================
+    Button
+========================= */
+
+.register-btn-group{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:12px;
+
+    padding-top:24px;
+
+    border-top:1px solid #E5E7EB;
+}
+
+.cancel-btn{
+
+    min-width:120px;
+
+    height:44px;
+
+    border:1px solid #D1D5DB;
+
+    border-radius:8px;
+
+    background:#fff;
+
+    color:#374151;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.cancel-btn:hover{
+
+    background:#F9FAFB;
+}
+
+.submit-btn{
+
+    min-width:180px;
+
+    height:44px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#6366F1;
+
+    color:#fff;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.submit-btn:hover{
+
+    background:#5458E8;
+}
+
+
+/* =========================
+    Responsive
+========================= */
+
+@media (max-width:768px){
+
+    .register-container{
+
+        padding:24px;
+    }
+
+    .register-header{
+
+        flex-direction:column;
+
+        gap:16px;
+    }
+
+    .form-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .company-search{
+
+        flex-direction:column;
+    }
+
+    .company-search button{
+
+        width:100%;
+    }
+
+    .salary-input span{
+
+        width:60px;
+    }
+
+    .register-btn-group{
+
+        flex-direction:column;
+    }
+
+    .cancel-btn,
+    .submit-btn{
+
+        width:100%;
+    }
+}
