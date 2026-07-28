@@ -1,0 +1,387 @@
+/* =========================================================
+   ADMIN-02 회원 관리 / ADMIN-03 기업 관리
+========================================================= */
+
+/* 공통 관리자 콘텐츠 */
+
+.content {
+    flex: 1;
+    min-width: 0;
+    padding: 32px;
+    overflow: auto;
+}
+
+.management-content {
+    min-width: 0;
+}
+
+/* =========================================================
+   제목
+========================================================= */
+
+.management-heading {
+    margin-bottom: 28px;
+}
+
+.management-heading h1 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.management-heading p {
+    margin: 10px 0 0;
+    color: #94a3b8;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   통계 카드
+========================================================= */
+
+.management-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.management-stat-card {
+    min-height: 132px;
+    padding: 26px;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    background-color: #1e293b;
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.management-stat-card:hover {
+    border-color: #2563eb;
+    transform: translateY(-2px);
+}
+
+.management-stat-card span {
+    display: block;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.management-stat-card strong {
+    display: block;
+    margin-top: 12px;
+    color: #f8fafc;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.management-stat-card small {
+    display: block;
+    margin-top: 7px;
+    color: #64748b;
+    font-size: 11px;
+}
+
+/* =========================================================
+   목록 패널
+========================================================= */
+
+.management-panel {
+    min-height: 560px;
+    padding: 28px;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    background-color: #1e293b;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   탭
+========================================================= */
+
+.management-tabs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.management-tab {
+    min-width: 88px;
+    height: 42px;
+    padding: 0 20px;
+    border-radius: 10px;
+    background-color: #0f172a;
+    color: #cbd5e1;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.management-tab:hover {
+    background-color: #334155;
+}
+
+.management-tab.is-active {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+/* =========================================================
+   검색
+========================================================= */
+
+.management-search {
+    display: grid;
+    grid-template-columns: 180px minmax(220px, 1fr) 100px auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.management-select,
+.management-search-input {
+    width: 100%;
+    height: 46px;
+    padding: 0 16px;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    background-color: #0f172a;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.management-search-input::placeholder {
+    color: #64748b;
+}
+
+.management-select:focus,
+.management-search-input:focus {
+    border-color: #2563eb;
+}
+
+.management-search-button {
+    height: 46px;
+    border-radius: 10px;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.management-search-button:hover {
+    background-color: #1d4ed8;
+}
+
+.management-total {
+    justify-self: end;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+/* =========================================================
+   테이블
+========================================================= */
+
+.management-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.management-table {
+    width: 100%;
+    min-width: 820px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.management-table thead {
+    background-color: #0f172a;
+}
+
+.management-table th,
+.management-table td {
+    height: 64px;
+    padding: 0 12px;
+    border-bottom: 1px solid #334155;
+    color: #cbd5e1;
+    font-size: 12px;
+    text-align: center;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+.management-table th {
+    height: 48px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.management-table tbody tr:hover {
+    background-color: #273449;
+}
+
+.management-table th:first-child,
+.management-table td:first-child {
+    width: 82px;
+}
+
+.management-table th:last-child,
+.management-table td:last-child {
+    width: 82px;
+}
+
+/* 상태 */
+
+.status-text {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-text.is-active,
+.status-text.is-pending {
+    color: #22c55e;
+}
+
+.status-text.is-approved {
+    color: #60a5fa;
+}
+
+.status-text.is-suspended,
+.status-text.is-rejected {
+    color: #ef4444;
+}
+
+/* 상세 링크 */
+
+.management-detail-link {
+    display: inline-flex;
+    min-width: 48px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border-radius: 8px;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.management-detail-link:hover {
+    background-color: #1d4ed8;
+}
+
+/* =========================================================
+   빈 목록
+========================================================= */
+
+.management-empty {
+    margin: 70px 0;
+    color: #94a3b8;
+    font-size: 13px;
+    text-align: center;
+}
+
+.management-empty[hidden] {
+    display: none;
+}
+
+/* =========================================================
+   페이지네이션
+========================================================= */
+
+.management-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 34px;
+}
+
+.management-pagination a {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background-color: #0f172a;
+    color: #cbd5e1;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.management-pagination a:hover {
+    background-color: #334155;
+}
+
+.management-pagination a.is-current {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 220px;
+    }
+
+    .content {
+        padding: 24px;
+    }
+
+    .management-search {
+        grid-template-columns: 160px minmax(180px, 1fr) 90px;
+    }
+
+    .management-total {
+        grid-column: 1 / -1;
+        justify-self: end;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: 0;
+        border-bottom: 1px solid #334155;
+    }
+
+    .management-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .management-search {
+        grid-template-columns: 1fr;
+    }
+
+    .management-total {
+        grid-column: auto;
+        justify-self: start;
+    }
+
+    .management-panel {
+        padding: 20px 16px;
+    }
+}

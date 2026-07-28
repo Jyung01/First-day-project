@@ -223,6 +223,31 @@ textarea {
     border-radius: 10px;
 }
 
+/* =========================================================
+   기업 승인 반려 상태
+========================================================= */
+
+.company-visibility--rejected {
+    background-color: #fff7ed;
+}
+
+.company-visibility--rejected .company-visibility__status {
+    color: #ea580c;
+}
+
+.company-visibility--rejected .company-visibility__date {
+    color: #9a3412;
+}
+
+/* 반려 상태에서 제한되는 메뉴 */
+
+.corp-nav__item.is-disabled {
+    color: #b8c0ce;
+    background-color: #f1f3f6;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
 .company-visibility__label {
     color: var(--corp-muted);
     font-size: 11px;

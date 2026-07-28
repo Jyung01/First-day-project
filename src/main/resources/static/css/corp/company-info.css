@@ -1,0 +1,379 @@
+/* =========================================================
+   CORP-02 기업정보 관리
+========================================================= */
+
+.company-info-main {
+    min-height: 1120px;
+    padding-bottom: 180px;
+}
+
+.company-info-content {
+    min-width: 0;
+}
+
+/* =========================================================
+   페이지 제목
+========================================================= */
+
+.company-info-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.company-info-heading h1 {
+    margin: 0;
+    color: var(--corp-ink);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.7px;
+}
+
+.company-info-heading p {
+    margin: 7px 0 0;
+    color: var(--corp-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.company-info-save-top,
+.company-info-save-bottom {
+    display: inline-flex;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 22px;
+    border: 1px solid var(--corp-blue);
+    border-radius: 8px;
+    background-color: var(--corp-blue);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.company-info-save-top:hover,
+.company-info-save-bottom:hover {
+    background-color: var(--corp-blue-dark);
+}
+
+.company-info-save-bottom {
+    display: none;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* =========================================================
+   폼 카드
+========================================================= */
+
+.company-info-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.company-info-card {
+    padding: 26px;
+    border: 1px solid var(--corp-border);
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+.company-info-section-title {
+    margin: 0 0 22px;
+    color: var(--corp-ink);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+/* =========================================================
+   기업 로고
+========================================================= */
+
+.company-basic-layout {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 28px;
+}
+
+.company-logo-area {
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.company-logo-preview {
+    display: flex;
+    width: 96px;
+    height: 96px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--corp-border);
+    border-radius: 12px;
+    background-color: var(--corp-blue-soft);
+    color: var(--corp-blue);
+    font-size: 35px;
+    font-weight: 800;
+}
+
+.company-logo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.company-logo-change-button {
+    display: inline-flex;
+    width: 96px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--corp-border);
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: var(--corp-ink);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.company-logo-change-button:hover {
+    border-color: var(--corp-blue);
+    color: var(--corp-blue);
+}
+
+/* =========================================================
+   필드
+========================================================= */
+
+.company-basic-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+}
+
+.company-field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    margin-bottom: 20px;
+}
+
+.company-basic-fields .company-field-grid {
+    margin-bottom: 0;
+}
+
+.company-field {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.company-field-full {
+    width: 100%;
+}
+
+.company-field > label,
+.company-address legend {
+    color: var(--corp-ink);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.company-input,
+.company-textarea {
+    width: 100%;
+    border: 1px solid var(--corp-border);
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--corp-ink);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.company-input {
+    height: 46px;
+    padding: 0 14px;
+}
+
+.company-textarea {
+    min-height: 110px;
+    padding: 14px;
+    padding-bottom: 32px;
+    line-height: 1.7;
+    resize: vertical;
+}
+
+.company-input::placeholder,
+.company-textarea::placeholder {
+    color: #9aa5b7;
+}
+
+.company-input:hover,
+.company-textarea:hover {
+    border-color: #aebbd0;
+}
+
+.company-input:focus,
+.company-textarea:focus {
+    border-color: var(--corp-blue);
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+}
+
+.company-input[readonly] {
+    background-color: var(--corp-soft);
+    color: var(--corp-muted);
+    cursor: default;
+}
+
+.company-input.is-error,
+.company-textarea.is-error {
+    border-color: #ef4444;
+}
+
+.company-select {
+    cursor: pointer;
+}
+
+/* =========================================================
+   주소
+========================================================= */
+
+.company-address {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 0 20px;
+    padding: 0;
+    border: 0;
+}
+
+.company-address legend {
+    margin-bottom: 8px;
+}
+
+.company-postcode-row {
+    display: grid;
+    grid-template-columns: 180px 140px;
+    gap: 10px;
+}
+
+.company-outline-button {
+    height: 46px;
+    border: 1px solid var(--corp-border);
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--corp-ink);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.company-outline-button:hover {
+    border-color: var(--corp-blue);
+    color: var(--corp-blue);
+}
+
+/* =========================================================
+   글자 수 및 메시지
+========================================================= */
+
+.company-character-count {
+    position: absolute;
+    right: 12px;
+    bottom: 9px;
+    color: #8a96a9;
+    font-size: 10px;
+}
+
+.company-field-message {
+    display: none;
+    margin: 0;
+    color: #ef4444;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.company-field-message.is-visible {
+    display: block;
+}
+
+.company-field-message.is-success {
+    display: block;
+    color: var(--corp-blue);
+}
+
+.company-form-message {
+    margin-top: -8px;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 960px) {
+    .company-basic-layout {
+        grid-template-columns: 96px minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .company-field-grid {
+        gap: 18px;
+    }
+}
+
+@media (max-width: 720px) {
+    .company-info-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .company-info-save-top {
+        display: none;
+    }
+
+    .company-info-save-bottom {
+        display: flex;
+    }
+
+    .company-info-card {
+        padding: 22px 18px;
+    }
+
+    .company-basic-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .company-logo-area {
+        align-items: center;
+    }
+
+    .company-field-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 440px) {
+    .company-info-heading h1 {
+        font-size: 24px;
+    }
+
+    .company-postcode-row {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>이력서 보기 | 첫출근</title>
+
+        <!-- 사이트 공통 -->
+        <link rel="stylesheet" th:href="@{/css/common.css}" />
+
+        <!-- 마이페이지 공통 -->
+        <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+
+        <!-- 이력서 상세 -->
+        <link rel="stylesheet" th:href="@{/css/my/resume/detail.css}" />
+    </head>
+
+    <body>
+        <!-- 공통 헤더 -->
+        <header th:replace="~{common/header :: header}"></header>
+
+        <main class="mypage">
+            <div class="wrap mypage-layout">
+                <!-- 마이페이지 공통 사이드바 -->
+                <aside th:replace="~{common/my-aside :: myAside}"></aside>
+
+                <!-- 이력서 상세 콘텐츠 -->
+                <section class="mypage-content resume-detail-content">
+                    <!-- 상단 제목 -->
+                    <div class="resume-detail-heading">
+                        <div>
+                            <h1 class="resume-detail-page-title">이력서 보기</h1>
+
+                            <p class="resume-detail-page-description">
+                                저장되거나 제출된 형태로 이력서 내용을 확인합니다.
+                            </p>
+                        </div>
+
+                        <a th:href="@{/my/resume}" class="resume-detail-back-button"> 돌아가기 </a>
+                    </div>
+
+                    <!-- 이력서 본문 -->
+                    <article class="resume-document">
+                        <!-- 기본정보 -->
+                        <header class="resume-document-header">
+                            <h2 class="resume-member-name">김첫출</h2>
+
+                            <p class="resume-member-position">
+                                <span>백엔드 개발자</span>
+                                <span aria-hidden="true">·</span>
+                                <span>경력</span>
+                            </p>
+
+                            <div class="resume-member-contact">
+                                <span>user@firstwork.co.kr</span>
+                                <span class="resume-contact-divider">·</span>
+                                <span>010-1234-5678</span>
+                                <span class="resume-contact-divider">·</span>
+                                <span>서울특별시 강남구</span>
+                            </div>
+                        </header>
+
+                        <!-- 소개 -->
+                        <section class="resume-document-section">
+                            <h3 class="resume-section-title">소개</h3>
+
+                            <p class="resume-section-description" th:text="${resume?.summary}">
+                                문제를 끝까지 추적하고 데이터 흐름을 검증하며, 해결 내용을 문서화하는 백엔드
+                                개발자입니다.
+                            </p>
+                        </section>
+
+                        <!-- 경력 -->
+                        <section class="resume-document-section">
+                            <h3 class="resume-section-title">경력</h3>
+
+                            <div class="resume-entry-list">
+                                <!-- 서버 연결용 -->
+                                <!--
+                                <article
+                                    class="resume-entry"
+                                    th:each="career : ${resume.careers}"
+                                >
+                                    <strong
+                                        class="resume-entry-title"
+                                        th:text="${career.companyName
+                                            + ' · '
+                                            + career.position}"
+                                    >
+                                        첫출근테크 · 백엔드 개발 인턴
+                                    </strong>
+
+                                    <p class="resume-entry-meta">
+                                        <span
+                                            th:text="${career.startDate}"
+                                        >
+                                            2025.03
+                                        </span>
+
+                                        <span aria-hidden="true">–</span>
+
+                                        <span
+                                            th:text="${career.endDate}"
+                                        >
+                                            2026.02
+                                        </span>
+
+                                        <span
+                                            class="resume-entry-divider"
+                                            aria-hidden="true"
+                                        >
+                                            |
+                                        </span>
+
+                                        <span
+                                            th:text="${career.description}"
+                                        >
+                                            Spring Boot 기반 채용 서비스 API 개발
+                                        </span>
+                                    </p>
+                                </article>
+                                -->
+
+                                <!-- 화면 확인용 -->
+                                <article class="resume-entry">
+                                    <strong class="resume-entry-title"> 첫출근테크 · 백엔드 개발 인턴 </strong>
+
+                                    <p class="resume-entry-meta">
+                                        2025.03 – 2026.02
+                                        <span class="resume-entry-divider" aria-hidden="true"> | </span>
+                                        Spring Boot 기반 채용 서비스 API 개발
+                                    </p>
+                                </article>
+                            </div>
+                        </section>
+
+                        <!-- 학력 -->
+                        <section class="resume-document-section">
+                            <h3 class="resume-section-title">학력</h3>
+
+                            <div class="resume-entry-list">
+                                <!-- 서버 연결용 -->
+                                <!--
+                                <article
+                                    class="resume-entry"
+                                    th:each="education : ${resume.educations}"
+                                >
+                                    <strong
+                                        class="resume-entry-title"
+                                        th:text="${education.schoolName
+                                            + ' '
+                                            + education.major
+                                            + ' '
+                                            + education.graduationStatusName}"
+                                    >
+                                        한국대학교 컴퓨터공학과 졸업
+                                    </strong>
+
+                                    <p class="resume-entry-meta">
+                                        <span
+                                            th:text="${education.admissionDate}"
+                                        >
+                                            2020.03
+                                        </span>
+
+                                        <span aria-hidden="true">–</span>
+
+                                        <span
+                                            th:text="${education.graduationDate}"
+                                        >
+                                            2026.02
+                                        </span>
+
+                                        <span
+                                            th:if="${education.grade != null}"
+                                            class="resume-entry-divider"
+                                            aria-hidden="true"
+                                        >
+                                            |
+                                        </span>
+
+                                        <span
+                                            th:if="${education.grade != null}"
+                                            th:text="${education.grade}"
+                                        >
+                                            3.8 / 4.5
+                                        </span>
+                                    </p>
+                                </article>
+                                -->
+
+                                <!-- 화면 확인용 -->
+                                <article class="resume-entry">
+                                    <strong class="resume-entry-title"> 한국대학교 컴퓨터공학과 졸업 </strong>
+
+                                    <p class="resume-entry-meta">2020.03 – 2026.02</p>
+                                </article>
+                            </div>
+                        </section>
+
+                        <!-- 기술 -->
+                        <section class="resume-document-section">
+                            <h3 class="resume-section-title">기술</h3>
+
+                            <div class="resume-skill-list">
+                                <!-- 서버 연결용 -->
+                                <!--
+                                <span
+                                    class="resume-skill"
+                                    th:each="skill : ${resume.skills}"
+                                    th:text="${skill.name}"
+                                >
+                                    Java
+                                </span>
+                                -->
+
+                                <!-- 화면 확인용 -->
+                                <span class="resume-skill">Java</span>
+                                <span class="resume-skill">Spring Boot</span>
+                                <span class="resume-skill">MyBatis</span>
+                                <span class="resume-skill">MySQL</span>
+                                <span class="resume-skill">AWS</span>
+                                <span class="resume-skill">Docker</span>
+                            </div>
+                        </section>
+
+                        <!-- 프로젝트 -->
+                        <section class="resume-document-section">
+                            <h3 class="resume-section-title">프로젝트</h3>
+
+                            <div class="resume-entry-list">
+                                <!-- 서버 연결용 -->
+                                <!--
+                                <article
+                                    class="resume-entry"
+                                    th:each="project : ${resume.projects}"
+                                >
+                                    <strong
+                                        class="resume-entry-title"
+                                        th:text="${project.projectName}"
+                                    >
+                                        첫출근 채용 플랫폼
+                                    </strong>
+
+                                    <p
+                                        class="resume-entry-meta"
+                                        th:text="${project.role}"
+                                    >
+                                        채용공고 · 기업리뷰 · 이력서 ·
+                                        AI 자기소개서 첨삭 기능 설계 및 구현
+                                    </p>
+
+                                    <p
+                                        class="resume-entry-description"
+                                        th:text="${project.description}"
+                                    >
+                                        채용공고와 지원 문서 관리 기능을
+                                        구현했습니다.
+                                    </p>
+                                </article>
+                                -->
+
+                                <!-- 화면 확인용 -->
+                                <article class="resume-entry">
+                                    <strong class="resume-entry-title"> 첫출근 채용 플랫폼 </strong>
+
+                                    <p class="resume-entry-meta">
+                                        채용공고 · 기업리뷰 · 이력서 · AI 자기소개서 첨삭 기능 설계 및 구현
+                                    </p>
+                                </article>
+                            </div>
+                        </section>
+                    </article>
+                </section>
+            </div>
+        </main>
+
+        <!-- 공통 푸터 -->
+        <footer th:replace="~{common/footer :: footer}"></footer>
+
+        <script th:src="@{/js/common.js}"></script>
+    </body>
+</html>

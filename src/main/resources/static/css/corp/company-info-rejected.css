@@ -1,0 +1,157 @@
+/* =========================================================
+   CORP-02-01 반려 기업정보 수정
+========================================================= */
+
+.rejected-company-content {
+    min-width: 0;
+}
+
+/* 페이지 제목 */
+
+.rejected-company-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 22px;
+}
+
+.rejected-company-heading h1 {
+    margin: 0;
+    color: var(--corp-ink);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.7px;
+}
+
+.rejected-company-heading p {
+    margin: 7px 0 0;
+    color: var(--corp-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.rejected-company-heading-actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 12px;
+}
+
+.rejected-save-button,
+.rejected-review-button {
+    display: inline-flex;
+    min-width: 126px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.rejected-save-button {
+    border: 1px solid var(--corp-blue);
+    background-color: #ffffff;
+    color: var(--corp-blue);
+}
+
+.rejected-review-button {
+    border: 1px solid var(--corp-blue);
+    background-color: var(--corp-blue);
+    color: #ffffff;
+}
+
+.rejected-save-button:hover {
+    background-color: var(--corp-blue-soft);
+}
+
+.rejected-review-button:hover {
+    background-color: var(--corp-blue-dark);
+}
+
+/* 반려 사유 */
+
+.rejection-reason {
+    margin-bottom: 22px;
+    padding: 18px 20px;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background-color: #fff5f5;
+}
+
+.rejection-reason h2 {
+    margin: 0;
+    color: #dc2626;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.rejection-reason p {
+    margin: 11px 0 0;
+    color: #6b3a3a;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.rejection-reason span {
+    display: block;
+    margin-top: 5px;
+    color: #8f5555;
+    font-size: 11px;
+}
+
+/* 반려 항목 */
+
+.company-input.is-rejected {
+    border-color: #ef4444;
+    background-color: #fffafa;
+}
+
+.company-input.is-rejected:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.rejected-field-help {
+    margin: 0;
+    color: #ef4444;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.rejected-form-message {
+    margin-top: -6px;
+}
+
+/* 반응형 */
+
+@media (max-width: 760px) {
+    .rejected-company-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .rejected-company-heading-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .rejected-save-button,
+    .rejected-review-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 440px) {
+    .rejected-company-heading h1 {
+        font-size: 24px;
+    }
+
+    .rejected-company-heading-actions {
+        grid-template-columns: 1fr;
+    }
+}

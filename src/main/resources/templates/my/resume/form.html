@@ -538,109 +538,95 @@ Spring Boot 기반 채용·지원 API 개발</textarea
 
                             <!-- 보유 기술 -->
                             <div class="resume-field resume-field-full">
-                                <label for="skillSearch">
-                                    보유 기술 선택
-                                    <span class="resume-label-option"> (최대 10개) </span>
-                                </label>
+                                <div class="resume-skill-label-row">
+                                    <label>
+                                        보유 기술 선택
+                                        <span class="resume-label-option">(최대 10개)</span>
+                                    </label>
 
-                                <!-- 보유 기술 -->
-                                <div class="resume-field resume-field-full">
-                                    <div class="resume-skill-label-row">
-                                        <label>
-                                            보유 기술 선택
-                                            <span class="resume-label-option"> (최대 10개) </span>
-                                        </label>
+                                    <span class="resume-skill-count" data-skill-selection-count> 6/10 </span>
+                                </div>
 
-                                        <span class="resume-skill-count" data-skill-selection-count> 6/10 </span>
-                                    </div>
+                                <div class="resume-skill-selection-box">
+                                    <div class="resume-skill-chips" data-skill-chip-list>
+                                        <button
+                                            type="button"
+                                            class="resume-skill-chip"
+                                            data-skill-id="1"
+                                            data-skill-name="Java"
+                                        >
+                                            Java
+                                            <span aria-hidden="true">×</span>
+                                        </button>
 
-                                    <div class="resume-skill-selection-box">
-                                        <!-- 선택한 기술 표시 -->
-                                        <div class="resume-skill-chips" data-skill-chip-list>
-                                            <button
-                                                type="button"
-                                                class="resume-skill-chip"
-                                                data-skill-id="1"
-                                                data-skill-name="Java"
-                                            >
-                                                Java
-                                                <span aria-hidden="true">×</span>
-                                            </button>
+                                        <button
+                                            type="button"
+                                            class="resume-skill-chip"
+                                            data-skill-id="2"
+                                            data-skill-name="Spring Boot"
+                                        >
+                                            Spring Boot
+                                            <span aria-hidden="true">×</span>
+                                        </button>
 
-                                            <button
-                                                type="button"
-                                                class="resume-skill-chip"
-                                                data-skill-id="2"
-                                                data-skill-name="Spring Boot"
-                                            >
-                                                Spring Boot
-                                                <span aria-hidden="true">×</span>
-                                            </button>
+                                        <button
+                                            type="button"
+                                            class="resume-skill-chip"
+                                            data-skill-id="3"
+                                            data-skill-name="MyBatis"
+                                        >
+                                            MyBatis
+                                            <span aria-hidden="true">×</span>
+                                        </button>
 
-                                            <button
-                                                type="button"
-                                                class="resume-skill-chip"
-                                                data-skill-id="3"
-                                                data-skill-name="MyBatis"
-                                            >
-                                                MyBatis
-                                                <span aria-hidden="true">×</span>
-                                            </button>
+                                        <button
+                                            type="button"
+                                            class="resume-skill-chip"
+                                            data-skill-id="4"
+                                            data-skill-name="MySQL"
+                                        >
+                                            MySQL
+                                            <span aria-hidden="true">×</span>
+                                        </button>
 
-                                            <button
-                                                type="button"
-                                                class="resume-skill-chip"
-                                                data-skill-id="4"
-                                                data-skill-name="MySQL"
-                                            >
-                                                MySQL
-                                                <span aria-hidden="true">×</span>
-                                            </button>
+                                        <button
+                                            type="button"
+                                            class="resume-skill-chip"
+                                            data-skill-id="5"
+                                            data-skill-name="AWS"
+                                        >
+                                            AWS
+                                            <span aria-hidden="true">×</span>
+                                        </button>
 
-                                            <button
-                                                type="button"
-                                                class="resume-skill-chip"
-                                                data-skill-id="5"
-                                                data-skill-name="AWS"
-                                            >
-                                                AWS
-                                                <span aria-hidden="true">×</span>
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                class="resume-skill-chip"
-                                                data-skill-id="6"
-                                                data-skill-name="Docker"
-                                            >
-                                                Docker
-                                                <span aria-hidden="true">×</span>
-                                            </button>
-                                        </div>
-
-                                        <p class="resume-skill-empty" data-skill-empty hidden>
-                                            선택한 기술이 없습니다.
-                                        </p>
-
-                                        <!-- 서버 전송용 기술 ID -->
-                                        <div data-skill-hidden-inputs>
-                                            <input type="hidden" name="skillIds" value="1" />
-                                            <input type="hidden" name="skillIds" value="2" />
-                                            <input type="hidden" name="skillIds" value="3" />
-                                            <input type="hidden" name="skillIds" value="4" />
-                                            <input type="hidden" name="skillIds" value="5" />
-                                            <input type="hidden" name="skillIds" value="6" />
-                                        </div>
-
-                                        <button type="button" class="resume-skill-open-button" data-skill-modal-open>
-                                            기술 선택
+                                        <button
+                                            type="button"
+                                            class="resume-skill-chip"
+                                            data-skill-id="6"
+                                            data-skill-name="Docker"
+                                        >
+                                            Docker
+                                            <span aria-hidden="true">×</span>
                                         </button>
                                     </div>
 
-                                    <p class="resume-field-message" data-skill-message aria-live="polite"></p>
+                                    <p class="resume-skill-empty" data-skill-empty hidden>선택한 기술이 없습니다.</p>
+
+                                    <div data-skill-hidden-inputs>
+                                        <input type="hidden" name="skillIds" value="1" />
+                                        <input type="hidden" name="skillIds" value="2" />
+                                        <input type="hidden" name="skillIds" value="3" />
+                                        <input type="hidden" name="skillIds" value="4" />
+                                        <input type="hidden" name="skillIds" value="5" />
+                                        <input type="hidden" name="skillIds" value="6" />
+                                    </div>
+
+                                    <button type="button" class="resume-skill-open-button" data-skill-modal-open>
+                                        기술 선택
+                                    </button>
                                 </div>
 
-                                <p class="resume-field-message" data-skill-message></p>
+                                <p class="resume-field-message" data-skill-message aria-live="polite"></p>
                             </div>
 
                             <!-- 프로젝트 목록 -->
@@ -959,5 +945,6 @@ Spring Boot 기반 채용·지원 API 개발</textarea
         <script th:src="@{/js/common.js}"></script>
         <script th:src="@{/js/modal.js}"></script>
         <script th:src="@{/js/my/resume/form.js}"></script>
+        <script th:src="@{/js/modal/skill-select-modal.js}"></script>
     </body>
 </html>

@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const projectSummaryCount = form.querySelector("[data-project-summary-count]");
 
     const cancelLink = form.querySelector("[data-resume-cancel]");
-    const skillInput = form.querySelector("[data-skill-input]");
 
     let submitMode = "save";
 
