@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>마이페이지 - 리뷰확인</title>
+    <!-- 메인 헤더 푸터 css -->
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <!-- 마이페이지 공통 css -->
+    <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+    <!-- 마이페이지 관심공고 css   -->
+    <link rel="stylesheet" th:href="@{/css/my/saved-jobs.css}" />
+    <!-- 마이페이지 리뷰/면접후기 css-->
+    <link rel="stylesheet" th:href="@{/css/my/reviews.css}" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 탭 메뉴
+            const tabs = document.querySelectorAll(".review-tab");
+            const companyCards = document.querySelectorAll(".company-review");
+            const interviewCards = document.querySelectorAll(".interview-review");
+
+            tabs.forEach((tab) => {
+                tab.addEventListener("click", () => {
+                    tabs.forEach((t) => t.classList.remove("active"));
+                    tab.classList.add("active");
+
+                    if (tab.dataset.type === "company") {
+                        companyCards.forEach((c) => (c.style.display = "block"));
+                        interviewCards.forEach((c) => (c.style.display = "none"));
+                    } else {
+                        companyCards.forEach((c) => (c.style.display = "none"));
+                        interviewCards.forEach((c) => (c.style.display = "block"));
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+<main class="mypage">
+    <div class="wrap">
+        <div class="mypage-layout">
+            <!-- 좌측 사이드바 -->
+            <aside th:replace="~{common/my-aside :: myAside}"></aside>
+
+            <!-- 오른쪽 -->
+            <section class="mypage-content">
+                <div class="page-header">
+                    <h2>작성한 후기</h2>
+                    <p>작성한 기업 리뷰와 면접 후기를 확인할 수 있습니다.</p>
+                </div>
+
+                <div class="review-tabs">
+                    <button class="review-tab active" data-type="company">
+                        기업 리뷰 1
+                    </button>
+
+                    <button class="review-tab" data-type="interview">
+                        면접 후기 1
+                    </button>
+                </div>
+
+                <div class="review-list">
+                    <!-- 기업 리뷰 -->
+                    <div class="review-card company-review">
+                        <div class="review-top">
+                            <div class="review-info">
+                                <span class="review-type company"> 기업리뷰 </span>
+
+                                <h3>네이버클라우드</h3>
+                            </div>
+
+                            <span class="review-date"> 2026.07.12 </span>
+                        </div>
+
+                        <p class="review-job">직군 · 백엔드 개발</p>
+
+                        <p class="review-content">
+                            성장 기회가 많고 기술적인 도전을 할 수 있어요.
+                        </p>
+
+                        <div class="review-bottom">
+                            <button class="btn-outline">수정</button>
+
+                            <button class="btn-outline">삭제</button>
+                        </div>
+                    </div>
+
+                    <!-- 면접 후기 -->
+                    <div class="review-card interview-review">
+                        <div class="review-top">
+                            <div class="review-info">
+                                <span class="review-type interview"> 면접후기 </span>
+
+                                <h3>우아한형제들</h3>
+                            </div>
+
+                            <span class="review-date"> 2026.05.14 </span>
+                        </div>
+
+                        <p class="review-job">백엔드 개발자 · 면접 완료</p>
+
+                        <p class="review-content">
+                            기술 질문과 프로젝트 경험 중심으로 진행됐습니다.
+                        </p>
+
+                        <div class="review-bottom">
+                            <button class="btn-outline">수정</button>
+
+                            <button class="btn-outline">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+<!-- 공통 헤더·푸터 불러오기 -->
+<script th:src="@{../js/common.js}"></script>
+</body>
+</html>
