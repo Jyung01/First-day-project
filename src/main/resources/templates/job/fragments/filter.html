@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="job-filter-row" data-multi-filters th:fragment="filterBar">
+  <div class="multi-filter" data-filter-group data-filter-label="직무">
+    <button class="multi-filter-toggle" type="button" aria-expanded="false">직무 전체 <span>⌄</span></button>
+    <div class="multi-filter-panel" hidden>
+      <strong>직무</strong>
+      <div class="multi-filter-options">
+        <label><input type="checkbox" data-filter-all checked> 전체</label>
+        <label><input type="checkbox" name="job" value="backend" data-label="백엔드"> 백엔드</label>
+        <label><input type="checkbox" name="job" value="frontend" data-label="프론트엔드"> 프론트엔드</label>
+        <label><input type="checkbox" name="job" value="app" data-label="앱 개발"> 앱 개발</label>
+        <label><input type="checkbox" name="job" value="data" data-label="데이터"> 데이터</label>
+      </div>
+      <button class="multi-filter-apply" type="button">선택 완료</button>
+    </div>
+  </div>
+  <div class="multi-filter" data-filter-group data-filter-label="지역">
+    <button class="multi-filter-toggle" type="button" aria-expanded="false">지역 전체 <span>⌄</span></button>
+    <div class="multi-filter-panel" hidden>
+      <strong>지역</strong>
+      <div class="multi-filter-options">
+        <label><input type="checkbox" data-filter-all checked> 전체</label>
+        <label><input type="checkbox" name="region" value="seoul" data-label="서울"> 서울</label>
+        <label><input type="checkbox" name="region" value="gyeonggi" data-label="경기"> 경기</label>
+        <label><input type="checkbox" name="region" value="incheon" data-label="인천"> 인천</label>
+        <label><input type="checkbox" name="region" value="busan" data-label="부산"> 부산</label>
+      </div>
+      <button class="multi-filter-apply" type="button">선택 완료</button>
+    </div>
+  </div>
+  <div class="multi-filter" data-filter-group data-filter-label="경력">
+    <button class="multi-filter-toggle" type="button" aria-expanded="false">경력 전체 <span>⌄</span></button>
+    <div class="multi-filter-panel" hidden>
+      <strong>경력</strong>
+      <div class="multi-filter-options">
+        <label><input type="checkbox" data-filter-all checked> 전체</label>
+        <label><input type="checkbox" name="career" value="new" data-label="신입"> 신입</label>
+        <label><input type="checkbox" name="career" value="junior" data-label="1~3년"> 1~3년</label>
+        <label><input type="checkbox" name="career" value="middle" data-label="4~7년"> 4~7년</label>
+        <label><input type="checkbox" name="career" value="senior" data-label="8년 이상"> 8년 이상</label>
+      </div>
+      <button class="multi-filter-apply" type="button">선택 완료</button>
+    </div>
+  </div>
+  <div class="multi-filter" data-filter-group data-filter-label="학력">
+    <button class="multi-filter-toggle" type="button" aria-expanded="false">학력 전체 <span>⌄</span></button>
+    <div class="multi-filter-panel" hidden>
+      <strong>학력</strong>
+      <div class="multi-filter-options">
+        <label><input type="checkbox" data-filter-all checked> 전체</label>
+        <label><input type="checkbox" name="education" value="none" data-label="학력무관"> 학력무관</label>
+        <label><input type="checkbox" name="education" value="college" data-label="전문대졸"> 전문대졸</label>
+        <label><input type="checkbox" name="education" value="university" data-label="대졸"> 대졸</label>
+        <label><input type="checkbox" name="education" value="master" data-label="석사 이상"> 석사 이상</label>
+      </div>
+      <button class="multi-filter-apply" type="button">선택 완료</button>
+    </div>
+  </div>
+  <div class="multi-filter" data-filter-group data-filter-label="기술스택">
+    <button class="multi-filter-toggle" type="button" aria-expanded="false">기술스택 전체 <span>⌄</span></button>
+    <div class="multi-filter-panel" hidden>
+      <strong>기술스택</strong>
+      <div class="multi-filter-options">
+        <label><input type="checkbox" data-filter-all checked> 전체</label>
+        <label><input type="checkbox" name="stack" value="java" data-label="Java"> Java</label>
+        <label><input type="checkbox" name="stack" value="spring" data-label="Spring"> Spring</label>
+        <label><input type="checkbox" name="stack" value="kotlin" data-label="Kotlin"> Kotlin</label>
+        <label><input type="checkbox" name="stack" value="aws" data-label="AWS"> AWS</label>
+      </div>
+      <button class="multi-filter-apply" type="button">선택 완료</button>
+    </div>
+  </div>
+  <div class="job-sort">
+    <button class="active" type="button">최신순</button>
+    <button type="button">마감순</button>
+    <button type="button">조회순</button>
+  </div>
+</div>
+
+<div class="job-container job-active-filters active-filters"
+     data-active-filters hidden th:fragment="activeFilters">
+  <strong>적용된 필터</strong>
+  <div class="active-filter-chips" data-filter-chips></div>
+  <button class="filter-reset" type="button" data-filter-reset>전체 초기화</button>
+</div>
+</body>
+</html>
