@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java/Spring 백엔드 개발자 | 첫출근</title><link rel="stylesheet" th:href="@{/css/common.css}" href="/css/common.css"><link rel="stylesheet" th:href="@{/css/job/common.css}" href="/css/job/common.css"><link rel="stylesheet" th:href="@{/css/modal/job/resume-select-modal.css}" href="/css/modal/job/resume-select-modal.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java/Spring 백엔드 개발자 | 첫출근</title><link rel="stylesheet" th:href="@{/css/common.css}" href="/css/common.css"><link rel="stylesheet" th:href="@{/css/job/common.css}" href="/css/job/common.css"><link rel="stylesheet" th:href="@{/css/job/detail.css}" href="/css/job/detail.css"><link rel="stylesheet" th:href="@{/css/modal/job/resume-select-modal.css}" href="/css/modal/job/resume-select-modal.css"></head>
 <body class="job-header-active">
 <header th:replace="~{common/header :: header}"></header>
 <main class="job-page">
@@ -43,6 +43,7 @@
 </main>
 <footer th:replace="~{common/footer :: footer}"></footer>
 <div th:replace="~{modal/job/resume-select-modal :: resumeSelectModal}"></div>
-<script th:src="@{/js/job.js}" src="/js/job.js"></script>
+<script th:src="@{/js/job/common.js}" src="/js/job/common.js"></script>
+<script th:src="@{/js/job/detail.js}" src="/js/job/detail.js"></script>
 <script th:src="@{/js/modal/job/resume-select-modal.js}" src="/js/modal/job/resume-select-modal.js"></script>
 </body></html>
