@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>지원 상세 | 첫출근</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}" href="/css/common.css">
+    <link rel="stylesheet" th:href="@{/css/my/common.css}" href="/css/my/common.css">
+    <link rel="stylesheet" th:href="@{/css/my/application/common.css}" href="/css/my/application/common.css">
+    <link rel="stylesheet" th:href="@{/css/my/application/detail.css}" href="/css/my/application/detail.css">
+</head>
+<body th:with="
+    status=${applicationStatus ?: 'APPLIED'},
+    statusLabel=${status == 'APPLIED' ? '지원 완료' :
+                 status == 'REVIEWING' ? '서류 검토 중' :
+                 status == 'INTERVIEW_SCHEDULED' ? '면접 예정' :
+                 status == 'INTERVIEWED' ? '면접 완료' :
+                 status == 'PASSED' ? '최종 합격' :
+                 (status == 'DOCUMENT_REJECTED' or status == 'INTERVIEW_REJECTED') ? '불합격' :
+                 status == 'JOINED' ? '입사 완료' : '지원 취소'},
+    statusClass=${status == 'APPLIED' ? 'applied' :
+                 status == 'REVIEWING' ? 'reviewing' :
+                 status == 'INTERVIEW_SCHEDULED' ? 'interview' :
+                 status == 'INTERVIEWED' ? 'interviewed' :
+                 status == 'PASSED' ? 'passed' :
+                 (status == 'DOCUMENT_REJECTED' or status == 'INTERVIEW_REJECTED') ? 'rejected' :
+                 status == 'JOINED' ? 'joined' : 'canceled'},
+    currentStep=${status == 'APPLIED' ? 1 :
+                 (status == 'REVIEWING' or status == 'DOCUMENT_REJECTED') ? 2 :
+                 (status == 'INTERVIEW_SCHEDULED' or status == 'INTERVIEWED' or status == 'INTERVIEW_REJECTED') ? 3 :
+                 status == 'PASSED' ? 4 :
+                 status == 'JOINED' ? 5 : 1},
+    terminated=${status == 'DOCUMENT_REJECTED' or status == 'INTERVIEW_REJECTED' or status == 'CANCELED'}">
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="mypage">
+    <div class="wrap mypage-layout">
+        <aside th:replace="~{common/my-aside :: myAside}"></aside>
+
+        <section class="mypage-content application-content">
+            <header class="application-page-header">
+                <h1>지원 상세</h1>
+                <p>지원한 공고와 제출 문서, 전형 상태를 확인할 수 있습니다.</p>
+            </header>
+
+            <article class="application-summary-card">
+                <div class="application-company-mark" aria-hidden="true">N</div>
+                <div class="application-summary-copy">
+                    <span>네이버클라우드</span>
+                    <h2>백엔드 개발자</h2>
+                    <p>지원일 2026.07.18 · 지원번호 A-20260718-0042</p>
+                </div>
+                <div class="application-summary-actions">
+                    <span class="application-status"
+                          th:classappend="' application-status--' + ${statusClass}"
+                          th:text="${statusLabel}">지원 완료</span>
+                    <a th:href="@{/job/detail}">공고 보기</a>
+                </div>
+            </article>
+
+            <section class="application-progress-card">
+                <h2>전형 진행 상태</h2>
+                <ol class="application-progress"
+                    th:classappend="${terminated} ? ' is-terminated' : ''">
+                    <li th:classappend="${currentStep >= 1} ? ' is-complete' : ''">
+                        <span>1</span><strong>지원 완료</strong><small>2026.07.18</small>
+                    </li>
+                    <li th:classappend="${(currentStep >= 2 ? ' is-complete' : '') + (status == 'DOCUMENT_REJECTED' ? ' is-rejected' : '')}">
+                        <span>2</span>
+                        <strong>서류 전형</strong>
+                        <small th:text="${currentStep >= 2} ? '2026.07.20' : (${terminated} ? '진행 없음' : '예정')">예정</small>
+                    </li>
+                    <li th:classappend="${(currentStep >= 3 ? ' is-complete' : '') + (status == 'INTERVIEW_REJECTED' ? ' is-rejected' : '')}">
+                        <span>3</span>
+                        <strong>면접 전형</strong>
+                        <small th:text="${currentStep >= 3} ? '2026.07.25' : (${terminated} ? '진행 없음' : '예정')">예정</small>
+                    </li>
+                    <li th:classappend="${currentStep >= 4} ? ' is-complete' : ''">
+                        <span>4</span>
+                        <strong>최종 결과</strong>
+                        <small th:text="${currentStep >= 4} ? '2026.07.28' : (${terminated} ? '진행 없음' : '예정')">예정</small>
+                    </li>
+                    <li th:classappend="${currentStep >= 5} ? ' is-complete' : ''">
+                        <span>5</span>
+                        <strong>입사 완료</strong>
+                        <small th:text="${currentStep >= 5} ? '2026.08.03' : (${terminated} ? '진행 없음' : '예정')">예정</small>
+                    </li>
+                </ol>
+            </section>
+
+            <div class="application-detail-grid">
+                <section class="application-documents-card">
+                    <h2>제출 문서</h2>
+                    <div class="application-document">
+                        <span class="application-document__icon" aria-hidden="true"></span>
+                        <div><strong>백엔드 개발 이력서</strong><small>2026.07.18 제출</small></div>
+                        <a th:href="@{/my/resume/detail(id=1)}">이력서 제출본 보기 →</a>
+                    </div>
+                    <div class="application-document">
+                        <span class="application-document__icon" aria-hidden="true"></span>
+                        <div><strong>백엔드 지원 자기소개서</strong><small>2026.07.18 제출</small></div>
+                        <a th:href="@{/my/cover-letter/detail(id=1)}">자기소개서 제출본 보기 →</a>
+                    </div>
+
+                    <button class="application-cancel-button"
+                            type="button"
+                            data-application-cancel
+                            th:disabled="${status != 'APPLIED'}"
+                            th:text="${status == 'APPLIED' ? '지원 취소' :
+                                     status == 'DOCUMENT_REJECTED' or status == 'INTERVIEW_REJECTED' or status == 'CANCELED' ? '종료된 지원' : '지원 취소 불가'}">
+                        지원 취소
+                    </button>
+                </section>
+
+                <aside class="application-guide-card">
+                    <h2>지원 안내</h2>
+                    <div class="application-guide-copy">
+                        <th:block th:switch="${status}">
+                            <p th:case="'APPLIED'">지원이 정상적으로 접수되었습니다.<br>기업이 검토를 시작하기 전까지 지원을 취소할 수 있습니다.</p>
+                            <p th:case="'REVIEWING'">서류 검토가 시작되었습니다.<br>기업의 다음 전형 결과를 기다려주세요.</p>
+                            <p th:case="'INTERVIEW_SCHEDULED'">면접 일정이 예정되어 있습니다.<br>안내받은 일정과 장소를 확인해주세요.</p>
+                            <p th:case="'INTERVIEWED'">면접 전형이 완료되었습니다.<br>기업의 최종 결과 등록을 기다립니다.</p>
+                            <p th:case="'PASSED'">최종 합격을 축하드립니다.<br>기업의 입사 안내를 확인해주세요.</p>
+                            <p th:case="'DOCUMENT_REJECTED'">서류 전형에서 불합격 처리되었습니다.<br>종료된 지원은 다른 단계로 진행되지 않습니다.</p>
+                            <p th:case="'INTERVIEW_REJECTED'">면접 전형에서 불합격 처리되었습니다.<br>종료된 지원은 다른 단계로 진행되지 않습니다.</p>
+                            <p th:case="'JOINED'">입사 처리가 완료되었습니다.<br>새로운 시작을 첫출근이 응원합니다.</p>
+                            <p th:case="*">사용자가 취소한 지원입니다.<br>제출 문서와 지원 기록은 계속 확인할 수 있습니다.</p>
+                        </th:block>
+                    </div>
+                    <a th:href="@{/cs/qna}">문의하기</a>
+                </aside>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{common/footer :: footer}"></footer>
+<script th:src="@{/js/common.js}" src="/js/common.js"></script>
+<script th:src="@{/js/my/application/detail.js}" src="/js/my/application/detail.js"></script>
+</body>
+</html>

@@ -1,8 +1,11 @@
 package kr.co.firstdayproject.controller.my;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/my")
@@ -15,19 +18,22 @@ public class MyPageController {
     public String profileEdit() { return "my/profile-edit"; }
 
     @GetMapping("/applications")
-    public String applications() { return "my/applications"; }
+    public String applications(Model model) {
+        model.addAttribute("activeMenu", "applications");
+        return "my/applications";
+    }
 
-    @GetMapping("/application/applied")
-    public String applicationApplied() { return "my/application-detail-applied"; }
-
-    @GetMapping("/application/reviewing")
-    public String applicationReviewing() { return "my/application-detail-reviewing"; }
-
-    @GetMapping("/application/interviewed")
-    public String applicationInterviewed() { return "my/application-detail-interviewed"; }
-
-    @GetMapping("/application/rejected")
-    public String applicationRejected() { return "my/application-detail-rejected"; }
+    @GetMapping("/applications/{applicationNo}")
+    public String applicationDetail(
+            @PathVariable Long applicationNo,
+            @RequestParam(defaultValue = "APPLIED") String status,
+            Model model
+    ) {
+        model.addAttribute("applicationNo", applicationNo);
+        model.addAttribute("applicationStatus", status.toUpperCase());
+        model.addAttribute("activeMenu", "applications");
+        return "my/application-detail";
+    }
 
     @GetMapping("/saved-jobs")
     public String savedJobs() { return "my/saved-jobs"; }
