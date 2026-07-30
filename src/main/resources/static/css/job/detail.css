@@ -20,6 +20,9 @@
 .detail-copy { padding: 26px 28px 96px; line-height: 1.65; color: #52627c; }
 .detail-copy h3 { color: var(--job-ink); margin: 0 0 8px; }
 .detail-copy section + section { margin-top: 25px; }
+.detail-skill-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.detail-skill-list span { min-width: 72px; padding: 8px 16px; border: 1px solid var(--job-line); border-radius: 999px; background: #fff; color: var(--job-muted); font-size: 12px; line-height: 1; text-align: center; }
+.detail-skill-list span:nth-child(n + 6) { display: none; }
 .detail-actions { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 220px 1fr; gap: 14px; padding: 14px 28px; background: #fff; border-top: 1px solid var(--job-line); }
 @media (max-width: 900px) {
   .job-split { grid-template-columns: 1fr; }

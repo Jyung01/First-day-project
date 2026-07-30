@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>채용공고 등록 | 첫출근</title>
+    <link rel="stylesheet" th:href="@{/css/corp/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/corp/management.css}" />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/modal/common/skill-select-modal.css}"
+    />
+  </head>
+  <body class="corp-page">
+    <header th:replace="~{common/corp-header :: corpHeader}"></header>
+    <main class="corp-main">
+      <div class="corp-layout">
+        <aside th:replace="~{common/corp-aside :: corpAside}"></aside>
+        <section class="corp-content">
+          <div class="corp-page-heading">
+            <div>
+              <h1>채용공고 등록</h1>
+              <p>필수 정보를 입력하고 공고를 등록합니다.</p>
+            </div>
+            <div class="corp-actions">
+              <a class="corp-button" th:href="@{/corp/job}">목록</a
+              ><button form="jobForm" class="corp-button" type="button">
+                임시저장</button
+              ><button form="jobForm" class="corp-button corp-button--primary">
+                공고 등록
+              </button>
+            </div>
+          </div>
+          <form id="jobForm" class="corp-card job-form-card">
+            <h2>공고 기본정보</h2>
+            <div class="job-form-grid">
+              <div class="form-field form-field--wide">
+                <label for="jobTitle">공고 제목</label
+                ><input
+                  id="jobTitle"
+                  required
+                  placeholder="공고 제목을 입력하세요"
+                />
+              </div>
+              <div class="form-field">
+                <label for="category">직무 카테고리</label
+                ><select id="category">
+                  <option value="">직무를 선택하세요</option>
+                  <option>개발 · 백엔드 개발</option>
+                  <option>개발 · 프론트엔드 개발</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="employment">고용 형태</label
+                ><select id="employment">
+                  <option value="">고용 형태 선택</option>
+                  <option>정규직</option>
+                  <option>계약직</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="career">경력</label
+                ><select id="career">
+                  <option>경력 조건 선택</option>
+                  <option>신입 · 경력 3년 이하</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="education">학력</label
+                ><select id="education">
+                  <option>학력 조건 선택</option>
+                  <option>학력무관</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="location">근무 지역</label
+                ><select id="location">
+                  <option>근무 지역 선택</option>
+                  <option>서울 강남구</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="salary">급여</label
+                ><input id="salary" placeholder="급여 조건 입력" />
+              </div>
+              <div class="form-field">
+                <label for="deadline">접수 마감일</label
+                ><input id="deadline" type="date" />
+              </div>
+              <div class="form-field">
+                <label for="headcount">모집 인원</label
+                ><input
+                  id="headcount"
+                  type="number"
+                  min="1"
+                  placeholder="모집 인원 입력"
+                />
+              </div>
+              <div class="form-field form-field--wide">
+                <label
+                  >기술 스택 <span data-skill-selection-count>0/5</span></label
+                >
+                <div
+                  class="skill-picker"
+                  data-skill-chip-list
+                  data-skill-maximum="5"
+                >
+                  <span class="skill-picker__empty" data-skill-empty
+                    >공통 기술 검색 후 선택 (최대 5개)</span
+                  >
+                </div>
+                <button class="skill-open" type="button" data-skill-modal-open>
+                  + 기술 선택
+                </button>
+                <div data-skill-hidden-inputs></div>
+                <small class="skill-help"
+                  >채용 직무와 직접 관련된 기술을 최대 5개까지 선택할 수
+                  있습니다.</small
+                >
+              </div>
+              <div class="form-field form-field--wide">
+                <label for="intro"
+                  >공고 소개
+                  <button
+                    class="ai-polish-open"
+                    type="button"
+                    data-ai-polish-open="#intro"
+                    data-ai-polish-label="공고 소개"
+                  >
+                    AI 문장 다듬기
+                  </button></label
+                ><textarea
+                  id="intro"
+                  placeholder="회사와 포지션을 소개하는 문구를 입력하세요."
+                ></textarea>
+              </div>
+              <div class="form-field form-field--wide">
+                <label for="tasks"
+                  >주요 업무
+                  <button
+                    class="ai-polish-open"
+                    type="button"
+                    data-ai-polish-open="#tasks"
+                    data-ai-polish-label="주요 업무"
+                  >
+                    AI 문장 다듬기
+                  </button></label
+                ><textarea
+                  id="tasks"
+                  placeholder="담당할 주요 업무를 입력하세요."
+                ></textarea>
+              </div>
+              <div class="form-field form-field--wide">
+                <label for="requirements"
+                  >자격요건
+                  <button
+                    class="ai-polish-open"
+                    type="button"
+                    data-ai-polish-open="#requirements"
+                    data-ai-polish-label="자격요건"
+                  >
+                    AI 문장 다듬기
+                  </button></label
+                ><textarea
+                  id="requirements"
+                  placeholder="필수 자격요건을 입력하세요."
+                ></textarea>
+              </div>
+              <div class="form-field form-field--wide">
+                <label for="preferred"
+                  >우대사항
+                  <button
+                    class="ai-polish-open"
+                    type="button"
+                    data-ai-polish-open="#preferred"
+                    data-ai-polish-label="우대사항"
+                  >
+                    AI 문장 다듬기
+                  </button></label
+                ><textarea
+                  id="preferred"
+                  placeholder="우대하는 경험과 역량을 입력하세요."
+                ></textarea>
+              </div>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+    <footer th:replace="~{common/corp-footer :: corpFooter}"></footer>
+    <div
+      th:replace="~{modal/common/skill-select-modal :: skillSelectModal}"
+    ></div>
+    <div th:replace="~{modal/corp/ai-polish-modal :: aiPolishModal}"></div>
+    <script th:src="@{/js/modal/skill-select-modal.js}"></script>
+    <script th:src="@{/js/corp/job-form.js}"></script>
+  </body>
+</html>

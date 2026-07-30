@@ -4,6 +4,7 @@
 .job-section-head h2 { font-size: 22px; margin: 0; }
 .job-section-head span { color: var(--job-muted); font-size: 13px; }
 .job-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.job-card-grid .job-tag:nth-child(n + 4) { display: none; }
 @media (max-width: 900px) {
   .job-card-grid { grid-template-columns: repeat(2, 1fr); }
 }

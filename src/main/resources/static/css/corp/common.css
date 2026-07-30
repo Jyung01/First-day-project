@@ -86,10 +86,20 @@ textarea {
 
 .corp-brand__logo {
     display: block;
-    width: 160px;
+    width: 40px;
     height: 40px;
+    flex: 0 0 40px;
     object-fit: contain;
-    object-position: left center;
+    object-position: center;
+}
+
+.corp-brand__name {
+    color: var(--corp-ink);
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
 }
 
 .corp-brand__tag {
@@ -320,8 +330,12 @@ textarea {
     }
 
     .corp-brand__logo {
-        width: 132px;
-        height: 34px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .corp-brand__name {
+        font-size: 19px;
     }
 
     .corp-main {

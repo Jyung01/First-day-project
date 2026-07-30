@@ -1,0 +1,55 @@
+<div
+  class="ai-polish-modal"
+  data-ai-polish-modal
+  aria-hidden="true"
+  th:fragment="aiPolishModal"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <div class="ai-polish-modal__backdrop" data-ai-polish-close></div>
+  <section
+    class="ai-polish-modal__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="aiPolishTitle"
+  >
+    <div class="ai-polish-modal__heading">
+      <div>
+        <h2 id="aiPolishTitle">AI 문장 다듬기 결과</h2>
+        <p>
+          원문과 AI 수정안을 비교한 뒤 적용하세요. 적용 전에는 입력 내용이
+          변경되지 않습니다.
+        </p>
+      </div>
+      <button type="button" data-ai-polish-close aria-label="닫기">×</button>
+    </div>
+    <div class="ai-polish-modal__meta">
+      <strong>다듬을 항목</strong><span data-ai-polish-label>주요 업무</span>
+    </div>
+    <div class="ai-polish-modal__compare">
+      <article>
+        <strong>원문</strong
+        ><textarea readonly data-ai-polish-original></textarea>
+      </article>
+      <article class="is-suggestion">
+        <strong>AI 수정안</strong
+        ><textarea data-ai-polish-suggestion></textarea>
+      </article>
+    </div>
+    <p class="ai-polish-modal__notice">
+      수정안 적용 후에도 입력란에서 직접 편집할 수 있습니다.
+    </p>
+    <div class="ai-polish-modal__actions">
+      <button type="button" class="corp-button" data-ai-polish-close>
+        취소</button
+      ><button type="button" class="corp-button" data-ai-polish-regenerate>
+        다시 생성</button
+      ><button
+        type="button"
+        class="corp-button corp-button--primary"
+        data-ai-polish-apply
+      >
+        수정안 적용
+      </button>
+    </div>
+  </section>
+</div>

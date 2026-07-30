@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalCount = modal.querySelector("[data-skill-modal-count]");
     const confirmCount = modal.querySelector("[data-skill-confirm-count]");
     const modalMessage = modal.querySelector("[data-skill-modal-message]");
+    const modalMaximum = modal.querySelector("[data-skill-modal-maximum]");
 
     const pageChipList = document.querySelector("[data-skill-chip-list]");
     const pageEmpty = document.querySelector("[data-skill-empty]");
@@ -30,7 +31,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const pageCount = document.querySelector("[data-skill-selection-count]");
     const summaryCount = document.querySelector("[data-skill-summary-count]");
 
-    const maximumSelection = 10;
+    const maximumSelection = Number(pageChipList?.dataset.skillMaximum || 10);
+    const modalGuide = modal.querySelector(".skill-modal-header p");
+    if (modalGuide && maximumSelection !== 10) {
+        modalGuide.textContent = "공통 기술 DB에서 최대 " + maximumSelection + "개를 선택할 수 있습니다.";
+    }
+    Array.from(modalCount?.parentElement?.childNodes || []).forEach(function (node) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent.includes("10") && maximumSelection !== 10) {
+            node.textContent = node.textContent.replace("10", String(maximumSelection));
+        }
+    });
+    if (modalMaximum) {
+        modalMaximum.textContent = String(maximumSelection);
+    }
 
     let confirmedSkills = readPageSkills();
     let temporarySkills = [];
@@ -147,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (temporarySkills.length >= maximumSelection) {
-            showMessage("보유 기술은 최대 10개까지 선택할 수 있습니다.");
+            showMessage("기술은 최대 " + maximumSelection + "개까지 선택할 수 있습니다.");
 
             synchronizeCheckboxes();
             return;
