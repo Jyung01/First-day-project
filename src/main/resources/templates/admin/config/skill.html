@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/admin/config/common.css}" />
     <link rel="stylesheet" th:href="@{/css/admin/config/skill.css}" />
     <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
   </head>
   <body>
     <div class="wrapper">
@@ -103,7 +104,13 @@
                   >
                     수정
                   </button>
-                  <button class="table-action">삭제</button>
+                  <button
+                    class="table-action"
+                    data-modal-open="skill-delete"
+                    th:attr="data-modal-value=${skill}"
+                  >
+                    삭제
+                  </button>
                 </div>
               </div>
             </section>
@@ -116,8 +123,9 @@
       </div>
       <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
     </div>
+    <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
     <div th:replace="~{modal/common/form-modal :: formModal}"></div>
     <script th:src="@{/js/modal.js}"></script>
-    <script th:src="@{/js/admin/operations.js}"></script>
+    <script th:src="@{/js/modal/admin/operations.js}"></script>
   </body>
 </html>

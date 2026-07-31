@@ -1,4 +1,15 @@
+// 관리자 채용공고·직무·기술 공통 모달
 document.addEventListener("DOMContentLoaded", () => {
+  const applyAdminModal = (modalId, danger = false) => {
+    const modal = document.getElementById(modalId);
+    const rightButton = modal?.querySelector(".modal-footer .btn:last-child");
+
+    modal?.classList.add("admin-common-modal");
+    if (danger && rightButton) {
+      rightButton.className = "btn btn-danger";
+    }
+  };
+
   const categoryBody = () => `
     <div class="modal-form-body">
       <div class="modal-form-grid">
@@ -82,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
           bodyHtml: categoryBody(),
           onRight: () => closeModal("formModal"),
         });
+        applyAdminModal("formModal");
         document.querySelector("#categoryName").value = value;
       }
 
@@ -91,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
           bodyHtml: skillBody(),
           onRight: () => closeModal("formModal"),
         });
+        applyAdminModal("formModal");
         document.querySelector("#skillName").value = value;
       }
 
@@ -99,9 +112,43 @@ document.addEventListener("DOMContentLoaded", () => {
           title: "채용공고 숨김 처리",
           bodyHtml: hideJobBody(),
           rightText: "숨김 처리",
-          rightClass: "btn-danger",
           onRight: () => closeModal("formModal"),
         });
+        applyAdminModal("formModal", true);
+      }
+
+      if (modalType === "category-delete") {
+        showConfirmModal({
+          iconClass: "danger",
+          iconHtml: "!",
+          title: "카테고리 삭제",
+          message: `'${value}' 카테고리를 삭제할까요?`,
+          extraHtml: `
+            <p class="modal-notice modal-notice--danger">
+              회원 희망 직무·채용공고에서 사용 중인 직무는 삭제할 수 없습니다.
+            </p>
+          `,
+          rightText: "삭제",
+          rightClass: "btn-danger",
+        });
+        applyAdminModal("confirmModal");
+      }
+
+      if (modalType === "skill-delete") {
+        showConfirmModal({
+          iconClass: "danger",
+          iconHtml: "!",
+          title: "기술 스택 삭제",
+          message: `'${value}' 기술 스택을 삭제할까요?`,
+          extraHtml: `
+            <p class="modal-notice modal-notice--danger">
+              이력서·채용공고에서 사용 중인 기술은 삭제할 수 없습니다.
+            </p>
+          `,
+          rightText: "삭제",
+          rightClass: "btn-danger",
+        });
+        applyAdminModal("confirmModal");
       }
     });
   });

@@ -135,8 +135,6 @@ function showFormModal({
 
   leftText = "취소",
   rightText = "저장",
-  leftClass = "btn-outline",
-  rightClass = "btn-primary",
 
   onLeft = null,
   onRight = null,
@@ -151,8 +149,6 @@ function showFormModal({
 
   leftBtn.textContent = leftText;
   rightBtn.textContent = rightText;
-  leftBtn.className = `btn ${leftClass}`;
-  rightBtn.className = `btn ${rightClass}`;
 
   leftBtn.onclick = () => {
     closeModal("formModal");
