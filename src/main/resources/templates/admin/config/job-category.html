@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>직무 카테고리 | 첫출근 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin/config/common.css}" />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/admin/config/job-category.css}"
+    />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header th:replace="~{common/admin-header :: adminHeader}"></header>
+      <div class="container">
+        <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+        <main class="admin-operation">
+          <div class="operation-heading">
+            <div>
+              <h1>직무·기술 관리</h1>
+              <p>
+                회원 프로필·채용공고·검색에서 공통으로 사용하는 직무 분류를
+                관리합니다.
+              </p>
+            </div>
+            <button
+              class="operation-primary"
+              data-modal-open="category"
+              data-modal-title="카테고리 등록"
+            >
+              + 카테고리 등록
+            </button>
+          </div>
+          <nav class="config-tabs">
+            <a
+              class="config-tab is-active"
+              th:href="@{/admin/config/job-category}"
+            >
+              직무 카테고리
+            </a>
+            <a class="config-tab" th:href="@{/admin/config/skill}">
+              기술 스택
+            </a>
+          </nav>
+          <section class="operation-stats">
+            <article class="operation-stat">
+              <span>1차 카테고리</span>
+              <strong>9개</strong>
+            </article>
+            <article class="operation-stat">
+              <span>2차 카테고리</span>
+              <strong>48개</strong>
+            </article>
+            <article class="operation-stat">
+              <span>사용 건수</span>
+              <strong>1,284건</strong>
+            </article>
+          </section>
+          <div class="config-grid">
+            <section class="config-box">
+              <h2>1차 카테고리</h2>
+              <div class="config-list">
+                <button class="is-active">
+                  <strong>개발·데이터</strong>
+                  <small>12개</small>
+                </button>
+                <button>
+                  <strong>기획·PM</strong>
+                  <small>7개</small>
+                </button>
+                <button>
+                  <strong>디자인</strong>
+                  <small>6개</small>
+                </button>
+                <button>
+                  <strong>마케팅·광고</strong>
+                  <small>5개</small>
+                </button>
+                <button>
+                  <strong>영업</strong>
+                  <small>5개</small>
+                </button>
+                <button>
+                  <strong>경영·지원</strong>
+                  <small>6개</small>
+                </button>
+                <button>
+                  <strong>금융</strong>
+                  <small>3개</small>
+                </button>
+              </div>
+            </section>
+            <section class="config-box">
+              <h2>개발·데이터 하위 직무</h2>
+              <div class="config-row config-row--head">
+                <span>직무명</span>
+                <span>사용 건수</span>
+                <span>관리</span>
+              </div>
+              <div
+                th:each="job : ${ {
+                  '백엔드 개발',
+                  '프론트엔드 개발',
+                  '데이터 엔지니어',
+                  'AI·머신러닝',
+                  'DevOps·인프라',
+                  '모바일 앱 개발',
+                  'QA·테스트',
+                  '보안'
+                } }"
+                class="config-row"
+              >
+                <strong th:text="${job}">백엔드 개발</strong>
+                <span>224건</span>
+                <div class="config-actions">
+                  <button
+                    class="table-action"
+                    data-modal-open="category"
+                    data-modal-title="카테고리 수정"
+                    th:attr="data-modal-value=${job}"
+                  >
+                    수정
+                  </button>
+                  <button class="table-action">삭제</button>
+                </div>
+              </div>
+            </section>
+          </div>
+          <p class="operation-note">
+            회원 희망 직무·채용공고에서 사용 중인 직무는 삭제할 수 없습니다.
+          </p>
+        </main>
+      </div>
+      <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+    </div>
+    <div th:replace="~{modal/common/form-modal :: formModal}"></div>
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/admin/operations.js}"></script>
+  </body>
+</html>

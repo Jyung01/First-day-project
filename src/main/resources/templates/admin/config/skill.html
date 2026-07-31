@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>기술 스택 | 첫출근 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin/config/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin/config/skill.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header th:replace="~{common/admin-header :: adminHeader}"></header>
+      <div class="container">
+        <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+        <main class="admin-operation">
+          <div class="operation-heading">
+            <div>
+              <h1>직무·기술 관리</h1>
+              <p>
+                이력서와 채용공고에서 공통으로 사용하는 기술 스택을 관리합니다.
+              </p>
+            </div>
+            <button
+              class="operation-primary"
+              data-modal-open="skill"
+              data-modal-title="기술 스택 등록"
+            >
+              + 기술 등록
+            </button>
+          </div>
+          <nav class="config-tabs">
+            <a class="config-tab" th:href="@{/admin/config/job-category}">
+              직무 카테고리
+            </a>
+            <a
+              class="config-tab is-active"
+              th:href="@{/admin/config/skill}"
+            >
+              기술 스택
+            </a>
+          </nav>
+          <section class="operation-stats">
+            <article class="operation-stat">
+              <span>등록 기술</span>
+              <strong>64개</strong>
+            </article>
+            <article class="operation-stat">
+              <span>기술 분류</span>
+              <strong>5개</strong>
+            </article>
+            <article class="operation-stat">
+              <span>사용 건수</span>
+              <strong>1,284건</strong>
+            </article>
+          </section>
+          <div class="config-grid">
+            <section class="config-box">
+              <h2>기술 분류</h2>
+              <div class="config-list">
+                <button class="is-active">
+                  <strong>언어</strong>
+                  <small>18개</small>
+                </button>
+                <button>
+                  <strong>프레임워크</strong>
+                  <small>16개</small>
+                </button>
+                <button>
+                  <strong>데이터베이스</strong>
+                  <small>10개</small>
+                </button>
+                <button>
+                  <strong>클라우드·DevOps</strong>
+                  <small>12개</small>
+                </button>
+                <button>
+                  <strong>기타</strong>
+                  <small>8개</small>
+                </button>
+              </div>
+            </section>
+            <section class="config-box">
+              <h2>언어 기술 스택</h2>
+              <div class="config-row config-row--head">
+                <span>기술명</span>
+                <span>사용 건수</span>
+                <span>관리</span>
+              </div>
+              <div
+                th:each="skill : ${ {'Java','Python','JavaScript','TypeScript','Kotlin','Go'} }"
+                class="config-row"
+              >
+                <strong th:text="${skill}">Java</strong>
+                <span>328건</span>
+                <div class="config-actions">
+                  <button
+                    class="table-action"
+                    data-modal-open="skill"
+                    data-modal-title="기술 스택 수정"
+                    th:attr="data-modal-value=${skill}"
+                  >
+                    수정
+                  </button>
+                  <button class="table-action">삭제</button>
+                </div>
+              </div>
+            </section>
+          </div>
+          <p class="operation-note">
+            기술 스택 사용 건수는 이력서 보유 기술과 채용공고 요구 기술에서
+            참조한 합계이며, 사용 중인 기술은 삭제할 수 없습니다.
+          </p>
+        </main>
+      </div>
+      <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+    </div>
+    <div th:replace="~{modal/common/form-modal :: formModal}"></div>
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/admin/operations.js}"></script>
+  </body>
+</html>
