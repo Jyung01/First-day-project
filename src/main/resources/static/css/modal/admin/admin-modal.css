@@ -415,6 +415,82 @@
 }
 
 /* =========================================================
+   공통 폼·확인 모달 관리자 테마
+========================================================= */
+
+.modal-overlay.admin-common-modal {
+    background-color: rgba(2, 6, 23, 0.78);
+}
+
+.admin-common-modal .modal {
+    max-width: 570px;
+    border-color: #26344c;
+    background-color: #111827;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+    text-align: left;
+}
+
+.admin-common-modal .modal h2 {
+    color: #f8fafc;
+}
+
+.admin-common-modal .modal-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.admin-common-modal .modal-form-grid .form-group {
+    margin-bottom: 0;
+}
+
+.admin-common-modal .modal-form-grid .form-group--wide {
+    grid-column: 1 / -1;
+}
+
+.admin-common-modal .modal-form-body label {
+    color: #94a3b8;
+}
+
+.admin-common-modal .modal-form-body input,
+.admin-common-modal .modal-form-body select,
+.admin-common-modal .modal-form-body textarea {
+    border-color: #334155;
+    background-color: #1e293b;
+    color: #e2e8f0;
+}
+
+.admin-common-modal .modal-form-body input::placeholder,
+.admin-common-modal .modal-form-body textarea::placeholder {
+    color: #64748b;
+}
+
+.admin-common-modal .modal-notice {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background-color: #294a78;
+    color: #60a5fa;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.admin-common-modal .modal-notice--danger {
+    background-color: #1e293b;
+}
+
+.admin-common-modal .modal-footer .btn-outline {
+    border-color: #334155;
+    background-color: transparent;
+    color: #cbd5e1;
+}
+
+.admin-common-modal .modal-footer .btn-outline:hover {
+    border-color: #475569;
+    background-color: #1e293b;
+}
+
+/* =========================================================
    반응형
 ========================================================= */
 
@@ -449,6 +525,10 @@
 
     .admin-modal-button {
         width: 100%;
+    }
+
+    .admin-common-modal .modal-form-grid {
+        grid-template-columns: 1fr;
     }
 }
 

@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modal = document.querySelector("[data-resume-modal]");
   const openButton = document.querySelector("[data-resume-modal-open]");
   const closeButtons = modal?.querySelectorAll("[data-resume-modal-close]");
+  const cancelButton = modal?.querySelector("[data-resume-modal-cancel]");
 
   const openModal = () => {
     if (!modal) return;
@@ -26,6 +27,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   openButton?.addEventListener("click", openModal);
   closeButtons?.forEach((button) => button.addEventListener("click", closeModal));
+  cancelButton?.addEventListener("click", () => {
+    showConfirmModal({
+      iconClass: "danger",
+      iconHtml: "!",
+      title: "지원을 취소할까요?",
+      message:
+        "선택한 이력서와 자기소개서 정보가 초기화됩니다.\n채용공고 상세로 돌아갈까요?",
+      leftText: "계속 작성",
+      rightText: "지원 취소",
+      rightClass: "btn-danger",
+      onRight: closeModal,
+    });
+  });
 
   modal?.addEventListener("click", (event) => {
     if (event.target === modal) closeModal();

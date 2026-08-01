@@ -6,6 +6,7 @@
     <title>지원자 상세 | 첫출근</title>
     <link rel="stylesheet" th:href="@{/css/corp/common.css}" />
     <link rel="stylesheet" th:href="@{/css/corp/management.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
   </head>
   <body class="corp-page">
     <header th:replace="~{common/corp-header :: corpHeader}"></header>
@@ -20,7 +21,11 @@
             </div>
             <div class="corp-actions">
               <a class="corp-button" th:href="@{/corp/applicant}">목록</a
-              ><button class="corp-button corp-button--primary" type="button">
+              ><button
+                class="corp-button corp-button--primary"
+                type="button"
+                data-applicant-status-open
+              >
                 상태 변경
               </button>
             </div>
@@ -93,5 +98,8 @@ Spring 프로젝트 경험 확인 필요
       </div>
     </main>
     <footer th:replace="~{common/corp-footer :: corpFooter}"></footer>
+    <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/corp/applicant-detail.js}"></script>
   </body>
 </html>

@@ -1,1 +1,90 @@
-/* 공통 스타일 파일 */
+/* 관리자 설정 화면 공통 */
+.admin-operation {
+  flex: 1;
+  min-width: 0;
+  padding: 38px 40px 80px;
+}
+
+.operation-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.operation-heading h1 {
+  font-size: 29px;
+}
+
+.operation-heading p {
+  margin-top: 9px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.operation-primary {
+  height: 44px;
+  padding: 0 25px;
+  border-radius: 9px;
+  background: #2955df;
+  color: #fff;
+  font-weight: 700;
+}
+
+.operation-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-bottom: 28px;
+}
+
+.operation-stat {
+  padding: 20px;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  background: #111827;
+}
+
+.operation-stat span,
+.operation-stat small {
+  display: block;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.operation-stat strong {
+  display: block;
+  margin: 10px 0 6px;
+  font-size: 27px;
+}
+
+.operation-stat small {
+  color: #60a5fa;
+}
+
+.table-action {
+  color: #60a5fa;
+  font-weight: 700;
+}
+
+.config-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.config-actions .table-action + .table-action {
+  margin-left: 2px;
+  padding-left: 10px;
+  border-left: 1px solid #475569;
+}
+
+@media (max-width: 900px) {
+  .admin-operation {
+    padding: 28px 20px;
+  }
+
+  .operation-stats {
+    grid-template-columns: 1fr;
+  }
+}

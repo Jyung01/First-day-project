@@ -1,0 +1,101 @@
+/* 직무 카테고리 관리 */
+.config-tabs {
+  display: grid;
+  grid-template-columns: 175px 175px;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.config-tab {
+  display: grid;
+  height: 42px;
+  place-items: center;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+.config-tab.is-active {
+  border-color: #244a7a;
+  background: #244a7a;
+  color: #fff;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+}
+
+.config-box {
+  height: 520px;
+  padding: 18px;
+  overflow: auto;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  background: #111827;
+}
+
+.config-box h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.config-list {
+  display: grid;
+  gap: 8px;
+}
+
+.config-list button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: 13px;
+  border-radius: 8px;
+  color: #e2e8f0;
+  text-align: left;
+}
+
+.config-list button.is-active {
+  background: #244a7a;
+  color: #60a5fa;
+}
+
+.config-list small {
+  color: #94a3b8;
+}
+
+.config-row {
+  display: grid;
+  grid-template-columns: 1fr 110px 150px;
+  align-items: center;
+  min-height: 64px;
+  border-bottom: 1px solid #334155;
+  font-size: 13px;
+}
+
+.config-row--head {
+  min-height: 44px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.operation-note {
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 9px;
+  background: #244a7a;
+  color: #60a5fa;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .config-box {
+    height: auto;
+  }
+}

@@ -440,6 +440,36 @@
   gap: 20px;
   margin-top: 20px;
 }
+
+.modal-status-summary {
+  padding: 16px;
+  border: 1px solid #d8e3f2;
+  border-radius: 8px;
+  background-color: #eef5ff;
+  color: #62738d;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.modal-status-summary strong {
+  display: block;
+  margin-bottom: 12px;
+  color: #172033;
+}
+
+.modal-status-select {
+  width: 100%;
+  height: 46px;
+  margin-top: 16px;
+  padding: 0 14px;
+  border: 1px solid #d7deea;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #172033;
+  font: inherit;
+  font-size: 13px;
+}
 .document-panel,
 .process-panel {
   padding: 22px;

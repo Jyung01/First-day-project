@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>채용공고 관리 | 첫출근 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin/job/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header th:replace="~{common/admin-header :: adminHeader}"></header>
+      <div class="container">
+        <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+        <main class="admin-operation">
+          <div class="operation-heading">
+            <div>
+              <h1>채용공고 관리</h1>
+              <p>등록된 채용공고의 게시·마감·숨김 상태를 관리합니다.</p>
+            </div>
+          </div>
+          <section class="operation-stats">
+            <article class="operation-stat">
+              <span>오늘 등록</span>
+              <strong>21건</strong>
+              <small>신규 게시 5건</small>
+            </article>
+            <article class="operation-stat">
+              <span>게시 중</span>
+              <strong>82건</strong>
+              <small>마감 임박 11건</small>
+            </article>
+            <article class="operation-stat">
+              <span>숨김 처리</span>
+              <strong>3건</strong>
+              <small>재검토 요청 1건 포함</small>
+            </article>
+          </section>
+          <section class="operation-panel">
+            <nav class="operation-tabs">
+              <button class="operation-tab is-active">전체</button>
+              <button class="operation-tab">게시 중</button>
+              <button class="operation-tab">마감</button>
+              <button class="operation-tab">숨김</button>
+            </nav>
+            <form class="operation-search">
+              <select class="operation-control">
+                <option>직무 전체</option>
+              </select>
+              <input
+                class="operation-control"
+                placeholder="공고명·기업명 검색"
+              />
+              <button>검색</button>
+            </form>
+            <table class="operation-table">
+              <thead>
+                <tr>
+                  <th>번호</th>
+                  <th>기업명</th>
+                  <th>공고 제목</th>
+                  <th>직무</th>
+                  <th>등록일</th>
+                  <th>마감일</th>
+                  <th>상태</th>
+                  <th>관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>J-2081</td>
+                  <td>코드웨이브</td>
+                  <td>백엔드 개발자 채용</td>
+                  <td>개발</td>
+                  <td>07.22</td>
+                  <td>08.15</td>
+                  <td class="status">게시 중</td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="table-action">보기</button>
+                      <button
+                        class="table-action"
+                        data-modal-open="job-hide"
+                      >
+                        숨김
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>J-2080</td>
+                  <td>넥스트랩</td>
+                  <td>데이터 엔지니어</td>
+                  <td>데이터</td>
+                  <td>07.22</td>
+                  <td>08.20</td>
+                  <td class="status">게시 중</td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="table-action">보기</button>
+                      <button
+                        class="table-action"
+                        data-modal-open="job-hide"
+                      >
+                        숨김
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>J-2079</td>
+                  <td>브릿지웍스</td>
+                  <td>서비스 기획자</td>
+                  <td>기획</td>
+                  <td>07.21</td>
+                  <td>08.12</td>
+                  <td class="status">게시 중</td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="table-action">보기</button>
+                      <button
+                        class="table-action"
+                        data-modal-open="job-hide"
+                      >
+                        숨김
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>J-2078</td>
+                  <td>하이퍼랩</td>
+                  <td>프론트엔드 개발자</td>
+                  <td>개발</td>
+                  <td>07.21</td>
+                  <td>08.18</td>
+                  <td class="status">마감</td>
+                  <td><button class="table-action">보기</button></td>
+                </tr>
+                <tr>
+                  <td>J-2077</td>
+                  <td>데이터포지</td>
+                  <td>AI 엔지니어</td>
+                  <td>AI</td>
+                  <td>07.20</td>
+                  <td>08.30</td>
+                  <td class="status">재검토 요청</td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="table-action">보기</button>
+                      <button class="table-action">해제</button>
+                      <button class="table-action">유지</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <nav class="operation-pagination">
+              <a href="#">‹</a>
+              <a href="#">1</a>
+              <a href="#">2</a>
+              <a href="#">3</a>
+              <a href="#">4</a>
+              <a href="#">5</a>
+              <a href="#">›</a>
+            </nav>
+          </section>
+        </main>
+      </div>
+      <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+    </div>
+    <div th:replace="~{modal/common/form-modal :: formModal}"></div>
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/modal/admin/operations.js}"></script>
+  </body>
+</html>
