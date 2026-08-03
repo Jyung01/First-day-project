@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사이트 설정 | 첫출근 관리자</title>
+    <link rel="stylesheet" href="../../css/admin/config/common.css">
+</head>
+<body>
+
+<div class="admin-shell">
+
+    <header class="topbar">
+        <div class="topbar-brand">첫출근 <span class="badge-role">관리자</span></div>
+        <div class="topbar-actions">
+            <a class="btn" href="#">서비스 홈</a>
+            <a class="btn" href="#">로그아웃</a>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <a class="menu-item top-level" href="../index.html">대시보드</a>
+
+        <div class="sidebar-group">
+            <div class="sidebar-group-label">회원·기업</div>
+            <a class="menu-item" href="../member/index.html">회원 관리</a>
+            <a class="menu-item" href="../company/index.html">기업 관리</a>
+        </div>
+
+        <div class="sidebar-group">
+            <div class="sidebar-group-label">채용 관리</div>
+            <a class="menu-item" href="../job/index.html">채용공고 관리</a>
+            <a class="menu-item" href="skill.html">직무·기술 관리</a>
+            <a class="menu-item" href="../salary/index.html">연봉정보 관리</a>
+        </div>
+
+        <div class="sidebar-group">
+            <div class="sidebar-group-label">콘텐츠·고객지원</div>
+            <a class="menu-item" href="../review/index.html">후기 관리</a>
+            <a class="menu-item" href="../report/index.html">신고 관리</a>
+            <a class="menu-item" href="../cs/notice.html">고객센터 관리</a>
+        </div>
+
+        <div class="sidebar-group">
+            <div class="sidebar-group-label">사이트 운영</div>
+            <a class="menu-item" href="../banner/index.html">배너 관리</a>
+            <a class="menu-item active" href="site-setting.html">사이트 설정</a>
+            <a class="menu-item" href="version.html">사이트 버전 관리</a>
+            <a class="menu-item" href="policy.html">약관·정책 관리</a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="admin-name">최고 관리자</div>
+            <div class="admin-login">최근 로그인<br>2026.07.22 11:42</div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="page-header">
+            <h1>사이트 설정</h1>
+            <p>서비스 기본정보, 브랜드 이미지와 공통 푸터 정보를 관리합니다.</p>
+        </div>
+
+        <div class="two-col">
+            <div>
+                <div class="panel">
+                    <div class="panel-head"><h2>서비스 기본정보</h2></div>
+                    <div class="form-grid">
+                        <div class="field"><label>서비스명</label><input type="text" value="첫출근"></div>
+                        <div class="field"><label>고객센터 이메일</label><input type="email" value="help@firstwork.co.kr"></div>
+                        <div class="field"><label>대표 전화번호</label><input type="tel" value="02-1234-5678"></div>
+                        <div class="field"><label>운영시간</label><input type="text" value="평일 09:00 ~ 18:00"></div>
+                        <div class="field full">
+                            <label>서비스 소개 문구</label>
+                            <textarea>설레는 첫 출근을 함께 준비합니다.</textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions"><button class="btn btn-primary">기본정보 저장</button></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head"><h2>공통 푸터 설정</h2></div>
+                    <div class="form-grid">
+                        <div class="field"><label>회사명</label><input type="text" value="첫출근"></div>
+                        <div class="field"><label>사업자등록번호</label><input type="text" value="120-08-12345"></div>
+                        <div class="field full"><label>주소</label><input type="text" value="서울특별시 강남구 테헤란로 123"></div>
+                        <div class="field full">
+                            <label>저작권 문구</label>
+                            <input type="text" value="© 2026 첫출근. All rights reserved.">
+                        </div>
+                    </div>
+                    <div class="form-actions"><button class="btn btn-primary">푸터 설정 저장</button></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-head"><h2>브랜드 이미지 관리 · 테마별 적용</h2></div>
+
+                <label style="font-size:12.5px; font-weight:700; color:var(--text-soft);">헤더 로고 이미지</label>
+                <div class="upload-hint">투명배경 PNG 권장 · 권장 190 × 40px</div>
+                <div class="upload-box">
+                    <div class="preview"><span class="mark">첫</span> 첫출근</div>
+                    <button class="btn">파일 선택</button>
+                </div>
+
+                <label style="font-size:12.5px; font-weight:700; color:var(--text-soft);">푸터 이미지 로고</label>
+                <div class="upload-hint">단가 기업/발행 브랜드에 사용 · 권장 148 × 36px</div>
+                <div class="upload-box">
+                    <div class="preview">첫출근</div>
+                    <button class="btn">파일 선택</button>
+                </div>
+
+                <label style="font-size:12.5px; font-weight:700; color:var(--text-soft);">파비콘</label>
+                <div class="upload-hint">브라우저 탭 표시용 아이콘 · 32 × 32px</div>
+                <div class="upload-box">
+                    <div class="preview"><span class="mark">첫</span> 첫출근 | 채용 정보서비스</div>
+                    <button class="btn">파일 선택</button>
+                </div>
+
+                <div class="upload-hint" style="margin-top:6px;">투명 PNG·SVG 권장 · 라이트/다크 테마 이미지는 각각 저장</div>
+            </div>
+        </div>
+    </main>
+
+    <aside class="right-panel">
+        <div class="panel-card">
+            <h3>ADMIN-11 / 사이트 설정</h3>
+            <ul>
+                <li>서비스명·고객센터 연락처·운영시간 관리</li>
+                <li>헤더 로고·푸터 로고·파비콘 관리</li>
+                <li>회사명·사업자등록·주소 저작권 표시</li>
+                <li>기본정보와 푸터는 각각 별도 저장</li>
+                <li>브랜드 이미지는 파일별 변경 반영</li>
+                <li>약관·정책은 별도 메뉴에서 관리</li>
+            </ul>
+            <div class="tip-box">
+                사이트 설정은 관리 화면에서 저장하고 API 키·보안값은 환경변수로 관리합니다.
+            </div>
+        </div>
+    </aside>
+
+    <footer class="admin-footer">
+        <span>© 2026 첫출근 관리자</span>
+        <span>운영 버전 v1.0.0</span>
+    </footer>
+
+</div>
+
+</body>
+</html>

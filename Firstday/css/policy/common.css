@@ -1,1 +1,377 @@
 /* 공통 스타일 파일 */
+/* ===================================================
+   첫출근 · 약관 조회 페이지 공통 스타일
+   =================================================== */
+
+:root {
+    --brand: #6C5CE7;
+    --brand-dark: #5443d1;
+    --brand-tint: #F1EEFE;
+    --ink: #1B1D29;
+    --ink-soft: #565A6E;
+    --ink-faint: #8A8EA3;
+    --line: #E7E7EF;
+    --bg: #FAFAFC;
+    --card: #FFFFFF;
+    --footer-bg: #14151F;
+    --footer-ink: #B5B7C7;
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --font: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", -apple-system,
+    BlinkMacSystemFont, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font);
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+ul { margin: 0; padding: 0; list-style: none; }
+
+/* ---------- Header ---------- */
+.site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    border-bottom: 1px solid var(--line);
+    background: var(--card);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+}
+
+.logo-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--brand), #9B8CFF);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.main-nav {
+    display: flex;
+    gap: 32px;
+}
+
+.main-nav a {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    transition: color .15s ease;
+}
+
+.main-nav a:hover { color: var(--ink); }
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 14.5px;
+}
+
+.header-actions .login-link {
+    color: var(--ink-soft);
+    font-weight: 500;
+}
+
+.header-actions .signup-btn {
+    background: var(--brand);
+    color: #fff;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-weight: 700;
+    transition: background .15s ease;
+}
+
+.header-actions .signup-btn:hover { background: var(--brand-dark); }
+
+/* ---------- Layout ---------- */
+.policy-shell {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 32px;
+    align-items: start;
+}
+
+.policy-main {
+    order: 1;
+}
+
+.policy-side {
+    order: 2;
+    position: sticky;
+    top: 96px;
+}
+
+.eyebrow {
+    color: var(--brand);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: .04em;
+    margin-bottom: 10px;
+}
+
+.page-title {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 10px;
+}
+
+.page-desc {
+    color: var(--ink-soft);
+    font-size: 15px;
+    margin: 0 0 32px;
+    line-height: 1.6;
+}
+
+/* ---------- Content Card (list + detail) ---------- */
+.policy-card {
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(20, 21, 31, 0.03);
+}
+
+.policy-list {
+    border-right: 1px solid var(--line);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.policy-list a {
+    display: block;
+    padding: 13px 14px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    transition: background .15s ease, color .15s ease;
+}
+
+.policy-list a:hover {
+    background: var(--bg);
+    color: var(--ink);
+}
+
+.policy-list a.active {
+    background: var(--brand-tint);
+    color: var(--brand-dark);
+    font-weight: 700;
+}
+
+.policy-detail {
+    padding: 36px 40px;
+}
+
+.policy-detail h2 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 24px;
+    letter-spacing: -0.01em;
+}
+
+.policy-detail .clause {
+    margin-bottom: 22px;
+}
+
+.policy-detail .clause:last-of-type {
+    margin-bottom: 0;
+}
+
+.policy-detail .clause h3 {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 6px;
+}
+
+.policy-detail .clause p {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    margin: 0;
+}
+
+.policy-detail .fine-print {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--line);
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    line-height: 1.6;
+}
+
+/* ---------- Sidebar summary card ---------- */
+.summary-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+}
+
+.summary-card h3 {
+    font-size: 15px;
+    font-weight: 800;
+    margin: 0 0 14px;
+}
+
+.summary-card ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.summary-card li {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    padding-left: 16px;
+    position: relative;
+}
+
+.summary-card li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--brand);
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+    background: var(--footer-bg);
+    color: var(--footer-ink);
+    padding: 48px 48px 28px;
+}
+
+.footer-top {
+    max-width: 1160px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.footer-brand-box {
+    width: 190px;
+    height: 56px;
+    border: 1px dashed rgba(255,255,255,0.25);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 14px;
+}
+
+.footer-tagline {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+}
+
+.footer-col h4 {
+    font-size: 13px;
+    color: #fff;
+    margin: 0 0 14px;
+    font-weight: 700;
+}
+
+.footer-col ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-col a {
+    font-size: 13px;
+    color: var(--footer-ink);
+    transition: color .15s ease;
+}
+
+.footer-col a:hover { color: #fff; }
+
+.footer-bottom {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.footer-legal-links {
+    display: flex;
+    gap: 14px;
+    font-size: 12.5px;
+}
+
+.footer-legal-links a {
+    color: rgba(255,255,255,0.6);
+}
+
+.footer-legal-links a:hover { color: #fff; }
+
+.footer-copy {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+    .site-header { padding: 14px 20px; }
+    .main-nav { display: none; }
+    .policy-shell {
+        grid-template-columns: 1fr;
+        padding: 32px 20px 64px;
+    }
+    .policy-side { position: static; order: 3; }
+    .policy-card { grid-template-columns: 1fr; }
+    .policy-list {
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+        flex-direction: row;
+        overflow-x: auto;
+    }
+    .policy-list a { white-space: nowrap; }
+    .policy-detail { padding: 26px 22px; }
+    .footer-top { grid-template-columns: 1fr; }
+}

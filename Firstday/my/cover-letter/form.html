@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>첫출근 — 자기소개서 작성·수정</title>
+    <link rel="stylesheet" href="../../css/common.css" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" href="../../css/my/my.css" th:href="@{/css/my/my.css}" />
+    <style>
+        /* ============================================================
+           자기소개서 작성·수정 (my/cover-letter/form.html) 전용 스타일
+           - .wrap, .mypage-layout, .mypage-side, .btn, .btn-primary,
+             .btn-outline 등 공통 클래스는 common.css / my.css 에서
+             이미 정의되어 있다고 가정하고, 여기서는 이 화면 전용 클래스만 추가합니다.
+           ============================================================ */
+
+        .cl-page-header {
+            margin-bottom: 24px;
+        }
+
+        .cl-page-header__title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+            margin: 0 0 8px;
+        }
+
+        .cl-page-header__desc {
+            font-size: 14px;
+            color: var(--text-muted, #767781);
+            margin: 0;
+        }
+
+        .cl-form-card {
+            background: #fff;
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 14px;
+            padding: 28px;
+        }
+
+        .cl-field {
+            margin-bottom: 24px;
+        }
+
+        .cl-field:last-child {
+            margin-bottom: 0;
+        }
+
+        .cl-field__label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-strong, #1c1c22);
+            margin-bottom: 10px;
+        }
+
+        .cl-field__label .required {
+            color: #e6564c;
+            margin-left: 2px;
+        }
+
+        .cl-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            font-size: 14px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-input:focus,
+        .cl-textarea:focus {
+            outline: none;
+            border-color: var(--primary, #6c5ce7);
+        }
+
+        .cl-job-select {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            background: #fafafb;
+            cursor: pointer;
+        }
+
+        .cl-job-select__text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .cl-job-select__title {
+            font-weight: 600;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-job-select__meta {
+            color: var(--text-muted, #8a8b94);
+        }
+
+        .cl-job-select__chevron {
+            flex-shrink: 0;
+            color: #b5b6c0;
+        }
+
+        /* ---------- 문항 카드 ---------- */
+        .cl-question {
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 16px;
+        }
+
+        .cl-question__head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .cl-question__label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-question__remove {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e6564c;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .cl-question__prompt {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background: #fafafb;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-textarea {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 160px;
+            padding: 14px;
+            font-size: 14px;
+            line-height: 1.6;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            resize: vertical;
+            color: var(--text-strong, #1c1c22);
+            font-family: inherit;
+        }
+
+        .cl-question__count {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-muted, #a6a7b1);
+            margin-top: 8px;
+        }
+
+        /* ---------- 문항 추가 영역 ---------- */
+        .cl-add-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .cl-add-hint {
+            font-size: 13px;
+            color: var(--text-muted, #8a8b94);
+            background: #f7f7fb;
+            padding: 10px 14px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 240px;
+        }
+
+        /* ---------- 하단 액션 버튼 ---------- */
+        .cl-form-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cl-form-actions .btn-outline {
+            flex: 0 0 auto;
+            min-width: 110px;
+            text-align: center;
+        }
+
+        .cl-form-actions .cl-submit {
+            flex: 1;
+            text-align: center;
+        }
+
+        @media (max-width: 720px) {
+            .cl-form-actions {
+                flex-wrap: wrap;
+            }
+
+            .cl-form-actions .btn-outline,
+            .cl-form-actions .cl-submit {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<header
+        data-job-list-url="/job/list.html"
+        th:attr="data-job-list-url=@{/job/list}"
+        th:fragment="header"
+        xmlns:th="http://www.thymeleaf.org"
+        class="site-header"
+>
+    <div class="wrap header-inner">
+        <a href="/index.html" th:href="@{/}" class="header-logo" aria-label="첫출근 메인으로 이동">
+            <!-- 권장 이미지 크기: 160 × 40px / 투명 SVG·PNG -->
+            <img
+                    src="/images/header-logo.svg"
+                    th:src="@{/images/header-logo.svg}"
+                    width="160"
+                    height="40"
+                    alt="첫출근"
+            />
+        </a>
+
+        <div class="mega-wrap" id="mega-wrap">
+            <nav class="primary-nav">
+                <button type="button" class="nav-hamburger" id="mega-btn" aria-label="직무 메뉴 열기">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <a href="/job/list.html" th:href="@{/job/list}" class="emph">채용공고</a>
+                <a href="/company/list.html" th:href="@{/company/list}">기업정보</a>
+                <a href="/my/resume/list.html" th:href="@{/my/resume/list}">이력서</a>
+                <a href="/salary/list.html" th:href="@{/salary/list}">연봉정보</a>
+            </nav>
+
+            <!-- 메가메뉴 패널 (전체 폭) -->
+            <div class="mega-panel">
+                <div class="mega-panel-inner">
+                    <!-- 좌측: 직군 목록 -->
+                    <ul class="mega-sidebar" id="mega-sidebar">
+                        <li data-cat="all">직군 전체</li>
+                        <li data-cat="dev" class="active">개발</li>
+                        <li data-cat="biz">경영·비즈니스</li>
+                        <li data-cat="marketing">마케팅·광고</li>
+                        <li data-cat="design">디자인</li>
+                        <li data-cat="cs">고객서비스·리테일</li>
+                        <li data-cat="sales">영업</li>
+                        <li data-cat="media">미디어</li>
+                        <li data-cat="engineering">엔지니어링·설계</li>
+                        <li data-cat="manufacturing">제조·생산</li>
+                        <li data-cat="finance">금융</li>
+                        <li data-cat="medical">의료·바이오</li>
+                        <li data-cat="edu">교육</li>
+                        <li data-cat="law">법률</li>
+                    </ul>
+
+                    <!-- 우측: 선택된 직군의 직무 목록 -->
+                    <div class="mega-content">
+                        <div class="mega-content-head">
+                            <span class="mega-cat-name" id="mega-cat-name">개발</span>
+                            <span class="mega-cat-hint"
+                            >원하는 직무를 선택하면 해당 조건의 채용공고 목록으로 이동</span
+                            >
+                        </div>
+                        <div class="mega-job-grid" id="mega-job-grid">
+                            <!-- JS로 채워짐 -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mega-panel-footer">
+                    출력 기준 · 1차 분류: 직군 · 2차 분류: 직무 · 관리자 카테고리 관리에서 명칭·순서·사용 여부
+                    설정 · 직무 클릭 → 선택 조건이 적용된 채용공고 목록 페이지로 이동
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right" aria-label="회원 메뉴">
+            <a href="/auth/login.html" th:href="@{/auth/login}" class="btn btn-ghost">로그인</a>
+            <a href="/auth/member-type.html" th:href="@{/auth/member-type}" class="btn btn-primary">회원가입</a>
+        </div>
+    </div>
+</header>
+
+<main class="mypage">
+    <div class="wrap mypage-layout">
+        <!-- 좌측 사이드바 -->
+        <aside class="mypage-side">
+            <div class="mypage-side__profile">
+                <div class="mypage-side__avatar" th:text="${#strings.substring(memberName, 0, 1)} ?: '김'">김</div>
+                <div class="mypage-side__info">
+                    <p class="mypage-side__name">
+                        <span th:text="${memberName} ?: '김첫출'">김첫출</span>&nbsp;님
+                    </p>
+                    <p class="mypage-side__type" th:text="${memberType} ?: '개인회원'">개인회원</p>
+                </div>
+            </div>
+
+            <nav class="mypage-side__nav">
+                <a href="/mypage" th:href="@{/mypage}" class="mypage-side__link">마이페이지 홈</a>
+                <a href="/mypage/applications" th:href="@{/mypage/applications}" class="mypage-side__link">지원 내역</a>
+                <a href="/mypage/interest-jobs" th:href="@{/mypage/interest-jobs}" class="mypage-side__link">관심 공고</a>
+                <a href="/mypage/interest-companies" th:href="@{/mypage/interest-companies}" class="mypage-side__link">관심 기업</a>
+                <a href="/mypage/resumes" th:href="@{/mypage/resumes}" class="mypage-side__link">이력서 관리</a>
+                <a href="/my/cover-letter/list.html" th:href="@{/my/cover-letter/list}" class="mypage-side__link is-active">자기소개서 관리</a>
+                <a href="/mypage/reviews" th:href="@{/mypage/reviews}" class="mypage-side__link">작성한 후기</a>
+                <a href="/mypage/edit" th:href="@{/mypage/edit}" class="mypage-side__link">개인정보 수정</a>
+            </nav>
+        </aside>
+
+        <!-- 우측 컨텐츠 -->
+        <section class="mypage-content">
+            <!-- 페이지 헤더 -->
+            <div class="cl-page-header">
+                <h1 class="cl-page-header__title">자기소개서 작성·수정</h1>
+                <p class="cl-page-header__desc">문항별 답변을 작성하고 원하는 시점에 AI 첨삭을 요청하세요.</p>
+            </div>
+
+            <form class="cl-form-card" th:action="@{/my/cover-letter/{id}(id=${coverLetter?.id})}" method="post">
+                <!-- 제목 -->
+                <div class="cl-field">
+                    <label class="cl-field__label" for="cl-title">자기소개서 제목<span class="required">*</span></label>
+                    <input
+                            type="text"
+                            id="cl-title"
+                            name="title"
+                            class="cl-input"
+                            th:value="${coverLetter?.title} ?: '백엔드 개발자 지원 자기소개서'"
+                            value="백엔드 개발자 지원 자기소개서"
+                            placeholder="자기소개서 제목을 입력해주세요"
+                    />
+                </div>
+
+                <!-- 연결할 채용공고 -->
+                <div class="cl-field">
+                    <label class="cl-field__label">연결할 채용공고 (선택)</label>
+                    <div class="cl-job-select" role="button" tabindex="0">
+                        <span class="cl-job-select__text">
+                            <span class="cl-job-select__title">백엔드 개발자 채용</span><br />
+                            <span class="cl-job-select__meta">기업 첫출근 · 모집 직무 백엔드 개발</span>
+                        </span>
+                        <svg class="cl-job-select__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="m7 10 5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                </div>
+
+                <!--
+                  정적 프로토타입 단계: 지금은 문항 1개만 직접 써놓았습니다.
+                  나중에 백엔드 연동 시, 아래 .cl-question 하나만 남기고
+                  th:each="q : ${coverLetter.questions}" 를 그 요소에 추가한 뒤
+                  순번 / 질문 / 답변 / 글자수를 th:text, th:value 로 채우면 됩니다.
+                -->
+                <div class="cl-question">
+                    <div class="cl-question__head">
+                        <span class="cl-question__label">문항 1</span>
+                        <button type="button" class="cl-question__remove">삭제</button>
+                    </div>
+                    <input type="text" class="cl-question__prompt" value="지원 동기와 입사 후 목표를 작성해주세요." />
+                    <textarea class="cl-textarea" maxlength="1000">저는 문제의 원인을 로그와 데이터 흐름으로 확인하는 과정에서 백엔드 개발의 매력을 느꼈습니다. 첫출근 프로젝트에서는 채용공고와 지원 데이터의 상태 변화를 실시간으로...</textarea>
+                    <p class="cl-question__count">468 / 1,000자</p>
+                </div>
+
+                <!-- 문항 추가 -->
+                <div class="cl-add-row">
+                    <button type="button" class="btn btn-outline">+ 문항 추가</button>
+                    <p class="cl-add-hint">저장된 자기소개서는 입사지원 시 제출 문서로 선택할 수 있습니다.</p>
+                </div>
+
+                <!-- 하단 액션 -->
+                <div class="cl-form-actions">
+                    <a href="/my/cover-letter/list.html" th:href="@{/my/cover-letter/list}" class="btn btn-outline">취소</a>
+                    <button type="submit" name="action" value="save" class="btn btn-outline">저장</button>
+                    <button type="submit" name="action" value="ai-review" class="btn btn-primary cl-submit">AI 첨삭 요청</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:fragment="footer" xmlns:th="http://www.thymeleaf.org" class="site-footer">
+    <div class="wrap footer-inner">
+        <div class="footer-brand">
+            <a href="/index.html" th:href="@{/}" class="footer-logo" aria-label="첫출근 메인으로 이동">
+                <!-- 권장 이미지 크기: 190 × 56px / 투명 SVG·PNG -->
+                <img
+                        src="/images/footer-logo.svg"
+                        th:src="@{/images/footer-logo.svg}"
+                        width="190"
+                        height="56"
+                        alt="첫출근"
+                />
+            </a>
+            <div class="footer-slogan">설레는 첫 출근을 함께 준비합시다.<br />© 2026 FirstWork Inc.</div>
+        </div>
+        <div class="footer-col">
+            <div class="footer-col-title">서비스</div>
+            <a href="/job/list.html" th:href="@{/job/list}">채용공고</a>
+            <a href="/company/list.html" th:href="@{/company/list}">기업정보</a>
+            <a href="/my/resume/list.html" th:href="@{/my/resume/list}">이력서</a>
+            <a href="/salary/list.html" th:href="@{/salary/list}">연봉정보</a>
+        </div>
+        <div class="footer-col">
+            <div class="footer-col-title">고객지원</div>
+            <a href="/cs/notice/index.html" th:href="@{/cs/notice}">공지사항</a>
+            <a href="/cs/faq/index.html" th:href="@{/cs/faq}">자주 묻는 질문</a>
+            <a href="/cs/qna/index.html" th:href="@{/cs/qna}">1:1 문의</a>
+        </div>
+    </div>
+    <div class="wrap footer-bottom">
+        <div>서비스 v1.0.0</div>
+        <div class="legal">
+            <a href="/policy/terms.html" th:href="@{/policy/terms}">이용약관</a>
+            <a href="/policy/privacy.html" th:href="@{/policy/privacy}">개인정보처리방침</a>
+        </div>
+    </div>
+</footer>
+
+<!-- 공통 헤더·푸터 불러오기 -->
+<script src="../../js/common.js" th:src="@{../js/common.js}"></script>
+
+<script>
+    // 문항 텍스트 글자수 실시간 카운트 (정적 프로토타입용 간단 스크립트)
+    document.querySelectorAll('.cl-question').forEach(function (q) {
+        const textarea = q.querySelector('.cl-textarea');
+        const counter = q.querySelector('.cl-question__count');
+        if (!textarea || !counter) return;
+        const max = textarea.getAttribute('maxlength') || 1000;
+        const update = () => {
+            counter.textContent = textarea.value.length + ' / ' + max + '자';
+        };
+        textarea.addEventListener('input', update);
+        update();
+    });
+</script>
+</body>
+</html>
