@@ -1,0 +1,66 @@
+<!-- report-modal 시, modal/common.css 같이 연동하기 -->
+<div id="reportModal" class="modal-overlay" th:fragment="reportModal">
+  <div class="modal report-modal">
+    <div class="report-header">
+      <div>
+        <h2>신고하기</h2>
+        <p>부적절하거나 잘못된 정보를 신고해주세요.</p>
+      </div>
+
+      <button type="button" class="modal-close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form id="reportForm" class="modal-form-body">
+      <div class="form-group">
+        <label for="reportTarget">신고 대상</label>
+        <input
+                type="text"
+                id="reportTarget"
+                value="채용공고 · 백엔드 개발자 채용"
+                readonly
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="reportReason">신고 사유</label>
+
+        <select id="reportReason">
+          <option value="">신고 사유를 선택하세요.</option>
+          <option>허위 정보·사기 의심</option>
+          <option>개인정보 노출</option>
+          <option>욕설·비방·차별 표현</option>
+          <option>광고·스팸·중복 콘텐츠</option>
+          <option>기타 운영정책 위반</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="reportContent">상세 내용</label>
+
+        <textarea
+                id="reportContent"
+                rows="6"
+                maxlength="500"
+                placeholder="신고 내용을 구체적으로 입력해주세요. (최대 500자)"
+        ></textarea>
+      </div>
+
+      <p class="report-guide">
+        로그인 회원만 신고할 수 있으며, 동일 회원이 동일 대상에 대해 중복
+        신고하는 것은 제한됩니다.
+      </p>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline btn-cancel">
+          취소
+        </button>
+
+        <button type="submit" class="btn btn-primary report-submit-btn">
+          신고 접수
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

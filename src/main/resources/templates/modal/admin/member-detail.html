@@ -1,0 +1,80 @@
+<div
+    xmlns:th="http://www.thymeleaf.org"
+    th:fragment="memberDetailModal"
+    class="admin-modal"
+    data-member-detail-modal
+    aria-hidden="true"
+>
+    <div class="admin-modal__backdrop" data-member-detail-close></div>
+
+    <section
+        class="admin-modal__dialog admin-modal__dialog--member"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="memberDetailModalTitle"
+    >
+        <header class="admin-modal__header">
+            <h2 id="memberDetailModalTitle">회원 상세</h2>
+
+            <button type="button" class="admin-modal__close" data-member-detail-close aria-label="회원 상세 닫기">
+                ×
+            </button>
+        </header>
+
+        <div class="admin-modal__body">
+            <p class="admin-modal__meta">
+                회원번호
+                <strong data-member-number>12842</strong>
+                <span aria-hidden="true">·</span>
+                <span data-member-type>개인회원</span>
+            </p>
+
+            <div class="admin-modal__grid">
+                <div class="admin-modal__field">
+                    <span class="admin-modal__label"> 이름 </span>
+
+                    <div class="admin-modal__value" data-member-name>김민준</div>
+                </div>
+
+                <div class="admin-modal__field">
+                    <span class="admin-modal__label"> 이메일 </span>
+
+                    <div class="admin-modal__value" data-member-email>minjun@email.com</div>
+                </div>
+
+                <div class="admin-modal__field">
+                    <span class="admin-modal__label"> 가입일 </span>
+
+                    <div class="admin-modal__value" data-member-created-at>2026.07.22</div>
+                </div>
+
+                <div class="admin-modal__field">
+                    <span class="admin-modal__label"> 최근 로그인 </span>
+
+                    <div class="admin-modal__value" data-member-last-login>2026.07.22 11:20</div>
+                </div>
+            </div>
+
+            <div class="admin-member-status">
+                <span class="admin-modal__label"> 계정 상태 </span>
+
+                <strong class="admin-member-status__value is-active" data-member-status>
+                    <span aria-hidden="true">●</span>
+                    정상 이용 중
+                </strong>
+            </div>
+
+            <div class="admin-modal__guide">지원·후기 이력은 보존하므로 삭제 대신 이용정지를 사용합니다.</div>
+        </div>
+
+        <footer class="admin-modal__footer">
+            <button type="button" class="admin-modal-button admin-modal-button--outline" data-member-detail-close>
+                닫기
+            </button>
+
+            <button type="button" class="admin-modal-button admin-modal-button--danger" data-member-suspend>
+                이용정지
+            </button>
+        </footer>
+    </section>
+</div>

@@ -1,0 +1,152 @@
+/* 공통 스타일 파일 */
+.page-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.add-btn {
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.add-btn:hover {
+  background: #1d4ed8;
+}
+
+.banner-guide {
+  margin-top: 16px;
+  color: #94a3b8;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.banner-guide strong {
+  color: #fff;
+}
+
+.banner-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.banner-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  padding: 18px;
+
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+}
+
+.banner-thumb {
+  width: 260px;
+  height: 100px;
+
+  border-radius: 10px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.blue {
+  background: #3b82f6;
+}
+
+.green {
+  background: #22c55e;
+}
+
+.navy {
+  background: #1e3a8a;
+}
+
+.orange {
+  background: #f59e0b;
+}
+
+.banner-info {
+  flex: 1;
+}
+
+.banner-info h3 {
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.banner-info p {
+  color: #94a3b8;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.banner-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 18px;
+}
+
+.status {
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status.on {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.status.off {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.banner-action {
+  display: flex;
+  gap: 16px;
+}
+
+.banner-action a {
+  color: #60a5fa;
+  font-size: 14px;
+}
+
+.banner-action a:hover {
+  text-decoration: underline;
+}
+
+
+#fileName {
+  flex: 1;
+  min-width: 0;
+  max-width: calc(100% - 102px);
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+input[type="date"] {
+  color-scheme: dark;
+}

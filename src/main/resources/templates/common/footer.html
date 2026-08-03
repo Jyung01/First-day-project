@@ -1,0 +1,36 @@
+<footer th:fragment="footer" xmlns:th="http://www.thymeleaf.org" class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <a th:href="@{/}" class="footer-logo" aria-label="첫출근 메인으로 이동">
+        <!-- 권장 이미지 크기: 190 × 56px / 투명 SVG·PNG -->
+        <img
+                th:src="@{/images/footer-logo.svg}"
+                width="190"
+                height="56"
+                alt="첫출근"
+        />
+      </a>
+      <div class="footer-slogan">설레는 첫 출근을 함께 준비합시다.<br />© 2026 FirstWork Inc.</div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">서비스</div>
+      <a th:href="@{/job/list}">채용공고</a>
+      <a th:href="@{/company/list}">기업정보</a>
+      <a th:href="@{/my/resume/list}">이력서</a>
+      <a th:href="@{/salary/list}">연봉정보</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">고객지원</div>
+      <a th:href="@{/cs/notice}">공지사항</a>
+      <a th:href="@{/cs/faq}">자주 묻는 질문</a>
+      <a th:href="@{/cs/qna}">1:1 문의</a>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <div>서비스 v1.0.0</div>
+    <div class="legal">
+      <a th:href="@{/policy/terms}">이용약관</a>
+      <a th:href="@{/policy/privacy}">개인정보처리방침</a>
+    </div>
+  </div>
+</footer>

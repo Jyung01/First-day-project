@@ -1,0 +1,84 @@
+.application-content {
+    --application-primary: #635bff;
+    --application-primary-soft: #eeefff;
+    --application-border: #dce3ef;
+    --application-muted: #72819a;
+}
+
+.application-page-header {
+    margin: 4px 0 28px;
+}
+
+.application-page-header h1 {
+    margin: 0;
+    color: var(--navy-900);
+    font-size: 28px;
+    letter-spacing: -.04em;
+}
+
+.application-page-header p {
+    margin-top: 8px;
+    color: var(--application-muted);
+    font-size: 14px;
+}
+
+.application-back-link {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: var(--application-primary);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.application-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 90px;
+    min-height: 30px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--application-primary-soft);
+    color: var(--application-primary);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.application-status--reviewing,
+.application-status--applied {
+    background: #eeefff;
+    color: #635bff;
+}
+
+.application-status--interview {
+    background: #fff4d9;
+    color: #c27a00;
+}
+
+.application-status--interviewed {
+    background: #e3f8ee;
+    color: #18a665;
+}
+
+.application-status--passed,
+.application-status--joined {
+    background: #e4f8ec;
+    color: #138b50;
+}
+
+.application-status--rejected {
+    background: #ffe8e8;
+    color: #e54848;
+}
+
+.application-status--canceled {
+    background: #edf0f5;
+    color: #68758a;
+}
+
+@media (max-width: 768px) {
+    .application-page-header {
+        margin-top: 0;
+    }
+}

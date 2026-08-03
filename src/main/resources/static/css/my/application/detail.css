@@ -1,0 +1,297 @@
+.application-summary-card,
+.application-progress-card,
+.application-documents-card,
+.application-guide-card {
+    border: 1px solid var(--application-border);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.application-summary-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-height: 148px;
+    padding: 26px 24px;
+}
+
+.application-company-mark {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
+    border-radius: 16px;
+    background: #d8f1ff;
+    color: var(--navy-900);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.application-summary-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.application-summary-copy > span,
+.application-summary-copy p {
+    color: var(--application-muted);
+    font-size: 12px;
+}
+
+.application-summary-copy h2 {
+    margin: 8px 0 9px;
+    color: var(--navy-900);
+    font-size: 21px;
+    letter-spacing: -.025em;
+    overflow-wrap: anywhere;
+}
+
+.application-summary-copy p {
+    overflow-wrap: anywhere;
+}
+
+.application-summary-actions {
+    display: grid;
+    gap: 14px;
+    min-width: 120px;
+}
+
+.application-summary-actions > a,
+.application-guide-card > a {
+    display: grid;
+    place-items: center;
+    min-height: 40px;
+    border: 1px solid var(--application-border);
+    border-radius: 8px;
+    color: var(--navy-900);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.application-progress-card {
+    margin-top: 20px;
+    padding: 22px 24px 28px;
+}
+
+.application-progress-card h2,
+.application-documents-card h2,
+.application-guide-card h2 {
+    margin: 0;
+    color: var(--navy-900);
+    font-size: 18px;
+}
+
+.application-progress {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    margin-top: 26px;
+    padding: 0 4px;
+}
+
+.application-progress li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 32px auto;
+    grid-template-rows: 32px auto;
+    justify-content: center;
+    align-items: center;
+    column-gap: 9px;
+    row-gap: 7px;
+    min-width: 0;
+    color: var(--application-muted);
+}
+
+.application-progress li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: calc(50% + 48px);
+    right: calc(-50% + 48px);
+    height: 1.5px;
+    background: var(--application-border);
+}
+
+.application-progress li > span {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--application-border);
+    border-radius: 50%;
+    background: #f5f8fc;
+    font-size: 11px;
+}
+
+.application-progress li strong {
+    position: relative;
+    z-index: 1;
+    padding-right: 2px;
+    background: #fff;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.application-progress li small {
+    grid-column: 1 / 3;
+    justify-self: start;
+    padding-left: 41px;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.application-progress li.is-complete {
+    color: var(--navy-900);
+}
+
+.application-progress li.is-complete > span {
+    border-color: var(--application-primary);
+    background: var(--application-primary);
+    color: #fff;
+}
+
+.application-progress li:has(+ li.is-complete)::after {
+    background: var(--application-primary);
+}
+
+.application-progress li.is-rejected {
+    color: #d82d2d;
+}
+
+.application-progress li.is-rejected > span {
+    border-color: #d82d2d;
+    background: #d82d2d;
+}
+
+.application-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.85fr) minmax(260px, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.application-documents-card,
+.application-guide-card {
+    min-height: 300px;
+    padding: 24px;
+}
+
+.application-document {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    margin-top: 22px;
+}
+
+.application-document__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--application-primary-soft);
+}
+
+.application-document strong,
+.application-document small {
+    display: block;
+}
+
+.application-document strong {
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.application-document small {
+    margin-top: 5px;
+    color: var(--application-muted);
+    font-size: 11px;
+}
+
+.application-document > a {
+    color: var(--application-primary);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.application-cancel-button {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 36px;
+    border: 1px solid var(--application-border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--navy-900);
+    font-weight: 700;
+}
+
+.application-cancel-button:disabled {
+    background: #f1f4f8;
+    color: #7a879b;
+    cursor: not-allowed;
+}
+
+.application-guide-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.application-guide-copy {
+    flex: 1;
+    margin-top: 22px;
+    color: var(--application-muted);
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 950px) {
+    .application-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .application-summary-card {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .application-summary-actions {
+        width: 100%;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .application-progress {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .application-progress li:not(:last-child)::after {
+        top: 32px;
+        bottom: -16px;
+        left: 15px;
+        right: auto;
+        width: 2px;
+        height: auto;
+    }
+
+    .application-progress li {
+        grid-template-columns: 32px minmax(0, 1fr);
+        justify-content: stretch;
+    }
+
+    .application-progress li small {
+        padding-left: 41px;
+    }
+
+    .application-document {
+        grid-template-columns: 42px 1fr;
+    }
+
+    .application-document > a {
+        grid-column: 2;
+    }
+}

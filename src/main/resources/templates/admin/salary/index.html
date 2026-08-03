@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>연봉 관리</title>
+        <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+        <link rel="stylesheet" th:href="@{/css/admin/review/common.css}" />
+        <link rel="stylesheet" th:href="@{/css/admin/salary/common.css}" />
+        <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}"/>
+
+        <script>
+            const salaryData = {
+                all: [
+                    {
+                        no: "S-428",
+                        company: "토스",
+                        job: "백엔드 개발자",
+                        career: "3~5년",
+                        salary: "6,800만원",
+                        year: "2026",
+                        sample: "182명",
+                        state: "정상",
+                    },
+
+                    {
+                        no: "S-427",
+                        company: "카카오",
+                        job: "프론트엔드",
+                        career: "5년 이상",
+                        salary: "7,500만원",
+                        year: "2026",
+                        sample: "121명",
+                        state: "정상",
+                    },
+
+                    {
+                        no: "S-426",
+                        company: "네이버",
+                        job: "AI 엔지니어",
+                        career: "신입",
+                        salary: "5,400만원",
+                        year: "2026",
+                        sample: "73명",
+                        state: "검토 필요",
+                    },
+
+                    {
+                        no: "S-425",
+                        company: "당근",
+                        job: "백엔드",
+                        career: "1~3년",
+                        salary: "5,900만원",
+                        year: "2026",
+                        sample: "84명",
+                        state: "정상",
+                    },
+
+                    {
+                        no: "S-424",
+                        company: "라인",
+                        job: "데이터 엔지니어",
+                        career: "3~5년",
+                        salary: "6,600만원",
+                        year: "2026",
+                        sample: "68명",
+                        state: "숨김",
+                    },
+                ],
+
+                normal: [],
+                review: [],
+                hidden: [],
+            };
+
+        </script>
+
+        <script th:src="@{/js/admin/salary.js}"></script>
+
+    </head>
+    <body>
+        <div class="wrapper">
+            <!-- ================= Header ================= -->
+
+            <header th:replace="~{common/admin-header :: adminHeader}"></header>
+
+            <!-- ================= Main ================= -->
+
+            <div class="container">
+                <!-- Sidebar -->
+
+                <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+
+                <!-- ================= Content ================= -->
+
+                <main class="content">
+                    <!-- 제목 -->
+
+                    <section class="page-title">
+                        <h2>연봉정보 관리</h2>
+
+                        <p>기업·직무·경력별 연봉 카드 데이터를 조회하고 관리합니다.</p>
+                    </section>
+
+                    <!-- 통계 카드 -->
+
+                    <section class="summary">
+                        <div class="summary-card">
+                            <span>전체 데이터</span>
+                            <h3>428건</h3>
+                        </div>
+
+                        <div class="summary-card">
+                            <span>검토 필요</span>
+                            <h3>12건</h3>
+                        </div>
+
+                        <div class="summary-card">
+                            <span>숨김</span>
+                            <h3>5건</h3>
+                        </div>
+                    </section>
+
+                    <!-- 후기 영역 -->
+
+                    <section class="review-box">
+                        <!-- 탭 -->
+
+                        <div class="review-tab">
+                            <button class="tab-btn active" data-tab="all">전체</button>
+
+                            <button class="tab-btn" data-tab="normal">정상</button>
+
+                            <button class="tab-btn" data-tab="review">검토 필요</button>
+
+                            <button class="tab-btn" data-tab="hidden">숨김</button>
+                        </div>
+
+                        <!-- 검색 -->
+
+                        <form class="search-area">
+                            <select name="company">
+                                <option value="">기업 전체</option>
+                                <option>대기업</option>
+                                <option>중견기업</option>
+                                <option>스타트업</option>
+                            </select>
+
+                            <select name="job">
+                                <option value="">직무 전체</option>
+                                <option>백엔드</option>
+                                <option>프론트엔드</option>
+                                <option>AI</option>
+                            </select>
+
+                            <select name="career">
+                                <option value="">경력 전체</option>
+                                <option>신입</option>
+                                <option>1~3년</option>
+                                <option>3~5년</option>
+                                <option>5년 이상</option>
+                            </select>
+
+                            <input type="text" name="keyword" placeholder="기업명 검색" />
+
+                            <button type="submit">검색</button>
+                        </form>
+
+                        <!-- 연봉 테이블 -->
+
+                        <div class="table-wrap">
+                            <table class="salary-table">
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>기업명</th>
+                                        <th>직무</th>
+                                        <th>경력</th>
+                                        <th>평균연봉</th>
+                                        <th>기준연도</th>
+                                        <th>표본</th>
+                                        <th>상태</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="salaryBody"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- 페이지네이션 -->
+
+                        <div class="pagination">
+                            <a href="#">&lt;</a>
+
+                            <a href="#" class="active">1</a>
+
+                            <a href="#">2</a>
+
+                            <a href="#">3</a>
+
+                            <a href="#">4</a>
+
+                            <a href="#">5</a>
+
+                            <a href="#">&gt;</a>
+                        </div>
+                    </section>
+                </main>
+            </div>
+
+            <!-- ================= Footer ================= -->
+            <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+
+            <!-- 연봉 제보 검토 모달 -->
+            <div th:replace="~{modal/admin/salary-review :: salaryReportReviewModal}"></div>
+        </div>
+    </body>
+</html>

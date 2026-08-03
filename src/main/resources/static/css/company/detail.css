@@ -1,0 +1,332 @@
+
+
+
+/* ===========================
+   본문 레이아웃
+=========================== */
+
+.company-content{
+
+    display:grid;
+
+    grid-template-columns:2fr 380px;
+
+    gap:24px;
+
+}
+
+.content-left{
+
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+
+}
+
+.content-right{
+
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+
+}
+
+
+
+/* ===========================
+   공통 카드
+=========================== */
+
+.content-card,
+.side-card{
+
+    background:#fff;
+
+    border:1px solid #e8ebf3;
+
+    border-radius:14px;
+
+    padding:28px;
+
+}
+
+.content-card h3,
+.side-card h3{
+
+    font-size:20px;
+    font-weight:700;
+
+    color:#222;
+
+    margin-bottom:20px;
+
+}
+
+.content-card:nth-child(1){
+    min-height:180px;
+}
+
+.content-card:nth-child(2){
+    min-height:370px;
+}
+
+.side-card:first-child{
+    min-height:270px;
+}
+
+.side-card:last-child{
+    min-height:270px;
+}
+/* ===========================
+   기업 소개
+=========================== */
+
+.company-description{
+
+    font-size:15px;
+    color:#666;
+    line-height:1.9;
+
+}
+
+
+/* ===========================
+   기본 정보
+=========================== */
+
+.info-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:28px 40px;
+
+}
+
+.info-item{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.info-item span{
+
+    font-size:13px;
+
+    color:#999;
+
+}
+
+.info-item strong{
+
+    font-size:16px;
+
+    color:#222;
+
+    font-weight:600;
+
+}
+
+
+/* ===========================
+   복지
+=========================== */
+
+.benefit-list{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:12px;
+
+}
+
+.benefit-list span{
+
+    padding:10px 18px;
+
+    border-radius:30px;
+
+    background:#edf9f0;
+
+    color:#26a65b;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+
+/* ===========================
+   사이드 타이틀
+=========================== */
+
+.side-title{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:18px;
+
+}
+
+.side-title span{
+
+    color:#6b6df6;
+
+    font-size:14px;
+
+    font-weight:700;
+
+}
+
+
+/* ===========================
+   채용공고
+=========================== */
+
+.recruit-list{
+
+    list-style:none;
+
+    margin:0;
+    padding:0;
+
+}
+
+.recruit-list li{
+
+    background:#f8f9fc;
+
+    border-radius:10px;
+
+    padding:16px;
+
+    margin-bottom:14px;
+
+    transition:.2s;
+
+    cursor:pointer;
+
+}
+
+.recruit-list li:last-child{
+
+    margin-bottom:0;
+
+}
+
+.recruit-list li:hover{
+
+    background:#eef2ff;
+
+}
+
+.recruit-list strong{
+
+    display:block;
+
+    font-size:15px;
+
+    color:#222;
+
+    margin-bottom:8px;
+
+}
+
+.recruit-list span{
+
+    font-size:13px;
+
+    color:#888;
+
+}
+
+
+/* ===========================
+   리뷰
+=========================== */
+
+.review-score{
+
+    margin-bottom:18px;
+
+}
+
+.review-score span{
+
+    display:block;
+
+    font-size:34px;
+
+    font-weight:700;
+
+    color:#ff9800;
+
+}
+
+.review-score small{
+
+    color:#999;
+
+    font-size:13px;
+
+}
+
+.side-card p{
+
+    color:#777;
+
+    font-size:14px;
+
+    line-height:1.7;
+
+    margin-bottom:24px;
+
+}
+
+
+/* ===========================
+   후기 버튼
+=========================== */
+
+.review-btn{
+
+    width:100%;
+
+    height:50px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#6b6df6;
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.review-btn:hover{
+
+    background:#5658eb;
+
+}
+
+

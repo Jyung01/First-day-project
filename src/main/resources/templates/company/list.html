@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>기업 - 기업목록</title>
+    <!-- 메인 헤더 푸터 css -->
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <!-- 기업 목록 css -->
+    <link rel="stylesheet" th:href="@{/css/company/list.css}"/>
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/salary-create.css}"/>
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+
+    <script th:src="@{/js/company/list.js}"></script>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="company-main">
+
+    <!-- 검색 영역 -->
+    <section class="company-search-section">
+
+        <div class="search-top">
+            <div class="title-box">
+                <h2>기업정보</h2>
+                <p>나와 맞는 기업을 찾고 채용 정보를 확인해보세요.</p>
+            </div>
+
+            <form class="search-form">
+
+                <div class="keyword-search">
+                    <input
+                            type="text"
+                            placeholder="기업명 · 업종 · 키워드 검색">
+
+                    <button type="button">
+                        검색
+                    </button>
+                </div>
+
+                <div class="filter-group">
+
+                    <select>
+                        <option>업종 전체</option>
+                    </select>
+
+                    <select>
+                        <option>지역 전체</option>
+                    </select>
+
+                    <select>
+                        <option>기업 규모</option>
+                    </select>
+
+                    <select>
+                        <option>직무</option>
+                    </select>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- 광고 -->
+    <section class="company-banner">
+
+        <div class="banner-box">
+            <span>COMPANY_LIST</span>
+            <p>관리자 등록 기업 배너 (광고 1280 × 120)</p>
+        </div>
+
+    </section>
+
+
+    <!-- 기업 목록 -->
+    <section class="company-list-section">
+
+        <div class="section-header">
+
+            <h3>전체 기업</h3>
+
+            <span class="company-count">
+                총 245개
+            </span>
+
+        </div>
+
+        <div class="company-grid">
+
+            <!-- 카드 -->
+
+            <a th:href="@{/company/detail}" class="company-card">
+
+                <div class="card-top">
+
+                    <div class="company-logo">
+                        N
+                    </div>
+
+                    <button
+                            class="wish-btn" >
+                            <!-- th:data-company-id="${company.companyNo}" -->
+
+
+                        <i class="fa-regular fa-heart"></i>
+
+                    </button>
+
+                </div>
+
+                <h4>네이버클라우드</h4>
+
+                <p class="company-info">
+                    IT 서비스 · 서울 강남
+                </p>
+
+                <span class="recruit-badge">
+                    채용중
+                </span>
+
+                <div class="company-score">
+                    ⭐ 4.5 · 리뷰 328개
+                </div>
+
+                <div class="card-line"></div>
+
+                <p class="company-review">
+                    "성장 기회와 복지가 좋은 기업"
+                </p>
+
+            </a>
+
+
+            <div class="company-card">
+
+                <div class="card-top">
+                    <div class="company-logo">
+                        K
+                    </div>
+
+                    <button class="wish-btn">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </div>
+
+                <h4>카카오엔터프라이즈</h4>
+
+                <p class="company-info">
+                    플랫폼 · 경기 성남
+                </p>
+
+                <span class="recruit-badge">
+                    채용중
+                </span>
+
+                <div class="company-score">
+                    ⭐ 4.3 · 리뷰 214개
+                </div>
+
+                <div class="card-line"></div>
+
+                <p class="company-review">
+                    "성장 기회와 복지가 좋은 기업"
+                </p>
+
+            </div>
+
+
+            <div class="company-card">
+
+                <div class="card-top">
+                    <div class="company-logo">
+                        T
+                    </div>
+
+                    <button class="wish-btn">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </div>
+
+                <h4>토스페이먼츠</h4>
+
+                <p class="company-info">
+                    핀테크 · 서울 강남
+                </p>
+
+                <span class="recruit-badge">
+                    채용중
+                </span>
+
+                <div class="company-score">
+                    ⭐ 4.6 · 리뷰 176개
+                </div>
+
+                <div class="card-line"></div>
+
+                <p class="company-review">
+                    "성장 기회와 복지가 좋은 기업"
+                </p>
+
+            </div>
+
+
+            <div class="company-card">
+
+                <div class="card-top">
+                    <div class="company-logo">
+                        W
+                    </div>
+
+                    <button class="wish-btn">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </div>
+
+                <h4>우아한형제들</h4>
+
+                <p class="company-info">
+                    플랫폼 · 서울 송파
+                </p>
+
+                <span class="recruit-badge">
+                    채용중
+                </span>
+
+                <div class="company-score">
+                    ⭐ 4.4 · 리뷰 295개
+                </div>
+
+                <div class="card-line"></div>
+
+                <p class="company-review">
+                    "성장 기회와 복지가 좋은 기업"
+                </p>
+
+            </div>
+
+
+            <div class="company-card">
+
+                <div class="card-top">
+                    <div class="company-logo">
+                        D
+                    </div>
+
+                    <button class="wish-btn">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </div>
+
+                <h4>당근</h4>
+
+                <p class="company-info">
+                    IT 서비스 · 서울 서초
+                </p>
+
+                <span class="recruit-badge">
+                    채용중
+                </span>
+
+                <div class="company-score">
+                    ⭐ 4.5 · 리뷰 187개
+                </div>
+
+                <div class="card-line"></div>
+
+                <p class="company-review">
+                    "성장 기회와 복지가 좋은 기업"
+                </p>
+
+            </div>
+
+
+            <div class="company-card">
+
+                <div class="card-top">
+                    <div class="company-logo">
+                        C
+                    </div>
+
+                    <button class="wish-btn">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </div>
+
+                <h4>뤼튼테크놀로지스</h4>
+
+                <p class="company-info">
+                    AI · 서울 강남
+                </p>
+
+                <span class="recruit-badge">
+                    채용중
+                </span>
+
+                <div class="company-score">
+                    ⭐ 4.2 · 리뷰 89개
+                </div>
+
+                <div class="card-line"></div>
+
+                <p class="company-review">
+                    "성장 기회와 복지가 좋은 기업"
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- 페이지네이션 -->
+
+        <div class="pagination">
+
+            <button>&lt;</button>
+
+            <button class="active">
+                1
+            </button>
+
+            <button>2</button>
+
+            <button>3</button>
+
+            <button>4</button>
+
+            <button>5</button>
+
+            <button>&gt;</button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 모달 불러오기 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+<!-- 공통 헤더·푸터 불러오기 -->
+<script th:src="@{../js/common.js}"></script>
+</body>
+</html>

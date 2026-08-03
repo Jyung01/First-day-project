@@ -1,0 +1,15 @@
+/* 공통 스타일 파일 */
+.normal {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.review {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.hidden {
+  color: #ef4444;
+  font-weight: 600;
+}

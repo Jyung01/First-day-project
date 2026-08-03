@@ -1,0 +1,35 @@
+.job-split { display: grid; grid-template-columns: 370px 1fr; gap: 28px; align-items: start; }
+.job-list-column { min-width: 0; }
+.job-result-count { margin: 0 0 16px; font-size: 16px; }
+.job-result-count strong { color: var(--job-primary); }
+.job-list-pane { display: grid; gap: 12px; }
+.job-list-pane .job-card { padding: 16px; }
+.job-list-pane .job-card h3 { font-size: 16px; }
+.job-list-pagination { margin-top: 28px; }
+.job-list-pagination a { width: 36px; height: 36px; }
+.job-detail-panel { position: sticky; top: 92px; background: #fff; border: 1px solid var(--job-line); border-radius: 16px; overflow: hidden; }
+.detail-main { position: relative; padding: 28px; }
+.detail-title-row { display: flex; justify-content: space-between; gap: 20px; }
+.detail-title-row h2 { margin: 20px 0 0; font-size: 26px; }
+.report-button { align-self: end; border: 1px solid var(--job-line); border-radius: 8px; background: #fff; padding: 9px 18px; }
+.detail-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px; background: var(--job-surface); border-radius: 12px; padding: 17px; }
+.detail-summary small { display: block; color: var(--job-muted); margin-bottom: 7px; }
+.detail-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--job-line); }
+.detail-tabs button { border: 0; background: #fff; padding: 18px; color: var(--job-muted); font-weight: 700; }
+.detail-tabs button.active { color: var(--job-primary); box-shadow: inset 0 -2px var(--job-primary); }
+.detail-copy { padding: 26px 28px 96px; line-height: 1.65; color: #52627c; }
+.detail-copy h3 { color: var(--job-ink); margin: 0 0 8px; }
+.detail-copy section + section { margin-top: 25px; }
+.detail-skill-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.detail-skill-list span { min-width: 72px; padding: 8px 16px; border: 1px solid var(--job-line); border-radius: 999px; background: #fff; color: var(--job-muted); font-size: 12px; line-height: 1; text-align: center; }
+.detail-skill-list span:nth-child(n + 6) { display: none; }
+.detail-actions { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 220px 1fr; gap: 14px; padding: 14px 28px; background: #fff; border-top: 1px solid var(--job-line); }
+@media (max-width: 900px) {
+  .job-split { grid-template-columns: 1fr; }
+  .job-detail-panel { position: static; }
+}
+@media (max-width: 620px) {
+  .detail-summary, .detail-actions { grid-template-columns: 1fr; }
+  .detail-actions { position: static; }
+  .detail-copy { padding-bottom: 26px; }
+}

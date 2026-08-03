@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>개인회원 정보입력 | 첫출근</title>
+
+    <!-- 사이트 공통 -->
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+
+    <!-- 인증 화면 공통 -->
+    <link rel="stylesheet" th:href="@{/css/auth/common.css}" />
+
+    <!-- 회원 정보입력 공통 -->
+    <link rel="stylesheet" th:href="@{/css/auth/join-form.css}" />
+
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+
+    <!-- 직무 선택 모달 -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/modal/common/job-select-modal.css}"
+    />
+</head>
+
+<body>
+<!-- 공통 헤더 -->
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="auth-main join-form-main">
+    <div class="auth-container join-form-container">
+        <section class="auth-card join-form-card">
+            <div class="auth-card-header join-form-header">
+                <h1 class="auth-title">개인회원 정보입력</h1>
+
+                <p class="auth-description">
+                    로그인과 입사지원에 사용할 정보를 입력해주세요.
+                </p>
+            </div>
+
+            <!-- 회원가입 진행 단계 -->
+            <div class="join-progress">
+                <p class="join-progress-text">
+                    2단계 · <strong>정보입력</strong>
+                </p>
+
+                <div
+                        class="join-progress-track"
+                        role="progressbar"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        aria-valuenow="67"
+                        aria-label="회원가입 진행률"
+                >
+                    <span class="join-progress-bar"></span>
+                </div>
+            </div>
+
+            <form
+                    class="join-form"
+                    th:action="@{/auth/member/form}"
+                    method="post"
+                    data-join-form
+                    data-member-form
+            >
+                <!-- 아이디 -->
+                <div class="join-field join-field-full">
+                    <label for="memberId" class="auth-label">
+                        아이디
+                        <span class="join-required">*</span>
+                    </label>
+
+                    <div class="join-input-action">
+                        <input
+                                type="text"
+                                id="memberId"
+                                name="memberId"
+                                class="auth-input"
+                                placeholder="영문, 숫자 6~20자"
+                                minlength="6"
+                                maxlength="20"
+                                autocomplete="username"
+                                required
+                                data-id-input
+                        />
+
+                        <button
+                                type="button"
+                                class="join-outline-button"
+                                data-id-check
+                        >
+                            중복확인
+                        </button>
+                    </div>
+
+                    <p
+                            class="join-field-message"
+                            data-id-message
+                            aria-live="polite"
+                    ></p>
+                </div>
+
+                <!-- 비밀번호 -->
+                <div class="join-field-row">
+                    <div class="join-field">
+                        <label for="password" class="auth-label">
+                            비밀번호
+                            <span class="join-required">*</span>
+                        </label>
+
+                        <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="auth-input"
+                                placeholder="8자 이상"
+                                minlength="8"
+                                autocomplete="new-password"
+                                required
+                                data-password
+                        />
+                    </div>
+
+                    <div class="join-field">
+                        <label
+                                for="passwordConfirm"
+                                class="auth-label"
+                        >
+                            비밀번호 확인
+                            <span class="join-required">*</span>
+                        </label>
+
+                        <input
+                                type="password"
+                                id="passwordConfirm"
+                                class="auth-input"
+                                placeholder="다시 입력"
+                                minlength="8"
+                                autocomplete="new-password"
+                                required
+                                data-password-confirm
+                        />
+                    </div>
+                </div>
+
+                <p
+                        class="join-field-message"
+                        data-password-message
+                        aria-live="polite"
+                ></p>
+
+                <!-- 이름 / 휴대전화 -->
+                <div class="join-field-row">
+                    <div class="join-field">
+                        <label for="memberName" class="auth-label">
+                            이름
+                            <span class="join-required">*</span>
+                        </label>
+
+                        <input
+                                type="text"
+                                id="memberName"
+                                name="memberName"
+                                class="auth-input"
+                                placeholder="이름 입력"
+                                autocomplete="name"
+                                required
+                        />
+                    </div>
+
+                    <div class="join-field">
+                        <label for="phone" class="auth-label">
+                            휴대전화
+                            <span class="join-required">*</span>
+                        </label>
+
+                        <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                class="auth-input"
+                                placeholder="010-0000-0000"
+                                inputmode="numeric"
+                                autocomplete="tel"
+                                maxlength="13"
+                                required
+                                data-phone-input
+                        />
+                    </div>
+                </div>
+
+                <!-- 이메일 -->
+                <div class="join-field join-field-full">
+                    <label for="email" class="auth-label">
+                        이메일
+                        <span class="join-required">*</span>
+                    </label>
+
+                    <div class="join-input-action">
+                        <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="auth-input"
+                                placeholder="example@email.com"
+                                autocomplete="email"
+                                required
+                                data-email-input
+                        />
+
+                        <button
+                                type="button"
+                                class="join-outline-button"
+                                data-send-code
+                        >
+                            인증번호 받기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 이메일 인증번호 -->
+                <div class="join-verification">
+                    <input
+                            type="text"
+                            id="verificationCode"
+                            class="auth-input"
+                            placeholder="인증번호 6자리"
+                            maxlength="6"
+                            inputmode="numeric"
+                            data-verification-code
+                    />
+
+                    <button
+                            type="button"
+                            class="join-resend-button"
+                            data-resend-code
+                    >
+                        재전송
+                    </button>
+
+                    <button
+                            type="button"
+                            class="join-primary-small-button"
+                            data-confirm-code
+                    >
+                        인증 확인
+                    </button>
+                </div>
+
+                <p
+                        class="join-field-message"
+                        data-email-message
+                        aria-live="polite"
+                ></p>
+
+                <!-- 희망 직무 -->
+                <div class="join-field join-field-full">
+                    <div class="join-label-row">
+                        <label class="auth-label">
+                            희망 직무
+                            <span class="join-label-option">
+                                        (선택 · 최대 3개)
+                                    </span>
+                        </label>
+
+                        <span
+                                class="job-selection-count"
+                                data-job-selection-count
+                        >
+                                    0/3
+                                </span>
+                    </div>
+
+                    <div
+                            class="job-selection-field"
+                            data-job-selection-field
+                    >
+                        <!-- 선택된 직무 칩 -->
+                        <div
+                                class="job-selected-list"
+                                data-job-selected-list
+                        >
+                            <p
+                                    class="job-selected-empty"
+                                    data-job-selected-empty
+                            >
+                                선택된 희망 직무가 없습니다.
+                            </p>
+                        </div>
+
+                        <!-- 직무 ID 서버 전송 영역 -->
+                        <div data-job-hidden-inputs></div>
+
+                        <button
+                                type="button"
+                                class="job-select-open-button"
+                                data-job-modal-open
+                        >
+                            희망 직무 선택
+                        </button>
+                    </div>
+
+                    <p
+                            class="join-field-message"
+                            data-job-message
+                            aria-live="polite"
+                    ></p>
+
+                    <p class="join-help">
+                        선택한 희망 직무는 로그인 후 맞춤 채용공고 추천에
+                        사용됩니다. 가입 후 마이페이지에서 변경할 수 있습니다.
+                    </p>
+                </div>
+
+                <!-- 주소 -->
+                <fieldset class="join-address">
+                    <legend>
+                        주소
+                        <span class="join-label-option">(선택)</span>
+                    </legend>
+
+                    <div class="join-postcode-row">
+                        <input
+                                type="text"
+                                id="postcode"
+                                name="postcode"
+                                class="auth-input"
+                                placeholder="우편번호"
+                                readonly
+                        />
+
+                        <button
+                                type="button"
+                                class="join-address-button"
+                                data-address-search
+                        >
+                            주소 찾기
+                        </button>
+                    </div>
+
+                    <input
+                            type="text"
+                            id="address"
+                            name="address"
+                            class="auth-input"
+                            placeholder="주소 찾기 선택 시 기본주소 자동 입력"
+                            readonly
+                    />
+
+                    <input
+                            type="text"
+                            id="addressDetail"
+                            name="addressDetail"
+                            class="auth-input"
+                            placeholder="상세주소 입력"
+                    />
+
+                    <p class="join-help">
+                        선택 입력 · 주소 찾기 버튼을 누르면 Kakao Postcode
+                        검색 결과가 입력됩니다.
+                    </p>
+                </fieldset>
+
+                <!-- 하단 버튼 -->
+                <div class="join-form-actions">
+                    <a
+                            th:href="@{/auth/personal-terms}"
+                            class="join-secondary-button"
+                            data-signup-cancel
+                    >
+                        이전
+                    </a>
+
+                    <button
+                            type="submit"
+                            class="join-submit-button"
+                    >
+                        가입하기
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<!-- 공통 푸터 -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 직무 선택 공통 모달 -->
+<div
+        th:replace="~{modal/common/job-select-modal :: jobSelectModal}"
+></div>
+
+<!-- 공통 확인 모달 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/auth/join-form.js}"></script>
+<script th:src="@{/js/modal.js}"></script>
+<script
+        th:src="@{/js/modal/job-select-modal.js}"
+></script>
+</body>
+</html>

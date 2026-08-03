@@ -1,0 +1,463 @@
+/* =========================================================
+   CORP-08 기업회원 계정관리
+========================================================= */
+
+.corp-account-main {
+    min-height: 1120px;
+    padding-bottom: 160px;
+}
+
+.corp-account-content {
+    min-width: 0;
+}
+
+/* =========================================================
+   페이지 제목
+========================================================= */
+
+.corp-account-heading {
+    margin-bottom: 24px;
+}
+
+.corp-account-heading h1 {
+    margin: 0;
+    color: var(--corp-ink);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.7px;
+}
+
+.corp-account-heading p {
+    margin: 7px 0 0;
+    color: var(--corp-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   공통 카드
+========================================================= */
+
+.corp-account-card {
+    margin-bottom: 20px;
+    padding: 26px;
+    border: 1px solid var(--corp-border);
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+.corp-account-card-title {
+    margin: 0 0 24px;
+    color: var(--corp-ink);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+/* =========================================================
+   로그인 정보
+========================================================= */
+
+.corp-login-info {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.corp-login-id-row {
+    display: grid;
+    grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+    align-items: center;
+    gap: 18px;
+}
+
+.corp-login-id-row p {
+    margin: 0;
+    color: var(--corp-muted);
+    font-size: 11px;
+}
+
+.corp-password-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.corp-password-row span {
+    color: var(--corp-muted);
+    font-size: 11px;
+}
+
+/* =========================================================
+   담당자 정보
+========================================================= */
+
+.corp-manager-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.corp-account-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+}
+
+.corp-account-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.corp-account-field label {
+    color: var(--corp-ink);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.corp-account-input {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid var(--corp-border);
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--corp-ink);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.corp-account-input::placeholder {
+    color: #9aa5b7;
+}
+
+.corp-account-input:hover {
+    border-color: #aebbd0;
+}
+
+.corp-account-input:focus {
+    border-color: var(--corp-blue);
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+}
+
+.corp-account-input[readonly] {
+    background-color: var(--corp-soft);
+    color: var(--corp-muted);
+}
+
+.corp-account-input.is-error {
+    border-color: #ef4444;
+}
+
+.corp-manager-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.corp-account-primary-button,
+.corp-account-outline-button {
+    display: inline-flex;
+    min-width: 126px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.corp-account-primary-button {
+    border: 1px solid var(--corp-blue);
+    background-color: var(--corp-blue);
+    color: #ffffff;
+}
+
+.corp-account-primary-button:hover {
+    background-color: var(--corp-blue-dark);
+}
+
+.corp-account-outline-button {
+    border: 1px solid var(--corp-border);
+    background-color: #ffffff;
+    color: var(--corp-ink);
+}
+
+.corp-account-outline-button:hover {
+    border-color: var(--corp-blue);
+    color: var(--corp-blue);
+}
+
+/* =========================================================
+   보안 안내
+========================================================= */
+
+.corp-account-security {
+    margin-bottom: 20px;
+    padding: 20px 22px;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    background-color: #eff6ff;
+}
+
+.corp-account-security h2 {
+    margin: 0;
+    color: var(--corp-blue);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.corp-account-security p {
+    margin: 10px 0 0;
+    color: #52627b;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   기업회원 탈퇴
+========================================================= */
+
+.corp-withdraw-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 22px 24px;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background-color: #fff5f5;
+}
+
+.corp-withdraw-section h2 {
+    margin: 0;
+    color: #dc2626;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.corp-withdraw-section p {
+    margin: 8px 0 0;
+    color: #785151;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.corp-withdraw-button {
+    display: inline-flex;
+    min-width: 132px;
+    height: 42px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #dc2626;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.corp-withdraw-button:hover {
+    background-color: #fff0f0;
+}
+
+/* =========================================================
+   메시지
+========================================================= */
+
+.corp-account-message {
+    display: none;
+    margin: -8px 0 0;
+    color: #ef4444;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.corp-account-message.is-visible {
+    display: block;
+}
+
+.corp-account-message.is-success {
+    display: block;
+    color: var(--corp-blue);
+}
+
+/* =========================================================
+   계정관리 전용 공통 모달 내용
+========================================================= */
+
+.corp-modal-summary {
+    margin-top: 20px;
+    padding: 18px;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    background-color: #fff4f4;
+    text-align: left;
+}
+
+.corp-modal-summary strong {
+    display: block;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.corp-modal-summary p {
+    margin: 11px 0 0;
+    color: #765252;
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+.corp-modal-guide {
+    margin-top: 14px;
+    padding: 13px 15px;
+    border: 1px solid var(--corp-border);
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--corp-muted);
+    font-size: 11px;
+    line-height: 1.6;
+    text-align: left;
+}
+
+/* =========================================================
+   비밀번호 변경 form-modal
+========================================================= */
+
+.corp-password-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 22px;
+    text-align: left;
+}
+
+.corp-password-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.corp-password-modal-field label {
+    color: var(--corp-ink);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.corp-password-input-wrap {
+    position: relative;
+}
+
+.corp-password-modal-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 60px 0 13px;
+    border: 1px solid var(--corp-border);
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--corp-ink);
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.corp-password-modal-input:focus {
+    border-color: var(--corp-blue);
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+}
+
+.corp-password-modal-input.is-error {
+    border-color: #ef4444;
+}
+
+.corp-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    padding: 4px;
+    border: 0;
+    background-color: transparent;
+    color: var(--corp-blue);
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.corp-password-modal-message {
+    display: none;
+    margin: 0;
+    color: #ef4444;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.corp-password-modal-message.is-visible {
+    display: block;
+}
+
+/* 숨겨진 테스트 버튼 */
+
+.corp-rejection-test-button[hidden] {
+    display: none;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 760px) {
+    .corp-account-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .corp-login-id-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .corp-withdraw-section {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .corp-withdraw-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 440px) {
+    .corp-account-heading h1 {
+        font-size: 24px;
+    }
+
+    .corp-account-card {
+        padding: 22px 17px;
+    }
+
+    .corp-password-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .corp-account-outline-button,
+    .corp-account-primary-button {
+        width: 100%;
+    }
+}

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>내 연봉정보 목록</title>
+    <!-- 메인 헤더 푸터 css -->
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <!-- 연봉정보 등록/수정 공통 폼 css -->
+    <link rel="stylesheet" th:href="@{/css/salary/my-list.css}" />
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/salary-create.css}"/>
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <script th:src="@{/js/salary/my-list.js}"></script>
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="my-salary-page">
+    <section class="my-salary-container">
+        <div class="my-salary-header">
+            <div>
+                <h1>내 연봉정보</h1>
+
+                <p>
+                    내가 등록한 연봉정보를 확인하고 수정하거나 삭제할 수 있습니다.
+                </p>
+            </div>
+
+            <a href="#" class="register-policy"> 개인정보 · 로그인 완료 </a>
+        </div>
+
+        <div class="register-notice">
+            <div class="notice-icon">✓</div>
+
+            <div class="notice-content">
+                <strong> 개인 연봉은 공개되지 않습니다. </strong>
+
+                <p>
+                    등록된 정보는 기업별 통계에만 반영되며, 기업·기준연도별로 1년간
+                    관리됩니다.
+                </p>
+            </div>
+        </div>
+
+        <div class="my-salary-top">
+          <span class="salary-count">
+            등록한 연봉정보 <strong>2건</strong>
+          </span>
+
+            <a th:href="@{/salary/create}" class="salary-add-btn"> + 새 연봉정보 등록 </a>
+        </div>
+
+        <div class="salary-list">
+            <article class="salary-card">
+                <div class="salary-company">
+                    <h3>네이버클라우드</h3>
+
+                    <p>백엔드 개발 · 2026년 · 현재 재직 중</p>
+                </div>
+
+                <div class="salary-amount">
+                    <strong> 5,200만원 </strong>
+
+                    <span> 세전 연봉 </span>
+                </div>
+
+                <div class="salary-date">
+                    <span> 2026.07.20 수정 </span>
+                </div>
+
+                <div class="salary-action">
+                    <a th:href="@{/salary/edit}" class="edit-btn"> 수정 </a>
+
+                    <button type="button" class="delete-btn">삭제</button>
+                </div>
+            </article>
+
+            <article class="salary-card">
+                <div class="salary-company">
+                    <h3>토스페이먼츠</h3>
+
+                    <p>플랫폼 엔지니어 · 2025년 · 퇴사</p>
+                </div>
+
+                <div class="salary-amount">
+                    <strong> 4,800만원 </strong>
+
+                    <span> 세전 연봉 </span>
+                </div>
+
+                <div class="salary-date">
+                    <span> 2026.07.12 수정 </span>
+                </div>
+
+                <div class="salary-action">
+                    <a href="#" class="edit-btn"> 수정 </a>
+
+                    <button type="button" class="delete-btn">삭제</button>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 모달 불러오기 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+
+<!-- 공통 헤더·푸터 불러오기 -->
+<script th:src="@{../js/common.js}"></script>
+</body>
+</html>

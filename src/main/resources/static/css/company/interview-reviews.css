@@ -1,0 +1,62 @@
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.difficulty {
+    color: #FF9800; /* 시안의 주황색 */
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* '신고' 버튼 스타일 수정 (시안에 맞춰 오른쪽으로 이동) */
+.review-card .report-btn {
+    min-width: 54px;
+    height: 28px;
+    border: 1px solid #e3e6ef;
+    border-radius: 20px;
+    background: #fff;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+    /* float: right; 등을 제거하고 flexbox로 정렬 */
+}
+
+/* '도움돼요' 배지 스타일 수정 (시안 배경색 반영) */
+.recommend-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #EEF0FF; /* 시안의 보라색 배경 */
+    color: #6F78D8;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* '면접 내용', '준비 팁' 텍스트 색상 유지 */
+.review-content-box strong {
+    min-width: 60px;
+    flex-shrink: 0;
+}
+/*.interview-reviews-main*/
+.pros {
+    color: #6366F1; /* 시안의 진한 회색 */
+    font-weight: 700;
+    margin-right: 8px;
+}
+
+.cons {
+    color: #1A9E61; /* 시안의 진한 회색 */
+    font-weight: 700;
+    margin-right: 8px;
+}
+
+/* 반응형에서 '난이도 보통'이 안 보이게 하려면 미디어 쿼리 추가 */
+@media (max-width: 768px) {
+    .difficulty {
+        /* display: none; */ /* 필요 시 주석 해제 */
+    }
+}

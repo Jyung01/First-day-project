@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>채용공고 상세 | 첫출근 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin/job/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/modal/admin/job/job-modal.css}"
+    />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header th:replace="~{common/admin-header :: adminHeader}"></header>
+      <div class="container">
+        <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+        <main class="admin-operation">
+          <div class="operation-heading job-detail-heading">
+            <div>
+              <h1>채용공고 상세</h1>
+              <p>등록된 채용공고의 내용과 운영 상태를 확인합니다.</p>
+            </div>
+          </div>
+
+          <div class="job-detail-layout">
+            <article class="job-detail-card">
+              <header class="job-detail-card__header">
+                <div>
+                  <span
+                    class="job-detail-company"
+                    th:text="${companyName}"
+                  >코드웨이브</span>
+                  <h2 th:text="${jobTitle}">백엔드 개발자 채용</h2>
+                  <p>
+                    공고번호 <span th:text="${jobId}">J-2081</span>
+                    <span aria-hidden="true">·</span>
+                    등록일 2026.07.22
+                    <span aria-hidden="true">·</span>
+                    마감일 2026.08.15
+                  </p>
+                </div>
+                <span
+                  class="job-detail-status"
+                  th:classappend="${reviewRequested} ? ' job-detail-status--review' : (${closed} ? ' job-detail-status--closed' : (${hidden} ? ' job-detail-status--hidden' : ''))"
+                  th:text="${jobStatus}"
+                >게시 중</span>
+              </header>
+
+              <section class="job-detail-section">
+                <h3>기업 정보</h3>
+                <dl class="job-detail-grid">
+                  <div>
+                    <dt>기업명</dt>
+                    <dd th:text="${companyName}">코드웨이브</dd>
+                  </div>
+                  <div>
+                    <dt>업종</dt>
+                    <dd>IT·소프트웨어</dd>
+                  </div>
+                  <div class="job-detail-grid__wide">
+                    <dt>기업 주소</dt>
+                    <dd>서울특별시 강남구 테헤란로 123</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section class="job-detail-section">
+                <h3>모집 조건</h3>
+                <dl class="job-detail-grid">
+                  <div>
+                    <dt>직무</dt>
+                    <dd>개발 · 백엔드</dd>
+                  </div>
+                  <div>
+                    <dt>고용 형태</dt>
+                    <dd>정규직</dd>
+                  </div>
+                  <div>
+                    <dt>경력</dt>
+                    <dd>신입·경력 3년 이하</dd>
+                  </div>
+                  <div>
+                    <dt>학력</dt>
+                    <dd>학력 무관</dd>
+                  </div>
+                  <div>
+                    <dt>근무 지역</dt>
+                    <dd>서울 강남구</dd>
+                  </div>
+                  <div>
+                    <dt>급여</dt>
+                    <dd>회사 내규에 따름</dd>
+                  </div>
+                  <div>
+                    <dt>모집 인원</dt>
+                    <dd>2명</dd>
+                  </div>
+                  <div>
+                    <dt>마감일</dt>
+                    <dd>2026.08.15</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section class="job-detail-section">
+                <h3>기술 스택</h3>
+                <div class="job-detail-skills">
+                  <span>Java</span>
+                  <span>Spring Boot</span>
+                  <span>MySQL</span>
+                  <span>AWS</span>
+                  <span>Git</span>
+                </div>
+              </section>
+
+              <section class="job-detail-section">
+                <h3>주요 업무</h3>
+                <ul class="job-detail-copy">
+                  <li>Spring Boot 기반 서비스 API 개발</li>
+                  <li>데이터베이스 설계 및 성능 개선</li>
+                  <li>서비스 운영과 코드 리뷰 참여</li>
+                </ul>
+              </section>
+
+              <section class="job-detail-section">
+                <h3>자격 요건 및 우대사항</h3>
+                <ul class="job-detail-copy">
+                  <li>Java 또는 Kotlin 개발 경험</li>
+                  <li>관계형 데이터베이스와 REST API에 대한 이해</li>
+                </ul>
+                <p class="job-detail-preferred">
+                  우대 · AWS 운영 경험, 협업 도구를 활용한 프로젝트 경험
+                </p>
+              </section>
+            </article>
+
+            <aside class="job-operation-panel">
+              <h2>운영 정보</h2>
+
+              <div class="job-operation-field">
+                <span>현재 상태</span>
+                <strong
+                  th:classappend="${reviewRequested} ? ' is-review' : (${closed} ? ' is-closed' : (${hidden} ? ' is-hidden' : ''))"
+                  th:text="${jobStatus}"
+                >게시 중</strong>
+              </div>
+
+              <div class="job-operation-field">
+                <span th:text="${reviewRequested} ? '재검토 요청일' : '게시 기간'">
+                  게시 기간
+                </span>
+                <p
+                  th:text="${reviewRequested} ? '2026.07.25 14:30' : '2026.07.22 - 2026.08.15'"
+                >2026.07.22 - 2026.08.15</p>
+              </div>
+
+              <div class="job-operation-group">
+                <h3>기업 담당자</h3>
+                <strong>김채용</strong>
+                <p>recruit@codewave.co.kr</p>
+                <p>02-1234-5678</p>
+              </div>
+
+              <div
+                class="job-operation-group"
+                th:if="${reviewRequested}"
+              >
+                <h3>기존 숨김 사유</h3>
+                <div class="job-hide-reason">
+                  <strong>
+                    허위 또는 과장된 채용 정보가 포함되어 있습니다.
+                  </strong>
+                  <small>2026.07.22 관리자 숨김 처리</small>
+                </div>
+                <p class="job-review-guide">
+                  현재 등록된 공고 내용을 직접 검토한 뒤 숨김 유지 또는 해제를
+                  선택합니다.
+                </p>
+              </div>
+
+              <div class="job-operation-actions">
+                <div
+                  class="job-operation-actions__review"
+                  th:if="${reviewRequested}"
+                >
+                  <button
+                    class="job-operation-button job-operation-button--danger"
+                    type="button"
+                    data-modal-open="job-keep-hidden"
+                  >
+                    숨김 유지
+                  </button>
+                  <button
+                    class="job-operation-button job-operation-button--primary"
+                    type="button"
+                    data-modal-open="job-release-hidden"
+                  >
+                    숨김 해제
+                  </button>
+                </div>
+                <button
+                  class="job-operation-button job-operation-button--danger"
+                  type="button"
+                  data-modal-open="job-hide"
+                  th:if="${canHide}"
+                >
+                  숨김 처리
+                </button>
+                <a
+                  class="job-operation-button job-operation-button--secondary"
+                  th:href="@{/admin/job}"
+                >목록으로</a>
+              </div>
+            </aside>
+          </div>
+        </main>
+      </div>
+      <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+    </div>
+    <div th:replace="~{modal/common/form-modal :: formModal}"></div>
+    <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/modal/admin/job/job-modal.js}"></script>
+  </body>
+</html>

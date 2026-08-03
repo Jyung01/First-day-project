@@ -1,0 +1,181 @@
+<div
+        xmlns:th="http://www.thymeleaf.org"
+        th:fragment="bannerModal"
+        class="admin-modal"
+        data-banner-modal
+        aria-hidden="true"
+>
+    <div class="admin-modal__backdrop" data-banner-close></div>
+
+    <section
+            class="admin-modal__dialog admin-modal__dialog--banner"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="bannerModalTitle"
+    >
+        <header class="admin-modal__header">
+            <h2 id="bannerModalTitle">배너 등록 · 수정</h2>
+
+            <button
+                    type="button"
+                    class="admin-modal__close"
+                    data-banner-close
+                    aria-label="배너 모달 닫기"
+            >
+                ×
+            </button>
+        </header>
+
+        <form class="admin-modal__form"  id="bannerForm">
+
+            <div class="admin-modal__row">
+
+                <div class="admin-modal__field admin-modal__field--full">
+                    <label class="admin-modal__label">배너 제목</label>
+
+                    <input
+                            name="title"
+                            class="admin-modal__input"
+                            type="text"
+                            placeholder="배너 제목 입력"
+                    />
+                </div>
+
+            </div>
+
+            <div class="admin-modal__row">
+
+                <div class="admin-modal__field">
+                    <label class="admin-modal__label">노출 위치</label>
+
+                    <select name="position"  class="admin-modal__select">
+                        <option>메인</option>
+                        <option>채용공고</option>
+                        <option>기업정보</option>
+                    </select>
+                </div>
+
+                <div class="admin-modal__field">
+                    <label class="admin-modal__label">
+                        노출 순서(우선순위)
+                    </label>
+
+                    <input
+                            name="priority"
+                            class="admin-modal__input"
+                            type="number"
+                            value="1"
+                    />
+
+                    <span class="admin-modal__hint">
+                        같은 위치·기간은 작은 번호 우선
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="admin-modal__row">
+
+                <div class="admin-modal__field admin-modal__field--full">
+                    <label class="admin-modal__label">연결 URL</label>
+
+                    <input
+                            name="url"
+                            class="admin-modal__input"
+                            type="text"
+                            placeholder="/jobs/event-new-developer"
+                    />
+                </div>
+
+            </div>
+
+            <div class="admin-modal__row">
+
+                <div class="admin-modal__field">
+                    <label class="admin-modal__label">배너 이미지</label>
+
+                    <div class="admin-modal__file-box">
+
+                        <label
+                                for="bannerFile"
+                                class="admin-modal__file-btn"
+                        >
+                            파일 선택
+                        </label>
+
+                        <span
+                                class="admin-modal__file-name"
+                                id="fileName"
+                        >
+                            선택된 파일 없음
+                        </span>
+
+                        <input
+                                id="bannerFile"
+                                type="file"
+                        />
+
+                    </div>
+                </div>
+
+                <div class="admin-modal__field">
+                    <label class="admin-modal__label">대체 텍스트</label>
+
+                    <input
+                            name="altText"
+                            class="admin-modal__input"
+                            type="text"
+                            placeholder="신입 개발자 채용 특별전"
+                    />
+                </div>
+
+            </div>
+
+            <div class="admin-modal__row">
+
+                <div class="admin-modal__field">
+                    <label class="admin-modal__label">시작일</label>
+
+                    <input
+                            name="startDate"
+                            class="admin-modal__input"
+                            type="date"
+                    />
+                </div>
+
+                <div class="admin-modal__field">
+                    <label class="admin-modal__label">종료일</label>
+
+                    <input
+                            name="endDate"
+                            class="admin-modal__input"
+                            type="date"
+                    />
+                </div>
+
+            </div>
+
+            <footer class="admin-modal__footer">
+
+                <button
+                        type="button"
+                        class="admin-modal-button admin-modal-button--outline"
+                        data-banner-close
+                >
+                    취소
+                </button>
+
+                <button
+                        id="bannerSubmitBtn"
+                        type="submit"
+                        class="admin-modal-button admin-modal-button--primary"
+                >
+                    저장
+                </button>
+
+            </footer>
+
+        </form>
+
+    </section>
+</div>

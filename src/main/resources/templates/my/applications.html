@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>지원 내역 | 첫출근</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}" href="/css/common.css">
+    <link rel="stylesheet" th:href="@{/css/my/common.css}" href="/css/my/common.css">
+    <link rel="stylesheet" th:href="@{/css/my/application/common.css}" href="/css/my/application/common.css">
+    <link rel="stylesheet" th:href="@{/css/my/application/list.css}" href="/css/my/application/list.css">
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="mypage">
+    <div class="wrap mypage-layout">
+        <aside th:replace="~{common/my-aside :: myAside}"></aside>
+
+        <section class="mypage-content application-content">
+            <header class="application-page-header">
+                <h1>지원 내역</h1>
+                <p>지원 상태와 전형 진행 상황을 확인할 수 있습니다.</p>
+            </header>
+
+            <nav class="application-filter" aria-label="지원 상태 필터">
+                <button class="application-filter__button is-active" type="button" data-application-filter="all">
+                    전체 <strong>8</strong>
+                </button>
+                <button class="application-filter__button" type="button" data-application-filter="applied">
+                    지원 완료 <strong>1</strong>
+                </button>
+                <button class="application-filter__button" type="button" data-application-filter="review">
+                    검토 중 <strong>1</strong>
+                </button>
+                <button class="application-filter__button" type="button" data-application-filter="interview">
+                    면접 <strong>2</strong>
+                </button>
+                <button class="application-filter__button" type="button" data-application-filter="result">
+                    최종 결과 <strong>4</strong>
+                </button>
+            </nav>
+
+            <section class="application-list-card">
+                <div class="application-list-head" aria-hidden="true">
+                    <span>지원 기업 · 공고</span>
+                    <span>지원일</span>
+                    <span>현재 상태</span>
+                    <span>최근 변경</span>
+                    <span>상세</span>
+                </div>
+
+                <div class="application-row" data-application-group="review">
+                    <strong class="application-row__job">네이버클라우드 · 백엔드 개발자</strong>
+                    <time datetime="2026-07-18">2026.07.18</time>
+                    <span class="application-status application-status--reviewing">서류 검토 중</span>
+                    <time datetime="2026-07-20">2026.07.20</time>
+                    <a class="application-detail-link" th:href="@{/my/applications/101(status='REVIEWING')}">상세 보기</a>
+                </div>
+
+                <div class="application-row" data-application-group="applied">
+                    <strong class="application-row__job">토스페이먼츠 · 플랫폼 개발자</strong>
+                    <time datetime="2026-07-15">2026.07.15</time>
+                    <span class="application-status application-status--applied">지원 완료</span>
+                    <time datetime="2026-07-15">2026.07.15</time>
+                    <a class="application-detail-link" th:href="@{/my/applications/102(status='APPLIED')}">상세 보기</a>
+                </div>
+
+                <div class="application-row" data-application-group="interview">
+                    <strong class="application-row__job">우아한형제들 · 데이터 엔지니어</strong>
+                    <time datetime="2026-07-10">2026.07.10</time>
+                    <span class="application-status application-status--interview">면접 예정</span>
+                    <time datetime="2026-07-19">2026.07.19</time>
+                    <a class="application-detail-link" th:href="@{/my/applications/103(status='INTERVIEW_SCHEDULED')}">상세 보기</a>
+                </div>
+
+                <div class="application-row" data-application-group="interview">
+                    <strong class="application-row__job">카카오엔터프라이즈 · 클라우드 엔지니어</strong>
+                    <time datetime="2026-06-28">2026.06.28</time>
+                    <span class="application-status application-status--interviewed">면접 완료</span>
+                    <time datetime="2026-07-08">2026.07.08</time>
+                    <a class="application-detail-link" th:href="@{/my/applications/104(status='INTERVIEWED')}">상세 보기</a>
+                </div>
+
+                <div class="application-row" data-application-group="result">
+                    <strong class="application-row__job">라인플러스 · 서버 개발자</strong>
+                    <time datetime="2026-06-20">2026.06.20</time>
+                    <span class="application-status application-status--passed">최종 합격</span>
+                    <time datetime="2026-07-05">2026.07.05</time>
+                    <a class="application-detail-link" th:href="@{/my/applications/105(status='PASSED')}">상세 보기</a>
+                </div>
+
+                <div class="application-row" data-application-group="result">
+                    <strong class="application-row__job">당근 · 백엔드 개발자</strong>
+                    <time datetime="2026-06-12">2026.06.12</time>
+                    <span class="application-status application-status--rejected">불합격</span>
+                    <time datetime="2026-07-02">2026.07.02</time>
+                    <a class="application-detail-link" th:href="@{/my/applications/106(status='DOCUMENT_REJECTED')}">상세 보기</a>
+                </div>
+
+                <div class="application-row" data-application-group="result">
+                    <strong class="application-row__job">쿠팡 · Java 개발자</strong>
+                    <time datetime="2026-05-18">2026.05.18</time>
+                    <span class="application-status application-status--joined">입사 완료</span>
+                    <time datetime="2026-06-30">2026.06.30</time>
+                    <a class="application-detail-link" th:href="@{/my/applications/107(status='JOINED')}">상세 보기</a>
+                </div>
+
+                <div class="application-row" data-application-group="result">
+                    <strong class="application-row__job">컬리 · 주문 플랫폼 개발자</strong>
+                    <time datetime="2026-05-10">2026.05.10</time>
+                    <span class="application-status application-status--canceled">지원 취소</span>
+                    <time datetime="2026-05-11">2026.05.11</time>
+                    <a class="application-detail-link" th:href="@{/my/applications/108(status='CANCELED')}">상세 보기</a>
+                </div>
+
+                <p class="application-empty" data-application-empty hidden>해당 상태의 지원 내역이 없습니다.</p>
+            </section>
+
+            <nav class="application-pagination" aria-label="지원 내역 페이지">
+                <a href="#" aria-label="이전 페이지">‹</a>
+                <a class="is-active" href="#" aria-current="page">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                <a href="#">4</a>
+                <a href="#">5</a>
+                <a href="#" aria-label="다음 페이지">›</a>
+            </nav>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{common/footer :: footer}"></footer>
+<script th:src="@{/js/common.js}" src="/js/common.js"></script>
+<script th:src="@{/js/my/application/list.js}" src="/js/my/application/list.js"></script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+/* common */
+
+.corp-page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 5px 0 28px;
+}
+
+.corp-page-heading h1 {
+  font-size: 27px;
+  line-height: 1.3;
+}
+
+.corp-page-heading p {
+  margin-top: 8px;
+  color: var(--corp-muted);
+  font-size: 14px;
+}
+
+.corp-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.corp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 86px;
+  height: 42px;
+  padding: 0 20px;
+  border: 1px solid var(--corp-border);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.corp-button--primary {
+  color: #fff;
+  border-color: var(--corp-blue);
+  background: var(--corp-blue);
+}
+
+.corp-button--danger {
+  color: #ef4444;
+  border: 0;
+  background: transparent;
+}
+
+.corp-card {
+  border: 1px solid var(--corp-border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.corp-badge {
+  display: inline-grid;
+  min-width: 76px;
+  height: 27px;
+  padding: 0 12px;
+  place-items: center;
+  border-radius: 99px;
+  color: var(--corp-blue);
+  background: var(--corp-blue-soft);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.corp-badge--green {
+  color: var(--corp-green);
+}
+
+.corp-badge--orange {
+  color: var(--corp-orange);
+}
+
+.corp-badge--red {
+  color: #ef4444;
+}
+
+.corp-note {
+  margin-top: 28px;
+  padding: 16px 18px;
+  color: var(--corp-muted);
+  background: var(--corp-blue-soft);
+  border: 1px solid var(--corp-border);
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.corp-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 22px;
+}
+
+.corp-pagination a {
+  width: 40px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: var(--corp-muted);
+  font-size: 12px;
+}
+
+.corp-pagination .is-active {
+  color: var(--corp-blue);
+  font-weight: 800;
+}
+
+.primary-action {
+  width: 130px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--corp-blue);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.panel {
+  padding: 22px;
+  border: 1px solid var(--corp-border);
+  border-radius: 12px;
+}
+
+.corp-control {
+  width: 100%;
+  height: 43px;
+  padding: 0 14px;
+  border: 1px solid var(--corp-border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: var(--corp-blue);
+  background: var(--corp-blue-soft);
+  border: 1px solid var(--corp-border);
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.corp-pagination a:first-child,
+.corp-pagination a:last-child {
+  border-radius: 7px;
+  font-size: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  transition: background-color 0.18s ease;
+}
+
+.corp-pagination a:first-child {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2363728d' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 5-5 5 5 5'/%3E%3C/svg%3E");
+}
+
+.corp-pagination a:last-child {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2363728d' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m8 5 5 5-5 5'/%3E%3C/svg%3E");
+}
+
+.corp-pagination a:first-child:hover,
+.corp-pagination a:last-child:hover {
+  background-color: var(--corp-blue-soft);
+}
+
+.corp-pagination a {
+  cursor: pointer;
+  border-radius: 7px;
+}
+
+.corp-pagination a:hover {
+  background-color: var(--corp-blue-soft);
+}
+
+.ai-polish-open {
+  padding: 5px 12px;
+  color: var(--corp-blue);
+  background: var(--corp-blue-soft);
+  border: 1px solid #a9c2ff;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.corp-content input,
+.corp-content select,
+.corp-content textarea {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.corp-content input::placeholder,
+.corp-content textarea::placeholder {
+  font-size: 13px;
+  color: #8793a8;
+}
+
+.corp-content button,
+.corp-content .corp-button {
+  font-size: 13px;
+}
+
+.corp-content .ai-polish-open {
+  font-size: 11px;
+}
+
+.skill-modal-dialog {
+  font-size: 13px;
+}
+
+.skill-modal-dialog input,
+.skill-modal-dialog button {
+  font-size: 13px;
+}

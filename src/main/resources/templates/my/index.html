@@ -1,0 +1,215 @@
+ <!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>첫출근 — 메인 페이지</title>
+        <!-- 메인 헤더 푸터 css -->
+        <link rel="stylesheet" th:href="@{/css/common.css}" />
+        <!-- 마이페이지 공통 css -->
+        <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+        <!-- 마이페이지 index(대시보드) css -->
+        <link rel="stylesheet" th:href="@{/css/my/index.css}" />
+    </head>
+    <body>
+        <!-- ============ 헤더 (공통 영역) ============ -->
+        <header th:replace="~{common/header :: header}"></header>
+
+        <main class="mypage">
+            <div class="wrap mypage-layout">
+                <!-- 좌측 사이드바 -->
+                <aside th:replace="~{common/my-aside :: myAside}"></aside>
+
+                <!-- 우측 컨텐츠 -->
+                <section class="mypage-content">
+                    <!-- 인사말 -->
+                    <div class="mypage-greeting">
+                        <h1 class="mypage-greeting__title">
+                            안녕하세요, <span th:text="${memberName} ?: '김첫출'">김첫출</span> 님
+                        </h1>
+                        <p class="mypage-greeting__desc">첫출근에서 준비 중인 취업 활동을 한눈에 확인하세요.</p>
+                    </div>
+
+                    <!-- 요약 통계 카드 -->
+                    <div class="mypage-stats">
+                        <div class="stat-card">
+                            <div class="stat-card__icon stat-card__icon--lilac">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"
+                                        stroke="currentColor"
+                                        stroke-width="1.6"
+                                        stroke-linejoin="round"
+                                    />
+                                    <path
+                                        d="M14 3v5h5"
+                                        stroke="currentColor"
+                                        stroke-width="1.6"
+                                        stroke-linejoin="round"
+                                    />
+                                    <path
+                                        d="M8 13h8M8 17h5"
+                                        stroke="currentColor"
+                                        stroke-width="1.6"
+                                        stroke-linecap="round"
+                                    />
+                                </svg>
+                            </div>
+                            <p class="stat-card__label">지원 내역</p>
+                            <p class="stat-card__value" th:text="${applicationCount} ?: 4">
+                                4<span class="stat-card__unit">건</span>
+                            </p>
+                            <p class="stat-card__hint">
+                                진행 중 <span th:text="${applicationInProgress} ?: 2">2</span>건
+                            </p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-card__icon stat-card__icon--peach">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="m12 3 2.7 5.9 6.3.6-4.7 4.4 1.3 6.3L12 17l-5.6 3.2 1.3-6.3L3 9.5l6.3-.6L12 3Z"
+                                        stroke="currentColor"
+                                        stroke-width="1.6"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                            </div>
+                            <p class="stat-card__label">관심 공고</p>
+                            <p class="stat-card__value" th:text="${likedJobCount} ?: 12">
+                                12<span class="stat-card__unit">건</span>
+                            </p>
+                            <p class="stat-card__hint">
+                                마감 임박 <span th:text="${likedJobDeadlineCount} ?: 3">3</span>건
+                            </p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-card__icon stat-card__icon--sand">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M4 21V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v15"
+                                        stroke="currentColor"
+                                        stroke-width="1.6"
+                                        stroke-linejoin="round"
+                                    />
+                                    <path
+                                        d="M15 10h4a1 1 0 0 1 1 1v10"
+                                        stroke="currentColor"
+                                        stroke-width="1.6"
+                                        stroke-linejoin="round"
+                                    />
+                                    <path
+                                        d="M8 9h2M8 13h2M8 17h2"
+                                        stroke="currentColor"
+                                        stroke-width="1.6"
+                                        stroke-linecap="round"
+                                    />
+                                </svg>
+                            </div>
+                            <p class="stat-card__label">관심 기업</p>
+                            <p class="stat-card__value" th:text="${likedCompanyCount} ?: 6">
+                                6<span class="stat-card__unit">개</span>
+                            </p>
+                            <p class="stat-card__hint">
+                                신규 공고 <span th:text="${likedCompanyNewCount} ?: 2">2</span>건
+                            </p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-card__icon stat-card__icon--mint">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M3 7h6l2 2h10v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"
+                                        stroke="currentColor"
+                                        stroke-width="1.6"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                            </div>
+                            <p class="stat-card__label">등록 문서</p>
+                            <p class="stat-card__value" th:text="${documentCount} ?: 5">
+                                5<span class="stat-card__unit">개</span>
+                            </p>
+                            <p class="stat-card__hint">이력서 3 · 자소서 2</p>
+                        </div>
+                    </div>
+
+                    <!-- 하단 2컬럼 -->
+                    <div class="mypage-bottom">
+                        <!-- 최근 지원 내역 -->
+                        <div class="panel">
+                            <div class="panel__header">
+                                <h2 class="panel__title">최근 지원 내역</h2>
+                                <a th:href="@{/mypage/applications}" class="more-link">전체보기 →</a>
+                            </div>
+
+                            <!--
+                      정적 프로토타입 단계: 지금은 3개 항목을 직접 써놓았습니다.
+                      나중에 백엔드 연동 시, 아래 <li> 하나만 남기고
+                      th:each="app : ${recentApplications}" 를 그 li에 추가한 뒤
+                      company / position / status 값을 th:text 로 채우면 됩니다.
+                    -->
+                            <ul class="application-list">
+                                <li class="application-item">
+                                    <div class="application-item__avatar avatar-c1">네</div>
+                                    <div class="application-item__info">
+                                        <p class="application-item__company">네이버클라우드</p>
+                                        <p class="application-item__position">백엔드 개발자</p>
+                                    </div>
+                                    <span class="status-badge status-badge--review">서류 검토 중</span>
+                                </li>
+                                <li class="application-item">
+                                    <div class="application-item__avatar avatar-c2">토</div>
+                                    <div class="application-item__info">
+                                        <p class="application-item__company">토스페이먼츠</p>
+                                        <p class="application-item__position">풀스택 엔지니어</p>
+                                    </div>
+                                    <span class="status-badge status-badge--done">지원 완료</span>
+                                </li>
+                                <li class="application-item">
+                                    <div class="application-item__avatar avatar-c3">우</div>
+                                    <div class="application-item__info">
+                                        <p class="application-item__company">우아한형제들</p>
+                                        <p class="application-item__position">데이터 엔지니어</p>
+                                    </div>
+                                    <span class="status-badge status-badge--interview">면접 예정</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- 내 문서 -->
+                        <div class="panel">
+                            <div class="panel__header">
+                                <h2 class="panel__title">내 문서</h2>
+                            </div>
+
+                            <div class="document-block">
+                                <p class="document-block__label">최근 수정 이력서</p>
+                                <p class="document-block__desc">백엔드 개발 이력서 · 2026.07.20</p>
+                                <a href="#" class="btn btn-outline btn-block">최근 이력서 수정</a>
+                            </div>
+
+                            <div class="document-block">
+                                <p class="document-block__label">최근 수정 자기소개서</p>
+                                <p class="document-block__desc">AI 첨삭 완료</p>
+                                <a href="#" class="btn btn-primary btn-block">AI 첨삭 결과 보기</a>
+                            </div>
+
+                            <div class="document-empty">
+                                <p class="document-empty__text">미등록 시 등록된 문서가 없습니다</p>
+                                <a th:href="@{/mypage/resumes/new}" class="document-empty__link">이력서 작성하기 →</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- ============ 푸터 (공통 영역) ============ -->
+        <footer th:replace="~{common/footer :: footer}"></footer>
+
+        <!-- 공통 헤더·푸터 불러오기 -->
+        <script th:src="@{../js/common.js}"></script>
+    </body>
+</html>

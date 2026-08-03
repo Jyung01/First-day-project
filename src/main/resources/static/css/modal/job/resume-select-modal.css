@@ -1,0 +1,190 @@
+.resume-modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, .48);
+}
+
+.resume-modal-overlay.is-open {
+  display: flex;
+}
+
+body.resume-modal-open {
+  overflow: hidden;
+}
+
+.resume-modal {
+  position: relative;
+  width: min(740px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  border-radius: 20px;
+  background: #fff;
+  padding: 38px 60px 54px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, .24);
+}
+
+.resume-modal-close {
+  position: absolute;
+  top: 28px;
+  right: 34px;
+  border: 0;
+  background: transparent;
+  color: var(--job-muted);
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.resume-modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -.03em;
+}
+
+.resume-modal-header p {
+  margin: 8px 0 32px;
+  color: var(--job-muted);
+  font-size: 14px;
+}
+
+.resume-modal-section {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.resume-modal-section + .resume-modal-section {
+  margin-top: 34px;
+}
+
+.resume-modal-section legend,
+.resume-modal-section h3 {
+  margin: 0 0 14px;
+  color: var(--job-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.resume-modal-option {
+  display: flex;
+  align-items: center;
+  min-height: 94px;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--job-line);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.resume-modal-option + .resume-modal-option {
+  margin-top: 14px;
+}
+
+.resume-modal-option:has(input:checked) {
+  border-color: var(--job-primary);
+  background: var(--job-primary-soft);
+}
+
+.resume-modal-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.resume-modal-radio {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border: 1px solid var(--job-line);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.resume-modal-option input:checked + .resume-modal-radio {
+  border: 7px solid var(--job-primary);
+}
+
+.resume-modal-copy {
+  flex: 1;
+}
+
+.resume-modal-copy strong,
+.resume-modal-copy small,
+.resume-modal-document strong,
+.resume-modal-document small {
+  display: block;
+}
+
+.resume-modal-copy small,
+.resume-modal-document small {
+  margin-top: 7px;
+  color: var(--job-muted);
+  font-size: 12px;
+}
+
+.resume-modal-option .selected-label {
+  color: var(--job-primary);
+  font-size: 12px;
+}
+
+.resume-modal-document {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 76px;
+  padding: 16px 18px;
+  border: 1px solid var(--job-line);
+  border-radius: 12px;
+}
+
+.resume-modal-document a {
+  color: var(--job-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.resume-modal-notice {
+  margin-top: 30px;
+  padding: 18px;
+  border-radius: 11px;
+  background: var(--job-surface);
+}
+
+.resume-modal-notice strong {
+  color: var(--job-primary);
+  font-size: 13px;
+}
+
+.resume-modal-notice p {
+  margin: 7px 0 0;
+  color: var(--job-muted);
+  font-size: 12px;
+}
+
+.resume-modal-actions {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 18px;
+  margin-top: 38px;
+}
+
+@media (max-width: 620px) {
+  .resume-modal {
+    padding: 32px 20px 28px;
+  }
+
+  .resume-modal-close {
+    top: 22px;
+    right: 20px;
+  }
+
+  .resume-modal-actions {
+    grid-template-columns: 1fr;
+  }
+}

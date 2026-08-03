@@ -1,0 +1,491 @@
+/* =========================================================
+   개인회원 / 기업회원 정보입력 페이지
+========================================================= */
+
+.join-form-main {
+    min-height: 760px;
+    padding-top: 34px;
+    padding-bottom: 70px;
+}
+
+.join-form-container {
+    max-width: 680px;
+}
+
+.join-form-card {
+    padding: 38px 46px 42px;
+}
+
+.join-form-header {
+    margin-bottom: 20px;
+}
+
+.join-form-header .auth-title {
+    font-size: 28px;
+    letter-spacing: -0.7px;
+}
+
+.join-form-header .auth-description {
+    margin-top: 7px;
+}
+
+/* 진행 단계 */
+
+.join-progress {
+    margin-bottom: 26px;
+}
+
+.join-progress-text {
+    margin: 0 0 11px;
+    color: #6266f1;
+    font-size: 13px;
+}
+
+.join-progress-text strong {
+    font-weight: 700;
+}
+
+.join-progress-track {
+    width: 100%;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background-color: #e3e7ef;
+}
+
+.join-progress-bar {
+    display: block;
+    width: 66.666%;
+    height: 100%;
+    border-radius: inherit;
+    background-color: #6266f1;
+}
+
+/* 폼 기본 */
+
+.join-form {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+.join-field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.join-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.join-field-full {
+    width: 100%;
+}
+
+.join-required {
+    color: #6266f1;
+}
+
+.join-label-option {
+    color: #8a94a7;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.join-input-action {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 150px;
+    gap: 12px;
+}
+
+.join-outline-button,
+.join-address-button,
+.join-primary-small-button,
+.join-resend-button {
+    height: 52px;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.join-outline-button,
+.join-address-button {
+    border: 1px solid #6266f1;
+    background-color: #ffffff;
+    color: #5156e5;
+}
+
+.join-outline-button:hover,
+.join-address-button:hover {
+    background-color: #f4f5ff;
+}
+
+.join-primary-small-button {
+    border: 1px solid #6266f1;
+    background-color: #6266f1;
+    color: #ffffff;
+}
+
+.join-primary-small-button:hover {
+    border-color: #5357df;
+    background-color: #5357df;
+}
+
+.join-resend-button {
+    border: 0;
+    background-color: transparent;
+    color: #707b90;
+    font-weight: 500;
+}
+
+.join-resend-button:hover {
+    color: #5156e5;
+}
+
+/* 이메일 인증 */
+
+.join-verification {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 72px 170px;
+    gap: 10px;
+    padding: 8px;
+    border: 1px solid #dce2ec;
+    border-radius: 10px;
+    background-color: #f8f9fc;
+}
+
+.join-verification .auth-input {
+    height: 44px;
+    background-color: #ffffff;
+}
+
+.join-verification .join-resend-button,
+.join-verification .join-primary-small-button {
+    height: 44px;
+}
+
+/* 상태 메시지 */
+
+.join-field-message {
+    display: none;
+    margin: -8px 0 0;
+    color: #ff4d5a;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.join-field-message.is-visible {
+    display: block;
+}
+
+.join-field-message.is-success {
+    display: block;
+    color: #3b82f6;
+}
+
+/* 섹션 구분 */
+
+.join-section-title {
+    margin: 2px 0 -2px;
+    color: #6266f1;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.join-company-section-title {
+    margin-top: 8px;
+    padding-top: 17px;
+    border-top: 1px solid #edf0f5;
+}
+
+.join-company-size-field {
+    width: calc(50% - 7px);
+}
+
+.join-select {
+    appearance: none;
+    background-image:
+            linear-gradient(45deg, transparent 50%, #8b95a7 50%),
+            linear-gradient(135deg, #8b95a7 50%, transparent 50%);
+    background-position:
+            calc(100% - 18px) 22px,
+            calc(100% - 13px) 22px;
+    background-repeat: no-repeat;
+    background-size: 5px 5px;
+    cursor: pointer;
+}
+
+/* =========================================================
+   희망 직무 선택 영역
+========================================================= */
+
+.join-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.job-selection-count {
+    color: #6266f1;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.job-selection-field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 98px;
+    padding: 12px;
+    border: 1px solid #d7deea;
+    border-radius: 9px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+}
+
+.job-selection-field:focus-within {
+    border-color: #6266f1;
+    box-shadow: 0 0 0 3px rgba(98, 102, 241, 0.1);
+}
+
+.job-selected-list {
+    display: flex;
+    min-height: 30px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.job-selected-empty {
+    margin: 0;
+    color: #9aa4b5;
+    font-size: 12px;
+}
+
+.job-selected-chip {
+    display: inline-flex;
+    height: 30px;
+    align-items: center;
+    gap: 7px;
+    padding: 0 8px 0 10px;
+    border-radius: 6px;
+    background-color: #f0f2ff;
+    color: #5156df;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.job-selected-chip button {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: transparent;
+    color: #7f83d8;
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.job-selected-chip button:hover {
+    background-color: #dfe1ff;
+    color: #3e43ca;
+}
+
+.job-select-open-button {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #6266f1;
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: #5156df;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.job-select-open-button:hover {
+    background-color: #f4f5ff;
+}
+
+/* 주소 */
+
+.join-address {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.join-address legend {
+    margin-bottom: 7px;
+    color: #293246;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.join-postcode-row {
+    display: grid;
+    grid-template-columns: 150px 160px;
+    gap: 12px;
+}
+
+.join-address .auth-input[readonly] {
+    background-color: #f6f8fb;
+    cursor: default;
+}
+
+.join-postcode-row .auth-input[readonly] {
+    background-color: #ffffff;
+}
+
+.join-help {
+    margin: 0;
+    color: #8a94a7;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+/* 하단 버튼 */
+
+.join-form-actions {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.join-secondary-button,
+.join-submit-button {
+    display: flex;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.join-secondary-button {
+    border: 1px solid #d7deea;
+    background-color: #ffffff;
+    color: #30394c;
+}
+
+.join-secondary-button:hover {
+    border-color: #b8c2d4;
+    background-color: #fafbfc;
+}
+
+.join-submit-button {
+    border: 1px solid #6266f1;
+    background-color: #6266f1;
+    color: #ffffff;
+}
+
+.join-submit-button:hover {
+    border-color: #5357df;
+    background-color: #5357df;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 768px) {
+    .join-form-main {
+        padding-top: 28px;
+        padding-bottom: 55px;
+    }
+
+    .join-form-card {
+        padding: 34px 26px 36px;
+    }
+
+    .join-input-action {
+        grid-template-columns: minmax(0, 1fr) 130px;
+    }
+
+    .join-verification {
+        grid-template-columns: minmax(0, 1fr) 66px 140px;
+    }
+
+    .join-company-size-field {
+        width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+    .join-field-row {
+        grid-template-columns: 1fr;
+    }
+
+    .join-input-action {
+        grid-template-columns: 1fr;
+    }
+
+    .join-outline-button {
+        height: 46px;
+    }
+
+    .join-verification {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .join-verification .auth-input {
+        grid-column: 1 / -1;
+    }
+
+    .join-postcode-row {
+        grid-template-columns: minmax(0, 1fr) 130px;
+    }
+
+    .join-form-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .join-submit-button {
+        order: 1;
+    }
+
+    .join-secondary-button {
+        order: 2;
+    }
+}
+
+@media (max-width: 480px) {
+    .join-form-card {
+        padding: 30px 20px 32px;
+    }
+
+    .join-form-header .auth-title {
+        font-size: 24px;
+    }
+
+    .join-postcode-row {
+        grid-template-columns: 1fr;
+    }
+
+    .join-address-button {
+        height: 46px;
+    }
+}

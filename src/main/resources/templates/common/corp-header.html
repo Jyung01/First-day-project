@@ -1,0 +1,13 @@
+<header class="corp-header" xmlns:th="http://www.thymeleaf.org" th:fragment="corpHeader">
+    <div class="corp-header__inner">
+        <a class="corp-brand" th:href="@{/corp}" aria-label="첫출근 기업관리 홈">
+            <img class="corp-brand__logo" th:src="@{/images/header-logo.svg}" width="40" height="40" alt="" aria-hidden="true" />
+            <strong class="corp-brand__name">첫출근</strong>
+            <span class="corp-brand__tag">기업관리</span>
+        </a>
+        <nav class="corp-header__actions" aria-label="기업관리 바로가기">
+            <a class="corp-header__home" th:href="@{/}">서비스 홈</a>
+            <a class="corp-header__logout" th:href="@{/logout}">로그아웃</a>
+        </nav>
+    </div>
+</header>

@@ -1,0 +1,323 @@
+/* =========================================================
+   DOC-01 이력서 관리
+========================================================= */
+
+.resume-list-content {
+    min-width: 0;
+}
+
+.resume-list-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.resume-list-title {
+    margin: 0;
+    color: var(--ink-900);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.7px;
+}
+
+.resume-list-description {
+    margin: 7px 0 0;
+    color: var(--ink-500);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* 새 이력서 작성 */
+
+.resume-create-button {
+    display: inline-flex;
+    min-width: 148px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0 18px;
+    border: 1px solid var(--blue-600);
+    border-radius: 8px;
+    background-color: var(--blue-600);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.resume-create-button:hover {
+    filter: brightness(0.94);
+}
+
+/* =========================================================
+   이력서 목록
+========================================================= */
+
+.resume-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.resume-card {
+    display: flex;
+    min-height: 112px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 22px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background-color: var(--paper);
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.resume-card:hover {
+    border-color: #c8ccff;
+    box-shadow: 0 7px 20px rgba(33, 43, 79, 0.06);
+    transform: translateY(-1px);
+}
+
+.resume-card-main {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 16px;
+}
+
+.resume-card-icon {
+    position: relative;
+    width: 42px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    background-color: #eef1ff;
+}
+
+.resume-card-icon::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    left: 11px;
+    width: 20px;
+    height: 3px;
+    border-radius: 999px;
+    background-color: #c9cdff;
+    box-shadow:
+        0 7px 0 #c9cdff,
+        0 14px 0 #c9cdff;
+}
+
+.resume-card-info {
+    min-width: 0;
+}
+
+.resume-card-title {
+    overflow: hidden;
+    margin: 0;
+    color: var(--ink-900);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resume-card-summary {
+    overflow: hidden;
+    margin: 8px 0 0;
+    color: var(--ink-500);
+    font-size: 12px;
+    line-height: 1.5;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 카드 버튼 */
+
+.resume-card-actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+}
+
+.resume-action-button {
+    display: inline-flex;
+    min-width: 54px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 13px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background-color: var(--paper);
+    color: var(--ink-700);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.resume-action-button:hover {
+    border-color: var(--blue-600);
+    color: var(--blue-600);
+}
+
+.resume-view-button {
+    min-width: 88px;
+}
+
+/* =========================================================
+   안내 문구
+========================================================= */
+
+.resume-list-guide {
+    margin-top: 34px;
+    padding: 18px 20px;
+    border-radius: 9px;
+    background-color: #eef1ff;
+    color: #737d91;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   빈 목록
+========================================================= */
+
+.resume-empty {
+    display: flex;
+    min-height: 320px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 40px 20px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background-color: var(--paper);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.resume-empty[hidden] {
+    display: none;
+}
+
+.resume-empty-icon {
+    position: relative;
+    width: 62px;
+    height: 70px;
+    margin-bottom: 22px;
+    border-radius: 9px;
+    background-color: #eef1ff;
+}
+
+.resume-empty-icon::before {
+    content: "";
+    position: absolute;
+    top: 18px;
+    left: 16px;
+    width: 30px;
+    height: 4px;
+    border-radius: 999px;
+    background-color: #c7cbff;
+    box-shadow:
+        0 10px 0 #c7cbff,
+        0 20px 0 #c7cbff;
+}
+
+.resume-empty h2 {
+    margin: 0;
+    color: var(--ink-900);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.resume-empty p {
+    margin: 10px 0 0;
+    color: var(--ink-500);
+    font-size: 13px;
+}
+
+.resume-empty-button {
+    display: inline-flex;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 24px;
+    padding: 0 20px;
+    border-radius: 8px;
+    background-color: var(--blue-600);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 900px) {
+    .resume-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .resume-card-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 640px) {
+    .resume-list-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .resume-create-button {
+        width: 100%;
+    }
+
+    .resume-card {
+        padding: 20px 16px;
+    }
+
+    .resume-card-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .resume-action-button,
+    .resume-view-button {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 420px) {
+    .resume-list-title {
+        font-size: 24px;
+    }
+
+    .resume-card-main {
+        align-items: flex-start;
+    }
+
+    .resume-card-actions {
+        grid-template-columns: 1fr;
+    }
+}

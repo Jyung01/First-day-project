@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>기업회원 약관 동의 | 첫출근</title>
+
+        <link rel="stylesheet" th:href="@{/css/common.css}" />
+        <link rel="stylesheet" th:href="@{/css/auth/common.css}" />
+        <link rel="stylesheet" th:href="@{/css/auth/terms.css}" />
+        <link rel="stylesheet" th:href="@{/css/modal/auth/terms-modal.css}" />
+    </head>
+
+    <body>
+        <!-- 공통 헤더 -->
+        <header th:replace="~{common/header :: header}"></header>
+
+        <main class="auth-main terms-main">
+            <div class="auth-container terms-container">
+                <section class="auth-card terms-card">
+                    <div class="auth-card-header terms-header">
+                        <h1 class="auth-title">기업회원 가입</h1>
+                        <p class="auth-description">기업 서비스 이용을 위한 약관에 동의해주세요.</p>
+                    </div>
+
+                    <!-- 회원가입 단계 -->
+                    <div class="terms-progress">
+                        <p class="terms-progress-text">1단계 · <strong>약관동의</strong></p>
+
+                        <div class="terms-progress-track" aria-label="회원가입 진행률">
+                            <span class="terms-progress-bar"></span>
+                        </div>
+                    </div>
+
+                    <form class="terms-form" th:action="@{/auth/corporate-signup}" method="get" data-terms-form>
+                        <!-- 전체 동의 -->
+                        <label class="terms-all">
+                            <input type="checkbox" class="terms-checkbox-input" data-check-all />
+
+                            <span class="terms-checkbox-box"></span>
+
+                            <span class="terms-all-text"> 전체 약관에 동의합니다. </span>
+                        </label>
+
+                        <!-- 개별 약관 -->
+                        <div class="terms-list">
+                            <div class="terms-item">
+                                <label class="terms-item-label">
+                                    <input
+                                        type="checkbox"
+                                        name="serviceTermsAgreed"
+                                        value="true"
+                                        class="terms-checkbox-input"
+                                        data-term-checkbox
+                                        data-required="true"
+                                    />
+
+                                    <span class="terms-checkbox-box"></span>
+
+                                    <span class="terms-item-content">
+                                        <strong>기업회원 서비스 이용약관</strong>
+                                        <small>필수</small>
+                                    </span>
+                                </label>
+
+                                <button type="button" class="terms-view-button" data-modal-type="company-service">
+                                    보기
+                                </button>
+                            </div>
+
+                            <div class="terms-item">
+                                <label class="terms-item-label">
+                                    <input
+                                        type="checkbox"
+                                        name="privacyAgreed"
+                                        value="true"
+                                        class="terms-checkbox-input"
+                                        data-term-checkbox
+                                        data-required="true"
+                                    />
+
+                                    <span class="terms-checkbox-box"></span>
+
+                                    <span class="terms-item-content">
+                                        <strong>개인정보 수집·이용 동의</strong>
+                                        <small>필수</small>
+                                    </span>
+                                </label>
+
+                                <button type="button" class="terms-view-button" data-modal-type="privacy">보기</button>
+                            </div>
+
+                            <div class="terms-item">
+                                <label class="terms-item-label">
+                                    <input
+                                        type="checkbox"
+                                        name="companyInfoAgreed"
+                                        value="true"
+                                        class="terms-checkbox-input"
+                                        data-term-checkbox
+                                        data-required="true"
+                                    />
+
+                                    <span class="terms-checkbox-box"></span>
+
+                                    <span class="terms-item-content">
+                                        <strong>기업정보 공개 동의</strong>
+                                        <small>필수</small>
+                                    </span>
+                                </label>
+
+                                <button type="button" class="terms-view-button" data-modal-type="company-info">
+                                    보기
+                                </button>
+                            </div>
+
+                            <div class="terms-item">
+                                <label class="terms-item-label">
+                                    <input
+                                        type="checkbox"
+                                        name="marketingAgreed"
+                                        value="true"
+                                        class="terms-checkbox-input"
+                                        data-term-checkbox
+                                    />
+
+                                    <span class="terms-checkbox-box"></span>
+
+                                    <span class="terms-item-content">
+                                        <strong>마케팅 정보 수신 동의</strong>
+                                        <small>선택</small>
+                                    </span>
+                                </label>
+
+                                <button type="button" class="terms-view-button" data-modal-type="marketing">
+                                    보기
+                                </button>
+                            </div>
+                        </div>
+
+                        <p class="terms-error" data-terms-error aria-live="polite">필수 약관에 모두 동의해주세요.</p>
+
+                        <div class="terms-actions">
+                            <a th:href="@{/auth/member-type}" class="terms-button terms-button-secondary"> 취소 </a>
+
+                            <button type="submit" class="terms-button terms-button-primary">다음</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </main>
+
+        <!-- 약관 상세 모달 -->
+        <div th:replace="~{modal/auth/terms-modal :: termsModal}"></div>
+
+        <!-- 공통 푸터 -->
+        <footer th:replace="~{common/footer :: footer}"></footer>
+
+        <script th:src="@{/js/common.js}"></script>
+        <script th:src="@{/js/auth/terms.js}"></script>
+    </body>
+</html>

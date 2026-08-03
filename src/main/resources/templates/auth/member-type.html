@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>회원가입 유형 선택 | 첫출근</title>
+
+        <!-- 사이트 전체 공통 CSS -->
+        <link rel="stylesheet" th:href="@{/css/common.css}" />
+
+        <!-- 로그인·회원가입 공통 CSS -->
+        <link rel="stylesheet" th:href="@{/css/auth/common.css}" />
+
+        <!-- 회원 유형 선택 전용 CSS -->
+        <link rel="stylesheet" th:href="@{/css/auth/member-type.css}" />
+    </head>
+
+    <body>
+        <!-- 공통 헤더 -->
+        <header th:replace="~{common/header :: header}"></header>
+
+        <main class="auth-main member-type-main">
+            <div class="auth-container member-type-container">
+                <section class="auth-card member-type-card">
+                    <div class="auth-card-header member-type-header">
+                        <h1 class="auth-title">회원가입 유형을 선택해주세요</h1>
+
+                        <p class="auth-description">가입하려는 회원 유형에 따라 필요한 정보가 달라요.</p>
+                    </div>
+
+                    <div class="member-type-list">
+                        <!-- 개인회원 -->
+                        <article class="member-type-item member-type-item-personal">
+                            <div class="member-type-content">
+                                <h2 class="member-type-title">개인회원</h2>
+
+                                <p class="member-type-description">채용공고를 찾고 지원하고 싶어요.</p>
+
+                                <ul class="member-type-benefits">
+                                    <li>채용공고 지원</li>
+                                    <li>관심 공고·기업 관리</li>
+                                    <li>이력서·자기소개서 작성</li>
+                                    <li>기업 리뷰·면접 후기</li>
+                                </ul>
+                            </div>
+
+                            <a th:href="@{/auth/personal-terms}" class="member-type-button member-type-button-primary">
+                                개인회원 가입
+                            </a>
+                        </article>
+
+                        <!-- 기업회원 -->
+                        <article class="member-type-item">
+                            <div class="member-type-content">
+                                <h2 class="member-type-title">기업회원</h2>
+
+                                <p class="member-type-description">채용공고와 지원자를 관리하고 싶어요.</p>
+
+                                <ul class="member-type-benefits">
+                                    <li>기업정보 관리</li>
+                                    <li>채용공고 등록·관리</li>
+                                    <li>지원자 확인</li>
+                                    <li>지원 상태 변경</li>
+                                </ul>
+                            </div>
+
+                            <a
+                                th:href="@{/auth/corporate-terms}"
+                                class="member-type-button member-type-button-secondary"
+                            >
+                                기업회원 가입
+                            </a>
+                        </article>
+                    </div>
+
+                    <div class="member-type-login">
+                        <span>이미 계정이 있나요?</span>
+
+                        <a th:href="@{/login}" class="member-type-login-link"> 로그인 </a>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- 공통 푸터 -->
+        <footer th:replace="~{common/footer :: footer}"></footer>
+
+        <!-- 공통 헤더·푸터 JS -->
+        <script th:src="@{/js/common.js}"></script>
+    </body>
+</html>

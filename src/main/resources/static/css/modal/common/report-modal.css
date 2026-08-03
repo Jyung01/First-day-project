@@ -1,0 +1,60 @@
+.report-modal {
+    max-width: 760px !important;
+    text-align: left !important;
+}
+
+.report-modal .modal-form-body {
+    margin-top: 0;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e8ebf3;
+}
+
+.report-header h2 {
+    margin: 0;
+}
+
+.report-header p {
+    margin-top: 8px;
+    color: #7b869a;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.modal-close {
+    border: none;
+    background: none;
+    color: #8b93a7;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+    color: #172033;
+}
+
+.report-guide {
+    margin-top: 8px;
+    color: #7b869a;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.report-modal textarea {
+    resize: none;
+    min-height: 140px;
+}
+
+.report-counter {
+    margin-top: 8px;
+    text-align: right;
+    color: #98a2b3;
+    font-size: 12px;
+}

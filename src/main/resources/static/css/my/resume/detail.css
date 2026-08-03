@@ -1,0 +1,272 @@
+/* =========================================================
+   DOC-03 이력서 보기
+========================================================= */
+
+.resume-detail-content {
+    min-width: 0;
+}
+
+/* =========================================================
+   페이지 상단
+========================================================= */
+
+.resume-detail-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.resume-detail-page-title {
+    margin: 0;
+    color: var(--ink-900);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.7px;
+}
+
+.resume-detail-page-description {
+    margin: 7px 0 0;
+    color: var(--ink-500);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.resume-detail-back-button {
+    display: inline-flex;
+    min-width: 120px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background-color: var(--paper);
+    color: var(--ink-800);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.resume-detail-back-button:hover {
+    border-color: var(--blue-600);
+    color: var(--blue-600);
+}
+
+/* =========================================================
+   이력서 문서
+========================================================= */
+
+.resume-document {
+    min-height: 680px;
+    padding: 42px 44px 56px;
+    border: 1px solid var(--line);
+    background-color: var(--paper);
+    box-sizing: border-box;
+}
+
+/* 기본정보 */
+
+.resume-document-header {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+}
+
+.resume-member-name {
+    margin: 0;
+    color: var(--ink-900);
+    font-size: 29px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.7px;
+}
+
+.resume-member-position {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 11px 0 0;
+    color: var(--blue-600);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.resume-member-contact {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 12px;
+    color: var(--ink-500);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.resume-contact-divider {
+    color: var(--ink-300);
+}
+
+/* =========================================================
+   공통 섹션
+========================================================= */
+
+.resume-document-section {
+    margin-top: 34px;
+}
+
+.resume-section-title {
+    margin: 0 0 14px;
+    color: var(--ink-900);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.resume-section-description {
+    margin: 0;
+    color: var(--ink-700);
+    font-size: 12px;
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+/* =========================================================
+   경력·학력·프로젝트
+========================================================= */
+
+.resume-entry-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.resume-entry {
+    min-width: 0;
+}
+
+.resume-entry-title {
+    display: block;
+    color: var(--ink-800);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.resume-entry-meta {
+    margin: 4px 0 0;
+    color: var(--ink-600);
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.resume-entry-divider {
+    margin: 0 7px;
+    color: var(--ink-300);
+}
+
+.resume-entry-description {
+    margin: 7px 0 0;
+    color: var(--ink-600);
+    font-size: 11px;
+    line-height: 1.7;
+    white-space: pre-line;
+}
+
+/* =========================================================
+   기술
+========================================================= */
+
+.resume-skill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.resume-skill {
+    display: inline-flex;
+    min-width: 92px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    border-radius: 999px;
+    background-color: #eef0ff;
+    color: var(--blue-600);
+    font-size: 10px;
+    font-weight: 700;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 900px) {
+    .resume-document {
+        padding: 36px 32px 48px;
+    }
+}
+
+@media (max-width: 640px) {
+    .resume-detail-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .resume-detail-back-button {
+        width: 100%;
+    }
+
+    .resume-document {
+        min-height: auto;
+        padding: 30px 22px 42px;
+    }
+
+    .resume-member-name {
+        font-size: 25px;
+    }
+
+    .resume-member-contact {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .resume-contact-divider {
+        display: none;
+    }
+
+    .resume-entry-divider {
+        display: none;
+    }
+
+    .resume-skill {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 420px) {
+    .resume-detail-page-title {
+        font-size: 24px;
+    }
+
+    .resume-document {
+        padding: 26px 17px 36px;
+    }
+
+    .resume-document-section {
+        margin-top: 29px;
+    }
+
+    .resume-skill-list {
+        gap: 7px;
+    }
+
+    .resume-skill {
+        height: 28px;
+        padding: 0 12px;
+    }
+}

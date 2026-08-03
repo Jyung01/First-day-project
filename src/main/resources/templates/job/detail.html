@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java/Spring 백엔드 개발자 | 첫출근</title><link rel="stylesheet" th:href="@{/css/common.css}" href="/css/common.css"><link rel="stylesheet" th:href="@{/css/job/common.css}" href="/css/job/common.css"><link rel="stylesheet" th:href="@{/css/job/detail.css}" href="/css/job/detail.css"><link rel="stylesheet" th:href="@{/css/modal/common.css}" href="/css/modal/common.css"><link rel="stylesheet" th:href="@{/css/modal/job/resume-select-modal.css}" href="/css/modal/job/resume-select-modal.css"></head>
+<body class="job-header-active">
+<header th:replace="~{common/header :: header}"></header>
+<main class="job-page">
+  <section class="job-hero"><div class="job-container"><div class="job-hero-top"><h1>채용공고</h1><form class="job-search" th:action="@{/job/search}"><input name="keyword" placeholder="직무, 공고명, 기업명, 기술스택 검색"><button>검색</button></form></div>
+    <div th:replace="~{job/fragments/filter :: filterBar}"></div>
+  </div></section>
+  <div th:replace="~{job/fragments/filter :: activeFilters}"></div>
+  <section class="job-content"><div class="job-container job-split">
+    <div class="job-list-column">
+      <h2 class="job-result-count">검색 결과 <strong>128건</strong></h2>
+      <aside class="job-list-pane" aria-label="채용공고 목록">
+        <a class="job-card selected" th:href="@{/job/detail}"><div class="job-card-head"><span class="company-mark">네</span><span class="company-name">네이버클라우드</span></div><span class="job-badge hot">HOT</span><button class="bookmark">♡</button><h3>Java/Spring 백엔드 개발자</h3><p class="job-meta">서울 강남 · 신입/경력</p><div class="job-tags"><span class="job-tag">Java</span><span class="job-tag">Spring</span></div><div class="job-card-foot"><span>조회 128</span><span class="job-deadline">D-8</span></div></a>
+        <a class="job-card" href="#"><div class="job-card-head"><span class="company-mark">카</span><span class="company-name">카카오엔터프라이즈</span></div><span class="job-badge new">NEW</span><button class="bookmark">♡</button><h3>AI 플랫폼 서버 개발자</h3><p class="job-meta">경기 성남 · 신입</p><div class="job-tags"><span class="job-tag">Java</span><span class="job-tag">LLM</span></div><div class="job-card-foot"><span>조회 96</span><span class="job-deadline">D-12</span></div></a>
+        <a class="job-card" href="#"><div class="job-card-head"><span class="company-mark">토</span><span class="company-name">토스페이먼츠</span></div><button class="bookmark">♡</button><h3>Backend Engineer</h3><p class="job-meta">서울 강남 · 경력무관</p><div class="job-tags"><span class="job-tag">Kotlin</span><span class="job-tag">Kafka</span></div><div class="job-card-foot"><span>조회 214</span><span class="job-deadline">상시</span></div></a>
+      </aside>
+      <nav class="pagination job-list-pagination" aria-label="채용공고 목록 페이지">
+        <a href="#" aria-label="이전 페이지">‹</a>
+        <a class="active" href="#" aria-current="page">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">5</a>
+        <a href="#" aria-label="다음 페이지">›</a>
+      </nav>
+    </div>
+    <article class="job-detail-panel">
+      <div class="detail-main">
+        <div class="job-card-head"><span class="company-mark">네</span><div><strong>네이버클라우드</strong><p class="job-meta">서울 강남 · IT 서비스</p></div></div>
+        <span class="job-badge hot">HOT</span>
+        <button class="bookmark" type="button" aria-label="관심 공고 추가" aria-pressed="false">♡</button>
+        <div class="detail-title-row"><h2>Java/Spring 백엔드 개발자</h2><button class="report-button">신고</button></div>
+        <div class="detail-summary"><div><small>경력</small><strong>신입 · 경력</strong></div><div><small>학력</small><strong>학력무관</strong></div><div><small>고용형태</small><strong>정규직</strong></div><div><small>마감일</small><strong class="job-deadline">D-8</strong></div></div>
+      </div>
+      <div class="detail-tabs"><button class="active" data-detail-tab="job">채용 상세</button><button data-detail-tab="company">기업정보</button></div>
+      <div class="detail-copy" data-job-copy><section><h3>담당업무</h3><p>• 채용 서비스 백엔드 API 개발<br>• 대용량 트래픽 처리 및 성능 개선<br>• Spring 기반 서비스 설계와 운영</p></section><section><h3>자격요건</h3><p>• Java 또는 Kotlin 개발 경험<br>• Spring Boot와 관계형 데이터베이스 이해<br>• 협업과 코드리뷰에 익숙한 분</p></section><section><h3>우대사항</h3><p>• AWS 환경에서 서비스 운영 경험<br>• 테스트 코드 작성 경험</p></section><section class="detail-skills"><h3>기술 스택</h3><div class="detail-skill-list" aria-label="기술 스택"><span>Java</span><span>Spring</span><span>AWS</span><span>MySQL</span><span>Docker</span></div></section></div>
+      <div class="detail-copy" data-company-copy hidden><section><h3>네이버클라우드</h3><p>기술과 데이터를 통해 더 나은 업무 경험을 만드는 클라우드 플랫폼 기업입니다.</p></section><section><h3>기업 정보</h3><p>업종 IT 서비스 · 사원수 1,250명 · 서울특별시 강남구</p></section></div>
+      <div class="detail-actions"><button class="job-secondary-button" type="button">♡ 관심 공고</button><button class="job-primary-button" type="button" data-resume-modal-open>지원하기</button></div>
+    </article>
+  </div></section>
+</main>
+<footer th:replace="~{common/footer :: footer}"></footer>
+<div th:replace="~{modal/job/resume-select-modal :: resumeSelectModal}"></div>
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<script th:src="@{/js/job/common.js}" src="/js/job/common.js"></script>
+<script th:src="@{/js/job/detail.js}" src="/js/job/detail.js"></script>
+<script th:src="@{/js/modal.js}" src="/js/modal.js"></script>
+<script th:src="@{/js/modal/job/resume-select-modal.js}" src="/js/modal/job/resume-select-modal.js"></script>
+</body></html>

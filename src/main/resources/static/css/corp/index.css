@@ -1,0 +1,250 @@
+/* ===================================================
+   기업관리 대시보드 전용 스타일
+   corp/common.css와 함께 사용합니다.
+=================================================== */
+
+/* ---------------- 대시보드 제목 ---------------- */
+
+.dashboard {
+    min-width: 0;
+    padding-top: 7px;
+}
+
+.dashboard-heading {
+    min-height: 50px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.dashboard-heading h1 {
+    margin: 0 0 6px;
+    font-size: 25px;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+}
+
+.dashboard-heading p {
+    color: var(--corp-muted);
+    font-size: 13px;
+}
+
+/* ---------------- 요약 카드 ---------------- */
+
+.summary-grid {
+    margin-top: 33px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.summary-card {
+    min-height: 105px;
+    padding: 15px 17px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid var(--corp-border);
+    border-radius: 12px;
+}
+
+.summary-card__label {
+    color: var(--corp-muted);
+    font-size: 13px;
+}
+
+.summary-card__value {
+    margin-top: 4px;
+    font-size: 24px;
+}
+
+.summary-card__detail {
+    margin-top: auto;
+    font-size: 11px;
+}
+
+.is-blue {
+    color: var(--corp-blue);
+}
+
+.is-green {
+    color: var(--corp-green);
+}
+
+.is-orange {
+    color: var(--corp-orange);
+}
+
+/* ---------------- 대시보드 패널 ---------------- */
+
+.dashboard-panels {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: minmax(0, 620px) minmax(280px, 336px);
+    gap: 20px;
+}
+
+.panel {
+    min-height: 410px;
+    padding: 19px 21px;
+    background: #fff;
+    border: 1px solid var(--corp-border);
+    border-radius: 12px;
+}
+
+.panel__header {
+    min-height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel__header h2 {
+    font-size: 19px;
+    letter-spacing: -0.02em;
+}
+
+.panel__header a {
+    color: var(--corp-blue);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* ---------------- 최근 지원자 ---------------- */
+
+.applicant-table {
+    margin-top: 13px;
+}
+
+.applicant-row {
+    min-height: 72px;
+    display: grid;
+    grid-template-columns: 156px minmax(150px, 204px) 106px 88px;
+    align-items: center;
+    color: var(--corp-muted);
+    font-size: 12px;
+    border-radius: 8px;
+}
+
+a.applicant-row:hover {
+    background: var(--corp-soft);
+}
+
+.applicant-row--head {
+    min-height: 28px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.applicant-row strong {
+    color: var(--corp-ink);
+    font-size: 14px;
+}
+
+.status-badge {
+    width: 88px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    color: var(--corp-blue);
+    background: #f2f2ff;
+    border-radius: 14px;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.status-badge.is-interview {
+    color: var(--corp-green);
+}
+
+/* ---------------- 채용공고 현황 ---------------- */
+
+.job-status-list {
+    margin-top: 11px;
+}
+
+.job-status-list li + li {
+    margin-top: 26px;
+}
+
+.job-status-list a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 6px 0;
+    border-radius: 6px;
+}
+
+.job-status-list a:hover {
+    background: var(--corp-soft);
+}
+
+.job-status-list strong {
+    font-size: 13px;
+}
+
+.job-status-list span,
+.job-status-list em {
+    color: var(--corp-muted);
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.job-status-list em.is-open {
+    color: var(--corp-green);
+}
+
+/* ---------------- 기업관리 안내 ---------------- */
+
+.dashboard-guide {
+    min-height: 92px;
+    margin-top: 30px;
+    padding: 15px 17px;
+    color: var(--corp-muted);
+    background: var(--corp-blue-soft);
+    border: 1px solid var(--corp-border);
+    border-radius: 10px;
+}
+
+.dashboard-guide strong {
+    color: var(--corp-blue);
+    font-size: 13px;
+}
+
+.dashboard-guide p {
+    margin-top: 11px;
+    font-size: 12px;
+}
+
+/* ---------------- 반응형 ---------------- */
+
+@media (max-width: 1080px) {
+    .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-panels {
+        grid-template-columns: 1fr;
+    }
+
+    .applicants-panel {
+        overflow-x: auto;
+    }
+
+    .applicant-table {
+        min-width: 576px;
+    }
+}
+
+@media (max-width: 720px) {
+    .dashboard-heading {
+        gap: 20px;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}

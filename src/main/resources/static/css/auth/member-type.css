@@ -1,0 +1,232 @@
+/* =========================================================
+   회원가입 유형 선택 페이지
+========================================================= */
+
+.member-type-main {
+    min-height: 640px;
+    padding-top: 56px;
+    padding-bottom: 90px;
+}
+
+.member-type-container {
+    max-width: 760px;
+}
+
+.member-type-card {
+    padding: 42px 38px 46px;
+}
+
+.member-type-header {
+    margin-bottom: 38px;
+}
+
+.member-type-header .auth-title {
+    font-size: 28px;
+    letter-spacing: -0.7px;
+}
+
+.member-type-header .auth-description {
+    margin-top: 10px;
+}
+
+/* 회원 유형 카드 목록 */
+
+.member-type-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px;
+}
+
+.member-type-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 270px;
+    padding: 28px 26px 24px;
+    border: 1px solid #dce2ec;
+    border-radius: 16px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.member-type-item:hover {
+    border-color: #b7b9ff;
+    box-shadow: 0 8px 22px rgba(79, 85, 223, 0.08);
+    transform: translateY(-2px);
+}
+
+.member-type-item-personal {
+    border-color: #6266f1;
+    background-color: #f1f3ff;
+}
+
+.member-type-title {
+    margin: 0;
+    color: #172033;
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.5px;
+}
+
+.member-type-item-personal .member-type-title {
+    color: #6266f1;
+}
+
+.member-type-description {
+    margin: 12px 0 0;
+    color: #748096;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* 제공 기능 목록 */
+
+.member-type-benefits {
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.member-type-benefits li {
+    position: relative;
+    padding-left: 17px;
+    color: #30394c;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.member-type-benefits li::before {
+    content: "✓";
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #30394c;
+    font-weight: 700;
+}
+
+/* 가입 버튼 */
+
+.member-type-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 46px;
+    margin-top: 28px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.1s ease;
+}
+
+.member-type-button:active {
+    transform: translateY(1px);
+}
+
+.member-type-button-primary {
+    border: 1px solid #6266f1;
+    background-color: #6266f1;
+    color: #ffffff;
+}
+
+.member-type-button-primary:hover {
+    border-color: #5357df;
+    background-color: #5357df;
+}
+
+.member-type-button-secondary {
+    border: 1px solid #d6dde9;
+    background-color: #ffffff;
+    color: #273044;
+}
+
+.member-type-button-secondary:hover {
+    border-color: #6266f1;
+    color: #6266f1;
+}
+
+/* 로그인 이동 */
+
+.member-type-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 38px;
+    color: #808a9d;
+    font-size: 13px;
+}
+
+.member-type-login-link {
+    color: #6266f1;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.member-type-login-link:hover {
+    text-decoration: underline;
+}
+
+/* 반응형 */
+
+@media (max-width: 768px) {
+    .member-type-main {
+        padding-top: 32px;
+        padding-bottom: 60px;
+    }
+
+    .member-type-container {
+        max-width: 560px;
+    }
+
+    .member-type-card {
+        padding: 34px 26px 38px;
+    }
+
+    .member-type-list {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .member-type-item {
+        min-height: auto;
+    }
+
+    .member-type-benefits {
+        margin-top: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .member-type-card {
+        padding: 30px 20px 34px;
+    }
+
+    .member-type-header .auth-title {
+        font-size: 24px;
+    }
+
+    .member-type-item {
+        padding: 24px 20px 20px;
+    }
+
+    .member-type-title {
+        font-size: 21px;
+    }
+
+    .member-type-login {
+        gap: 14px;
+        margin-top: 30px;
+    }
+}

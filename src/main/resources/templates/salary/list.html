@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>연봉정보 목록</title>
+    <!-- 메인 헤더 푸터 css -->
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <!-- 연봉정보 목록 css -->
+    <link rel="stylesheet" th:href="@{/css/salary/list.css}"/>
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/salary-create.css}"/>
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <script th:src="@{/js/salary/list.js}"></script>
+
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="salary-list-page">
+    <!-- 상단 배너 -->
+    <section class="salary-hero">
+        <div class="hero-left">
+            <span class="hero-sub-title"> 첫출근 연봉 데이터 </span>
+
+            <h1>내 연봉, 어느 정도인지 비교해보세요</h1>
+
+            <p>
+                기업과 직무별 평균 연봉을 확인하고 내 연봉정보도 익명으로 등록할 수
+                있어요.
+            </p>
+        </div>
+
+        <div class="hero-right">
+            <form action="/salary/list" method="get" class="">
+
+                <div class="search-box">
+
+                    <input
+                            type="text"
+                            name="keyword"
+                            placeholder="기업명을 입력하세요">
+                    <button type="submit">검색</button>
+                </div>
+            </form>
+            <a th:href="@{/salary/my-list}" class="my-salary-btn">
+                내 연봉정보
+            </a>
+        </div>
+    </section>
+
+    <!-- 내용 -->
+    <section class="salary-container">
+        <!-- 통계 카드 -->
+        <section class="summary-section">
+            <article class="summary-card">
+                <div class="summary-title">전체 평균 연봉</div>
+
+                <div class="summary-bottom">
+                    <strong>4,820만원</strong>
+
+                    <span>최근 1년 기준</span>
+                </div>
+            </article>
+
+            <article class="summary-card">
+                <div class="summary-title">신입 평균 연봉</div>
+
+                <div class="summary-bottom">
+                    <strong>3,420만원</strong>
+
+                    <span>경력 1년 미만</span>
+                </div>
+            </article>
+
+            <article class="summary-card">
+                <div class="summary-title">등록된 연봉정보</div>
+
+                <div class="summary-bottom">
+                    <strong>1,284건</strong>
+
+                    <span>현재 기준 데이터</span>
+                </div>
+            </article>
+        </section>
+
+        <!-- 기업별 연봉정보 -->
+        <section class="salary-list-section">
+            <div class="section-header">
+                <h2>기업별 연봉정보</h2>
+
+                <span class="company-count"> 총 246개 기업 </span>
+            </div>
+
+            <div class="filter-row">
+                <div class="filter-group">
+                    <select>
+                        <option>기업규모 · 전체</option>
+                    </select>
+
+                    <select>
+                        <option>업종 · 전체</option>
+                    </select>
+
+                    <select>
+                        <option>경력 · 전체</option>
+                    </select>
+                </div>
+
+                <div class="sort-group">
+                    <select>
+                        <option>평균 연봉 높은순</option>
+                        <option>최신순</option>
+                        <option>등록순</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="company-list">
+                <!-- 기업 카드 1 -->
+                <article class="company-card">
+                    <div class="company-info">
+                        <div class="company-logo bg-blue">N</div>
+
+                        <div class="company-text">
+                            <h3>네이버클라우드</h3>
+
+                            <p>IT · 클라우드 · 성남시</p>
+                        </div>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 평균 연봉 </span>
+
+                        <strong> 5,480만원 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 신입 평균 </span>
+
+                        <strong> 3,900만원 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 등록 정보 </span>
+
+                        <strong> 128건 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 최근 갱신 </span>
+
+                        <strong class="date"> 2026.07.18 </strong>
+                    </div>
+
+                    <div class="company-link">
+                        <a th:href="@{/salary/detail}"> 기업별 상세 보기 → </a>
+                    </div>
+                </article>
+
+                <!-- 기업 카드 2 -->
+
+                <article class="company-card">
+                    <div class="company-info">
+                        <div class="company-logo bg-yellow">K</div>
+
+                        <div class="company-text">
+                            <h3>카카오엔터프라이즈</h3>
+
+                            <p>IT · 플랫폼 · 성남시</p>
+                        </div>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 평균 연봉 </span>
+
+                        <strong> 5,260만원 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 신입 평균 </span>
+
+                        <strong> 3,780만원 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 등록 정보 </span>
+
+                        <strong> 96건 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 최근 갱신 </span>
+
+                        <strong class="date"> 2026.07.16 </strong>
+                    </div>
+
+                    <div class="company-link">
+                        <a href="#"> 기업별 상세 보기 → </a>
+                    </div>
+                </article>
+                <!-- 기업 카드 3 -->
+                <article class="company-card">
+                    <div class="company-info">
+                        <div class="company-logo bg-purple">T</div>
+
+                        <div class="company-text">
+                            <h3>토스페이먼츠</h3>
+
+                            <p>핀테크 · 서울 강남구</p>
+                        </div>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 평균 연봉 </span>
+
+                        <strong> 5,120만원 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 신입 평균 </span>
+
+                        <strong> 3,850만원 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 등록 정보 </span>
+
+                        <strong> 84건 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 최근 갱신 </span>
+
+                        <strong class="date"> 2026.07.14 </strong>
+                    </div>
+
+                    <div class="company-link">
+                        <a href="#"> 기업별 상세 보기 → </a>
+                    </div>
+                </article>
+
+                <!-- 기업 카드 4 -->
+                <article class="company-card">
+                    <div class="company-info">
+                        <div class="company-logo bg-green">우</div>
+
+                        <div class="company-text">
+                            <h3>우아한형제들</h3>
+
+                            <p>IT · 푸드테크 · 서울 송파구</p>
+                        </div>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 평균 연봉 </span>
+
+                        <strong> 4,980만원 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 신입 평균 </span>
+
+                        <strong> 3,700만원 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 등록 정보 </span>
+
+                        <strong> 73건 </strong>
+                    </div>
+
+                    <div class="company-item">
+                        <span class="item-title"> 최근 갱신 </span>
+
+                        <strong class="date"> 2026.07.12 </strong>
+                    </div>
+
+                    <div class="company-link">
+                        <a href="#"> 기업별 상세 보기 → </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- 페이지네이션 -->
+        <section class="pagination">
+            <button class="page-btn">&lt;</button>
+
+            <button class="page-btn active">1</button>
+
+            <button class="page-btn">2</button>
+
+            <button class="page-btn">3</button>
+
+            <button class="page-btn">4</button>
+
+            <button class="page-btn">5</button>
+
+            <button class="page-btn">&gt;</button>
+        </section>
+    </section>
+</main>
+
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 모달 불러오기 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+<!-- 공통 헤더·푸터 불러오기 -->
+<script th:src="@{../js/common.js}"></script>
+</body>
+</html>

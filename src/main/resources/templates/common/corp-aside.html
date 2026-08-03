@@ -1,0 +1,101 @@
+<aside xmlns:th="http://www.thymeleaf.org" class="corp-sidebar" aria-label="기업관리 메뉴" th:fragment="corpAside">
+    <!-- 기업 프로필 -->
+    <div class="company-profile">
+        <div class="company-profile__logo" aria-hidden="true">ㅊ</div>
+
+        <div>
+            <strong class="company-profile__name"> 첫출근랩 </strong>
+
+            <span class="company-profile__type"> 기업회원 </span>
+        </div>
+    </div>
+
+    <!-- 기업관리 메뉴 -->
+    <nav class="corp-nav">
+        <a
+            class="corp-nav__item"
+            th:classappend="${activeMenu == 'dashboard'} ? ' is-active'"
+            th:href="@{/corp}"
+            th:attr="aria-current=${activeMenu == 'dashboard'} ? 'page' : null"
+        >
+            대시보드
+        </a>
+
+        <!--
+            메뉴는 하나만 유지하고,
+            승인 반려 상태일 때만 반려 수정 페이지로 이동
+        -->
+        <a
+            class="corp-nav__item"
+            th:classappend="${activeMenu == 'company'} ? ' is-active'"
+            th:href="${companyStatus == 'REJECTED'}
+                ? @{/corp/company-info-rejected}
+                : @{/corp/company-info}"
+            th:attr="aria-current=${activeMenu == 'company'} ? 'page' : null"
+        >
+            기업정보 관리
+        </a>
+
+        <a
+            class="corp-nav__item"
+            th:classappend="${activeMenu == 'jobs'} ? ' is-active'"
+            th:href="@{/corp/job}"
+            th:attr="aria-current=${activeMenu == 'jobs'} ? 'page' : null"
+        >
+            채용공고 관리
+        </a>
+
+        <a
+            class="corp-nav__item"
+            th:classappend="${activeMenu == 'applicants'} ? ' is-active'"
+            th:href="@{/corp/applicant}"
+            th:attr="aria-current=${activeMenu == 'applicants'} ? 'page' : null"
+        >
+            지원자 관리
+        </a>
+
+        <a
+            class="corp-nav__item"
+            th:classappend="${activeMenu == 'account'} ? ' is-active'"
+            th:href="@{/corp/account}"
+            th:attr="aria-current=${activeMenu == 'account'} ? 'page' : null"
+        >
+            계정관리
+        </a>
+    </nav>
+
+    <!-- 기업 상태 -->
+    <div
+        class="company-visibility"
+        th:classappend="${companyStatus == 'REJECTED'}
+            ? ' company-visibility--rejected'
+            : ''"
+    >
+        <span
+            class="company-visibility__label"
+            th:text="${companyStatus == 'REJECTED'}
+                ? '기업 승인 상태'
+                : '기업정보 공개 상태'"
+        >
+            기업정보 공개 상태
+        </span>
+
+        <strong
+            class="company-visibility__status"
+            th:text="${companyStatus == 'REJECTED'}
+                ? '승인 반려'
+                : '정상 노출 중'"
+        >
+            정상 노출 중
+        </strong>
+
+        <span
+            class="company-visibility__date"
+            th:text="${companyStatus == 'REJECTED'}
+                ? '정보 수정·재심사 필요'
+                : '마지막 수정 2026.07.21'"
+        >
+            마지막 수정 2026.07.21
+        </span>
+    </div>
+</aside>
