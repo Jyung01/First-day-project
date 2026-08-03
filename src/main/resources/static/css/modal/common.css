@@ -39,6 +39,8 @@
 
     text-align: center;
     box-sizing: border-box;
+
+    display: block;
 }
 
 /* 아이콘 */

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>기업 - 채용공고</title>
+    <!-- 메인 헤더 푸터 css -->
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <!-- 기업 채용공고 css -->
+    <link rel="stylesheet" th:href="@{/css/company/jobs.css}"/>
+    <!-- 기업 공통 css -->
+    <link rel="stylesheet" th:href="@{/css/company/common.css}"/>
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/salary-create.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/report-modal.css}"/>
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/modal/common/report-modal.js}"></script>
+
+    <script th:src="@{/js/company/detail.js}"></script>
+    <script th:src="@{/js/company/jobs.js}"></script>
+
+
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="company-detail-main">
+
+    <!-- 기업 헤더 -->
+    <section class="company-profile">
+
+        <div class="profile-left">
+
+            <div class="company-logo">
+                네
+            </div>
+
+            <div class="company-summary">
+
+                <h2>네이버클라우드</h2>
+
+                <p class="company-category">
+                    IT 서비스 · 서울 강남 · 중견기업
+                </p>
+
+                <div class="company-rating">
+
+                    <span>⭐ 4.5</span>
+                    <span>리뷰 328개</span>
+                    <span>진행 중 공고 12개</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="profile-right">
+
+            <button
+                    class="wish-btn"
+            >
+                <!--                    th:data-company-id="${company.companyNo}"-->
+
+                <i class="fa-regular fa-heart"></i>
+
+                관심기업
+
+            </button>
+
+            <button
+                    class="report-btn"
+                    data-report-type="company"
+            >
+                <!--                data-target-id="1"-->
+                <!--                data-target-name="네이버"-->
+                신고
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- 메뉴 -->
+
+    <section class="company-tab">
+
+        <a
+           class="tab-btn">
+<!--            th:href="@{/company/detail(companyNo=${company.companyNo})}"-->
+
+            기업소개
+
+        </a>
+
+        <a
+           class="tab-btn active">
+<!--            th:href="@{/company/recruit(companyNo=${company.companyNo})}"-->
+
+            채용공고
+
+        </a>
+
+        <a
+           class="tab-btn">
+<!--            th:href="@{/company/review(companyNo=${company.companyNo})}"-->
+
+            기업리뷰
+
+        </a>
+
+        <a
+           class="tab-btn">
+<!--            th:href="@{/company/interview(companyNo=${company.companyNo})}"-->
+
+            면접후기
+
+        </a>
+
+    </section>
+
+
+    <!-- 제목 -->
+    <section class="recruit-section">
+
+        <div class="section-title">
+
+            <h3>진행 중 채용공고</h3>
+
+            <span>총 18건</span>
+
+        </div>
+
+        <div class="recruit-grid">
+
+            <article class="recruit-card">
+
+                <!-- 상단 -->
+                <div class="card-header">
+
+                    <span class="deadline">D-13</span>
+
+                    <button
+                            class="bookmark-btn"
+                    >
+<!--                        th:data-recruit-id="${recruit.recruitNo}"-->
+
+                        <i class="fa-regular fa-heart"></i>
+
+                    </button>
+
+                </div>
+
+                <!-- 회사 -->
+                <div class="company-info">
+
+                    <span class="company-name">
+                    네이버클라우드
+                </span>
+
+                </div>
+
+                <!-- 제목 -->
+                <h4 class="recruit-title">
+                    Java / Spring 백엔드 개발자
+                </h4>
+
+                <!-- 기술 -->
+                <div class="skill-list">
+
+                    <span>Java</span>
+                    <span>Spring Boot</span>
+                    <span>MySQL</span>
+                    <span>AWS</span>
+
+                </div>
+
+                <!-- 정보 -->
+                <ul class="recruit-info">
+
+                    <li>
+                        <i class="fa-solid fa-briefcase"></i>
+                        경력 3년↑
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-location-dot"></i>
+                        서울 강남구
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        학력무관
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-coins"></i>
+                        회사내규
+                    </li>
+
+                </ul>
+
+                <!-- 버튼 -->
+                <a href="#"
+                   class="apply-btn">
+
+                    지원하기
+
+                </a>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+</main>
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 모달 불러오기 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<div th:replace="~{modal/common/report-modal :: reportModal}"></div>
+
+<!-- 공통 헤더·푸터 불러오기 -->
+<script th:src="@{../js/common.js}"></script>
+</body>
+</html>

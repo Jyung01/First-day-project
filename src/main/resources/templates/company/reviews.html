@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>기업 - 기업리뷰</title>
+    <!-- 메인 헤더 푸터 css -->
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <!-- 기업 기업리뷰 css -->
+    <link rel="stylesheet" th:href="@{/css/company/reviews.css}"/>
+    <!-- 기업 공통 css -->
+    <link rel="stylesheet" th:href="@{/css/company/common.css}"/>
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/report-modal.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/salary-create.css}"/>
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/modal/company/review-write.js}"></script>
+    <script th:src="@{/js/modal/common/report-modal.js}"></script>
+
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <script th:src="@{/js/company/reviews.js}"></script>
+    <script th:src="@{/js/company/detail.js}"></script>
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="company-detail-main">
+
+    <!-- 기업 헤더 -->
+    <section class="company-profile">
+
+        <div class="profile-left">
+
+            <div class="company-logo">
+                네
+            </div>
+
+            <div class="company-summary">
+
+                <h2>네이버클라우드</h2>
+
+                <p class="company-category">
+                    IT 서비스 · 서울 강남 · 중견기업
+                </p>
+
+                <div class="company-rating">
+
+                    <span>⭐ 4.5</span>
+                    <span>리뷰 328개</span>
+                    <span>진행 중 공고 12개</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="profile-right">
+
+            <button
+                    class="wish-btn"
+            >
+                <!--                    th:data-company-id="${company.companyNo}"-->
+
+                <i class="fa-regular fa-heart"></i>
+
+                관심기업
+
+            </button>
+
+            <button
+                    class="report-btn"
+                    data-report-type="company"
+            >
+                <!--                data-target-id="1"-->
+                <!--                data-target-name="네이버"-->
+                신고
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- 메뉴 -->
+
+    <section class="company-tab">
+
+        <a
+                class="tab-btn">
+            <!--            th:href="@{/company/detail(companyNo=${company.companyNo})}"-->
+
+            기업소개
+
+        </a>
+
+        <a
+                class="tab-btn ">
+            <!--            th:href="@{/company/recruit(companyNo=${company.companyNo})}"-->
+
+            채용공고
+
+        </a>
+
+        <a
+                class="tab-btn active">
+            <!--            th:href="@{/company/review(companyNo=${company.companyNo})}"-->
+
+            기업리뷰
+
+        </a>
+
+        <a
+                class="tab-btn">
+            <!--            th:href="@{/company/interview(companyNo=${company.companyNo})}"-->
+
+            면접후기
+
+        </a>
+
+    </section>
+
+
+    <!-- 제목 -->
+    <section class="review-section">
+
+        <div class="review-layout">
+
+            <!-- 왼쪽 -->
+            <aside class="review-summary">
+
+                <h3>기업리뷰</h3>
+
+                <div class="summary-score">
+
+                    <strong>4.5</strong>
+
+                    <span>/ 5.0</span>
+
+                </div>
+
+                <p class="review-count">
+
+                    등록된 리뷰 328개
+
+                </p>
+
+                <!-- 평점 분포 -->
+                <div class="rating-distribution">
+
+                    <div class="rating-row">
+
+                        <span>5점</span>
+
+                        <div class="rating-bar">
+
+                            <div class="rating-fill" style="width:78%;"></div>
+
+                        </div>
+
+                        <em>78%</em>
+
+                    </div>
+
+                    <div class="rating-row">
+
+                        <span>4점</span>
+
+                        <div class="rating-bar">
+
+                            <div class="rating-fill" style="width:64%;"></div>
+
+                        </div>
+
+                        <em>64%</em>
+
+                    </div>
+
+                    <div class="rating-row">
+
+                        <span>3점</span>
+
+                        <div class="rating-bar">
+
+                            <div class="rating-fill gray" style="width:34%;"></div>
+
+                        </div>
+
+                        <em>34%</em>
+
+                    </div>
+
+                    <div class="rating-row">
+
+                        <span>2점</span>
+
+                        <div class="rating-bar">
+
+                            <div class="rating-fill gray" style="width:18%;"></div>
+
+                        </div>
+
+                        <em>18%</em>
+
+                    </div>
+
+                    <div class="rating-row">
+
+                        <span>1점</span>
+
+                        <div class="rating-bar">
+
+                            <div class="rating-fill gray" style="width:8%;"></div>
+
+                        </div>
+
+                        <em>8%</em>
+
+                    </div>
+
+                </div>
+
+                <!-- 평가 -->
+                <div class="evaluation-box">
+
+                    <h4>
+
+                        평가 항목
+
+                    </h4>
+
+                    <ul>
+
+                        <li>
+
+                            <span>커리어 성장</span>
+
+                            <strong>4.4</strong>
+
+                        </li>
+
+                        <li>
+
+                            <span>업무 만족도</span>
+
+                            <strong>4.3</strong>
+
+                        </li>
+
+                        <li>
+
+                            <span>복지 · 급여</span>
+
+                            <strong>4.1</strong>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </aside>
+
+            <!-- 오른쪽 -->
+            <section class="review-content">
+
+                <div class="review-header">
+
+                    <h3>
+
+                        리뷰 328개
+
+                    </h3>
+
+                    <div class="review-actions">
+
+                        <button class="sort-btn active">
+
+                            최신순
+
+                        </button>
+
+                        <button class="sort-btn">
+
+                            도움순
+
+                        </button>
+
+                        <button class="write-review-btn">
+
+                            기업리뷰 작성
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="review-grid">
+                    <!-- 리뷰 카드 1 -->
+                    <article class="review-card">
+
+                        <div class="review-card-header">
+
+                            <div>
+
+                                <h4>
+
+                                    성장 기회와 좋은 동료가 있는 회사
+
+                                </h4>
+
+                                <p class="review-meta">
+
+                                    현직원 · 개발 · 3년차
+
+                                </p>
+
+                            </div>
+
+                            <button
+                                    class="report-btn"
+                                    data-report-type="companyReview"
+                                    data-target-id="205"
+                                    data-target-name="기업리뷰">
+                                신고
+                            </button>
+
+                        </div>
+
+                        <div class="review-recommend">
+
+                        <span class="recommend-badge">
+
+                            👍 도움돼요 24
+
+                        </span>
+
+                        </div>
+
+                        <div class="review-content-box">
+
+                            <p>
+
+                                <strong class="pros">
+
+                                    장점
+
+                                </strong>
+
+                                새로운 기술을 시도할 수 있는 기회가 많고 팀 분위기가 좋습니다.
+
+                            </p>
+
+                            <p>
+
+                                <strong class="cons">
+
+                                    아쉬운 점
+
+                                </strong>
+
+                                프로젝트 일정이 촉박한 경우가 있습니다.
+
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- 리뷰 카드 2 -->
+                    <article class="review-card">
+
+                        <div class="review-card-header">
+
+                            <div>
+
+                                <h4>
+
+                                    대규모 서비스 경험을 쌓기 좋아요
+
+                                </h4>
+
+                                <p class="review-meta">
+
+                                    전직원 · 개발 · 2년차
+
+                                </p>
+
+                            </div>
+
+                            <button
+                                    class="report-btn"
+                                    data-report-type="companyReview"
+                                    data-target-id="205"
+                                    data-target-name="기업리뷰">
+                                신고
+                            </button>
+
+                        </div>
+
+                        <div class="review-recommend">
+
+                        <span class="recommend-badge">
+
+                            👍 도움돼요 18
+
+                        </span>
+
+                        </div>
+
+                        <div class="review-content-box">
+
+                            <p>
+
+                                <strong class="pros">
+
+                                    장점
+
+                                </strong>
+
+                                다양한 프로젝트와 안정적인 복지 제도가 장점입니다.
+
+                            </p>
+
+                            <p>
+
+                                <strong class="cons">
+
+                                    아쉬운 점
+
+                                </strong>
+
+                                의사결정 과정이 다소 길게 느껴질 때가 있습니다.
+
+                            </p>
+
+                        </div>
+
+                    </article>
+                    <!-- 리뷰 카드 3 -->
+                    <article class="review-card">
+
+                        <div class="review-card-header">
+
+                            <div>
+
+                                <h4>
+
+                                    복지와 근무환경이 안정적입니다
+
+                                </h4>
+
+                                <p class="review-meta">
+
+                                    현직원 · 기획 · 4년차
+
+                                </p>
+
+                            </div>
+
+                            <button
+                                    class="report-btn"
+                                    data-report-type="companyReview"
+                                    data-target-id="205"
+                                    data-target-name="기업리뷰">
+                                신고
+                            </button>
+
+                        </div>
+
+                        <div class="review-recommend">
+
+                        <span class="recommend-badge">
+
+                            👍 도움돼요 12
+
+                        </span>
+
+                        </div>
+
+                        <div class="review-content-box">
+
+                            <p>
+
+                                <strong class="pros">
+
+                                    장점
+
+                                </strong>
+
+                                유연근무와 교육 지원 제도를 편리하게 이용했습니다.
+
+                            </p>
+
+                            <p>
+
+                                <strong class="cons">
+
+                                    아쉬운 점
+
+                                </strong>
+
+                                부서 이동 과정이 조금 복잡했습니다.
+
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- 리뷰 카드 4 -->
+                    <article class="review-card">
+
+                        <div class="review-card-header">
+
+                            <div>
+
+                                <h4>
+
+                                    기술 성장을 원하는 분께 추천
+
+                                </h4>
+
+                                <p class="review-meta">
+
+                                    전직원 · 데이터 · 3년차
+
+                                </p>
+
+                            </div>
+
+                            <button
+                                    class="report-btn"
+                                    data-report-type="companyReview"
+                                    data-target-id="205"
+                                    data-target-name="기업리뷰">
+                                신고
+                            </button>
+
+                        </div>
+
+                        <div class="review-recommend">
+
+                        <span class="recommend-badge">
+
+                            👍 도움돼요 9
+
+                        </span>
+
+                        </div>
+
+                        <div class="review-content-box">
+
+                            <p>
+
+                                <strong class="pros">
+
+                                    장점
+
+                                </strong>
+
+                                최신 프로젝트 경험이 빠르게 쌓이는 환경이었습니다.
+
+                            </p>
+
+                            <p>
+
+                                <strong class="cons">
+
+                                    아쉬운 점
+
+                                </strong>
+
+                                프로젝트 일정이 빠르게 바뀌는 경우가 있습니다.
+
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+
+                    <button>&lt;</button>
+
+                    <button class="active">
+
+                        1
+
+                    </button>
+
+                    <button>
+
+                        2
+
+                    </button>
+
+                    <button>
+
+                        3
+
+                    </button>
+
+                    <button>
+
+                        4
+
+                    </button>
+
+                    <button>
+
+                        5
+
+                    </button>
+
+                    <button>&gt;</button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </section>
+
+</main>
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 모달 불러오기 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<div th:replace="~{modal/common/report-modal :: reportModal}"></div>
+
+<!-- 공통 헤더·푸터 불러오기 -->
+<script th:src="@{../js/common.js}"></script>
+</body>
+</html>

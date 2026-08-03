@@ -1,0 +1,107 @@
+<div
+        xmlns:th="http://www.thymeleaf.org"
+        th:fragment="reportProcessModal"
+        class="admin-modal"
+        data-report-process-modal
+        aria-hidden="true"
+>
+    <div class="admin-modal__backdrop" data-report-process-close></div>
+
+    <section
+            class="admin-modal__dialog admin-modal__dialog--company"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reportProcessModalTitle"
+    >
+        <header class="admin-modal__header">
+            <h2 id="reportProcessModalTitle">신고 처리</h2>
+
+            <button
+                    type="button"
+                    class="admin-modal__close"
+                    data-report-process-close
+                    aria-label="신고 처리 닫기"
+            >
+                ×
+            </button>
+        </header>
+
+        <form>
+            <div class="admin-modal__body">
+
+                <p class="admin-report-code">
+                    신고 RP-091 · 채용공고
+                </p>
+
+                <div class="admin-report-box">
+                    <p><strong>신고 대상</strong> 고액 알바 모집</p>
+                    <p><strong>신고 사유</strong> 허위 · 사기 의심</p>
+                    <p><strong>신고 내용</strong> 선입금을 요구하는 외부 메신저 링크가 포함되어 있습니다.</p>
+                </div>
+
+                <fieldset class="admin-approval-fieldset">
+                    <legend>조치 선택</legend>
+
+                    <div class="admin-approval-options">
+                        <label class="admin-approval-option">
+                            <input
+                                    type="radio"
+                                    name="reportAction"
+                                    value="KEEP"
+                            />
+                            <span>신고 기각</span>
+                        </label>
+
+                        <label class="admin-approval-option">
+                            <input
+                                    type="radio"
+                                    name="reportAction"
+                                    value="HIDE"
+                            />
+                            <span>콘텐츠 숨김</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="admin-approval-message">
+                    <label for="reportMemo">
+                        관리자 처리 메모
+                    </label>
+
+                    <textarea
+                            id="reportMemo"
+                            class="admin-approval-textarea"
+                            placeholder="처리 내용을 입력하세요."
+                    >허위 채용 여부 확인 후 공고 숨김 처리</textarea>
+                </div>
+
+                <div class="admin-modal__guide">
+                    숨김 처리 시 연결된 미처리 신고는 처리완료로 변경되고 같은 대상 상태를 공유합니다.
+                </div>
+
+            </div>
+
+            <footer class="admin-modal__footer">
+
+                <button
+                        type="button"
+                        class="admin-modal-button admin-modal-button--outline"
+                        data-report-process-close
+                >
+                    취소
+                </button>
+
+                <button
+                        type="submit"
+                        class="admin-modal-button admin-modal-button--primary"
+                >
+                    처리 완료
+                </button>
+
+            </footer>
+
+        </form>
+
+    </section>
+
+</div>

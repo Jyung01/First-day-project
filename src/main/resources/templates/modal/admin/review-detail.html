@@ -1,0 +1,102 @@
+<div
+        xmlns:th="http://www.thymeleaf.org"
+        th:fragment="reviewDetailModal"
+        class="admin-modal"
+        data-review-detail-modal
+        aria-hidden="true"
+>
+    <div class="admin-modal__backdrop" data-review-detail-close></div>
+
+    <section
+            class="admin-modal__dialog admin-modal__dialog--company"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reviewDetailModalTitle"
+    >
+        <header class="admin-modal__header">
+            <h2 id="reviewDetailModalTitle">후기 상세</h2>
+
+            <button
+                    type="button"
+                    class="admin-modal__close"
+                    data-review-detail-close
+                    aria-label="후기 상세 닫기"
+            >
+                ×
+            </button>
+        </header>
+
+        <form>
+
+            <div class="admin-modal__body">
+
+                <p class="admin-review-code">
+                    기업리뷰 R-3238 · 하이퍼랩 · 작성자 최**
+                </p>
+
+                <div class="admin-review-box">
+                    <p><strong>후기 제목</strong> 면접 피드백이 빨랐습니다.</p>
+
+                    <p><strong>후기 내용</strong> 면접 일정 안내가 명확했고 결과도 빠르게 전달받았습니다.</p>
+
+                    <p><strong>작성일</strong> 2026.07.21</p>
+                </div>
+
+                <div class="admin-review-info">
+
+                    <span class="admin-modal__label">
+                        평점 및 신고
+                    </span>
+
+                    <div class="admin-review-rating">
+                        평점 4.0 / 5.0
+                        <span>·</span>
+                        누적 신고 3건
+                    </div>
+
+                </div>
+
+                <div class="admin-approval-message">
+
+                    <label for="reviewMemo">
+                        관리자 처리 메모
+                    </label>
+
+                    <textarea
+                            id="reviewMemo"
+                            class="admin-approval-textarea"
+                            placeholder="관리자 메모 입력"
+                    >신고 사유와 전체 후기 내용을 확인했습니다.</textarea>
+
+                </div>
+
+                <div class="admin-modal__guide">
+                    숨김 처리 시 사용자 화면에 노출되지 않으며 연결된 미처리 신고는 처리완료로 변경됩니다.
+                </div>
+
+            </div>
+
+            <footer class="admin-modal__footer">
+
+                <button
+                        type="button"
+                        class="admin-modal-button admin-modal-button--outline"
+                        data-review-detail-close
+                >
+                    닫기
+                </button>
+
+                <button
+                        type="submit"
+                        class="admin-modal-button admin-modal-button--primary"
+                >
+                    숨김 처리
+                </button>
+
+            </footer>
+
+        </form>
+
+    </section>
+
+</div>

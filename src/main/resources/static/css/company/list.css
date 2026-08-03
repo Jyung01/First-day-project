@@ -1,0 +1,604 @@
+/* ===========================
+   company/list.css
+   검색영역 + 배너
+=========================== */
+
+.company-main{
+    background:#f5f7fc;
+    min-height:100vh;
+    padding-bottom:80px;
+}
+
+
+/* ===========================
+   검색영역
+=========================== */
+
+.company-search-section{
+    background:#eef2ff;
+    padding:42px 0;
+    margin-bottom:28px;
+}
+
+.search-top{
+    width:1280px;
+    margin:0 auto;
+}
+
+.title-box{
+    margin-bottom:28px;
+}
+
+.title-box h2{
+    font-size:34px;
+    font-weight:700;
+    color:#222;
+    margin-bottom:8px;
+}
+
+.title-box p{
+    font-size:15px;
+    color:#777;
+}
+
+
+/* ===========================
+   검색창
+=========================== */
+
+.keyword-search{
+    display:flex;
+    gap:16px;
+    margin-bottom:22px;
+}
+
+.keyword-search input{
+    flex:1;
+    height:54px;
+
+    border:none;
+    outline:none;
+
+    border-radius:10px;
+
+    padding:0 22px;
+
+    background:white;
+
+    font-size:15px;
+}
+
+.keyword-search input::placeholder{
+    color:#999;
+}
+
+.keyword-search button{
+
+    width:140px;
+    border:none;
+    border-radius:10px;
+
+    background:#6b6df6;
+    color:white;
+
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.keyword-search button:hover{
+
+    background:#5658eb;
+
+}
+
+
+/* ===========================
+   필터
+=========================== */
+
+.filter-group{
+
+    display:flex;
+    gap:14px;
+
+}
+
+.filter-group select{
+
+    width:150px;
+    height:46px;
+
+    border:1px solid #e2e6ef;
+    border-radius:8px;
+
+    background:white;
+
+    padding:0 16px;
+
+    color:#555;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    outline:none;
+
+    transition:.2s;
+
+}
+
+.filter-group select:hover{
+
+    border-color:#6b6df6;
+
+}
+
+.filter-group select:focus{
+
+    border-color:#6b6df6;
+
+}
+
+
+/* ===========================
+   배너
+=========================== */
+
+.company-banner{
+
+    width:1280px;
+    margin:0 auto 42px;
+
+}
+
+.banner-box{
+
+    height:120px;
+
+    border:1px dashed #d9dfea;
+
+    background:white;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+
+    padding-left:28px;
+
+}
+
+.banner-box span{
+
+    font-size:13px;
+    font-weight:700;
+
+    color:#5d67f4;
+
+    margin-bottom:6px;
+
+}
+
+.banner-box p{
+
+    color:#8a8a8a;
+    font-size:14px;
+
+}
+
+
+/* ===========================
+   기업목록 영역
+=========================== */
+
+.company-list-section{
+
+    width:1280px;
+    margin:0 auto;
+
+}
+
+.section-header{
+
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:24px;
+
+}
+
+.section-header h3{
+
+    font-size:28px;
+    font-weight:700;
+
+    color:#222;
+
+}
+
+.company-count{
+
+    color:#999;
+    font-size:14px;
+
+}
+/* ===========================
+   기업 카드
+=========================== */
+
+.company-grid{
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+
+    gap:24px;
+
+}
+
+.company-card{
+
+    background:#fff;
+
+    border:1px solid #e7eaf3;
+
+    border-radius:14px;
+
+    padding:22px;
+
+    transition:.25s;
+
+    cursor:pointer;
+
+}
+
+.company-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 12px 28px rgba(0,0,0,.08);
+
+    border-color:#6b6df6;
+
+}
+
+.card-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    margin-bottom:18px;
+
+}
+
+
+/* ===========================
+   로고
+=========================== */
+
+.company-logo{
+
+    width:48px;
+    height:48px;
+
+    border-radius:12px;
+
+    background:#eef2ff;
+
+    color:#6b6df6;
+
+    font-size:18px;
+    font-weight:700;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+}
+
+
+/* ===========================
+   관심기업
+=========================== */
+
+.wish-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #f5f6fa;
+
+    cursor: pointer;
+    transition: .2s;
+}
+
+.wish-btn i{
+    font-size: 17px;
+    color: #999;
+    transition: .2s;
+}
+
+.wish-btn:hover{
+    background: #EEF0FF;
+}
+
+.wish-btn:hover i{
+    color: #6F78D8;
+}
+
+/* 관심기업 등록 상태 */
+.wish-btn.active{
+    background: #EEF0FF;
+}
+
+.wish-btn.active i{
+    color: #6F78D8;
+    font-weight: 900;
+}
+
+/* ===========================
+   회사명
+=========================== */
+
+.company-card h4{
+
+    font-size:20px;
+    font-weight:700;
+
+    color:#222;
+
+    margin-bottom:8px;
+
+}
+
+
+/* ===========================
+   회사정보
+=========================== */
+
+.company-info{
+
+    font-size:14px;
+
+    color:#888;
+
+    margin-bottom:18px;
+
+}
+
+
+/* ===========================
+   채용중
+=========================== */
+
+.recruit-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:7px 14px;
+
+    border-radius:30px;
+
+    background:#e8fff0;
+
+    color:#20a354;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    margin-bottom:18px;
+
+}
+
+
+/* ===========================
+   평점
+=========================== */
+
+.company-score{
+
+    font-size:14px;
+
+    color:#666;
+
+    margin-bottom:20px;
+
+}
+
+
+/* ===========================
+   구분선
+=========================== */
+
+.card-line{
+
+    height:1px;
+
+    background:#eceff5;
+
+    margin-bottom:18px;
+
+}
+
+
+/* ===========================
+   한줄평
+=========================== */
+
+.company-review{
+
+    color:#777;
+
+    font-size:14px;
+
+    line-height:1.6;
+
+    font-style:italic;
+
+}
+
+
+/* ===========================
+   Pagination
+=========================== */
+
+.pagination{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-top:60px;
+
+}
+
+.pagination button{
+
+    width:40px;
+    height:40px;
+
+    border:1px solid #dfe4ef;
+
+    background:#fff;
+
+    border-radius:8px;
+
+    color:#666;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.pagination button:hover{
+
+    background:#eef2ff;
+
+    color:#6b6df6;
+
+    border-color:#6b6df6;
+
+}
+
+.pagination .active{
+
+    background:#6b6df6;
+
+    color:#fff;
+
+    border-color:#6b6df6;
+
+}
+
+
+/* ===========================
+   반응형
+=========================== */
+
+@media (max-width:1300px){
+
+    .search-top,
+    .company-banner,
+    .company-list-section{
+
+        width:95%;
+
+    }
+
+}
+
+@media (max-width:1024px){
+
+    .company-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+    .keyword-search{
+
+        flex-direction:column;
+
+    }
+
+    .keyword-search button{
+
+        width:100%;
+        height:52px;
+
+    }
+
+    .filter-group{
+
+        flex-wrap:wrap;
+
+    }
+
+    .filter-group select{
+
+        flex:1 1 48%;
+
+    }
+
+}
+
+@media (max-width:768px){
+
+    .company-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .title-box h2{
+
+        font-size:28px;
+
+    }
+
+    .filter-group{
+
+        flex-direction:column;
+
+    }
+
+    .filter-group select{
+
+        width:100%;
+
+    }
+
+    .section-header{
+
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+
+    }
+
+}

@@ -457,3 +457,258 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================================
+   배너 등록 모달
+========================================================= */
+
+.admin-modal__dialog--banner {
+    max-width: 760px;
+}
+
+.admin-modal__form {
+    padding: 22px 28px 24px;
+}
+
+.admin-modal__row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 18px;
+
+    margin-bottom: 20px;
+}
+
+.admin-modal__field--full {
+    grid-column: 1 / -1;
+}
+
+.admin-modal__input,
+.admin-modal__select,
+.admin-modal__file-box {
+    width: 100%;
+    min-height: 46px;
+
+    border: 1px solid #334155;
+    border-radius: 8px;
+
+    background: #1e293b;
+    color: #e2e8f0;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    box-sizing: border-box;
+}
+
+.admin-modal__input {
+    padding: 0 13px;
+}
+
+.admin-modal__select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    padding: 0 42px 0 13px;
+
+    background:
+            #1e293b
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23cbd5e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 7 9 10 12 7'/%3E%3C/svg%3E")
+            no-repeat right 14px center;
+}
+
+.admin-modal__input:focus,
+.admin-modal__select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+}
+
+.admin-modal__hint {
+    margin-top: 6px;
+
+    color: #64748b;
+    font-size: 11px;
+}
+
+.admin-modal__file-box {
+    display: flex;
+    align-items: center;
+
+    padding: 6px;
+    gap: 10px;
+}
+
+.admin-modal__file-box input {
+    display: none;
+}
+
+.admin-modal__file-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 88px;
+    height: 32px;
+
+    border-radius: 6px;
+
+    background: #2563eb;
+    color: #fff;
+
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.admin-modal__file-btn:hover {
+    background: #1d4ed8;
+}
+
+.admin-modal__file-name {
+    overflow: hidden;
+
+    color: #94a3b8;
+    font-size: 12px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.admin-modal input[type="date"] {
+    color-scheme: dark;
+}
+
+@media (max-width:640px) {
+    .admin-modal__row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   신고 처리
+========================================================= */
+
+.admin-report-code {
+    margin: 0 0 18px;
+
+    color: #ef4444;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-report-box {
+    padding: 16px;
+
+    border: 1px solid #334155;
+    border-radius: 8px;
+
+    background: #1e293b;
+}
+
+.admin-report-box p {
+    margin: 0;
+
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.admin-report-box p + p {
+    margin-top: 4px;
+}
+
+.admin-report-box strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* =========================================================
+  연봉 제보 검토
+========================================================= */
+
+.admin-modal__field--full {
+    margin-top: 22px;
+}
+
+.admin-modal__input {
+    width: 100%;
+    height: 46px;
+
+    padding: 0 13px;
+
+    border: 1px solid #334155;
+    border-radius: 8px;
+
+    background: #1e293b;
+    color: #e2e8f0;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    outline: none;
+    box-sizing: border-box;
+}
+
+.admin-modal__input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+}
+
+.admin-modal__input:read-only {
+    color: #cbd5e1;
+}
+
+.admin-modal__input option {
+    background: #1e293b;
+}
+
+/* =========================================================
+   후기 상세
+========================================================= */
+
+.admin-review-code {
+    margin: 0 0 18px;
+
+    color: #ef4444;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-review-box {
+    padding: 16px;
+
+    border: 1px solid #334155;
+    border-radius: 8px;
+
+    background: #1e293b;
+}
+
+.admin-review-box p {
+    margin: 0;
+
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.admin-review-box p + p {
+    margin-top: 4px;
+}
+
+.admin-review-box strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.admin-review-info {
+    margin-top: 24px;
+}
+
+.admin-review-rating {
+    margin-top: 8px;
+
+    color: #e2e8f0;
+    font-size: 15px;
+}

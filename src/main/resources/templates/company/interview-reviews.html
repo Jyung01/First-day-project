@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>기업 - 면접후기</title>
+    <!-- 메인 헤더 푸터 css -->
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <!-- 기업 기업리뷰 css -->
+    <link rel="stylesheet" th:href="@{/css/company/reviews.css}"/>
+    <!--  기업 면접리뷰 css -->
+    <link rel="stylesheet" th:href="@{/css/company/interview-reviews.css}"/>
+    <!-- 기업 공통 css -->
+    <link rel="stylesheet" th:href="@{/css/company/common.css}"/>
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/salary-create.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/report-modal.css}"/>
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/modal/company/review-write.js}"></script>
+
+    <script th:src="@{/js/company/detail.js}"></script>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const reportModal = document.getElementById("reportModal");
+            const closeBtn = reportModal.querySelector(".modal-close");
+            const cancelBtn = reportModal.querySelector(".btn-cancel");
+
+            // 신고 버튼 클릭
+            document.querySelectorAll(".report-btn").forEach((btn) => {
+                btn.addEventListener("click", () => {
+
+                    // TODO : 나중에 신고 대상 정보 세팅
+                    // document.getElementById("reportTarget").value = "...";
+
+                    reportModal.classList.add("show");
+                });
+            });
+
+            // X 버튼
+            closeBtn.addEventListener("click", () => {
+                reportModal.classList.remove("show");
+            });
+
+            // 취소 버튼
+            cancelBtn.addEventListener("click", () => {
+                reportModal.classList.remove("show");
+            });
+
+            // 바깥 영역 클릭
+            reportModal.addEventListener("click", (e) => {
+                if (e.target === reportModal) {
+                    reportModal.classList.remove("show");
+                }
+            });
+
+            // 신고 접수(테스트)
+            document.getElementById("reportForm").addEventListener("submit", (e) => {
+                e.preventDefault();
+
+                reportModal.classList.remove("show");
+
+                // TODO : fetch 신고 API
+                // TODO : 신고 완료 모달 호출
+            })
+        });
+
+    </script>
+
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="interview-reviews-main company-detail-main">
+
+    <!-- 기업 헤더 -->
+    <section class="company-profile">
+
+        <div class="profile-left">
+
+            <div class="company-logo">
+                네
+            </div>
+
+            <div class="company-summary">
+
+                <h2>네이버클라우드</h2>
+
+                <p class="company-category">
+                    IT 서비스 · 서울 강남 · 중견기업
+                </p>
+
+                <div class="company-rating">
+
+                    <span>⭐ 4.5</span>
+                    <span>리뷰 328개</span>
+                    <span>진행 중 공고 12개</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="profile-right">
+
+            <button
+                    class="wish-btn"
+            >
+                <!--                    th:data-company-id="${company.companyNo}"-->
+
+                <i class="fa-regular fa-heart"></i>
+
+                관심기업
+
+            </button>
+
+            <button
+                    class="report-btn"
+                    data-report-type="company"
+            >
+                <!--                data-target-id="1"-->
+                <!--                data-target-name="네이버"-->
+                신고
+
+            </button>
+        </div>
+
+    </section>
+
+
+    <!-- 메뉴 -->
+
+    <section class="company-tab">
+
+        <a
+                class="tab-btn">
+            <!--            th:href="@{/company/detail(companyNo=${company.companyNo})}"-->
+
+            기업소개
+
+        </a>
+
+        <a
+                class="tab-btn">
+            <!--            th:href="@{/company/recruit(companyNo=${company.companyNo})}"-->
+
+            채용공고
+
+        </a>
+
+        <a
+                class="tab-btn">
+            <!--            th:href="@{/company/review(companyNo=${company.companyNo})}"-->
+
+            기업리뷰
+
+        </a>
+
+        <a
+                class="tab-btn  active">
+            <!--            th:href="@{/company/interview(companyNo=${company.companyNo})}"-->
+
+            면접후기
+
+        </a>
+
+    </section>
+
+    <!-- 제목 -->
+    <section class="review-section">
+
+        <div class="review-layout">
+
+            <!-- 왼쪽 -->
+            <aside class="review-summary">
+
+                <h3>면접후기</h3>
+
+                <div class="summary-score">
+
+                    <strong>보통</strong>
+
+                </div>
+
+                <p class="review-count">
+
+                    면접 후기 146개
+
+                </p>
+
+
+                <!-- 면접 결과 -->
+                <div class="rating-distribution">
+
+                    <div class="rating-row">
+
+                        <span>합격</span>
+
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width:58%;"></div>
+                        </div>
+
+                        <em>58%</em>
+
+                    </div>
+
+
+                    <div class="rating-row">
+
+                        <span>불합격</span>
+
+                        <div class="rating-bar">
+                            <div class="rating-fill gray" style="width:31%;"></div>
+                        </div>
+
+                        <em>31%</em>
+
+                    </div>
+
+
+                    <div class="rating-row">
+
+                        <span>대기중</span>
+
+                        <div class="rating-bar">
+                            <div class="rating-fill gray" style="width:11%;"></div>
+                        </div>
+
+                        <em>11%</em>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 면접 단계 -->
+                <div class="evaluation-box">
+
+                    <h4>
+                        면접 단계
+                    </h4>
+
+
+                    <ul>
+
+                        <li>
+
+                            <span>서류 → 실무면접 → 임원면접</span>
+
+                        </li>
+
+
+                        <li>
+
+                            <span>평균 소요기간 14일</span>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+            </aside>
+
+
+            <!-- 오른쪽 -->
+            <section class="review-content">
+
+
+                <div class="review-header">
+
+                    <h3>
+                        면접후기 146개
+                    </h3>
+
+
+                    <div class="review-actions">
+
+
+                        <button class="sort-btn active">
+                            최신순
+                        </button>
+
+
+                        <button class="sort-btn">
+                            도움순
+                        </button>
+
+
+                        <button class="write-review-btn">
+                            면접후기 작성
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="review-grid">
+
+
+                    <!-- 카드 1 -->
+                    <article class="review-card">
+
+
+                        <div class="review-card-header">
+                            <div>
+                                <h4>백엔드 개발자 면접</h4>
+                                <p class="review-meta">
+                                    2026.06 · 신입 · 합격 <!-- '합격' 텍스트 추가 -->
+                                </p>
+                            </div>
+                            <div class="header-right">
+                                <span class="difficulty">난이도 보통</span> <!-- '난이도 보통' 추가 -->
+                                <button
+                                        class="report-btn"
+                                        data-report-type="interviewReview"
+                                        data-target-id="205"
+                                        data-target-name="면접후기">
+                                    신고
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="review-recommend">
+
+                        <span class="recommend-badge">
+                            👍 도움돼요 31
+                        </span>
+
+                        </div>
+
+
+                        <div class="review-content-box">
+
+
+                            <p>
+
+                                <strong class="pros">
+                                    면접 내용
+                                </strong>
+
+                                기술 질문과 프로젝트 경험 중심으로 진행되었습니다.
+
+                            </p>
+
+
+                            <p>
+                                <strong class="cons">준비 팁</strong>
+                                CS 지식과 협업 경험을 정리하면 도움이 됩니다.
+                            </p>
+
+
+                        </div>
+
+
+                    </article>
+
+
+                    <!-- 카드 2 -->
+                    <article class="review-card">
+
+
+                        <div class="review-card-header">
+                            <div>
+                                <h4>백엔드 개발자 면접</h4>
+                                <p class="review-meta">
+                                    2026.06 · 신입 · 합격 <!-- '합격' 텍스트 추가 -->
+                                </p>
+                            </div>
+                            <div class="header-right">
+                                <span class="difficulty">난이도 보통</span> <!-- '난이도 보통' 추가 -->
+                                <button
+                                        class="report-btn"
+                                        data-report-type="interviewReview"
+                                        data-target-id="205"
+                                        data-target-name="면접후기">
+                                    신고
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="review-recommend">
+
+                        <span class="recommend-badge">
+                            👍 도움돼요 31
+                        </span>
+
+                        </div>
+
+
+                        <div class="review-content-box">
+
+
+                            <p>
+
+                                <strong class="pros">
+                                    면접 내용
+                                </strong>
+
+                                기술 질문과 프로젝트 경험 중심으로 진행되었습니다.
+
+                            </p>
+
+
+                            <p>
+                                <strong class="cons">준비 팁</strong>
+                                CS 지식과 협업 경험을 정리하면 도움이 됩니다.
+                            </p>
+
+
+                        </div>
+
+
+                    </article>
+
+
+                    <!-- 카드 3 -->
+                    <article class="review-card">
+
+
+                        <div class="review-card-header">
+                            <div>
+                                <h4>백엔드 개발자 면접</h4>
+                                <p class="review-meta">
+                                    2026.06 · 신입 · 합격 <!-- '합격' 텍스트 추가 -->
+                                </p>
+                            </div>
+                            <div class="header-right">
+                                <span class="difficulty">난이도 보통</span> <!-- '난이도 보통' 추가 -->
+                                <button
+                                        class="report-btn"
+                                        data-report-type="interviewReview"
+                                        data-target-id="205"
+                                        data-target-name="면접후기">
+                                    신고
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="review-recommend">
+
+                        <span class="recommend-badge">
+                            👍 도움돼요 31
+                        </span>
+
+                        </div>
+
+
+                        <div class="review-content-box">
+
+
+                            <p>
+
+                                <strong class="pros">
+                                    면접 내용
+                                </strong>
+
+                                기술 질문과 프로젝트 경험 중심으로 진행되었습니다.
+
+                            </p>
+
+
+                            <p>
+                                <strong class="cons">준비 팁</strong>
+                                CS 지식과 협업 경험을 정리하면 도움이 됩니다.
+                            </p>
+
+
+                        </div>
+
+
+                    </article>
+
+
+                    <!-- 카드 4 -->
+                    <article class="review-card">
+
+
+                        <div class="review-card-header">
+                            <div>
+                                <h4>백엔드 개발자 면접</h4>
+                                <p class="review-meta">
+                                    2026.06 · 신입 · 합격 <!-- '합격' 텍스트 추가 -->
+                                </p>
+                            </div>
+                            <div class="header-right">
+                                <span class="difficulty">난이도 보통</span> <!-- '난이도 보통' 추가 -->
+                                <button
+                                        class="report-btn"
+                                        data-report-type="interviewReview"
+                                        data-target-id="205"
+                                        data-target-name="면접후기">
+                                    신고
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="review-recommend">
+
+                        <span class="recommend-badge">
+                            👍 도움돼요 31
+                        </span>
+
+                        </div>
+
+
+                        <div class="review-content-box">
+
+
+                            <p>
+
+                                <strong class="pros">
+                                    면접 내용
+                                </strong>
+
+                                기술 질문과 프로젝트 경험 중심으로 진행되었습니다.
+
+                            </p>
+
+
+                            <p>
+                                <strong class="cons">준비 팁</strong>
+                                CS 지식과 협업 경험을 정리하면 도움이 됩니다.
+                            </p>
+
+
+                        </div>
+
+
+                    </article>
+
+
+                </div>
+
+
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+
+                    <button>&lt;</button>
+
+                    <button class="active">
+                        1
+                    </button>
+
+                    <button>
+                        2
+                    </button>
+
+                    <button>
+                        3
+                    </button>
+
+                    <button>
+                        4
+                    </button>
+
+                    <button>
+                        5
+                    </button>
+
+                    <button>&gt;</button>
+
+                </div>
+
+
+            </section>
+
+
+        </div>
+
+
+    </section>
+
+</main>
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 모달 불러오기 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<div th:replace="~{modal/common/report-modal :: reportModal}"></div>
+
+<!-- 공통 헤더·푸터 불러오기 -->
+<script th:src="@{../js/common.js}"></script>
+</body>
+</html>
