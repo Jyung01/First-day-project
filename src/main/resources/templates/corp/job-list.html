@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>채용공고 관리 | 첫출근</title>
     <link rel="stylesheet" th:href="@{/css/corp/common.css}" />
-    <link rel="stylesheet" th:href="@{/css/corp/management.css}" />
+    <link rel="stylesheet" th:href="@{/css/corp/management/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/corp/management/job-list.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/corp/job-list-modal.css}" />
   </head>
   <body class="corp-page">
     <header th:replace="~{common/corp-header :: corpHeader}"></header>
@@ -28,11 +31,11 @@
           </div>
 
           <nav class="job-tabs" aria-label="공고 상태별 조회">
-            <a class="is-active" th:href="@{/corp/job(status='all')}">전체 9</a>
-            <a th:href="@{/corp/job(status='open')}">모집중 4</a>
-            <a th:href="@{/corp/job(status='draft')}">임시저장 2</a>
-            <a th:href="@{/corp/job(status='closed')}">마감 2</a>
-            <a th:href="@{/corp/job(status='hidden')}">숨김 1</a>
+            <a class="is-active" href="#" data-job-filter="ALL">전체 9</a>
+            <a href="#" data-job-filter="OPEN">모집중 4</a>
+            <a href="#" data-job-filter="DRAFT">임시저장 2</a>
+            <a href="#" data-job-filter="CLOSED">마감 2</a>
+            <a href="#" data-job-filter="HIDDEN">숨김 1</a>
           </nav>
 
           <form
@@ -63,7 +66,7 @@
               <span>공고 제목</span><span>상태</span><span>지원자</span>
               <span>마감일</span><span>수정일</span><span>관리</span>
             </div>
-            <div class="job-row">
+            <div class="job-row" data-job-status="OPEN">
               <strong>백엔드 개발자</strong
               ><em class="corp-badge corp-badge--green">모집중</em>
               <span>18명</span><time>2026.07.29</time><time>2026.07.21</time>
@@ -78,7 +81,7 @@
                 </button>
               </div>
             </div>
-            <div class="job-row">
+            <div class="job-row" data-job-status="OPEN">
               <strong>데이터 엔지니어</strong
               ><em class="corp-badge corp-badge--green">모집중</em>
               <span>9명</span><time>2026.08.05</time><time>2026.07.20</time>
@@ -93,7 +96,7 @@
                 </button>
               </div>
             </div>
-            <div class="job-row">
+            <div class="job-row" data-job-status="DRAFT">
               <strong>서비스 기획자</strong
               ><em class="corp-badge corp-badge--orange">임시저장</em>
               <span>-</span><span>미설정</span><time>2026.07.19</time>
@@ -108,7 +111,7 @@
                 </button>
               </div>
             </div>
-            <div class="job-row">
+            <div class="job-row" data-job-status="CLOSED">
               <strong>프론트엔드 개발자</strong
               ><em class="corp-badge">마감</em> <span>24명</span
               ><time>2026.07.18</time><time>2026.07.18</time>
@@ -123,7 +126,7 @@
                 </button>
               </div>
             </div>
-            <div class="job-row">
+            <div class="job-row" data-job-status="HIDDEN">
               <strong>UI/UX 디자이너</strong
               ><em class="corp-badge corp-badge--hidden">숨김</em>
               <span>7명</span><span>상시채용</span><time>2026.07.17</time>
@@ -154,5 +157,8 @@
       </div>
     </main>
     <footer th:replace="~{common/corp-footer :: corpFooter}"></footer>
+    <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/corp/job-list.js}"></script>
   </body>
 </html>

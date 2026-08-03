@@ -1,0 +1,205 @@
+/* applicant-detail */
+
+.applicant-hero {
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.applicant-hero .avatar {
+  width: 84px;
+  height: 84px;
+  font-size: 30px;
+}
+
+.applicant-hero__copy {
+  flex: 1;
+}
+
+.applicant-hero__copy h2 {
+  margin-bottom: 8px;
+}
+
+.applicant-hero__copy p {
+  margin-top: 7px;
+  color: var(--corp-muted);
+  font-size: 12px;
+}
+
+.applicant-detail-grid {
+  display: grid;
+  grid-template-columns: 1.65fr 0.9fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.modal-status-summary {
+  padding: 16px;
+  border: 1px solid #d8e3f2;
+  border-radius: 8px;
+  background-color: #eef5ff;
+  color: #62738d;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.modal-status-summary strong {
+  display: block;
+  margin-bottom: 12px;
+  color: #172033;
+}
+
+.modal-status-select {
+  width: 100%;
+  height: 46px;
+  margin-top: 16px;
+  padding: 0 14px;
+  border: 1px solid #d7deea;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #172033;
+  font: inherit;
+  font-size: 13px;
+}
+
+.document-panel,
+.process-panel {
+  padding: 22px;
+}
+
+.document-panel h2,
+.process-panel h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid var(--corp-border);
+  border-radius: 9px;
+}
+
+.document-item + .document-item {
+  margin-top: 14px;
+}
+
+.document-item div {
+  flex: 1;
+}
+
+.document-item small,
+.document-item strong {
+  display: block;
+}
+
+.document-item small {
+  margin-bottom: 7px;
+  color: var(--corp-blue);
+  font-weight: 700;
+}
+
+.document-item time {
+  display: block;
+  margin-top: 8px;
+  color: var(--corp-muted);
+  font-size: 10px;
+}
+
+.applicant-message {
+  margin-top: 28px;
+}
+
+.applicant-message textarea {
+  width: 100%;
+  min-height: 122px;
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px solid var(--corp-border);
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.process-history {
+  margin: 20px 0 32px;
+}
+
+.process-history li {
+  position: relative;
+  padding: 0 0 24px 18px;
+  color: var(--corp-muted);
+  font-size: 11px;
+}
+
+.process-history li:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 10px;
+  height: 10px;
+  background: var(--corp-blue);
+  border-radius: 50%;
+}
+
+.process-history strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--corp-ink);
+}
+
+.memo-area {
+  width: 100%;
+  min-height: 105px;
+  padding: 12px;
+  border: 1px solid var(--corp-border);
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.process-panel .corp-button {
+  width: 100%;
+  margin-top: 12px;
+}
+
+@media (max-width: 1050px) {
+  .dashboard-panels,
+    .applicant-detail-grid {
+      grid-template-columns: 1fr;
+    }
+}
+
+.job-form-card h2,
+.document-panel h2,
+.process-panel h2 {
+  font-size: 19px;
+}
+
+.applicant-message textarea,
+.memo-area {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.process-history li:before {
+  top: 3px;
+}
+
+.process-history li > strong {
+  min-height: 16px;
+  line-height: 16px;
+}
+
+.process-panel label[for="managerMemo"] {
+  display: block;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.process-panel .memo-area {
+  display: block;
+  margin-top: 0;
+}

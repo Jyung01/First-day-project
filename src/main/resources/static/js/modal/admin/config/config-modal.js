@@ -1,13 +1,6 @@
-// 관리자 채용공고·직무·기술 공통 모달
 document.addEventListener("DOMContentLoaded", () => {
-  const applyAdminModal = (modalId, danger = false) => {
-    const modal = document.getElementById(modalId);
-    const rightButton = modal?.querySelector(".modal-footer .btn:last-child");
-
-    modal?.classList.add("admin-common-modal");
-    if (danger && rightButton) {
-      rightButton.className = "btn btn-danger";
-    }
+  const applyAdminModal = (modalId) => {
+    document.getElementById(modalId)?.classList.add("admin-common-modal");
   };
 
   const categoryBody = () => `
@@ -65,29 +58,16 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   `;
 
-  const hideJobBody = () => `
-    <div class="modal-form-body">
-      <div class="form-group">
-        <label for="hideReason">숨김 사유 *</label>
-        <textarea
-          id="hideReason"
-          placeholder="위반 또는 부적절한 채용 정보를 입력하세요."
-        ></textarea>
-      </div>
-      <p class="modal-notice modal-notice--danger">
-        숨김 처리 후 기업회원은 수정 뒤 재검토를 요청할 수 있습니다.
-        입력한 숨김 사유는 기업회원에게 표시됩니다.
-      </p>
-    </div>
-  `;
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-modal-open]");
 
-  document.querySelectorAll("[data-modal-open]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const modalType = button.dataset.modalOpen;
-      const title = button.dataset.modalTitle;
-      const value = button.dataset.modalValue || "";
+    if (!button) return;
 
-      if (modalType === "category") {
+    const modalType = button.dataset.modalOpen;
+    const title = button.dataset.modalTitle;
+    const value = button.dataset.modalValue || "";
+
+    if (modalType === "category") {
         showFormModal({
           title: title || "카테고리 등록",
           bodyHtml: categoryBody(),
@@ -95,9 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         applyAdminModal("formModal");
         document.querySelector("#categoryName").value = value;
-      }
+    }
 
-      if (modalType === "skill") {
+    if (modalType === "skill") {
         showFormModal({
           title: title || "기술 스택 등록",
           bodyHtml: skillBody(),
@@ -105,19 +85,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         applyAdminModal("formModal");
         document.querySelector("#skillName").value = value;
-      }
+    }
 
-      if (modalType === "job-hide") {
-        showFormModal({
-          title: "채용공고 숨김 처리",
-          bodyHtml: hideJobBody(),
-          rightText: "숨김 처리",
-          onRight: () => closeModal("formModal"),
-        });
-        applyAdminModal("formModal", true);
-      }
-
-      if (modalType === "category-delete") {
+    if (modalType === "category-delete") {
         showConfirmModal({
           iconClass: "danger",
           iconHtml: "!",
@@ -132,9 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
           rightClass: "btn-danger",
         });
         applyAdminModal("confirmModal");
-      }
+    }
 
-      if (modalType === "skill-delete") {
+    if (modalType === "skill-delete") {
         showConfirmModal({
           iconClass: "danger",
           iconHtml: "!",
@@ -149,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
           rightClass: "btn-danger",
         });
         applyAdminModal("confirmModal");
-      }
-    });
+    }
   });
 });

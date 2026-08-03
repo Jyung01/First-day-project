@@ -1,4 +1,4 @@
-/* 직무 카테고리 관리 */
+/* 직무 카테고리·기술 스택 관리 공통 */
 .config-tabs {
   display: grid;
   grid-template-columns: 175px 175px;

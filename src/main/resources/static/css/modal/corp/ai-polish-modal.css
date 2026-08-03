@@ -1,0 +1,134 @@
+/* ai-polish */
+
+.ai-polish-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.ai-polish-modal[aria-hidden="false"] {
+  display: block;
+}
+
+.ai-polish-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 32, 57, 0.45);
+}
+
+.ai-polish-modal__dialog {
+  position: relative;
+  width: min(900px, calc(100% - 32px));
+  margin: 10vh auto;
+  padding: 28px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 22px 70px rgba(20, 32, 57, 0.3);
+}
+
+.ai-polish-modal__heading {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ai-polish-modal__heading h2 {
+  font-size: 24px;
+}
+
+.ai-polish-modal__heading p {
+  margin-top: 5px;
+  color: var(--corp-muted);
+  font-size: 12px;
+}
+
+.ai-polish-modal__heading button {
+  border: 0;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.ai-polish-modal__meta {
+  display: flex;
+  gap: 48px;
+  margin: 22px 0;
+  padding: 16px;
+  background: var(--corp-blue-soft);
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+.ai-polish-modal__compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.ai-polish-modal__compare article {
+  padding: 17px;
+  border: 1px solid var(--corp-border);
+  border-radius: 10px;
+}
+
+.ai-polish-modal__compare .is-suggestion {
+  border-color: #6d93ff;
+  background: #f7f9ff;
+}
+
+.ai-polish-modal__compare textarea {
+  width: 100%;
+  height: 210px;
+  margin-top: 14px;
+  padding: 14px;
+  border: 0;
+  border-radius: 8px;
+  background: #fff;
+  resize: none;
+}
+
+.ai-polish-modal__notice {
+  margin-top: 18px;
+  padding: 14px;
+  background: #fff9e9;
+  border-radius: 8px;
+  color: #7a6633;
+  font-size: 11px;
+}
+
+.ai-polish-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+@media (max-width: 650px) {
+  .ai-polish-modal__dialog {
+      margin: 3vh auto;
+      padding: 18px;
+    }
+
+  .ai-polish-modal__compare {
+      grid-template-columns: 1fr;
+    }
+
+  .ai-polish-modal__compare textarea {
+      height: 120px;
+    }
+}
+
+.ai-polish-modal__heading h2 {
+  font-size: 22px;
+}
+
+.ai-polish-modal__compare textarea {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.ai-polish-modal__meta > strong,
+.ai-polish-modal__compare .is-suggestion > strong {
+  color: var(--corp-blue);
+  font-weight: 700;
+}

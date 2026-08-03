@@ -6,8 +6,6 @@
     <title>채용공고 관리 | 첫출근 관리자</title>
     <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
     <link rel="stylesheet" th:href="@{/css/admin/job/common.css}" />
-    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
-    <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
   </head>
   <body>
     <div class="wrapper">
@@ -40,10 +38,11 @@
           </section>
           <section class="operation-panel">
             <nav class="operation-tabs">
-              <button class="operation-tab is-active">전체</button>
-              <button class="operation-tab">게시 중</button>
-              <button class="operation-tab">마감</button>
-              <button class="operation-tab">숨김</button>
+              <button class="operation-tab is-active" type="button" data-job-filter="ALL">전체</button>
+              <button class="operation-tab" type="button" data-job-filter="POSTED">게시 중</button>
+              <button class="operation-tab" type="button" data-job-filter="CLOSED">마감</button>
+              <button class="operation-tab" type="button" data-job-filter="HIDDEN">숨김</button>
+              <button class="operation-tab" type="button" data-job-filter="REVIEW">재검토 요청</button>
             </nav>
             <form class="operation-search">
               <select class="operation-control">
@@ -69,97 +68,86 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr data-job-status="POSTED">
                   <td>J-2081</td>
                   <td>코드웨이브</td>
                   <td>백엔드 개발자 채용</td>
                   <td>개발</td>
                   <td>07.22</td>
                   <td>08.15</td>
-                  <td class="status">게시 중</td>
+                  <td class="status status--posted">게시 중</td>
                   <td>
-                    <div class="table-actions">
-                      <button class="table-action">보기</button>
-                      <button
-                        class="table-action"
-                        data-modal-open="job-hide"
-                      >
-                        숨김
-                      </button>
-                    </div>
+                    <a
+                      class="table-action"
+                      th:href="@{/admin/job/{jobId}(jobId='J-2081')}"
+                    >상세보기</a>
                   </td>
                 </tr>
-                <tr>
+                <tr data-job-status="POSTED">
                   <td>J-2080</td>
                   <td>넥스트랩</td>
                   <td>데이터 엔지니어</td>
                   <td>데이터</td>
                   <td>07.22</td>
                   <td>08.20</td>
-                  <td class="status">게시 중</td>
+                  <td class="status status--posted">게시 중</td>
                   <td>
-                    <div class="table-actions">
-                      <button class="table-action">보기</button>
-                      <button
-                        class="table-action"
-                        data-modal-open="job-hide"
-                      >
-                        숨김
-                      </button>
-                    </div>
+                    <a
+                      class="table-action"
+                      th:href="@{/admin/job/{jobId}(jobId='J-2080')}"
+                    >상세보기</a>
                   </td>
                 </tr>
-                <tr>
+                <tr data-job-status="HIDDEN">
                   <td>J-2079</td>
                   <td>브릿지웍스</td>
                   <td>서비스 기획자</td>
                   <td>기획</td>
                   <td>07.21</td>
                   <td>08.12</td>
-                  <td class="status">게시 중</td>
+                  <td class="status status--hidden">숨김</td>
                   <td>
-                    <div class="table-actions">
-                      <button class="table-action">보기</button>
-                      <button
-                        class="table-action"
-                        data-modal-open="job-hide"
-                      >
-                        숨김
-                      </button>
-                    </div>
+                    <a
+                      class="table-action"
+                      th:href="@{/admin/job/{jobId}(jobId='J-2079')}"
+                    >상세보기</a>
                   </td>
                 </tr>
-                <tr>
+                <tr data-job-status="CLOSED">
                   <td>J-2078</td>
                   <td>하이퍼랩</td>
                   <td>프론트엔드 개발자</td>
                   <td>개발</td>
                   <td>07.21</td>
                   <td>08.18</td>
-                  <td class="status">마감</td>
-                  <td><button class="table-action">보기</button></td>
+                  <td class="status status--closed">마감</td>
+                  <td>
+                    <a
+                      class="table-action"
+                      th:href="@{/admin/job/{jobId}(jobId='J-2078')}"
+                    >상세보기</a>
+                  </td>
                 </tr>
-                <tr>
+                <tr data-job-status="REVIEW">
                   <td>J-2077</td>
                   <td>데이터포지</td>
                   <td>AI 엔지니어</td>
                   <td>AI</td>
                   <td>07.20</td>
                   <td>08.30</td>
-                  <td class="status">재검토 요청</td>
+                  <td class="status status--review">재검토 요청</td>
                   <td>
-                    <div class="table-actions">
-                      <button class="table-action">보기</button>
-                      <button class="table-action">해제</button>
-                      <button class="table-action">유지</button>
-                    </div>
+                    <a
+                      class="table-action"
+                      th:href="@{/admin/job/{jobId}(jobId='J-2077')}"
+                    >상세보기</a>
                   </td>
                 </tr>
               </tbody>
             </table>
             <nav class="operation-pagination">
               <a href="#">‹</a>
-              <a href="#">1</a>
+              <a class="is-active" href="#" aria-current="page">1</a>
               <a href="#">2</a>
               <a href="#">3</a>
               <a href="#">4</a>
@@ -171,8 +159,6 @@
       </div>
       <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
     </div>
-    <div th:replace="~{modal/common/form-modal :: formModal}"></div>
-    <script th:src="@{/js/modal.js}"></script>
-    <script th:src="@{/js/modal/admin/operations.js}"></script>
+    <script th:src="@{/js/admin/job-list.js}"></script>
   </body>
 </html>
