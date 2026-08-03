@@ -6,12 +6,13 @@
     <title>직무 카테고리 | 첫출근 관리자</title>
     <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
     <link rel="stylesheet" th:href="@{/css/admin/config/common.css}" />
-    <link
-      rel="stylesheet"
-      th:href="@{/css/admin/config/job-category.css}"
-    />
+    <link rel="stylesheet" th:href="@{/css/admin/config/job-skill.css}" />
     <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
     <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/modal/admin/config/config-modal.css}"
+    />
   </head>
   <body>
     <div class="wrapper">
@@ -63,39 +64,39 @@
           <div class="config-grid">
             <section class="config-box">
               <h2>1차 카테고리</h2>
-              <div class="config-list">
-                <button class="is-active">
+              <div class="config-list" data-category-list>
+                <button class="is-active" data-category="개발·데이터">
                   <strong>개발·데이터</strong>
                   <small>12개</small>
                 </button>
-                <button>
+                <button data-category="기획·PM">
                   <strong>기획·PM</strong>
                   <small>7개</small>
                 </button>
-                <button>
+                <button data-category="디자인">
                   <strong>디자인</strong>
                   <small>6개</small>
                 </button>
-                <button>
+                <button data-category="마케팅·광고">
                   <strong>마케팅·광고</strong>
                   <small>5개</small>
                 </button>
-                <button>
+                <button data-category="영업">
                   <strong>영업</strong>
                   <small>5개</small>
                 </button>
-                <button>
+                <button data-category="경영·지원">
                   <strong>경영·지원</strong>
                   <small>6개</small>
                 </button>
-                <button>
+                <button data-category="금융">
                   <strong>금융</strong>
                   <small>3개</small>
                 </button>
               </div>
             </section>
-            <section class="config-box">
-              <h2>개발·데이터 하위 직무</h2>
+            <section class="config-box" data-category-detail>
+              <h2 data-category-title>개발·데이터 하위 직무</h2>
               <div class="config-row config-row--head">
                 <span>직무명</span>
                 <span>사용 건수</span>
@@ -146,6 +147,7 @@
     <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
     <div th:replace="~{modal/common/form-modal :: formModal}"></div>
     <script th:src="@{/js/modal.js}"></script>
-    <script th:src="@{/js/modal/admin/operations.js}"></script>
+    <script th:src="@{/js/admin/config/job-category.js}"></script>
+    <script th:src="@{/js/modal/admin/config/config-modal.js}"></script>
   </body>
 </html>

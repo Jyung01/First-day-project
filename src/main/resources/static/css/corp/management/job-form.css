@@ -1,0 +1,156 @@
+/* job-form */
+
+.job-form-card {
+  padding: 24px;
+}
+
+.job-form-card h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.job-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 17px 28px;
+}
+
+.form-field {
+  display: grid;
+  gap: 8px;
+}
+
+.form-field--wide {
+  grid-column: 1/-1;
+}
+
+.form-field label {
+  color: var(--corp-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid var(--corp-border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.form-field input,
+.form-field select {
+  height: 43px;
+  padding: 0 13px;
+}
+
+.form-field textarea {
+  min-height: 100px;
+  padding: 13px;
+  resize: vertical;
+}
+
+.skill-picker {
+  min-height: 48px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border: 1px solid var(--corp-border);
+  border-radius: 8px;
+}
+
+.skill-picker__empty {
+  padding-left: 5px;
+  color: var(--corp-muted);
+  font-size: 12px;
+}
+
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  color: var(--corp-blue);
+  background: var(--corp-blue-soft);
+  border-radius: 99px;
+  font-size: 12px;
+}
+
+.skill-chip button {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.skill-open {
+  margin-left: auto;
+  border: 0;
+  color: var(--corp-blue);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.skill-help {
+  color: var(--corp-muted);
+  font-size: 11px;
+}
+
+@media (max-width: 700px) {
+  .summary-grid,
+    .job-form-grid {
+      grid-template-columns: 1fr;
+    }
+
+  .form-field--wide {
+      grid-column: auto;
+    }
+}
+
+.resume-skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  color: var(--corp-blue);
+  background: var(--corp-blue-soft);
+  border: 0;
+  border-radius: 99px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.form-field > .skill-open {
+  justify-self: start;
+  margin-left: 0;
+}
+
+.form-field label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-field input,
+.form-field select {
+  font-size: 13px;
+}
+
+.form-field textarea {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.corp-note--hidden {
+  color: #7a6633;
+  background: #fff9e9;
+  border-color: #eadba8;
+}
+
+.corp-note--hidden strong {
+  color: #66521f;
+}

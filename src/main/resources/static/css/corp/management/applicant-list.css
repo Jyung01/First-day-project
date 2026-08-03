@@ -1,0 +1,88 @@
+/* applicant-list */
+
+.applicant-filter {
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.applicant-filter__row {
+  display: grid;
+  grid-template-columns: 1.2fr 0.75fr 0.9fr 90px;
+  gap: 14px;
+}
+
+.applicant-summary {
+  margin-top: 16px;
+  color: var(--corp-muted);
+  font-size: 12px;
+}
+
+.applicant-list {
+  padding: 8px 20px;
+}
+
+.applicant-list-row {
+  display: grid;
+  grid-template-columns: 1.05fr 1.55fr 0.8fr 0.55fr 0.8fr 0.65fr;
+  align-items: center;
+  min-height: 84px;
+  font-size: 12px;
+}
+
+.applicant-list-row--head {
+  min-height: 42px;
+  color: var(--corp-muted);
+  font-weight: 700;
+}
+
+.applicant-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+@media (max-width: 700px) {
+  .filter-bar,
+    .applicant-filter__row {
+      grid-template-columns: 1fr;
+    }
+
+  .applicant-list-row {
+      grid-template-columns: 1fr 1fr;
+    }
+
+  .applicant-list-row > *:nth-child(3),
+    .applicant-list-row > *:nth-child(4),
+    .applicant-list-row > *:nth-child(5) {
+      display: none;
+    }
+}
+
+.applicant-name {
+  font-size: 13px;
+}
+
+.applicant-list-row > *:nth-child(n + 2) {
+  justify-self: center;
+  text-align: center;
+}
+
+.applicant-list-row > .corp-badge {
+  justify-self: center;
+}
+
+.applicant-list-row > .corp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  min-width: 84px;
+  padding: 0 14px;
+  text-align: center;
+}
+
+.applicant-list-row--head > span:nth-child(n + 2) {
+  width: 100%;
+  text-align: center;
+}
