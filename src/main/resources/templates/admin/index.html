@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>관리자 대시보드 | 첫출근 관리자</title>
+
+        <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+    </head>
+
+    <body>
+        <div class="wrapper">
+            <!-- 관리자 헤더 -->
+            <header th:replace="~{common/admin-header :: adminHeader}"></header>
+
+            <div class="container">
+                <!-- 관리자 사이드바 -->
+                <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+
+                <!-- 관리자 대시보드 콘텐츠 -->
+                <main class="dashboard-content">
+                    <section class="dashboard-heading">
+                        <h1>관리자 대시보드</h1>
+                        <p>서비스 운영 현황과 처리 대기 업무를 확인하세요.</p>
+                    </section>
+
+                    <section class="dashboard-stats" aria-label="주요 운영 현황">
+                        <article class="dashboard-stat-card is-blue">
+                            <span class="dashboard-stat-label">승인 대기 기업</span>
+                            <strong class="dashboard-stat-value">6건</strong>
+                            <small class="dashboard-stat-description">평균 심사 2일</small>
+                        </article>
+
+                        <article class="dashboard-stat-card is-orange">
+                            <span class="dashboard-stat-label">오늘 등록 공고</span>
+                            <strong class="dashboard-stat-value">21건</strong>
+                            <small class="dashboard-stat-description">전일 대비 +5건</small>
+                        </article>
+
+                        <article class="dashboard-stat-card is-red">
+                            <span class="dashboard-stat-label">미처리 신고</span>
+                            <strong class="dashboard-stat-value">9건</strong>
+                            <small class="dashboard-stat-description">오늘 접수 5건</small>
+                        </article>
+
+                        <article class="dashboard-stat-card is-green">
+                            <span class="dashboard-stat-label">미답변 문의</span>
+                            <strong class="dashboard-stat-value">7건</strong>
+                            <small class="dashboard-stat-description">24시간 경과 3건</small>
+                        </article>
+                    </section>
+
+                    <div class="dashboard-grid">
+                        <section class="dashboard-panel">
+                            <div class="dashboard-panel-heading">
+                                <h2>최근 기업 심사 요청</h2>
+                                <a th:href="@{/admin/company}" class="dashboard-more-link">전체보기 →</a>
+                            </div>
+
+                            <div class="dashboard-table-wrap">
+                                <table class="dashboard-table">
+                                    <thead>
+                                        <tr>
+                                            <th>구분</th>
+                                            <th>대상</th>
+                                            <th>신청일</th>
+                                            <th>상태</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="dashboard-tag is-blue">기업</span></td>
+                                            <td>코드웨이브 주식회사</td>
+                                            <td>07.22</td>
+                                            <td><span class="dashboard-tag is-orange">심사 대기</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="dashboard-tag is-blue">기업</span></td>
+                                            <td>브릿지텍스</td>
+                                            <td>07.22</td>
+                                            <td><span class="dashboard-tag is-orange">심사 대기</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="dashboard-tag is-blue">기업</span></td>
+                                            <td>넥스트림</td>
+                                            <td>07.21</td>
+                                            <td><span class="dashboard-tag is-green">재심사</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="dashboard-tag is-blue">기업</span></td>
+                                            <td>데이터포지</td>
+                                            <td>07.21</td>
+                                            <td><span class="dashboard-tag is-green">재심사</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="dashboard-tag is-blue">기업</span></td>
+                                            <td>하이커머테크</td>
+                                            <td>07.20</td>
+                                            <td><span class="dashboard-tag is-orange">심사 대기</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <section class="dashboard-panel">
+                            <div class="dashboard-panel-heading">
+                                <h2>오늘의 운영 현황</h2>
+                            </div>
+
+                            <dl class="dashboard-summary-list">
+                                <div><dt>신규 가입</dt><dd>38명</dd></div>
+                                <div><dt>신규 기업 신청</dt><dd><strong>4건</strong></dd></div>
+                                <div><dt>등록 공고</dt><dd>21건</dd></div>
+                                <div><dt>작성 후기</dt><dd>17건</dd></div>
+                                <div><dt>접수 신고</dt><dd><strong>5건</strong></dd></div>
+                                <div><dt>답변 완료 문의</dt><dd>9건</dd></div>
+                            </dl>
+                        </section>
+                    </div>
+                </main>
+            </div>
+
+            <!-- 관리자 푸터 -->
+            <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+        </div>
+    </body>
+</html>

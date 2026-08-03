@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>첫출근 — AI 첨삭 결과</title>
+<link rel="stylesheet" th:href="@{/css/common.css}" />
+<link rel="stylesheet" th:href="@{/css/my/common.css}" />
+<link rel="stylesheet" th:href="@{/css/my/cover-letter/ai-result.css}" />
+</head><body>
+<header th:replace="~{common/header :: header}"></header>
+<main class="mypage">
+    <div class="wrap mypage-layout">
+        <!-- 좌측 사이드바 -->
+        <aside th:replace="~{common/my-aside :: myAside}"></aside>
+
+        <!-- 우측 컨텐츠 -->
+        <section class="mypage-content">
+            <!-- 페이지 헤더 -->
+            <div class="cl-page-header">
+                <h1 class="cl-page-header__title">AI 첨삭 결과</h1>
+                <p class="cl-page-header__desc">원문과 AI 개선안을 비교하고 원하는 내용을 선택해 반영하세요.</p>
+            </div>
+
+            <!--
+              정적 프로토타입 단계: 문항 탭 3개를 직접 써놓았습니다.
+              나중에 백엔드 연동 시, th:each="q : ${coverLetter.questions}" 로
+              탭을 반복 생성하고 선택된 문항에 맞춰 아래 원문/AI 제안 영역을 채우면 됩니다.
+            -->
+            <div class="cl-review-tabs">
+                <div class="cl-review-tabs__left">
+                    <button type="button" class="cl-tab is-active">문항 1</button>
+                    <button type="button" class="cl-tab">문항 2</button>
+                    <button type="button" class="cl-tab">문항 3</button>
+                    <span class="cl-tab-nav">
+                        <a href="#">이전 문항</a>
+                        <a href="#">다음 문항</a>
+                    </span>
+                </div>
+                <a href="#" class="btn btn-outline btn-sm">다시 첨삭</a>
+            </div>
+
+            <div class="cl-review-meta">
+                <div class="cl-review-meta__left">
+                    <span class="status-badge status-badge--ai-done">첨삭 완료</span>
+                    <span>백엔드 개발자 지원 자기소개서 · 문항 1 · 2026.07.20 11:42</span>
+                </div>
+            </div>
+
+            <div class="cl-compare">
+                <!-- 원문 -->
+                <div class="cl-compare__col">
+                    <h2 class="cl-compare__title">원문</h2>
+                    <p class="cl-original__text">저는 문제의 원인을 로그와 데이터 흐름으로 확인하는 과정에서 백엔드 개발의 매력을 느꼈습니다. 프로젝트를 진행하면서 여러 기능을 구현했고 문제를 해결한 경험이 있습니다. 입사 후에도 열심히 배우겠습니다.</p>
+                    <p class="cl-original__count">원문 122자</p>
+                </div>
+
+                <!-- AI 첨삭 제안 -->
+                <div class="cl-compare__col">
+                    <h2 class="cl-compare__title">AI 첨삭 제안</h2>
+
+                    <div class="cl-suggestion__summary-box">
+                        <p class="cl-suggestion__summary-title">핵심 개선안</p>
+                        <p class="cl-suggestion__summary-text">구현 경험을 구체적인 기능과 결과로 설명하고 입사 후 포부를 직무와 연결해보세요.</p>
+                    </div>
+
+                    <ul class="cl-suggestion__points">
+                        <li class="cl-suggestion__point">
+                            <span class="cl-suggestion__point-label">구체성</span>
+                            '여러 기능' 대신 담당 기능과 세부한 문제로 작성
+                        </li>
+                        <li class="cl-suggestion__point">
+                            <span class="cl-suggestion__point-label">문장 명확성</span>
+                            지원 동기와 프로젝트 경험을 두 문단으로 구분
+                        </li>
+                        <li class="cl-suggestion__point">
+                            <span class="cl-suggestion__point-label">직무 연결</span>
+                            입사 후 포부를 직무와 역량과 연결
+                        </li>
+                    </ul>
+
+                    <div class="cl-suggestion__example">
+                        <p class="cl-suggestion__example-title">개선 예시</p>
+                        <p class="cl-suggestion__example-text">로그와 데이터 흐름을 추적해 원인을 찾아낸 경험을 통해 오류의 원인을 찾은 경험을 통해...</p>
+                    </div>
+
+                    <div class="cl-suggestion__actions">
+                        <a href="#" class="btn btn-outline">원문 유지</a>
+                        <a href="#" class="btn btn-primary">개선안 적용</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 안내 문구 -->
+            <div class="cl-notice">
+                <svg class="cl-notice__icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 8h.01M11 11h1v5h1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <p>AI 첨삭은 참고용입니다. 개인정보나 기업 기밀을 언급하지 않고, 최종 내용은 사용자가 직접 확인해주세요.</p>
+            </div>
+        </section>
+    </div>
+</main>
+<footer th:replace="~{common/footer :: footer}"></footer>
+<script th:src="@{/js/common.js}"></script>
+</body></html>

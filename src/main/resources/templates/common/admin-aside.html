@@ -54,6 +54,10 @@
             <a th:href="@{/admin/config/site-setting}">사이트 설정</a>
         </li>
 
+        <li th:classappend="${activeMenu == 'version'} ? ' active' : ''">
+            <a th:href="@{/admin/config/version}">사이트 버전 관리</a>
+        </li>
+
         <li th:classappend="${activeMenu == 'policy'} ? ' active' : ''">
             <a th:href="@{/admin/config/policy}">약관·정책 관리</a>
         </li>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>이용약관 | 첫출근</title>
+<link rel="stylesheet" th:href="@{/css/policy/page.css}" />
+<link rel="stylesheet" th:href="@{/css/common.css}" />
+</head><body>
+<header th:replace="~{common/header :: header}"></header>
+<div class="policy-page"><main class="policy-shell">
+
+    <div class="policy-main">
+        <div class="eyebrow">POLICY-01</div>
+        <h1 class="page-title">이용약관</h1>
+        <p class="page-desc">회원가입에 사용되는 약관과 동의 내용을 확인할 수 있습니다.</p>
+
+        <div class="policy-card">
+            <nav class="policy-list">
+                <a href="#" class="active" data-target="personal">개인회원 서비스 이용약관</a>
+                <a href="#" data-target="company">기업회원 서비스 이용약관</a>
+                <a href="#" data-target="info-collect">개인정보 수집·이용 동의</a>
+                <a href="#" data-target="info-open">기업정보 공개 동의</a>
+                <a href="#" data-target="marketing">마케팅 정보 수신 동의</a>
+                <a href="#" data-target="job-email">채용정보 이메일 수신 동의</a>
+                <a th:href="@{/policy/privacy}">개인정보처리방침</a>
+            </nav>
+
+            <section class="policy-detail" id="policy-content">
+                <h2>개인회원 서비스 이용약관</h2>
+
+                <div class="clause">
+                    <h3>제1조 목적</h3>
+                    <p>이 약관은 첫출근이 제공하는 채용 플랫폼 서비스의 이용 조건과 절차를 정합니다.</p>
+                </div>
+
+                <div class="clause">
+                    <h3>제2조 회원의 의무</h3>
+                    <p>회원은 정확한 정보를 제공하고 타인의 권리를 침해하는 콘텐츠를 등록해서는 안 됩니다.</p>
+                </div>
+
+                <div class="clause">
+                    <h3>제3조 서비스 이용</h3>
+                    <p>채용공고, 입사지원, 이력서·자기소개서, 기업정보 및 후기 기능을 이용합니다.</p>
+                </div>
+
+                <div class="fine-print">
+                    ※ 실제 화면에서는 관리자가 지정한 현재 부분 전체를 출력합니다.
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <aside class="policy-side">
+        <div class="summary-card">
+            <h3>약관 조회 안내</h3>
+            <ul>
+                <li>좌측 목록에서 원하는 약관을 선택하면 해당 본문이 즉시 표시됩니다</li>
+                <li>회원가입 시 동의한 항목과 동일한 전체 내용입니다</li>
+                <li>관리자가 수정하면 즉시 반영됩니다</li>
+                <li>버전 이력 및 적용일 관리는 제공되지 않습니다</li>
+            </ul>
+        </div>
+    </aside>
+
+</main></div>
+<footer th:replace="~{common/footer :: footer}"></footer>
+<script th:src="@{/js/common.js}"></script>
+</body></html>

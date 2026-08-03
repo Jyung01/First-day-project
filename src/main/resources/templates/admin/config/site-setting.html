@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>사이트 설정 | 첫출근 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin/section-common.css}" />
+</head>
+<body>
+<div class="wrapper">
+    <header th:replace="~{common/admin-header :: adminHeader}"></header>
+    <div class="container">
+        <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+        <main class="admin-section">
+            <div class="page-header"><h1>사이트 설정</h1><p>서비스 기본정보, 브랜드 이미지와 공통 푸터 정보를 관리합니다.</p></div>
+            <div class="two-col">
+                <div>
+                    <section class="panel">
+                        <div class="panel-head"><h2>서비스 기본정보</h2></div>
+                        <div class="form-grid">
+                            <div class="field"><label for="serviceName">서비스명</label><input id="serviceName" type="text" value="첫출근" /></div>
+                            <div class="field"><label for="supportEmail">고객센터 이메일</label><input id="supportEmail" type="email" value="help@firstwork.co.kr" /></div>
+                            <div class="field"><label for="supportPhone">대표 전화번호</label><input id="supportPhone" type="tel" value="02-1234-5678" /></div>
+                            <div class="field"><label for="serviceHours">운영시간</label><input id="serviceHours" type="text" value="평일 09:00 ~ 18:00" /></div>
+                            <div class="field full"><label for="serviceDescription">서비스 소개 문구</label><textarea id="serviceDescription">설레는 첫 출근을 함께 준비합니다.</textarea></div>
+                        </div>
+                        <div class="form-actions"><button type="button" class="btn btn-primary">기본정보 저장</button></div>
+                    </section>
+                    <section class="panel">
+                        <div class="panel-head"><h2>공통 푸터 설정</h2></div>
+                        <div class="form-grid">
+                            <div class="field"><label for="companyName">회사명</label><input id="companyName" type="text" value="첫출근" /></div>
+                            <div class="field"><label for="businessNumber">사업자등록번호</label><input id="businessNumber" type="text" value="120-08-12345" /></div>
+                            <div class="field full"><label for="companyAddress">주소</label><input id="companyAddress" type="text" value="서울특별시 강남구 테헤란로 123" /></div>
+                            <div class="field full"><label for="copyrightText">저작권 문구</label><input id="copyrightText" type="text" value="© 2026 첫출근. All rights reserved." /></div>
+                        </div>
+                        <div class="form-actions"><button type="button" class="btn btn-primary">푸터 설정 저장</button></div>
+                    </section>
+                </div>
+                <section class="panel">
+                    <div class="panel-head"><h2>브랜드 이미지 관리 · 테마별 적용</h2></div>
+                    <span class="upload-label">헤더 로고 이미지</span>
+                    <div class="upload-hint">투명 배경 PNG 권장 · 권장 190 × 40px</div>
+                    <div class="upload-box"><div class="preview"><span class="mark">첫</span> 첫출근</div><button type="button" class="btn">파일 선택</button></div>
+                    <span class="upload-label">푸터 이미지 로고</span>
+                    <div class="upload-hint">기업·발행 브랜드에 사용 · 권장 148 × 36px</div>
+                    <div class="upload-box"><div class="preview">첫출근</div><button type="button" class="btn">파일 선택</button></div>
+                    <span class="upload-label">파비콘</span>
+                    <div class="upload-hint">브라우저 탭 표시용 아이콘 · 32 × 32px</div>
+                    <div class="upload-box"><div class="preview"><span class="mark">첫</span> 첫출근 | 채용 정보서비스</div><button type="button" class="btn">파일 선택</button></div>
+                    <div class="upload-hint">투명 PNG·SVG 권장 · 라이트/다크 테마 이미지는 각각 저장</div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+</div>
+</body>
+</html>

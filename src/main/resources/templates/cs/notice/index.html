@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>공지사항 | 첫출근 고객센터</title>
+<link rel="stylesheet" th:href="@{/css/cs/user-common.css}" />
+<link rel="stylesheet" th:href="@{/css/common.css}" />
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+<div class="cs-page">
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">FIRST DAY HELP CENTER</p>
+    <h1>고객센터</h1>
+    <p>필요한 도움을 빠르고 편하게 확인하세요.</p>
+  </div>
+</section>
+
+<main class="content-shell">
+  <div class="wrap">
+
+    <nav class="tabs">
+      <a class="tab active" th:href="@{/cs/notice}">공지사항</a>
+      <a class="tab" th:href="@{/cs/faq}">자주 묻는 질문</a>
+      <a class="tab" th:href="@{/cs/qna}">1:1 문의</a>
+    </nav>
+
+    <div class="panel-head">
+      <div>
+        <h2>공지사항</h2>
+        <p class="desc">첫출근의 새로운 소식과 서비스 안내를 전해드립니다.</p>
+      </div>
+      <div class="panel-tools">
+        <select class="filter-select">
+          <option>전체 구분</option>
+          <option>서비스 안내</option>
+          <option>이용 안내</option>
+          <option>장업 안내</option>
+        </select>
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="제목을 검색해보세요" />
+        </div>
+      </div>
+    </div>
+
+    <table class="list-table">
+      <thead>
+        <tr>
+          <th class="col-num">번호</th>
+          <th class="col-cat">구분</th>
+          <th>제목</th>
+          <th class="col-date">등록일</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:onclick="|location.href='@{/cs/notice/detail}'|">
+          <td class="col-num"><span class="badge badge-pin">고정</span></td>
+          <td class="col-cat">서비스 안내</td>
+          <td class="title-cell"><a th:href="@{/cs/notice/detail}">개인정보 처리방침 개정 안내</a></td>
+          <td class="col-date">2026.07.18</td>
+        </tr>
+        <tr th:onclick="|location.href='@{/cs/notice/detail}'|">
+          <td class="col-num"><span class="badge badge-pin">고정</span></td>
+          <td class="col-cat">서비스 안내</td>
+          <td class="title-cell"><a th:href="@{/cs/notice/detail}">첫출근 서비스 정식 오픈 안내</a></td>
+          <td class="col-date">2026.07.15</td>
+        </tr>
+        <tr th:onclick="|location.href='@{/cs/notice/detail}'|">
+          <td class="col-num">13</td>
+          <td class="col-cat">이용 안내</td>
+          <td class="title-cell"><a th:href="@{/cs/notice/detail}">채용공고 지원 시 유의사항 안내</a></td>
+          <td class="col-date">2026.07.12</td>
+        </tr>
+        <tr th:onclick="|location.href='@{/cs/notice/detail}'|">
+          <td class="col-num">11</td>
+          <td class="col-cat">이용 안내</td>
+          <td class="title-cell"><a th:href="@{/cs/notice/detail}">휴면계정 전환 정책 안내</a></td>
+          <td class="col-date">2026.01.08</td>
+        </tr>
+        <tr th:onclick="|location.href='@{/cs/notice/detail}'|">
+          <td class="col-num">10</td>
+          <td class="col-cat">창업 안내</td>
+          <td class="title-cell"><a th:href="@{/cs/notice/detail}">기업 리뷰 운영 정책 안내</a></td>
+          <td class="col-date">2026.07.03</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <a href="#">‹</a>
+      <a href="#" class="current">1</a>
+      <a href="#">2</a>
+      <a href="#">3</a>
+      <a href="#">›</a>
+    </div>
+
+  </div>
+</main>
+</div>
+<footer th:replace="~{common/footer :: footer}"></footer>
+<script th:src="@{/js/common.js}"></script>
+</body></html>
