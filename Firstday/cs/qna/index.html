@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>1:1 문의 | 첫출근 고객센터</title>
+<link rel="stylesheet" href="../../css/cs/common.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="../../index.html" class="brand"><span class="dot"></span>첫출근</a>
+    <ul class="main-nav">
+      <li><a href="#">채용공고</a></li>
+      <li><a href="#">기업정보</a></li>
+      <li><a href="#">이력서</a></li>
+      <li><a href="#">면접정보</a></li>
+    </ul>
+    <div class="header-side">
+      <a href="#">마이페이지</a>
+      <a href="#">로그아웃</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">FIRST DAY HELP CENTER</p>
+    <h1>고객센터</h1>
+    <p>필요한 도움을 빠르고 편하게 확인하세요.</p>
+  </div>
+</section>
+
+<main class="content-shell">
+  <div class="wrap">
+
+    <nav class="tabs">
+      <a class="tab" href="../notice/index.html">공지사항</a>
+      <a class="tab" href="../faq/index.html">자주 묻는 질문</a>
+      <a class="tab active" href="index.html">1:1 문의</a>
+    </nav>
+
+    <div class="panel-head">
+      <div>
+        <h2>1:1 문의</h2>
+        <p class="desc">내가 등록한 문의와 답변 상태를 확인할 수 있습니다.</p>
+      </div>
+      <a href="write.html" class="btn btn-primary">+ 문의하기</a>
+    </div>
+
+    <div class="tabs" style="margin-bottom:18px;">
+      <button class="tab active" style="cursor:default;">전체</button>
+      <button class="tab" style="cursor:default;">답변대기</button>
+      <button class="tab" style="cursor:default;">답변완료</button>
+    </div>
+
+    <p style="font-size:13.5px;color:var(--gray-500);margin:0 0 12px;">전체 27건</p>
+
+    <table class="list-table">
+      <thead>
+        <tr>
+          <th class="col-cat">구분</th>
+          <th>제목</th>
+          <th class="col-status">상태</th>
+          <th class="col-date">등록일</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr onclick="location.href='detail.html'">
+          <td class="col-cat">지원·이력서</td>
+          <td class="title-cell"><a href="detail.html">지원 취소가 되지 않습니다.</a></td>
+          <td class="col-status"><span class="badge badge-pending">답변대기</span></td>
+          <td class="col-date">2026.07.20</td>
+        </tr>
+        <tr onclick="location.href='detail.html'">
+          <td class="col-cat">회원·계정</td>
+          <td class="title-cell"><a href="detail.html">회원정보 수정 관련 문의</a></td>
+          <td class="col-status"><span class="badge badge-done">답변완료</span></td>
+          <td class="col-date">2026.07.16</td>
+        </tr>
+        <tr onclick="location.href='detail.html'">
+          <td class="col-cat">신고·기타</td>
+          <td class="title-cell"><a href="detail.html">리뷰 작성 권한 문의</a></td>
+          <td class="col-status"><span class="badge badge-done">답변완료</span></td>
+          <td class="col-date">2026.07.10</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <a href="#">‹</a>
+      <a href="#" class="current">1</a>
+      <a href="#">2</a>
+      <a href="#">3</a>
+      <a href="#">4</a>
+      <a href="#">5</a>
+      <a href="#">›</a>
+    </div>
+
+    <p style="text-align:center;font-size:12.5px;color:var(--gray-400);margin-top:20px;">
+      ※ 개인회원·기업회원 모두 이용 가능하며, 로그인한 본인의 문의만 확인할 수 있습니다.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <button class="btn btn-outline">회사 로고 이미지<br />권장 190 × 56px</button>
+        <p>심플한 첫 출근을 함께 준비합니다.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>서비스</h4>
+          <ul>
+            <li><a href="#">채용공고</a></li>
+            <li><a href="#">기업정보</a></li>
+            <li><a href="#">기업정보·리뷰</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>고객지원</h4>
+          <ul>
+            <li><a href="../notice/index.html">공지사항</a></li>
+            <li><a href="../faq/index.html">자주 묻는 질문</a></li>
+            <li><a href="index.html">문의하기</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="legal"><a href="#">이용약관</a><a href="#">개인정보처리방침</a></div>
+      <div>© 2026 첫출근. All rights reserved. · v1.0.0</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// 첫출근 고객센터 - 공통 스크립트
+
+// FAQ 아코디언 토글
+document.querySelectorAll(".faq-q").forEach((q) => {
+  q.addEventListener("click", () => {
+    const item = q.closest(".faq-item");
+    item.classList.toggle("open");
+  });
+});
+
+// FAQ 카테고리 필터 (시각적 활성 상태만 전환)
+document.querySelectorAll(".pill").forEach((pill) => {
+  pill.addEventListener("click", () => {
+    document
+      .querySelectorAll(".pill")
+      .forEach((p) => p.classList.remove("active"));
+    pill.classList.add("active");
+  });
+});
+
+// 문의 작성 - 첨부파일 목록에서 삭제
+document.querySelectorAll(".file-chip .remove").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    btn.closest(".file-chip").remove();
+  });
+});
+
+// 글자수 카운터
+document.querySelectorAll("textarea[data-maxlength]").forEach((el) => {
+  const max = el.getAttribute("data-maxlength");
+  const counter = el.parentElement.querySelector(".char-count");
+  const update = () => {
+    if (counter) counter.textContent = `${el.value.length} / ${max}`;
+  };
+  el.addEventListener("input", update);
+  update();
+});
+
+</script>
+</body>
+</html>

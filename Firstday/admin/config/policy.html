@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>약관·정책 관리 | 첫출근 관리자</title>
+    <link rel="stylesheet" href="../../css/admin/config/common.css">
+</head>
+<body>
+
+<div class="admin-shell">
+
+    <header class="topbar">
+        <div class="topbar-brand">첫출근 <span class="badge-role">관리자</span></div>
+        <div class="topbar-actions">
+            <a class="btn" href="#">서비스 홈</a>
+            <a class="btn" href="#">로그아웃</a>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <a class="menu-item top-level" href="../index.html">대시보드</a>
+
+        <div class="sidebar-group">
+            <div class="sidebar-group-label">회원·기업</div>
+            <a class="menu-item" href="../member/index.html">회원 관리</a>
+            <a class="menu-item" href="../company/index.html">기업 관리</a>
+        </div>
+
+        <div class="sidebar-group">
+            <div class="sidebar-group-label">채용 관리</div>
+            <a class="menu-item" href="../job/index.html">채용공고 관리</a>
+            <a class="menu-item" href="skill.html">직무·기술 관리</a>
+            <a class="menu-item" href="../salary/index.html">연봉정보 관리</a>
+        </div>
+
+        <div class="sidebar-group">
+            <div class="sidebar-group-label">콘텐츠·고객지원</div>
+            <a class="menu-item" href="../review/index.html">후기 관리</a>
+            <a class="menu-item" href="../report/index.html">신고 관리</a>
+            <a class="menu-item" href="../cs/notice.html">고객센터 관리</a>
+        </div>
+
+        <div class="sidebar-group">
+            <div class="sidebar-group-label">사이트 운영</div>
+            <a class="menu-item" href="../banner/index.html">배너 관리</a>
+            <a class="menu-item" href="site-setting.html">사이트 설정</a>
+            <a class="menu-item" href="version.html">사이트 버전 관리</a>
+            <a class="menu-item active" href="policy.html">약관·정책 관리</a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="admin-name">최고 관리자</div>
+            <div class="admin-login">최근 로그인<br>2026.07.22 11:42</div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="page-header">
+            <h1>약관·정책 관리</h1>
+            <p>회원가입 동의 항목과 무단에 공개되는 정책 내용을 관리합니다.</p>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head"><h2>회원가입 동의·공개 정책 관리</h2></div>
+            <p style="font-size:12.5px; color:var(--text-soft); margin:-8px 0 16px;">
+                회원가입 동의 항목과 푸터 정책 페이지가 같은 데이터 항목을 사용합니다.
+            </p>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                    <tr><th>약관명</th><th>적용 대상</th><th>구분</th><th>관리</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>개인회원 서비스 이용약관</td><td>개인회원</td>
+                        <td><span class="tag red">필수</span></td>
+                        <td class="row-actions"><a href="#">내용·구분 수정</a></td>
+                    </tr>
+                    <tr>
+                        <td>개인정보 수집·이용 동의</td><td>개인·기업 공용</td>
+                        <td><span class="tag red">필수</span></td>
+                        <td class="row-actions"><a href="#">내용·구분 수정</a></td>
+                    </tr>
+                    <tr>
+                        <td>마케팅 정보 수신 동의</td><td>개인·기업 공용</td>
+                        <td><span class="tag gray">선택</span></td>
+                        <td class="row-actions"><a href="#">내용·구분 수정</a></td>
+                    </tr>
+                    <tr>
+                        <td>채용정보 이메일 수신 동의</td><td>개인회원</td>
+                        <td><span class="tag gray">선택</span></td>
+                        <td class="row-actions"><a href="#">내용·구분 수정</a></td>
+                    </tr>
+                    <tr>
+                        <td>기업회원 서비스 이용약관</td><td>기업회원</td>
+                        <td><span class="tag red">필수</span></td>
+                        <td class="row-actions"><a href="#">내용·구분 수정</a></td>
+                    </tr>
+                    <tr>
+                        <td>기업정보 공개 동의</td><td>기업회원</td>
+                        <td><span class="tag red">필수</span></td>
+                        <td class="row-actions"><a href="#">내용·구분 수정</a></td>
+                    </tr>
+                    <tr>
+                        <td>개인정보처리방침</td><td>전체 공개</td>
+                        <td><span class="tag blue">공개 정책</span></td>
+                        <td class="row-actions"><a href="#">내용 수정</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p style="font-size:11.5px; color:var(--text-faint); margin-top:16px;">
+                저장한 항목 내용은 사용하면 이전 약관 이력·버전 적용일과 별도로 관리되지 않습니다.
+            </p>
+        </div>
+    </main>
+
+    <aside class="right-panel">
+        <div class="panel-card">
+            <h3>ADMIN-13 / 약관·정책 관리</h3>
+            <ul>
+                <li>개인회원·기업회원 가입 동의 항목 관리</li>
+                <li>필수·선택 동의 구분 관리</li>
+                <li>개인정보처리방침은 공개 정책으로 관리</li>
+                <li>수정하면 회원가입 페이지와 푸터 페이지 즉시 반영</li>
+                <li>변경 내용은 되돌리기 별도 이력을 관리하지 않음</li>
+                <li>약관 수정 모달은 관리자 공통 다이얼로그 사용</li>
+            </ul>
+            <div class="tip-box">
+                약관·정책은 관리 화면에서 저장하고 API 키·비밀번호는 환경변수로 관리합니다.
+            </div>
+        </div>
+    </aside>
+
+    <footer class="admin-footer">
+        <span>© 2026 첫출근 관리자</span>
+        <span>운영 버전 v1.0.0</span>
+    </footer>
+
+</div>
+
+</body>
+</html>

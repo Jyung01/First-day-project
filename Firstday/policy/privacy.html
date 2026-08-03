@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인정보처리방침 | 첫출근</title>
+    <link rel="stylesheet" href="../css/policy/common.css">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="logo">
+        <span class="logo-mark">첫</span>
+        첫출근
+    </div>
+    <nav class="main-nav">
+        <a href="#">채용공고</a>
+        <a href="#">기업정보</a>
+        <a href="#">이력서</a>
+        <a href="#">면접정보</a>
+    </nav>
+    <div class="header-actions">
+        <a href="#" class="login-link">로그인</a>
+        <a href="#" class="signup-btn">회원가입</a>
+    </div>
+</header>
+
+<main class="policy-shell">
+
+    <div class="policy-main">
+        <div class="eyebrow">POLICY-02</div>
+        <h1 class="page-title">개인정보처리방침</h1>
+        <p class="page-desc">회원가입에 사용되는 약관과 동의 내용을 확인할 수 있습니다.</p>
+
+        <div class="policy-card">
+            <nav class="policy-list">
+                <a href="terms.html">개인회원 서비스 이용약관</a>
+                <a href="#" data-target="company">기업회원 서비스 이용약관</a>
+                <a href="#" data-target="info-collect">개인정보 수집·이용 동의</a>
+                <a href="#" data-target="info-open">기업정보 공개 동의</a>
+                <a href="#" data-target="marketing">마케팅 정보 수신 동의</a>
+                <a href="#" data-target="job-email">채용정보 이메일 수신 동의</a>
+                <a href="#" class="active" data-target="privacy">개인정보처리방침</a>
+            </nav>
+
+            <section class="policy-detail" id="policy-content">
+                <h2>개인정보처리방침</h2>
+
+                <div class="clause">
+                    <h3>1. 수집하는 개인정보 항목</h3>
+                    <p>회원가입, 입사지원, 기업서비스 제공에 필요한 최소 정보를 수집합니다.</p>
+                </div>
+
+                <div class="clause">
+                    <h3>2. 개인정보의 이용 목적</h3>
+                    <p>회원 식별, 채용 서비스 제공, 문의 처리 및 서비스 안전 관리에 사용됩니다.</p>
+                </div>
+
+                <div class="clause">
+                    <h3>3. 보관 및 파기</h3>
+                    <p>관련 법령과 서비스 정책에 따라 보관 기간 및 파기 절차를 따릅니다.</p>
+                </div>
+
+                <div class="clause">
+                    <h3>4. 이용자의 권리</h3>
+                    <p>회원은 자신의 개인정보를 조회·수정하거나 삭제를 요청할 수 있습니다.</p>
+                </div>
+
+                <div class="fine-print">
+                    ※ 실제 화면에서는 관리자가 지정한 현재 부분 전체를 출력합니다.
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <aside class="policy-side">
+        <div class="summary-card">
+            <h3>약관 조회 안내</h3>
+            <ul>
+                <li>좌측 목록에서 원하는 약관을 선택하면 해당 본문이 즉시 표시됩니다</li>
+                <li>회원가입 시 동의한 항목과 동일한 전체 내용입니다</li>
+                <li>관리자가 수정하면 즉시 반영됩니다</li>
+                <li>버전 이력 및 적용일 관리는 제공되지 않습니다</li>
+            </ul>
+        </div>
+    </aside>
+
+</main>
+
+<footer class="site-footer">
+    <div class="footer-top">
+        <div>
+            <div class="footer-brand-box">회사 로고 이미지<br>(권장 190 × 56px)</div>
+            <p class="footer-tagline">설레는 첫 출근을 함께 준비합니다.</p>
+        </div>
+        <div class="footer-col">
+            <h4>서비스</h4>
+            <ul>
+                <li><a href="#">채용공고</a></li>
+                <li><a href="#">기업정보</a></li>
+                <li><a href="#">기업정보·과제</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>고객지원</h4>
+            <ul>
+                <li><a href="#">공지사항</a></li>
+                <li><a href="#">자주 묻는 질문</a></li>
+                <li><a href="#">문의하기</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="footer-legal-links">
+            <a href="terms.html">이용약관</a>
+            <a href="privacy.html">개인정보처리방침</a>
+        </div>
+        <div class="footer-copy">© 2026 첫출근. All rights reserved. · v1.0.0</div>
+    </div>
+</footer>
+
+<script>
+    document.querySelectorAll('.policy-list a[data-target]').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelectorAll('.policy-list a').forEach(function (a) {
+                a.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+</script>
+
+</body>
+</html>
