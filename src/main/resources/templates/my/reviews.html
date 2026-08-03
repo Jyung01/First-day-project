@@ -1,41 +1,26 @@
 <!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>마이페이지 - 리뷰확인</title>
     <!-- 메인 헤더 푸터 css -->
-    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <!-- 마이페이지 공통 css -->
-    <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/my/common.css}"/>
     <!-- 마이페이지 관심공고 css   -->
-    <link rel="stylesheet" th:href="@{/css/my/saved-jobs.css}" />
+    <link rel="stylesheet" th:href="@{/css/my/saved-jobs.css}"/>
     <!-- 마이페이지 리뷰/면접후기 css-->
-    <link rel="stylesheet" th:href="@{/css/my/reviews.css}" />
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // 탭 메뉴
-            const tabs = document.querySelectorAll(".review-tab");
-            const companyCards = document.querySelectorAll(".company-review");
-            const interviewCards = document.querySelectorAll(".interview-review");
-
-            tabs.forEach((tab) => {
-                tab.addEventListener("click", () => {
-                    tabs.forEach((t) => t.classList.remove("active"));
-                    tab.classList.add("active");
-
-                    if (tab.dataset.type === "company") {
-                        companyCards.forEach((c) => (c.style.display = "block"));
-                        interviewCards.forEach((c) => (c.style.display = "none"));
-                    } else {
-                        companyCards.forEach((c) => (c.style.display = "none"));
-                        interviewCards.forEach((c) => (c.style.display = "block"));
-                    }
-                });
-            });
-        });
-    </script>
+    <link rel="stylesheet" th:href="@{/css/my/reviews.css}"/>
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/my/reviews.js}"></script>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
 </head>
 <body>
 <header th:replace="~{common/header :: header}"></header>
@@ -84,7 +69,10 @@
                         <div class="review-bottom">
                             <button class="btn-outline">수정</button>
 
-                            <button class="btn-outline">삭제</button>
+                            <button class="btn-outline btn-delete">
+                                <!--                                th:data-review-id="${review.reviewNo}">-->
+                                삭제
+                            </button>
                         </div>
                     </div>
 
@@ -109,7 +97,7 @@
                         <div class="review-bottom">
                             <button class="btn-outline">수정</button>
 
-                            <button class="btn-outline">삭제</button>
+                            <button class="btn-outline btn-delete">삭제</button>
                         </div>
                     </div>
                 </div>
@@ -120,6 +108,10 @@
 
 <!-- ============ 푸터 (공통 영역) ============ -->
 <footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 모달 불러오기 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
 <!-- 공통 헤더·푸터 불러오기 -->
 <script th:src="@{../js/common.js}"></script>
 </body>

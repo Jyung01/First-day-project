@@ -6,6 +6,9 @@
         <title>후기 관리</title>
         <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
         <link rel="stylesheet" th:href="@{/css/admin/review/common.css}" />
+        <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}"/>
+        <script th:src="@{/js/admin/review.js}"></script>
+
         <script>
             const reviewData = {
                 company: [
@@ -104,53 +107,6 @@
                     },
                 ],
             };
-
-            document.addEventListener("DOMContentLoaded", function () {
-                const tbody = document.getElementById("reviewBody");
-                const tabs = document.querySelectorAll(".tab-btn");
-
-                function render(type) {
-                    tbody.innerHTML = "";
-
-                    reviewData[type].forEach((item) => {
-                        tbody.innerHTML += `
-            <tr>
-
-                <td>${item.no}</td>
-
-                <td>${item.company}</td>
-
-                <td>${item.title}</td>
-
-                <td>${item.writer}</td>
-
-                <td>${item.score}</td>
-
-                <td>${item.report}</td>
-
-                <td>${item.date}</td>
-
-                <td>
-                    <a href="#">상세</a>
-                </td>
-
-            </tr>
-        `;
-                    });
-                }
-
-                render("company");
-
-                tabs.forEach((tab) => {
-                    tab.addEventListener("click", () => {
-                        tabs.forEach((btn) => btn.classList.remove("active"));
-
-                        tab.classList.add("active");
-
-                        render(tab.dataset.tab);
-                    });
-                });
-            });
         </script>
     </head>
     <body>
@@ -237,73 +193,7 @@
                                     </tr>
                                 </thead>
 
-                                <tbody id="reviewBody">
-                                    <tr>
-                                        <td>CR-3241</td>
-                                        <td>원티드랩</td>
-                                        <td>성장 기회가 많아 매우 좋았어요</td>
-                                        <td>김**</td>
-                                        <td>4.5</td>
-                                        <td>0</td>
-                                        <td>07.22</td>
-                                        <td><a href="#">상세</a></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>CR-3240</td>
-                                        <td>네오플</td>
-                                        <td>협업 문화와 복지가 만족스러워요</td>
-                                        <td>이**</td>
-                                        <td>4.2</td>
-                                        <td>1</td>
-                                        <td>07.22</td>
-                                        <td><a href="#">상세</a></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>CR-3239</td>
-                                        <td>브랜치랩스</td>
-                                        <td>업무 체계와 협업이 좋았어요</td>
-                                        <td>최**</td>
-                                        <td>3.8</td>
-                                        <td>0</td>
-                                        <td>07.21</td>
-                                        <td><a href="#">상세</a></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>CR-3238</td>
-                                        <td>카페24</td>
-                                        <td>유연근무가 큰 장점이었습니다</td>
-                                        <td>김**</td>
-                                        <td>4.0</td>
-                                        <td>3</td>
-                                        <td>07.21</td>
-                                        <td><a href="#">상세</a></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>CR-3237</td>
-                                        <td>여기어때</td>
-                                        <td>새로운 기술 도입이 활발해요</td>
-                                        <td>정**</td>
-                                        <td>4.7</td>
-                                        <td>0</td>
-                                        <td>07.20</td>
-                                        <td><a href="#">상세</a></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>CR-3236</td>
-                                        <td>로켓소프트</td>
-                                        <td>복지환경과 급여가 좋아 만족해요</td>
-                                        <td>강**</td>
-                                        <td>2.1</td>
-                                        <td>5</td>
-                                        <td>07.20</td>
-                                        <td><a href="#">상세</a></td>
-                                    </tr>
-                                </tbody>
+                                <tbody id="reviewBody"></tbody>
                             </table>
                         </div>
 
@@ -330,6 +220,10 @@
 
             <!-- ================= Footer ================= -->
             <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+
+            <!-- 후기 상세숨김 모달 -->
+            <div th:replace="~{modal/admin/review-detail :: reviewDetailModal}"></div>
+
         </div>
     </body>
 </html>

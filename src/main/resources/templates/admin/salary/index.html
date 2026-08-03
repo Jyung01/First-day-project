@@ -7,6 +7,7 @@
         <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
         <link rel="stylesheet" th:href="@{/css/admin/review/common.css}" />
         <link rel="stylesheet" th:href="@{/css/admin/salary/common.css}" />
+        <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}"/>
 
         <script>
             const salaryData = {
@@ -72,70 +73,10 @@
                 hidden: [],
             };
 
-            salaryData.normal = salaryData.all.filter((v) => v.state === "정상");
-
-            salaryData.review = salaryData.all.filter((v) => v.state === "검토 필요");
-
-            salaryData.hidden = salaryData.all.filter((v) => v.state === "숨김");
-
-            document.addEventListener("DOMContentLoaded", () => {
-                const salaryBody = document.getElementById("salaryBody");
-                const tabs = document.querySelectorAll(".tab-btn");
-
-                function render(type) {
-                    salaryBody.innerHTML = "";
-
-                    salaryData[type].forEach((item) => {
-                        salaryBody.innerHTML += `
-
-        <tr>
-
-            <td>${item.no}</td>
-
-            <td>${item.company}</td>
-
-            <td>${item.job}</td>
-
-            <td>${item.career}</td>
-
-            <td>${item.salary}</td>
-
-            <td>${item.year}</td>
-
-            <td>${item.sample}</td>
-
-            <td class="${item.state === "정상" ? "normal" : item.state === "검토 필요" ? "review" : "hidden"}">
-
-                ${item.state}
-
-            </td>
-
-            <td>
-
-                <a href="#">검토</a>
-
-            </td>
-
-        </tr>
-
-        `;
-                    });
-                }
-
-                // 최초 출력
-                render("all");
-
-                // 탭 클릭 이벤트
-                tabs.forEach((tab) => {
-                    tab.addEventListener("click", () => {
-                        tabs.forEach((btn) => btn.classList.remove("active"));
-                        tab.classList.add("active");
-
-                        render(tab.dataset.tab);
-                    });
-                });
-            });
         </script>
+
+        <script th:src="@{/js/admin/salary.js}"></script>
+
     </head>
     <body>
         <div class="wrapper">
@@ -269,8 +210,10 @@
             </div>
 
             <!-- ================= Footer ================= -->
-
             <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+
+            <!-- 연봉 제보 검토 모달 -->
+            <div th:replace="~{modal/admin/salary-review :: salaryReportReviewModal}"></div>
         </div>
     </body>
 </html>

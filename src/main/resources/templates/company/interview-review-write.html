@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>기업 - 면접후기</title>
+    <!-- 메인 헤더 푸터 css -->
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <!-- 기업 기업리뷰 css -->
+    <link rel="stylesheet" th:href="@{/css/company/reviews.css}"/>
+    <!--  기업 기업리뷰등록 css -->
+    <link rel="stylesheet" th:href="@{/css/company/interview-reviews.css}"/>
+    <!-- 기업 공통 css -->
+    <link rel="stylesheet" th:href="@{/css/company/common.css}"/>
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common/salary-create.css}"/>
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/modal/company/review-write.js}"></script>
+    <script th:src="@{/js/company/interview-review-write.js}"></script>
+
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="review-create-main company-detail-main">
+    <div class="review-form-container">
+
+        <!-- 상단 타이틀 영역 -->
+        <div class="form-header">
+            <div>
+                <h2>면접후기 작성</h2>
+                <p>면접 완료 이력이 확인된 지원 건에만 후기를 작성할 수 있습니다.</p>
+            </div>
+            <div class="verification-badge interview-badge">
+                ✓ 면접 완료 이력 확인됨
+            </div>
+        </div>
+
+        <!-- 면접후기 작성 폼 -->
+        <form id="interviewReviewForm">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>기업</label>
+                    <input type="text" name="companyName" value="네이버클라우드" readonly class="readonly-input">
+                </div>
+                <div class="form-group">
+                    <label>지원 공고</label>
+                    <input type="text" name="recruitTitle" value="Java/Spring 백엔드 개발자" readonly class="readonly-input">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>면접 시기</label>
+                    <input type="text" name="interviewDate" value="2026.06" readonly class="readonly-input">
+                </div>
+                <div class="form-group">
+                    <label>면접 방식</label>
+                    <input type="text" name="interviewType" value="대면 면접" readonly class="readonly-input">
+                </div>
+                <div class="form-group full-width">
+                    <label>면접 결과</label>
+                    <input type="text" name="interviewResult" value="합격" readonly class="readonly-input">
+                </div>
+            </div>
+
+            <!-- 면접 난이도 선택 -->
+            <div class="form-group full-width">
+                <label>면접 난이도</label>
+                <div class="difficulty-buttons">
+                    <button type="button" class="diff-btn">쉬움</button>
+                    <button type="button" class="diff-btn active">보통</button>
+                    <button type="button" class="diff-btn">어려움</button>
+                    <input type="hidden" name="difficulty" id="selectedDifficulty" value="보통">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label>면접 단계</label>
+                    <input type="text" name="interviewStep" value="서류 → 실무면접 → 임원면접" readonly class="readonly-input">
+                </div>
+            </div>
+
+            <!-- 면접 내용 / 준비 팁 -->
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label>면접 내용</label>
+                    <textarea name="interviewContent" placeholder="진행 방식과 질문 유형, 분위기 등 실제 면접 경험을 작성해주세요." rows="4"></textarea>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label>준비 팁</label>
+                    <textarea name="preparationTip" placeholder="다른 지원자에게 도움이 될 월 준비 방법을 작성해주세요." rows="4"></textarea>
+                </div>
+            </div>
+
+            <div class="notice-text">
+                모든 면접후기는 익명으로 공개됩니다.
+            </div>
+
+            <div class="info-box">
+                후기는 익명으로 등록 즉시 공개됩니다. 작성자 계정은 작성 자격 확인과 수정 관리에만 사용됩니다.
+            </div>
+
+            <!-- 버튼 영역 -->
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="history.back();">취소</button>
+                <button type="submit" class="btn-submit">면접후기 등록</button>
+            </div>
+
+        </form>
+    </div>
+</main>
+
+
+<!-- ============ 푸터 (공통 영역) ============ -->
+<footer th:replace="~{common/footer :: footer}"></footer>
+
+<!-- 모달 불러오기 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+<!-- 공통 헤더·푸터 불러오기 -->
+<script th:src="@{../js/common.js}"></script>
+</body>
+</html>

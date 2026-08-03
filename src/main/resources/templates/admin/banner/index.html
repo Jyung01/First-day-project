@@ -1,319 +1,204 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>배너 관리</title>
-        <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
-        <link rel="stylesheet" th:href="@{/css/admin/review/common.css}" />
-        <link rel="stylesheet" th:href="@{/css/admin/banner/common.css}" />
-
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                // 탭메뉴
-                const tabs = document.querySelectorAll(".tab-btn");
-                const banners = document.querySelectorAll(".banner-card");
-
-                tabs.forEach((tab) => {
-                    tab.addEventListener("click", () => {
-                        tabs.forEach((btn) => btn.classList.remove("active"));
-                        tab.classList.add("active");
-
-                        const type = tab.dataset.tab;
-
-                        banners.forEach((banner) => {
-                            if (type === "all" || banner.dataset.type === type) {
-                                banner.style.display = "flex";
-                            } else {
-                                banner.style.display = "none";
-                            }
-                        });
-                    });
-                });
-
-                // 배너 등록 모달
-                const bannerModal = document.getElementById("bannerModal");
-
-                document.getElementById("openBannerModal").addEventListener("click", () => {
-                    bannerModal.classList.add("show");
-                });
-
-                document.getElementById("closeBannerModal").addEventListener("click", () => {
-                    bannerModal.classList.remove("show");
-                });
-
-                document.getElementById("cancelBannerModal").addEventListener("click", () => {
-                    bannerModal.classList.remove("show");
-                });
-
-                bannerModal.addEventListener("click", (e) => {
-                    if (e.target === bannerModal) {
-                        bannerModal.classList.remove("show");
-                    }
-                });
-
-                // 배너 등록 - 파일 첨부
-                const bannerFile = document.getElementById("bannerFile");
-                const fileName = document.getElementById("fileName");
-
-                bannerFile.addEventListener("change", () => {
-                    if (bannerFile.files.length > 0) {
-                        fileName.textContent = bannerFile.files[0].name;
-                    } else {
-                        fileName.textContent = "선택된 파일 없음";
-                    }
-                });
-            });
-        </script>
-    </head>
-    <body>
-        <div class="wrapper">
-            <!-- ================= Header ================= -->
-
-            <header th:replace="~{common/admin-header :: adminHeader}"></header>
-
-            <!-- ================= Main ================= -->
-
-            <div class="container">
-                <!-- Sidebar -->
-
-                <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
-
-                <!-- ================= Content ================= -->
-
-                <main class="content">
-                    <!-- 제목 -->
-
-                    <div class="page-top">
-                        <div class="page-title">
-                            <h2>배너 관리</h2>
-                            <p>배너 이미지·노출 기간·우선순위를 관리합니다.</p>
-                        </div>
-
-                        <button class="add-btn" id="openBannerModal">+ 배너 등록</button>
-                    </div>
-
-                    <section class="review-box">
-                        <!-- 탭 -->
-
-                        <div class="review-tab">
-                            <button class="tab-btn active" data-tab="all">전체</button>
-                            <button class="tab-btn" data-tab="main">메인</button>
-                            <button class="tab-btn" data-tab="recruit">채용공고</button>
-                            <button class="tab-btn" data-tab="company">기업정보</button>
-                        </div>
-                        <p class="banner-guide">
-                            권장 크기 1920 × 320 · 채용공고 1280 × 120 · 기업정보 1280 × 120 | 순서: 같은 위치·기간이
-                            겹치면 작은 번호 우선 노출
-                        </p>
-
-                        <!-- 배너 카드 -->
-                        <div class="banner-list">
-                            <!-- 메인공고 배너 -->
-                            <div class="banner-card" data-type="main">
-                                <div class="banner-thumb blue">신입 개발자 채용 특별전</div>
-
-                                <div class="banner-info">
-                                    <h3>신입 개발자 채용 특별전</h3>
-
-                                    <p>노출 위치 메인 | 1920×320</p>
-
-                                    <p>노출 기간 2026.07.20 ~ 08.10</p>
-
-                                    <p>배너 우선순위 1</p>
-                                </div>
-
-                                <div class="banner-status">
-                                    <span class="status on"> 노출 중 </span>
-
-                                    <div class="banner-action">
-                                        <a href="#">수정</a>
-                                        <a href="#">숨김</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 채용공고 배너 -->
-                            <div class="banner-card" data-type="recruit">
-                                <div class="banner-thumb green">첫 이력서 작성 가이드</div>
-
-                                <div class="banner-info">
-                                    <h3>첫 이력서 작성 가이드</h3>
-
-                                    <p>노출 위치 채용공고 | 1920×320</p>
-
-                                    <p>노출 기간 2026.07.20 ~ 08.10</p>
-
-                                    <p>배너 우선순위 1</p>
-                                </div>
-
-                                <div class="banner-status">
-                                    <span class="status on"> 노출 중 </span>
-
-                                    <div class="banner-action">
-                                        <a href="#">수정</a>
-                                        <a href="#">숨김</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 기업정보 배너 -->
-                            <div class="banner-card" data-type="company">
-                                <div class="banner-thumb navy">기업회원 채용 시작하기</div>
-
-                                <div class="banner-info">
-                                    <h3>기업회원 채용 시작하기</h3>
-
-                                    <p>노출 위치 기업정보 | 1920×320</p>
-
-                                    <p>노출 기간 2026.07.20 ~ 08.10</p>
-
-                                    <p>배너 우선순위 1</p>
-                                </div>
-
-                                <div class="banner-status">
-                                    <span class="status on"> 노출 중 </span>
-
-                                    <div class="banner-action">
-                                        <a href="#">수정</a>
-                                        <a href="#">숨김</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- ai자기소개서 배너 -->
-                            <div class="banner-card" data-type="main">
-                                <div class="banner-thumb orange">AI 자기소개서 첨삭 오픈</div>
-
-                                <div class="banner-info">
-                                    <h3>AI 자기소개서 첨삭 오픈</h3>
-
-                                    <p>노출 위치 메인 | 1920×320</p>
-
-                                    <p>노출 기간 2026.07.20 ~ 08.10</p>
-
-                                    <p>배너 우선순위 1</p>
-                                </div>
-
-                                <div class="banner-status">
-                                    <span class="status on"> 노출 중 </span>
-
-                                    <div class="banner-action">
-                                        <a href="#">수정</a>
-                                        <a href="#">숨김</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 페이지네이션 -->
-
-                        <div class="pagination">
-                            <a href="#">&lt;</a>
-
-                            <a href="#" class="active">1</a>
-
-                            <a href="#">2</a>
-
-                            <a href="#">3</a>
-
-                            <a href="#">4</a>
-
-                            <a href="#">5</a>
-
-                            <a href="#">&gt;</a>
-                        </div>
-                    </section>
-                </main>
-            </div>
-
-            <!-- ================= Footer ================= -->
-
-            <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
-
-            <!-- 배너 등록 모달 -->
-            <div class="modal" id="bannerModal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2>배너 등록 · 수정</h2>
-
-                        <button class="close-btn" id="closeBannerModal">&times;</button>
-                    </div>
-
-                    <form class="banner-form">
-                        <div class="form-group full">
-                            <label>배너 제목</label>
-                            <input type="text" placeholder="배너 제목 입력" />
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>노출 위치</label>
-
-                                <select>
-                                    <option>메인</option>
-                                    <option>채용공고</option>
-                                    <option>기업정보</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>노출 순서(우선순위)</label>
-
-                                <input type="number" value="1" />
-
-                                <small>같은 위치·기간은 작은 번호 우선</small>
-                            </div>
-                        </div>
-
-                        <div class="form-group full">
-                            <label>연결 URL</label>
-
-                            <input type="text" placeholder="/jobs/event-new-developer" />
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="bannerFile">배너 이미지</label>
-
-                                <div class="file-box">
-                                    <label for="bannerFile" class="file-btn">이미지 선택</label>
-
-                                    <span id="fileName">선택된 파일 없음</span>
-
-                                    <input type="file" id="bannerFile" />
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>대체 텍스트</label>
-
-                                <input type="text" placeholder="신입 개발자 채용 특별전" />
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>시작일</label>
-
-                                <input type="date" />
-                            </div>
-
-                            <div class="form-group">
-                                <label>종료일</label>
-
-                                <input type="date" />
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="cancel-btn" id="cancelBannerModal">취소</button>
-
-                            <button type="submit" class="save-btn">저장</button>
-                        </div>
-                    </form>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>배너 관리</title>
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin/review/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin/banner/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}"/>
+
+
+    <!-- 모달 css -->
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <!-- 모달 js -->
+    <script th:src="@{/js/modal.js}"></script>
+
+    <script th:src="@{/js/admin/banner.js}"></script>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+</head>
+<body>
+<div class="wrapper">
+    <!-- ================= Header ================= -->
+
+    <header th:replace="~{common/admin-header :: adminHeader}"></header>
+
+    <!-- ================= Main ================= -->
+
+    <div class="container">
+        <!-- Sidebar -->
+
+        <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+
+        <!-- ================= Content ================= -->
+
+        <main class="content">
+            <!-- 제목 -->
+
+            <div class="page-top">
+                <div class="page-title">
+                    <h2>배너 관리</h2>
+                    <p>배너 이미지·노출 기간·우선순위를 관리합니다.</p>
                 </div>
+
+                <button class="add-btn" id="openBannerModal">+ 배너 등록</button>
             </div>
-        </div>
-    </body>
+
+            <section class="review-box">
+                <!-- 탭 -->
+
+                <div class="review-tab">
+                    <button class="tab-btn active" data-tab="all">전체</button>
+                    <button class="tab-btn" data-tab="main">메인</button>
+                    <button class="tab-btn" data-tab="recruit">채용공고</button>
+                    <button class="tab-btn" data-tab="company">기업정보</button>
+                </div>
+                <p class="banner-guide">
+                    권장 크기 1920 × 320 · 채용공고 1280 × 120 · 기업정보 1280 × 120 | 순서: 같은 위치·기간이
+                    겹치면 작은 번호 우선 노출
+                </p>
+
+                <!-- 배너 카드 -->
+                <div class="banner-list">
+                    <!-- 메인공고 배너 -->
+                    <div class="banner-card" data-type="main">
+                        <div class="banner-thumb blue">신입 개발자 채용 특별전</div>
+
+                        <div class="banner-info">
+                            <h3>신입 개발자 채용 특별전</h3>
+
+                            <p>노출 위치 메인 | 1920×320</p>
+
+                            <p>노출 기간 2026.07.20 ~ 08.10</p>
+
+                            <p>배너 우선순위 1</p>
+                        </div>
+
+                        <div class="banner-status">
+                            <span class="status on"> 노출 중 </span>
+
+                            <div class="banner-action">
+                                <a href="#"
+                                   class="edit-banner-btn"
+                                   data-banner-id="1">
+                                    수정
+                                </a>
+                                <a href="#"
+                                   class="hide-banner-btn"
+                                   data-banner-id="1">
+                                    숨김
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 채용공고 배너 -->
+                    <div class="banner-card" data-type="recruit">
+                        <div class="banner-thumb green">첫 이력서 작성 가이드</div>
+
+                        <div class="banner-info">
+                            <h3>첫 이력서 작성 가이드</h3>
+
+                            <p>노출 위치 채용공고 | 1920×320</p>
+
+                            <p>노출 기간 2026.07.20 ~ 08.10</p>
+
+                            <p>배너 우선순위 1</p>
+                        </div>
+
+                        <div class="banner-status">
+                            <span class="status on"> 노출 중 </span>
+
+                            <div class="banner-action">
+                                <a href="#">수정</a>
+                                <a href="#">숨김</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 기업정보 배너 -->
+                    <div class="banner-card" data-type="company">
+                        <div class="banner-thumb navy">기업회원 채용 시작하기</div>
+
+                        <div class="banner-info">
+                            <h3>기업회원 채용 시작하기</h3>
+
+                            <p>노출 위치 기업정보 | 1920×320</p>
+
+                            <p>노출 기간 2026.07.20 ~ 08.10</p>
+
+                            <p>배너 우선순위 1</p>
+                        </div>
+
+                        <div class="banner-status">
+                            <span class="status on"> 노출 중 </span>
+
+                            <div class="banner-action">
+                                <a href="#">수정</a>
+                                <a href="#">숨김</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ai자기소개서 배너 -->
+                    <div class="banner-card" data-type="main">
+                        <div class="banner-thumb orange">AI 자기소개서 첨삭 오픈</div>
+
+                        <div class="banner-info">
+                            <h3>AI 자기소개서 첨삭 오픈</h3>
+
+                            <p>노출 위치 메인 | 1920×320</p>
+
+                            <p>노출 기간 2026.07.20 ~ 08.10</p>
+
+                            <p>배너 우선순위 1</p>
+                        </div>
+
+                        <div class="banner-status">
+                            <span class="status on"> 노출 중 </span>
+
+                            <div class="banner-action">
+                                <a href="#">수정</a>
+                                <a href="#">숨김</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 페이지네이션 -->
+
+                <div class="pagination">
+                    <a href="#">&lt;</a>
+
+                    <a href="#" class="active">1</a>
+
+                    <a href="#">2</a>
+
+                    <a href="#">3</a>
+
+                    <a href="#">4</a>
+
+                    <a href="#">5</a>
+
+                    <a href="#">&gt;</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ================= Footer ================= -->
+    <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+
+    <!-- 배너 등록 모달 -->
+    <div th:replace="~{modal/admin/banner-form :: bannerModal}"></div>
+
+    <!-- 모달 불러오기 -->
+    <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+</div>
+</body>
 </html>
