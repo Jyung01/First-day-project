@@ -1,0 +1,213 @@
+/* ============================================================
+           자기소개서 작성·수정 (my/cover-letter/form.html) 전용 스타일
+           - .wrap, .mypage-layout, .mypage-side, .btn, .btn-primary,
+             .btn-outline 등 공통 클래스는 common.css / my.css 에서
+             이미 정의되어 있다고 가정하고, 여기서는 이 화면 전용 클래스만 추가합니다.
+           ============================================================ */
+
+        .cl-page-header {
+            margin-bottom: 24px;
+        }
+
+        .cl-page-header__title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+            margin: 0 0 8px;
+        }
+
+        .cl-page-header__desc {
+            font-size: 14px;
+            color: var(--text-muted, #767781);
+            margin: 0;
+        }
+
+        .cl-form-card {
+            background: #fff;
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 14px;
+            padding: 28px;
+        }
+
+        .cl-field {
+            margin-bottom: 24px;
+        }
+
+        .cl-field:last-child {
+            margin-bottom: 0;
+        }
+
+        .cl-field__label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-strong, #1c1c22);
+            margin-bottom: 10px;
+        }
+
+        .cl-field__label .required {
+            color: #e6564c;
+            margin-left: 2px;
+        }
+
+        .cl-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            font-size: 14px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-input:focus,
+        .cl-textarea:focus {
+            outline: none;
+            border-color: var(--primary, #6c5ce7);
+        }
+
+        .cl-job-select {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            background: #fafafb;
+            cursor: pointer;
+        }
+
+        .cl-job-select__text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .cl-job-select__title {
+            font-weight: 600;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-job-select__meta {
+            color: var(--text-muted, #8a8b94);
+        }
+
+        .cl-job-select__chevron {
+            flex-shrink: 0;
+            color: #b5b6c0;
+        }
+
+        /* ---------- 문항 카드 ---------- */
+        .cl-question {
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 16px;
+        }
+
+        .cl-question__head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .cl-question__label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-question__remove {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e6564c;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .cl-question__prompt {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background: #fafafb;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-textarea {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 160px;
+            padding: 14px;
+            font-size: 14px;
+            line-height: 1.6;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            resize: vertical;
+            color: var(--text-strong, #1c1c22);
+            font-family: inherit;
+        }
+
+        .cl-question__count {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-muted, #a6a7b1);
+            margin-top: 8px;
+        }
+
+        /* ---------- 문항 추가 영역 ---------- */
+        .cl-add-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .cl-add-hint {
+            font-size: 13px;
+            color: var(--text-muted, #8a8b94);
+            background: #f7f7fb;
+            padding: 10px 14px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 240px;
+        }
+
+        /* ---------- 하단 액션 버튼 ---------- */
+        .cl-form-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cl-form-actions .btn-outline {
+            flex: 0 0 auto;
+            min-width: 110px;
+            text-align: center;
+        }
+
+        .cl-form-actions .cl-submit {
+            flex: 1;
+            text-align: center;
+        }
+
+        @media (max-width: 720px) {
+            .cl-form-actions {
+                flex-wrap: wrap;
+            }
+
+            .cl-form-actions .btn-outline,
+            .cl-form-actions .cl-submit {
+                flex: 1 1 100%;
+            }
+        }
+

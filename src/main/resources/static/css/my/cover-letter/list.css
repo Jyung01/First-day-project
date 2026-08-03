@@ -1,0 +1,234 @@
+/* ============================================================
+           자기소개서 관리 (my/cover-letter/list.html) 전용 스타일
+           - .wrap, .mypage-layout, .mypage-side, .btn, .btn-primary,
+             .btn-outline, .status-badge 등 공통 클래스는 common.css / my.css 에서
+             이미 정의되어 있다고 가정하고, 여기서는 이 화면 전용 클래스와
+             my.css 에 없을 수 있는 배지/버튼 변형만 추가합니다.
+           ============================================================ */
+
+        /* ---------- 페이지 헤더 (제목 + 새 자기소개서 버튼) ---------- */
+        .cl-page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .cl-page-header__title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+            margin: 0 0 8px;
+        }
+
+        .cl-page-header__desc {
+            font-size: 14px;
+            color: var(--text-muted, #767781);
+            margin: 0;
+        }
+
+        .cl-new-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .cl-new-btn__plus {
+            font-size: 16px;
+            line-height: 1;
+            font-weight: 600;
+        }
+
+        /* ---------- 자기소개서 카드 목록 ---------- */
+        .cl-list {
+            list-style: none;
+            margin: 0 0 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .cl-card {
+            display: flex;
+            gap: 16px;
+            padding: 24px;
+            background: #fff;
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 14px;
+            transition: box-shadow 0.15s ease, border-color 0.15s ease;
+        }
+
+        .cl-card:hover {
+            border-color: var(--primary, #6c5ce7);
+            box-shadow: 0 4px 16px rgba(20, 20, 30, 0.06);
+        }
+
+        .cl-card__icon {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cl-card__icon--lilac {
+            background: #eee9ff;
+            color: #6c5ce7;
+        }
+
+        .cl-card__icon--peach {
+            background: #ffe9df;
+            color: #e07a45;
+        }
+
+        .cl-card__icon--mint {
+            background: #dff5ec;
+            color: #1f9d72;
+        }
+
+        .cl-card__body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cl-card__row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .cl-card__title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-strong, #1c1c22);
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .cl-card__meta {
+            font-size: 13px;
+            color: var(--text-muted, #8a8b94);
+            margin: 6px 0 16px;
+        }
+
+        .cl-card__actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ---------- 버튼 크기/상태 변형 (my.css 에 없을 경우 대비) ---------- */
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        .btn-disabled {
+            padding: 8px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+            border: 1px solid var(--border, #e7e7ec);
+            background: #f4f4f6;
+            color: #b5b6c0;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* ---------- 상태 배지 (my.css 에 없을 경우 대비) ---------- */
+        .status-badge--ai-done {
+            background: #e6f7ee;
+            color: #1f9d72;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .status-badge--pending {
+            background: #f1f2f4;
+            color: #8a8b94;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        /* ---------- 자기소개서 없음 (빈 상태) ---------- */
+        .cl-empty {
+            text-align: center;
+            padding: 48px 20px;
+            background: #fafafb;
+            border: 1px dashed var(--border, #e7e7ec);
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .cl-empty__text {
+            font-size: 14px;
+            color: var(--text-muted, #8a8b94);
+            margin: 0 0 10px;
+        }
+
+        .cl-empty__link {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary, #6c5ce7);
+            text-decoration: none;
+        }
+
+        /* ---------- 하단 안내 문구 ---------- */
+        .cl-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 16px 18px;
+            background: #f7f7fb;
+            border-radius: 10px;
+        }
+
+        .cl-notice__icon {
+            flex-shrink: 0;
+            margin-top: 2px;
+            color: #9a9baa;
+        }
+
+        .cl-notice p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted, #767781);
+        }
+
+        /* ---------- 반응형 ---------- */
+        @media (max-width: 720px) {
+            .cl-page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cl-card {
+                flex-direction: column;
+            }
+
+            .cl-card__row {
+                flex-wrap: wrap;
+            }
+
+            .cl-card__actions {
+                flex-wrap: wrap;
+            }
+        }
+

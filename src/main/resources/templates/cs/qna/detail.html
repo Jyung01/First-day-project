@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>지원 취소가 되지 않습니다. | 첫출근 고객센터</title>
+<link rel="stylesheet" th:href="@{/css/cs/user-common.css}" />
+<link rel="stylesheet" th:href="@{/css/common.css}" />
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+<div class="cs-page">
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">FIRST DAY HELP CENTER</p>
+    <h1>고객센터</h1>
+    <p>필요한 도움을 빠르고 편하게 확인하세요.</p>
+  </div>
+</section>
+
+<main class="content-shell">
+  <div class="wrap">
+
+    <nav class="tabs">
+      <a class="tab" th:href="@{/cs/notice}">공지사항</a>
+      <a class="tab" th:href="@{/cs/faq}">자주 묻는 질문</a>
+      <a class="tab active" th:href="@{/cs/qna}">1:1 문의</a>
+    </nav>
+
+    <p class="breadcrumb"><a th:href="@{/cs/qna}">‹ 문의 목록</a></p>
+
+    <div class="detail-card">
+      <div class="detail-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+        <div>
+          <span class="badge badge-pending">답변대기</span>
+          <h1>지원 취소가 되지 않습니다.</h1>
+          <div class="detail-meta">
+            <span>지원·이력서</span>
+            <span>·</span>
+            <span>2026.07.20 14:32</span>
+          </div>
+        </div>
+        <a href="#" class="delete-link">삭제</a>
+      </div>
+
+      <div class="detail-body" style="padding-bottom:10px;">
+        <p>채용공고 상세에서 지원 취소 버튼을 눌렀는데 취소가 되지 않습니다.<br />
+        현재 기업에서 아직 열람하지 않은 상태로 표시되는데, 확인 부탁드립니다.</p>
+      </div>
+
+      <p style="padding:0 30px;font-size:13px;font-weight:700;color:var(--gray-700);margin:0 0 10px;">첨부파일 2개</p>
+      <div class="attach-list">
+        <div class="attach-item">
+          <div class="attach-left">
+            <span>🖼️</span>
+            <span>error-screen.png</span>
+            <span class="attach-size">2.4MB</span>
+          </div>
+          <a href="#" class="download">다운로드</a>
+        </div>
+        <div class="attach-item">
+          <div class="attach-left">
+            <span>📄</span>
+            <span>지원취소_오류.pdf</span>
+            <span class="attach-size">614KB</span>
+          </div>
+          <a href="#" class="download">다운로드</a>
+        </div>
+      </div>
+
+      <div class="answer-box">
+        <p class="answer-label">관리자 답변</p>
+        <p>문의 내용을 확인하고 있습니다.<br />답변이 등록되면 이 화면에 답변 내용이 함께 표시됩니다.</p>
+      </div>
+
+      <div class="detail-footer">
+        <a th:href="@{/cs/qna}" class="btn btn-primary">목록으로</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+<footer th:replace="~{common/footer :: footer}"></footer>
+<script th:src="@{/js/common.js}"></script>
+</body></html>

@@ -22,11 +22,20 @@ public class AdminConfigController {
     }
 
     @GetMapping("/site-setting")
-    public String siteSetting() { return "admin/config/site-setting"; }
+    public String siteSetting(Model model) {
+        model.addAttribute("activeMenu", "siteSetting");
+        return "admin/config/site-setting";
+    }
 
     @GetMapping("/version")
-    public String version() { return "admin/config/version"; }
+    public String version(Model model) {
+        model.addAttribute("activeMenu", "version");
+        return "admin/config/version";
+    }
 
     @GetMapping("/policy")
-    public String policy() { return "admin/config/policy"; }
+    public String policy(Model model) {
+        model.addAttribute("activeMenu", "policy");
+        return "admin/config/policy";
+    }
 }

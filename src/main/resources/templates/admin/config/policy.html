@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>약관·정책 관리 | 첫출근 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin/section-common.css}" />
+</head>
+<body>
+<div class="wrapper">
+    <header th:replace="~{common/admin-header :: adminHeader}"></header>
+    <div class="container">
+        <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+        <main class="admin-section">
+            <div class="page-header">
+                <h1>약관·정책 관리</h1>
+                <p>회원가입 동의 항목과 사용자에게 공개되는 정책 내용을 관리합니다.</p>
+            </div>
+            <section class="panel">
+                <div class="panel-head"><h2>회원가입 동의·공개 정책 관리</h2></div>
+                <p class="section-description">회원가입 동의 항목과 푸터 정책 페이지가 같은 데이터 항목을 사용합니다.</p>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>약관명</th><th>적용 대상</th><th>구분</th><th>관리</th></tr></thead>
+                        <tbody>
+                        <tr><td>개인회원 서비스 이용약관</td><td>개인회원</td><td><span class="tag red">필수</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
+                        <tr><td>개인정보 수집·이용 동의</td><td>개인·기업 공용</td><td><span class="tag red">필수</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
+                        <tr><td>마케팅 정보 수신 동의</td><td>개인·기업 공용</td><td><span class="tag gray">선택</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
+                        <tr><td>채용정보 이메일 수신 동의</td><td>개인회원</td><td><span class="tag gray">선택</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
+                        <tr><td>기업회원 서비스 이용약관</td><td>기업회원</td><td><span class="tag red">필수</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
+                        <tr><td>기업정보 공개 동의</td><td>기업회원</td><td><span class="tag red">필수</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
+                        <tr><td>개인정보처리방침</td><td>전체 공개</td><td><span class="tag blue">공개 정책</span></td><td class="row-actions"><a href="#">내용 수정</a></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="section-note">저장한 항목 내용은 사용하면 이전 약관 이력·버전 적용일과 별도로 관리되지 않습니다.</p>
+            </section>
+        </main>
+    </div>
+    <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+</div>
+</body>
+</html>

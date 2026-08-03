@@ -1,0 +1,87 @@
+/* ============================================================
+           자기소개서 보기 (my/cover-letter/detail.html) 전용 스타일
+           - .wrap, .mypage-layout, .mypage-side, .btn, .btn-outline 등
+             공통 클래스는 common.css / my.css 에서 이미 정의되어 있다고
+             가정하고, 여기서는 이 화면 전용 클래스만 추가합니다.
+           ============================================================ */
+
+        .cl-page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .cl-page-header__text {
+            flex: 1;
+        }
+
+        .cl-page-header__title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+            margin: 0 0 8px;
+        }
+
+        .cl-page-header__desc {
+            font-size: 14px;
+            color: var(--text-muted, #767781);
+            margin: 0;
+        }
+
+        .cl-doc-card {
+            background: #fff;
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 14px;
+            padding: 36px 40px;
+        }
+
+        .cl-doc-card__title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+            margin: 0 0 10px;
+        }
+
+        .cl-doc-card__byline {
+            font-size: 14px;
+            color: var(--primary, #6c5ce7);
+            margin: 0 0 6px;
+        }
+
+        .cl-doc-card__job {
+            font-size: 13px;
+            color: var(--text-muted, #8a8b94);
+            margin: 0 0 20px;
+        }
+
+        .cl-doc-card__divider {
+            border: none;
+            border-top: 1px solid var(--border, #e7e7ec);
+            margin: 0 0 24px;
+        }
+
+        .cl-doc-section {
+            margin-bottom: 26px;
+        }
+
+        .cl-doc-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .cl-doc-section__title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+            margin: 0 0 10px;
+        }
+
+        .cl-doc-section__text {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text-strong, #1c1c22);
+            margin: 0;
+            white-space: pre-line;
+        }
+

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>공지사항 관리 | 첫출근 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin/section-common.css}" />
+</head>
+<body>
+<div class="wrapper">
+    <header th:replace="~{common/admin-header :: adminHeader}"></header>
+    <div class="container">
+        <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+        <main class="admin-section">
+            <div class="page-header-row">
+                <div class="page-header">
+                    <h1>고객센터 관리 · 공지사항</h1>
+                    <p>공지사항·FAQ를 관리하고 회원 문의에 답변합니다.</p>
+                </div>
+                <a class="btn btn-primary" href="#">+ 공지사항 등록</a>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card"><div class="label">미답변 문의</div><div class="value">7건</div></div>
+                <div class="stat-card orange"><div class="label">공지사항</div><div class="value">24건</div></div>
+                <div class="stat-card green"><div class="label">FAQ</div><div class="value">38건</div></div>
+            </div>
+            <div class="panel">
+                <nav class="tabs" aria-label="고객센터 관리 메뉴">
+                    <a class="tab active" th:href="@{/admin/cs/notice}">공지사항</a>
+                    <a class="tab" th:href="@{/admin/cs/faq}">FAQ</a>
+                    <a class="tab" th:href="@{/admin/cs/qna}">1:1 문의</a>
+                </nav>
+                <div class="filter-bar">
+                    <select aria-label="카테고리"><option>카테고리 전체</option><option>서비스 안내</option><option>채용정보</option><option>호환</option></select>
+                    <input type="text" placeholder="제목 검색" aria-label="제목 검색" />
+                    <button type="button" class="btn-search">검색</button>
+                    <span class="result-count">총 24건</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>번호</th><th>카테고리</th><th>제목</th><th>등록일</th><th>수정일</th><th>관리</th></tr></thead>
+                        <tbody>
+                        <tr><td>24</td><td><span class="tag blue">서비스 안내</span></td><td>첫출근 서비스 이용 안내</td><td>07.22</td><td>07.22</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
+                        <tr><td>23</td><td><span class="tag orange">채용정보</span></td><td>채용공고 작성 방법 안내</td><td>07.20</td><td>07.21</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
+                        <tr><td>22</td><td><span class="tag gray">호환</span></td><td>개인정보 수정 기능 안내</td><td>07.14</td><td>07.18</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
+                        <tr><td>21</td><td><span class="tag blue">서비스 안내</span></td><td>기업회원 승인 절차 안내</td><td>07.15</td><td>07.16</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
+                        <tr><td>20</td><td><span class="tag orange">채용정보</span></td><td>지원 취소 기한 안내</td><td>07.12</td><td>07.12</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
+                        <tr><td>19</td><td><span class="tag gray">기타</span></td><td>고객센터 운영시간 안내</td><td>07.10</td><td>07.10</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <nav class="pagination" aria-label="공지사항 페이지"><a class="active" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a></nav>
+            </div>
+        </main>
+    </div>
+    <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+</div>
+</body>
+</html>
