@@ -33,6 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const submitBtn = document.getElementById("bannerSubmitBtn");
     const bannerForm = document.getElementById("bannerForm");
 
+    const bannerFile = document.getElementById("bannerFile");
+    const fileName = document.getElementById("fileName");
+
     let editMode = false;
     let bannerId = null;
 
@@ -58,13 +61,60 @@ document.addEventListener("DOMContentLoaded", () => {
                 bannerModal.setAttribute("aria-hidden", "true");
             });
         });
+
+
+        // ===============================
+        // 등록/수정 submit
+        // ===============================
+        bannerForm.addEventListener("submit", async (e) => {
+
+            e.preventDefault();
+
+            if (editMode) {
+                // ********** 배너 수정 **********
+                const formData = new FormData(bannerForm);
+                // TODO
+                // PUT /admin/banner/{bannerId}
+                // fetch(`/admin/banner/${bannerId}`, {
+                //     method: "PUT",
+                //     body: formData
+                // });
+
+                bannerModal.classList.add("is-open");
+                bannerModal.setAttribute("aria-hidden", "false");
+            } else {
+                // ********** 배너 등록 **********
+                // TODO
+                const formData = new FormData(bannerForm);
+                try {
+                    const response =  await fetch("/admin/banner/register", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        alert("등록 실패");
+                        return;
+                    }
+
+                    alert("등록되었습니다.");
+                    bannerModal.classList.remove("is-open");
+                    bannerModal.setAttribute("aria-hidden", "true");
+
+                    location.reload();
+                } catch (e) {
+                    alert("등록 실패");
+                }
+
+            }
+        });
+
     }
 
     // ===============================
     // 배너 등록 - 파일 첨부
     // ===============================
-    const bannerFile = document.getElementById("bannerFile");
-    const fileName = document.getElementById("fileName");
+
 
     if (bannerFile && fileName) {
         bannerFile.addEventListener("change", () => {
@@ -107,31 +157,8 @@ document.addEventListener("DOMContentLoaded", () => {
             submitBtn.textContent = "수정";
 
             bannerModal.classList.add("is-open");
-
+            bannerModal.setAttribute("aria-hidden", "false");
         });
-
-    });
-
-    // ===============================
-    // 등록/수정 submit
-    // ===============================
-    bannerForm.addEventListener("submit", (e) => {
-
-        e.preventDefault();
-
-        if (editMode) {
-
-            // TODO
-            // PUT /admin/banner/{bannerId}
-
-        } else {
-
-            // TODO
-            // POST /admin/banner
-
-        }
-
-        bannerModal.classList.remove("is-open");
 
     });
 

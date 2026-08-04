@@ -3,6 +3,7 @@ package kr.co.firstdayproject.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,7 +23,7 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())   // ← 추가
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // TODO 권한 정책 확정 후 아래 규칙부터 순서대로 활성화
                         // .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -45,9 +46,8 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
-                .httpBasic(basic -> basic.disable());
+                .httpBasic(AbstractHttpConfigurer::disable);
 
         return http.build();
     }
-
 }
