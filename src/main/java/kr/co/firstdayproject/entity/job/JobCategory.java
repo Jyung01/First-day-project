@@ -16,7 +16,23 @@ import org.hibernate.annotations.DynamicUpdate;
  * DB table: job_categories
  */
 @Entity
-@Table(name = "job_categories")
+@Table(
+    name = "job_categories",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "uk_job_categories_slug",
+            columnNames = "slug"
+        ),
+        @UniqueConstraint(
+            name = "uk_job_categories_parent_name",
+            columnNames = {"parent_id", "category_name"}
+        )
+    },
+    indexes = @Index(
+        name = "idx_job_categories_parent_order",
+        columnList = "parent_id, is_active, display_order"
+    )
+)
 @Getter
 @Setter
 @Builder
@@ -30,20 +46,28 @@ public class JobCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "job_category_id", nullable = false)
     private Long jobCategoryId;
+
     @Column(name = "parent_id")
     private Long parentId;
+
     @Column(name = "category_name", nullable = false, length = 100)
     private String categoryName;
+
     @Column(name = "slug", nullable = false, length = 120)
     private String slug;
+
     @Column(name = "depth", nullable = false)
     private Integer depth;
+
     @Column(name = "display_order", nullable = false)
     private Integer displayOrder;
+
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 }
