@@ -12,6 +12,12 @@
   grid-column: 1 / -1;
 }
 
+.admin-common-modal #parentCategory:disabled,
+.admin-common-modal #skillCategory:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 @media (max-width: 640px) {
   .admin-common-modal .modal-form-grid {
     grid-template-columns: 1fr;

@@ -24,13 +24,13 @@
 
             <nav class="application-filter" aria-label="지원 상태 필터">
                 <button class="application-filter__button is-active" type="button" data-application-filter="all">
-                    전체 <strong>8</strong>
+                    전체 <strong>9</strong>
                 </button>
                 <button class="application-filter__button" type="button" data-application-filter="applied">
                     지원 완료 <strong>1</strong>
                 </button>
                 <button class="application-filter__button" type="button" data-application-filter="review">
-                    검토 중 <strong>1</strong>
+                    검토 중 <strong>2</strong>
                 </button>
                 <button class="application-filter__button" type="button" data-application-filter="interview">
                     면접 <strong>2</strong>
@@ -55,6 +55,14 @@
                     <span class="application-status application-status--reviewing">서류 검토 중</span>
                     <time datetime="2026-07-20">2026.07.20</time>
                     <a class="application-detail-link" th:href="@{/my/applications/101(status='REVIEWING')}">상세 보기</a>
+                </div>
+
+                <div class="application-row" data-application-group="review">
+                    <strong class="application-row__job">무신사 · 백엔드 개발자</strong>
+                    <time datetime="2026-07-16">2026.07.16</time>
+                    <span class="application-status application-status--document-passed">서류 합격</span>
+                    <time datetime="2026-07-21">2026.07.21</time>
+                    <a class="application-detail-link" th:href="@{/my/applications/109(status='DOCUMENT_PASSED')}">상세 보기</a>
                 </div>
 
                 <div class="application-row" data-application-group="applied">

@@ -15,11 +15,71 @@
     />
   </head>
   <body>
+    <form
+      id="skillCreateForm"
+      th:action="@{/admin/config/skill}"
+      method="post"
+      hidden
+    >
+      <input name="skillType" data-skill-form-type />
+      <input name="skillName" data-skill-form-name />
+      <input name="parentId" data-skill-form-parent />
+    </form>
+    <form
+      id="skillEditForm"
+      th:action="@{/admin/config/skill/edit}"
+      method="post"
+      hidden
+    >
+      <input name="skillId" data-skill-edit-id />
+      <input name="skillName" data-skill-edit-name />
+      <input name="parentId" data-skill-edit-parent />
+    </form>
+    <form
+      id="skillDeleteForm"
+      th:action="@{/admin/config/skill/delete}"
+      method="post"
+      hidden
+    >
+      <input name="skillId" data-skill-delete-id />
+    </form>
+    <form
+      id="skillRestoreForm"
+      th:action="@{/admin/config/skill/restore}"
+      method="post"
+      hidden
+    >
+      <input name="skillId" data-skill-restore-id />
+    </form>
+    <form
+      id="skillReorderForm"
+      th:action="@{/admin/config/skill/reorder}"
+      method="post"
+      hidden
+    >
+      <input name="parentId" data-sort-form-parent />
+    </form>
+    <div
+      th:if="${restoreSkillId}"
+      data-skill-restore-prompt
+      th:attr="data-skill-id=${restoreSkillId},data-skill-name=${restoreSkillName},data-skill-depth=${restoreSkillDepth}"
+      hidden
+    ></div>
     <div class="wrapper">
       <header th:replace="~{common/admin-header :: adminHeader}"></header>
       <div class="container">
         <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
         <main class="admin-operation">
+          <p
+            class="config-feedback config-feedback--success"
+            th:if="${configMessage}"
+            th:text="${configMessage}"
+          ></p>
+          <p
+            class="config-feedback config-feedback--error"
+            th:if="${configError}"
+            th:text="${configError}"
+          ></p>
           <div class="operation-heading">
             <div>
               <h1>직무·기술 관리</h1>
@@ -30,7 +90,8 @@
             <button
               class="operation-primary"
               data-modal-open="skill"
-              data-modal-title="기술 스택 등록"
+              data-modal-title="기술 등록"
+              data-skill-action="create"
             >
               + 기술 등록
             </button>
@@ -49,88 +110,159 @@
           <section class="operation-stats">
             <article class="operation-stat">
               <span>등록 기술</span>
-              <strong>64개</strong>
+              <strong th:text="|${activeSkillCount}개|">0개</strong>
             </article>
             <article class="operation-stat">
               <span>기술 분류</span>
-              <strong>5개</strong>
+              <strong th:text="|${#lists.size(skillGroups)}개|">0개</strong>
             </article>
             <article class="operation-stat">
               <span>사용 건수</span>
-              <strong>1,284건</strong>
+              <strong
+                th:text="|${#numbers.formatInteger(totalSkillUsageCount, 1, 'COMMA')}건|"
+              >
+                0건
+              </strong>
             </article>
           </section>
           <div class="config-grid">
             <section class="config-box">
               <h2>기술 분류</h2>
-              <div class="config-list" data-skill-category-list>
-                <button class="is-active" data-skill-category="언어">
-                  <strong>언어</strong>
-                  <small>18개</small>
-                </button>
-                <button data-skill-category="프레임워크">
-                  <strong>프레임워크</strong>
-                  <small>16개</small>
-                </button>
-                <button data-skill-category="데이터베이스">
-                  <strong>데이터베이스</strong>
-                  <small>10개</small>
-                </button>
-                <button data-skill-category="클라우드·DevOps">
-                  <strong>클라우드·DevOps</strong>
-                  <small>12개</small>
-                </button>
-                <button data-skill-category="기타">
-                  <strong>기타</strong>
-                  <small>8개</small>
-                </button>
+              <div
+                class="config-list"
+                data-skill-category-list
+                data-sort-list
+                data-sort-form-id="skillReorderForm"
+              >
+                <div
+                  class="config-category-item"
+                  th:each="group : ${skillGroups}"
+                  th:classappend="${selectedSkillGroup != null and selectedSkillGroup.skillId == group.skillId} ? ' is-active'"
+                  th:attr="data-sort-id=${group.skillId}"
+                  data-sort-item
+                >
+                  <button
+                    type="button"
+                    class="config-drag-handle"
+                    th:attr="aria-label=|${group.skillName} 순서 변경|"
+                    title="드래그하여 순서 변경"
+                  ></button>
+                  <a
+                    class="config-category-select"
+                    th:href="@{/admin/config/skill(groupId=${group.skillId})}"
+                  >
+                    <strong th:text="${group.skillName}">언어</strong>
+                    <small
+                      th:text="|${skillCountsByGroup.getOrDefault(group.skillId, 0)}개|"
+                    >
+                      0개
+                    </small>
+                  </a>
+                  <div class="config-category-actions">
+                    <button
+                      class="config-category-action"
+                      data-modal-open="skill-group"
+                      data-modal-title="기술 분류 수정"
+                      data-skill-action="edit-group"
+                      th:attr="data-modal-value=${group.skillName},data-modal-id=${group.skillId}"
+                    >수정</button>
+                    <button
+                      class="config-category-action config-category-action--delete"
+                      data-modal-open="skill-group-delete"
+                      th:attr="data-modal-value=${group.skillName},data-modal-id=${group.skillId}"
+                    >삭제</button>
+                  </div>
+                </div>
+                <p
+                  class="config-empty"
+                  th:if="${#lists.isEmpty(skillGroups)}"
+                >
+                  등록된 기술 분류가 없습니다.
+                </p>
               </div>
             </section>
-            <section class="config-box" data-skill-detail>
-              <h2 data-skill-title>언어 기술 스택</h2>
+            <section
+              class="config-box"
+              data-skill-detail
+              data-sort-list
+              data-sort-form-id="skillReorderForm"
+              th:attr="data-sort-parent-id=${selectedSkillGroup != null ? selectedSkillGroup.skillId : ''}"
+            >
+              <h2
+                data-skill-title
+                th:text="${selectedSkillGroup != null} ? |${selectedSkillGroup.skillName} 기술 스택| : '기술 스택'"
+              >
+                기술 스택
+              </h2>
               <div class="config-row config-row--head">
+                <span aria-hidden="true"></span>
                 <span>기술명</span>
                 <span>사용 건수</span>
                 <span>관리</span>
               </div>
               <div
-                th:each="skill : ${ {'Java','Python','JavaScript','TypeScript','Kotlin','Go'} }"
+                th:each="skill : ${skills}"
                 class="config-row"
+                th:attr="data-sort-id=${skill.skillId}"
+                data-sort-item
               >
-                <strong th:text="${skill}">Java</strong>
-                <span>328건</span>
+                <button
+                  type="button"
+                  class="config-drag-handle"
+                  th:attr="aria-label=|${skill.skillName} 순서 변경|"
+                  title="드래그하여 순서 변경"
+                ></button>
+                <strong th:text="${skill.skillName}">Java</strong>
+                <span
+                  th:text="|${#numbers.formatInteger(skillUsageCounts.getOrDefault(skill.skillId, 0), 1, 'COMMA')}건|"
+                >
+                  0건
+                </span>
                 <div class="config-actions">
                   <button
                     class="table-action"
                     data-modal-open="skill"
                     data-modal-title="기술 스택 수정"
-                    th:attr="data-modal-value=${skill}"
+                    th:attr="data-modal-value=${skill.skillName},data-modal-id=${skill.skillId},data-skill-category=${selectedSkillGroup.skillName},data-parent-id=${selectedSkillGroup.skillId},data-usage-count=${skillUsageCounts.getOrDefault(skill.skillId, 0)}"
                   >
                     수정
                   </button>
                   <button
-                    class="table-action"
+                    class="table-action table-action--delete"
                     data-modal-open="skill-delete"
-                    th:attr="data-modal-value=${skill}"
+                    th:attr="data-modal-value=${skill.skillName},data-modal-id=${skill.skillId}"
                   >
                     삭제
                   </button>
                 </div>
               </div>
+              <p
+                class="config-empty"
+                th:if="${#lists.isEmpty(skills)}"
+              >
+                등록된 기술이 없습니다.
+              </p>
             </section>
           </div>
           <p class="operation-note">
             기술 스택 사용 건수는 이력서 보유 기술과 채용공고 요구 기술에서
-            참조한 합계이며, 사용 중인 기술은 삭제할 수 없습니다.
+            참조한 합계입니다. 삭제해도 기존 연결 정보는 유지됩니다.
           </p>
         </main>
       </div>
       <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
     </div>
+    <select data-skill-group-source hidden>
+      <option
+        th:each="group : ${skillGroups}"
+        th:value="${group.skillId}"
+        th:text="${group.skillName}"
+      ></option>
+    </select>
     <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
     <div th:replace="~{modal/common/form-modal :: formModal}"></div>
     <script th:src="@{/js/modal.js}"></script>
-    <script th:src="@{/js/admin/config/skill.js}"></script>
+    <script th:src="@{/js/admin/config/sortable.js}"></script>
     <script th:src="@{/js/modal/admin/config/config-modal.js}"></script>
   </body>
 </html>

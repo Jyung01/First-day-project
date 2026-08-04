@@ -46,9 +46,8 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
-                .httpBasic(basic -> basic.disable());
+                .httpBasic(AbstractHttpConfigurer::disable);
 
         return http.build();
     }
-
 }
