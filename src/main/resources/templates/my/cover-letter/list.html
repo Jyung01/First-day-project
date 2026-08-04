@@ -31,60 +31,32 @@
               th:each="letter : ${coverLetters}" 를 그 요소에 추가한 뒤
               title / questionCount / charCount / aiStatus 값을 th:text 로 채우면 됩니다.
             -->
-            <ul class="cl-list">
-                <li class="cl-card">
-                    <div class="cl-card__icon cl-card__icon--lilac">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                    </div>
-                    <div class="cl-card__body">
-                        <div class="cl-card__row">
-                            <p class="cl-card__title">백엔드 개발자 지원 자기소개서</p>
-                            <span class="status-badge status-badge--ai-done">AI 첨삭 완료</span>
-                        </div>
-                        <p class="cl-card__meta">문항 1개 · 2,842자</p>
-                        <div class="cl-card__actions">
-                            <a href="#" class="btn btn-primary btn-sm">AI 결과</a>
-                            <a href="#" class="btn btn-outline btn-sm">보기</a>
-                            <a href="#" class="btn btn-outline btn-sm">수정</a>
-                            <a href="#" class="btn btn-outline btn-sm">삭제</a>
-                        </div>
-                    </div>
-                </li>
+            <ul class="cl-list" th:if="${not #lists.isEmpty(coverLetters)}">
+                <li class="cl-card" th:each="letter, iter : ${coverLetterList}">
 
-                <li class="cl-card">
-                    <div class="cl-card__icon cl-card__icon--peach">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                    <!-- 아이콘 div 클래스 부분 -->
+                    <div class="cl-card__icon"
+                         th:classappend="${{'cl-card__icon--lilac', 'cl-card__icon--orange', 'cl-card__icon--green'}[iter.index % 3]}">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">...</svg>
                     </div>
                     <div class="cl-card__body">
                         <div class="cl-card__row">
-                            <p class="cl-card__title">클라우드 엔지니어 지원용</p>
-                            <span class="status-badge status-badge--pending">검사 전</span>
+                            <p class="cl-card__title" th:text="${letter.title}">백엔드 개발자 지원 자기소개서</p>
+                            <span class="status-badge"
+                                  th:classappend="${letter.aiReviewed ? 'status-badge--ai-done' : 'status-badge--pending'}"
+                                  th:text="${letter.aiReviewed ? 'AI 첨삭 완료' : '검사 전'}">AI 첨삭 완료</span>
                         </div>
-                        <p class="cl-card__meta">문항 2개 · 1,650자</p>
+                        <p class="cl-card__meta" th:text="|문항 ${letter.questionCount}개 · ${#numbers.formatInteger(letter.charCount, 1, 'COMMA')}자|">문항 1개 · 2,842자</p>
                         <div class="cl-card__actions">
-                            <a href="#" class="btn btn-disabled btn-sm" aria-disabled="true">AI 결과</a>
-                            <a href="#" class="btn btn-outline btn-sm">보기</a>
-                            <a href="#" class="btn btn-outline btn-sm">수정</a>
-                            <a href="#" class="btn btn-outline btn-sm">삭제</a>
-                        </div>
-                    </div>
-                </li>
+                            <a th:if="${letter.aiReviewed}"
+                               th:href="@{/my/cover-letter/ai-result(id=${letter.id})}"
+                               class="btn btn-primary btn-sm">AI 결과</a>
+                            <a th:unless="${letter.aiReviewed}"
+                               class="btn btn-disabled btn-sm" aria-disabled="true">AI 결과</a>
 
-                <li class="cl-card">
-                    <div class="cl-card__icon cl-card__icon--mint">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                    </div>
-                    <div class="cl-card__body">
-                        <div class="cl-card__row">
-                            <p class="cl-card__title">협업 경험 중심 자기소개서</p>
-                            <span class="status-badge status-badge--ai-done">AI 첨삭 완료</span>
-                        </div>
-                        <p class="cl-card__meta">문항 1개 · 890자</p>
-                        <div class="cl-card__actions">
-                            <a href="#" class="btn btn-primary btn-sm">AI 결과</a>
-                            <a th:href="@{/my/cover-letter/detail}" class="btn btn-outline btn-sm">보기</a>
-                            <a href="#" class="btn btn-outline btn-sm">수정</a>
-                            <a href="#" class="btn btn-outline btn-sm">삭제</a>
+                            <a th:href="@{/my/cover-letter/detail(id=${letter.id})}" class="btn btn-outline btn-sm">보기</a>
+                            <a th:href="@{/my/cover-letter/form(id=${letter.id})}" class="btn btn-outline btn-sm">수정</a>
+                            <a href="#" class="btn btn-outline btn-sm js-delete" th:attr="data-id=${letter.id}">삭제</a>
                         </div>
                     </div>
                 </li>
@@ -106,4 +78,23 @@
 </main>
 <footer th:replace="~{common/footer :: footer}"></footer>
 <script th:src="@{/js/common.js}"></script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.js-delete').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (!confirm('정말 삭제하시겠습니까?')) return;
+
+                const id = btn.dataset.id;
+                try {
+                    const res = await fetch(`/my/cover-letter/${id}`, { method: 'DELETE' });
+                    if (!res.ok) throw new Error('삭제 실패');
+                    btn.closest('.cl-card').remove();
+                } catch (err) {
+                    alert('삭제 중 오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+</script>
 </body></html>

@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"><head>
-<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>첫출근 — 자기소개서 작성·수정</title>
-<link rel="stylesheet" th:href="@{/css/common.css}" />
-<link rel="stylesheet" th:href="@{/css/my/common.css}" />
-<link rel="stylesheet" th:href="@{/css/my/cover-letter/form.css}" />
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>첫출근 — 자기소개서 작성·수정</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/my/cover-letter/form.css}" />
 </head><body>
 <header th:replace="~{common/header :: header}"></header>
 <main class="mypage">
@@ -20,7 +20,7 @@
                 <p class="cl-page-header__desc">문항별 답변을 작성하고 원하는 시점에 AI 첨삭을 요청하세요.</p>
             </div>
 
-            <form class="cl-form-card" th:action="@{/my/cover-letter/{id}(id=${coverLetter?.id})}" method="post">
+            <form class="cl-form-card" id="cl-form">
                 <!-- 제목 -->
                 <div class="cl-field">
                     <label class="cl-field__label" for="cl-title">자기소개서 제목<span class="required">*</span></label>
@@ -29,8 +29,7 @@
                             id="cl-title"
                             name="title"
                             class="cl-input"
-                            th:value="${coverLetter?.title} ?: '백엔드 개발자 지원 자기소개서'"
-                            value="백엔드 개발자 지원 자기소개서"
+                            th:value="${coverLetter?.title}"
                             placeholder="자기소개서 제목을 입력해주세요"
                     />
                 </div>
@@ -47,33 +46,30 @@
                     </div>
                 </div>
 
-                <!--
-                  정적 프로토타입 단계: 지금은 문항 1개만 직접 써놓았습니다.
-                  나중에 백엔드 연동 시, 아래 .cl-question 하나만 남기고
-                  th:each="q : ${coverLetter.questions}" 를 그 요소에 추가한 뒤
-                  순번 / 질문 / 답변 / 글자수를 th:text, th:value 로 채우면 됩니다.
-                -->
-                <div class="cl-question">
-                    <div class="cl-question__head">
-                        <span class="cl-question__label">문항 1</span>
-                        <button type="button" class="cl-question__remove">삭제</button>
+                <!-- 문항 목록이 들어갈 컨테이너 -->
+                <div id="cl-questions">
+                    <div class="cl-question">
+                        <div class="cl-question__head">
+                            <span class="cl-question__label">문항 1</span>
+                            <button type="button" class="cl-question__remove">삭제</button>
+                        </div>
+                        <input type="text" class="cl-question__prompt" placeholder="문항 질문을 입력해주세요" value="지원 동기와 입사 후 목표를 작성해주세요." />
+                        <textarea class="cl-textarea" maxlength="1000" placeholder="답변을 입력해주세요"></textarea>
+                        <p class="cl-question__count">0 / 1,000자</p>
                     </div>
-                    <input type="text" class="cl-question__prompt" value="지원 동기와 입사 후 목표를 작성해주세요." />
-                    <textarea class="cl-textarea" maxlength="1000">저는 문제의 원인을 로그와 데이터 흐름으로 확인하는 과정에서 백엔드 개발의 매력을 느꼈습니다. 첫출근 프로젝트에서는 채용공고와 지원 데이터의 상태 변화를 실시간으로...</textarea>
-                    <p class="cl-question__count">468 / 1,000자</p>
                 </div>
 
                 <!-- 문항 추가 -->
                 <div class="cl-add-row">
-                    <button type="button" class="btn btn-outline">+ 문항 추가</button>
+                    <button type="button" id="btn-add-question" class="btn btn-outline">+ 문항 추가</button>
                     <p class="cl-add-hint">저장된 자기소개서는 입사지원 시 제출 문서로 선택할 수 있습니다.</p>
                 </div>
 
                 <!-- 하단 액션 -->
                 <div class="cl-form-actions">
                     <a th:href="@{/my/cover-letter/list}" class="btn btn-outline">취소</a>
-                    <button type="submit" name="action" value="save" class="btn btn-outline">저장</button>
-                    <button type="submit" name="action" value="ai-review" class="btn btn-primary cl-submit">AI 첨삭 요청</button>
+                    <button type="button" id="btn-save" class="btn btn-outline">저장</button>
+                    <button type="button" id="btn-ai-review" class="btn btn-primary cl-submit">AI 첨삭 요청</button>
                 </div>
             </form>
         </section>
@@ -81,4 +77,114 @@
 </main>
 <footer th:replace="~{common/footer :: footer}"></footer>
 <script th:src="@{/js/common.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const questionsContainer = document.getElementById('cl-questions');
+        let questionCounter = questionsContainer.querySelectorAll('.cl-question').length;
+
+        // 글자수 카운터 갱신
+        function bindCharCount(questionEl) {
+            const textarea = questionEl.querySelector('.cl-textarea');
+            const countEl = questionEl.querySelector('.cl-question__count');
+            textarea.addEventListener('input', () => {
+                countEl.textContent = `${textarea.value.length} / 1,000자`;
+            });
+        }
+        questionsContainer.querySelectorAll('.cl-question').forEach(bindCharCount);
+
+        // 문항 삭제 버튼 바인딩
+        function bindRemove(questionEl) {
+            questionEl.querySelector('.cl-question__remove').addEventListener('click', () => {
+                if (questionsContainer.querySelectorAll('.cl-question').length <= 1) {
+                    alert('문항은 최소 1개 이상이어야 합니다.');
+                    return;
+                }
+                questionEl.remove();
+                renumberQuestions();
+            });
+        }
+        questionsContainer.querySelectorAll('.cl-question').forEach(bindRemove);
+
+        // 문항 번호 다시 매기기 ("문항 1", "문항 2" ...)
+        function renumberQuestions() {
+            questionsContainer.querySelectorAll('.cl-question').forEach((q, idx) => {
+                q.querySelector('.cl-question__label').textContent = `문항 ${idx + 1}`;
+            });
+        }
+
+        // 문항 추가
+        document.getElementById('btn-add-question').addEventListener('click', () => {
+            questionCounter++;
+            const div = document.createElement('div');
+            div.className = 'cl-question';
+            div.innerHTML = `
+            <div class="cl-question__head">
+                <span class="cl-question__label">문항 ${questionCounter}</span>
+                <button type="button" class="cl-question__remove">삭제</button>
+            </div>
+            <input type="text" class="cl-question__prompt" placeholder="문항 질문을 입력해주세요" />
+            <textarea class="cl-textarea" maxlength="1000" placeholder="답변을 입력해주세요"></textarea>
+            <p class="cl-question__count">0 / 1,000자</p>
+        `;
+            questionsContainer.appendChild(div);
+            bindCharCount(div);
+            bindRemove(div);
+        });
+
+        // 폼 데이터 모아서 서버로 전송
+        async function submitForm() {
+            const title = document.getElementById('cl-title').value.trim();
+            if (!title) {
+                alert('제목을 입력해주세요.');
+                return null;
+            }
+
+            const items = [];
+            let hasEmptyItem = false;
+            questionsContainer.querySelectorAll('.cl-question').forEach((q, index) => {
+                const question = q.querySelector('.cl-question__prompt').value.trim();
+                const answer = q.querySelector('.cl-textarea').value.trim();
+                if (!question || !answer) {
+                    hasEmptyItem = true;
+                }
+                items.push({ question, answer, displayOrder: index + 1 });
+            });
+
+            if (hasEmptyItem) {
+                alert('모든 문항의 질문과 답변을 입력해주세요.');
+                return null;
+            }
+
+            try {
+                const res = await fetch('/my/cover-letter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, items })
+                });
+                if (!res.ok) throw new Error('저장 실패');
+                return await res.json(); // 새로 생성된 cover-letter id
+            } catch (err) {
+                alert('저장 중 오류가 발생했습니다.');
+                return null;
+            }
+        }
+
+        document.getElementById('btn-save').addEventListener('click', async () => {
+            const id = await submitForm();
+            if (id != null) {
+                alert('저장되었습니다.');
+                location.href = '/my/cover-letter/list';
+            }
+        });
+
+        document.getElementById('btn-ai-review').addEventListener('click', async () => {
+            const id = await submitForm();
+            if (id != null) {
+                // TODO: AI 첨삭 기능(Postgres/AI 서버 연동) 완성되면 여기서 첨삭 요청 API 호출로 교체
+                alert('저장되었습니다. (AI 첨삭 기능은 준비 중입니다)');
+                location.href = '/my/cover-letter/list';
+            }
+        });
+    });
+</script>
 </body></html>
