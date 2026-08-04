@@ -46,34 +46,8 @@
                         <p class="auth-description">첫출근 계정으로 서비스를 이용해보세요.</p>
                     </div>
 
-                    <!-- 회원 유형 선택 -->
-                    <div class="login-tabs" role="tablist" aria-label="회원 유형 선택">
-                        <button
-                            type="button"
-                            class="login-tab active"
-                            data-member-type="personal"
-                            role="tab"
-                            aria-selected="true"
-                        >
-                            개인회원
-                        </button>
-
-                        <button
-                            type="button"
-                            class="login-tab"
-                            data-member-type="company"
-                            role="tab"
-                            aria-selected="false"
-                        >
-                            기업회원
-                        </button>
-                    </div>
-
                     <!-- 로그인 폼 -->
                     <form class="auth-form login-form" th:action="@{/login}" method="post">
-                        <!-- 회원 유형 -->
-                        <input type="hidden" id="memberType" name="memberType" value="personal" />
-
                         <!-- 아이디 -->
                         <div class="auth-field">
                             <label for="username" class="auth-label"> 아이디 </label>
@@ -163,25 +137,8 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                const tabs = document.querySelectorAll(".login-tab");
-                const memberTypeInput = document.getElementById("memberType");
                 const passwordInput = document.getElementById("password");
                 const passwordToggle = document.getElementById("passwordToggle");
-
-                // 개인회원 / 기업회원 탭
-                tabs.forEach(function (tab) {
-                    tab.addEventListener("click", function () {
-                        tabs.forEach(function (item) {
-                            item.classList.remove("active");
-                            item.setAttribute("aria-selected", "false");
-                        });
-
-                        tab.classList.add("active");
-                        tab.setAttribute("aria-selected", "true");
-
-                        memberTypeInput.value = tab.dataset.memberType;
-                    });
-                });
 
                 // 비밀번호 보기
                 passwordToggle.addEventListener("click", function () {
