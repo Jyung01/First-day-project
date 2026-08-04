@@ -16,7 +16,6 @@
         <div class="job-modal-header">
             <div>
                 <h2 id="jobModalTitle">희망 직무 선택</h2>
-
                 <p>희망하는 직무를 최대 3개까지 선택해주세요.</p>
             </div>
 
@@ -38,58 +37,26 @@
                     data-job-primary-list
             >
                 <button
+                        th:each="group, status : ${jobCategoryGroups}"
                         type="button"
-                        class="job-primary-button is-active"
-                        data-job-primary="development"
+                        class="job-primary-button"
+                        th:classappend="${status.first} ? 'is-active' : ''"
+                        th:attr="data-job-primary=${group.jobCategoryId}"
+                        th:text="${group.categoryName}"
                 >
                     개발
-                </button>
-
-                <button
-                        type="button"
-                        class="job-primary-button"
-                        data-job-primary="design"
-                >
-                    디자인
-                </button>
-
-                <button
-                        type="button"
-                        class="job-primary-button"
-                        data-job-primary="planning"
-                >
-                    기획·전략
-                </button>
-
-                <button
-                        type="button"
-                        class="job-primary-button"
-                        data-job-primary="marketing"
-                >
-                    마케팅
-                </button>
-
-                <button
-                        type="button"
-                        class="job-primary-button"
-                        data-job-primary="sales"
-                >
-                    영업
-                </button>
-
-                <button
-                        type="button"
-                        class="job-primary-button"
-                        data-job-primary="management"
-                >
-                    경영·사무
                 </button>
             </nav>
 
             <!-- 2차 직무 목록 -->
             <div class="job-secondary-area">
                 <div class="job-secondary-header">
-                    <strong data-job-secondary-title>개발</strong>
+                    <strong
+                            data-job-secondary-title
+                            th:text="${#lists.isEmpty(jobCategoryGroups) ? '직무' : jobCategoryGroups[0].categoryName}"
+                    >
+                        직무
+                    </strong>
 
                     <span>
                         <strong data-job-modal-count>0</strong>/3개 선택
@@ -97,264 +64,31 @@
                 </div>
 
                 <div
-                        class="job-secondary-list is-active"
-                        data-job-secondary-list="development"
-                >
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="101"
-                                data-job-name="백엔드 개발"
-                                data-job-option
-                        />
-                        <span>백엔드 개발</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="102"
-                                data-job-name="프론트엔드 개발"
-                                data-job-option
-                        />
-                        <span>프론트엔드 개발</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="103"
-                                data-job-name="서버 개발"
-                                data-job-option
-                        />
-                        <span>서버 개발</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="104"
-                                data-job-name="웹 개발"
-                                data-job-option
-                        />
-                        <span>웹 개발</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="105"
-                                data-job-name="앱 개발"
-                                data-job-option
-                        />
-                        <span>앱 개발</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="106"
-                                data-job-name="데이터 엔지니어"
-                                data-job-option
-                        />
-                        <span>데이터 엔지니어</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="107"
-                                data-job-name="AI·머신러닝"
-                                data-job-option
-                        />
-                        <span>AI·머신러닝</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="108"
-                                data-job-name="시스템·네트워크"
-                                data-job-option
-                        />
-                        <span>시스템·네트워크</span>
-                    </label>
-                </div>
-
-                <div
+                        th:each="group, status : ${jobCategoryGroups}"
                         class="job-secondary-list"
-                        data-job-secondary-list="design"
+                        th:classappend="${status.first} ? 'is-active' : ''"
+                        th:attr="data-job-secondary-list=${group.jobCategoryId}"
                 >
-                    <label class="job-option">
+                    <label
+                            class="job-option"
+                            th:each="job : ${group.children}"
+                    >
                         <input
                                 type="checkbox"
-                                value="201"
-                                data-job-name="UI·UX 디자인"
+                                th:value="${job.jobCategoryId}"
+                                th:attr="data-job-name=${job.categoryName}"
                                 data-job-option
                         />
-                        <span>UI·UX 디자인</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="202"
-                                data-job-name="웹 디자인"
-                                data-job-option
-                        />
-                        <span>웹 디자인</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="203"
-                                data-job-name="그래픽 디자인"
-                                data-job-option
-                        />
-                        <span>그래픽 디자인</span>
+                        <span th:text="${job.categoryName}">백엔드 개발</span>
                     </label>
                 </div>
 
-                <div
-                        class="job-secondary-list"
-                        data-job-secondary-list="planning"
+                <p
+                        class="job-modal-selected-empty"
+                        th:if="${#lists.isEmpty(jobCategoryGroups)}"
                 >
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="301"
-                                data-job-name="서비스 기획"
-                                data-job-option
-                        />
-                        <span>서비스 기획</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="302"
-                                data-job-name="사업 기획"
-                                data-job-option
-                        />
-                        <span>사업 기획</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="303"
-                                data-job-name="PM·PO"
-                                data-job-option
-                        />
-                        <span>PM·PO</span>
-                    </label>
-                </div>
-
-                <div
-                        class="job-secondary-list"
-                        data-job-secondary-list="marketing"
-                >
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="401"
-                                data-job-name="콘텐츠 마케팅"
-                                data-job-option
-                        />
-                        <span>콘텐츠 마케팅</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="402"
-                                data-job-name="퍼포먼스 마케팅"
-                                data-job-option
-                        />
-                        <span>퍼포먼스 마케팅</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="403"
-                                data-job-name="브랜드 마케팅"
-                                data-job-option
-                        />
-                        <span>브랜드 마케팅</span>
-                    </label>
-                </div>
-
-                <div
-                        class="job-secondary-list"
-                        data-job-secondary-list="sales"
-                >
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="501"
-                                data-job-name="기업 영업"
-                                data-job-option
-                        />
-                        <span>기업 영업</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="502"
-                                data-job-name="기술 영업"
-                                data-job-option
-                        />
-                        <span>기술 영업</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="503"
-                                data-job-name="영업 관리"
-                                data-job-option
-                        />
-                        <span>영업 관리</span>
-                    </label>
-                </div>
-
-                <div
-                        class="job-secondary-list"
-                        data-job-secondary-list="management"
-                >
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="601"
-                                data-job-name="인사"
-                                data-job-option
-                        />
-                        <span>인사</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="602"
-                                data-job-name="회계·재무"
-                                data-job-option
-                        />
-                        <span>회계·재무</span>
-                    </label>
-
-                    <label class="job-option">
-                        <input
-                                type="checkbox"
-                                value="603"
-                                data-job-name="총무"
-                                data-job-option
-                        />
-                        <span>총무</span>
-                    </label>
-                </div>
+                    현재 선택할 수 있는 직무가 없습니다.
+                </p>
             </div>
         </div>
 
@@ -391,6 +125,7 @@
                     type="button"
                     class="job-modal-confirm"
                     data-job-modal-confirm
+                    th:disabled="${#lists.isEmpty(jobCategoryGroups)}"
             >
                 선택 완료
             </button>

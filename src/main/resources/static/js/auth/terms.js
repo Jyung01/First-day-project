@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalTitle = modal?.querySelector("[data-modal-title]");
     const modalContent = modal?.querySelector("[data-modal-content]");
     const modalCloseButtons = modal?.querySelectorAll("[data-modal-close]");
-    const modalOpenButtons = document.querySelectorAll("[data-modal-type]");
+    const modalOpenButtons = document.querySelectorAll("[data-modal-type], [data-policy-modal]");
 
     const modalData = {
         "member-service": {
@@ -75,6 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    updateCheckAll();
+
     form.addEventListener("submit", function (event) {
         const requiredAccepted = requiredCheckboxes.every((checkbox) => checkbox.checked);
 
@@ -88,12 +90,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    function openModal(type) {
+    function openModal(button) {
         if (!modal) {
             return;
         }
 
-        const data = modalData[type];
+        const data = button.hasAttribute("data-policy-modal")
+            ? {
+                title: button.dataset.policyTitle,
+                content: button.dataset.policyContent,
+            }
+            : modalData[button.dataset.modalType];
 
         if (!data) {
             return;
@@ -119,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     modalOpenButtons.forEach(function (button) {
         button.addEventListener("click", function () {
-            openModal(button.dataset.modalType);
+            openModal(button);
         });
     });
 

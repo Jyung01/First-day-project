@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 
     <title>개인회원 정보입력 | 첫출근</title>
 
@@ -60,10 +62,23 @@
             <form
                     class="join-form"
                     th:action="@{/auth/member/form}"
+                    th:object="${signupRequest}"
+                    th:attr="data-server-id-checked=${loginIdAvailable},data-server-email-verified=${emailVerified}"
                     method="post"
                     data-join-form
                     data-member-form
             >
+                <div th:if="${#fields.hasAnyErrors()}">
+                    <p
+                            class="join-field-message is-visible"
+                            th:each="error : ${#fields.allErrors()}"
+                            th:text="${error}"
+                            aria-live="polite"
+                    >
+                        입력값을 확인해주세요.
+                    </p>
+                </div>
+
                 <!-- 아이디 -->
                 <div class="join-field join-field-full">
                     <label for="memberId" class="auth-label">
@@ -83,6 +98,7 @@
                                 autocomplete="username"
                                 required
                                 data-id-input
+                                th:field="*{memberId}"
                         />
 
                         <button
@@ -116,6 +132,7 @@
                                 class="auth-input"
                                 placeholder="8자 이상"
                                 minlength="8"
+                                maxlength="64"
                                 autocomplete="new-password"
                                 required
                                 data-password
@@ -134,9 +151,11 @@
                         <input
                                 type="password"
                                 id="passwordConfirm"
+                                name="passwordConfirm"
                                 class="auth-input"
                                 placeholder="다시 입력"
                                 minlength="8"
+                                maxlength="64"
                                 autocomplete="new-password"
                                 required
                                 data-password-confirm
@@ -166,6 +185,7 @@
                                 placeholder="이름 입력"
                                 autocomplete="name"
                                 required
+                                th:field="*{memberName}"
                         />
                     </div>
 
@@ -186,6 +206,7 @@
                                 maxlength="13"
                                 required
                                 data-phone-input
+                                th:field="*{phone}"
                         />
                     </div>
                 </div>
@@ -205,8 +226,12 @@
                                 class="auth-input"
                                 placeholder="example@email.com"
                                 autocomplete="email"
+                                maxlength="254"
+                                pattern="[A-Za-z0-9._%+\-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}"
+                                title="example@email.com 형식으로 입력해주세요."
                                 required
                                 data-email-input
+                                th:field="*{email}"
                         />
 
                         <button
@@ -290,7 +315,15 @@
                         </div>
 
                         <!-- 직무 ID 서버 전송 영역 -->
-                        <div data-job-hidden-inputs></div>
+                        <div data-job-hidden-inputs>
+                            <input
+                                    th:each="job : ${selectedJobs}"
+                                    type="hidden"
+                                    name="desiredJobIds"
+                                    th:value="${job.jobCategoryId}"
+                                    th:attr="data-job-name=${job.categoryName}"
+                            />
+                        </div>
 
                         <button
                                 type="button"
@@ -328,6 +361,7 @@
                                 class="auth-input"
                                 placeholder="우편번호"
                                 readonly
+                                th:field="*{postcode}"
                         />
 
                         <button
@@ -346,6 +380,7 @@
                             class="auth-input"
                             placeholder="주소 찾기 선택 시 기본주소 자동 입력"
                             readonly
+                            th:field="*{address}"
                     />
 
                     <input
@@ -354,7 +389,14 @@
                             name="addressDetail"
                             class="auth-input"
                             placeholder="상세주소 입력"
+                            th:field="*{addressDetail}"
                     />
+
+                    <p
+                            class="join-field-message"
+                            data-address-message
+                            aria-live="polite"
+                    ></p>
 
                     <p class="join-help">
                         선택 입력 · 주소 찾기 버튼을 누르면 Kakao Postcode
@@ -396,6 +438,8 @@
 <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
 
 <script th:src="@{/js/common.js}"></script>
+<script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script th:src="@{/js/common/postcode.js}"></script>
 <script th:src="@{/js/auth/join-form.js}"></script>
 <script th:src="@{/js/modal.js}"></script>
 <script
