@@ -9,18 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin/config")
 public class AdminConfigController {
 
-    @GetMapping("/job-category")
-    public String jobCategory(Model model) {
-        model.addAttribute("activeMenu", "jobConfig");
-        return "admin/config/job-category";
-    }
-
-    @GetMapping("/skill")
-    public String skill(Model model) {
-        model.addAttribute("activeMenu", "jobConfig");
-        return "admin/config/skill";
-    }
-
     @GetMapping("/site-setting")
     public String siteSetting(Model model) {
         model.addAttribute("activeMenu", "siteSetting");

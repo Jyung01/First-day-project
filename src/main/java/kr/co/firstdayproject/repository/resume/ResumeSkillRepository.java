@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ResumeSkillRepository extends JpaRepository<ResumeSkill, ResumeSkillId> {
+
+    long countByIdSkillId(Long skillId);
 }

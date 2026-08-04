@@ -50,8 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
-  const createRow = ([name, count]) => {
+  const createRow = ([name, count], category) => {
     const safeName = escapeHtml(name);
+    const safeCategory = escapeHtml(category);
 
     return `
       <div class="config-row">
@@ -63,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
             data-modal-open="skill"
             data-modal-title="기술 스택 수정"
             data-modal-value="${safeName}"
+            data-skill-category="${safeCategory}"
           >수정</button>
           <button
             class="table-action"
@@ -75,19 +77,23 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const renderSkills = (category) => {
-    categoryList.querySelectorAll("button").forEach((button) => {
-      button.classList.toggle(
-        "is-active",
-        button.dataset.skillCategory === category,
-      );
-    });
+    categoryList
+      .querySelectorAll("[data-skill-category]")
+      .forEach((button) => {
+        button.closest(".config-category-item")?.classList.toggle(
+          "is-active",
+          button.dataset.skillCategory === category,
+        );
+      });
 
     title.textContent = `${category} 기술 스택`;
     detail.querySelectorAll(".config-row:not(.config-row--head)")
       .forEach((row) => row.remove());
     detail.insertAdjacentHTML(
       "beforeend",
-      skillData[category].map(createRow).join(""),
+      skillData[category]
+        .map((skill) => createRow(skill, category))
+        .join(""),
     );
   };
 

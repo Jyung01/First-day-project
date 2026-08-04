@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JobPostingSkillRepository extends JpaRepository<JobPostingSkill, JobPostingSkillId> {
+
+    long countByIdSkillId(Long skillId);
 }
