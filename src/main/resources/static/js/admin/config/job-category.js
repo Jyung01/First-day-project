@@ -62,8 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
-  const createRow = ([name, count]) => {
+  const createRow = ([name, count], parentCategory) => {
     const safeName = escapeHtml(name);
+    const safeParentCategory = escapeHtml(parentCategory);
 
     return `
       <div class="config-row">
@@ -75,11 +76,14 @@ document.addEventListener("DOMContentLoaded", () => {
             data-modal-open="category"
             data-modal-title="카테고리 수정"
             data-modal-value="${safeName}"
+            data-category-level="secondary"
+            data-parent-category="${safeParentCategory}"
           >수정</button>
           <button
             class="table-action"
             data-modal-open="category-delete"
             data-modal-value="${safeName}"
+            data-category-level="secondary"
           >삭제</button>
         </div>
       </div>
@@ -87,8 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const renderCategory = (category) => {
-    categoryList.querySelectorAll("button").forEach((button) => {
-      button.classList.toggle(
+    categoryList.querySelectorAll("[data-category]").forEach((button) => {
+      button.closest(".config-category-item")?.classList.toggle(
         "is-active",
         button.dataset.category === category,
       );
@@ -99,7 +103,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .forEach((row) => row.remove());
     detail.insertAdjacentHTML(
       "beforeend",
-      categoryData[category].map(createRow).join(""),
+      categoryData[category]
+        .map((job) => createRow(job, category))
+        .join(""),
     );
   };
 

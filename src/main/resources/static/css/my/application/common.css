@@ -56,6 +56,11 @@
     color: #c27a00;
 }
 
+.application-status--document-passed {
+    background: #e3f8ee;
+    color: #138b50;
+}
+
 .application-status--interviewed {
     background: #e3f8ee;
     color: #18a665;
