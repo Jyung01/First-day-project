@@ -3,20 +3,18 @@
         th:attr="data-job-list-url=@{/job/list}"
         th:fragment="header"
         xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
         class="site-header"
 >
     <div class="wrap header-inner">
         <a th:href="@{/}" class="header-logo" aria-label="첫출근 메인으로 이동">
-            <!-- 권장 이미지 크기: 160 × 40px / 투명 SVG·PNG -->
             <img
                     th:src="@{/images/header-logo.svg}"
-                    width="40"
+                    width="160"
                     height="40"
-                    alt=""
-                    aria-hidden="true"
-                    class="header-logo__mark"
+                    alt="첫출근"
+                    class="header-logo__image"
             />
-            <strong class="header-logo__name">첫출근</strong>
         </a>
 
         <div class="mega-wrap" id="mega-wrap">
@@ -74,9 +72,26 @@
             </div>
         </div>
 
-        <div class="header-right" aria-label="회원 메뉴">
+        <div class="header-right" aria-label="회원 메뉴" sec:authorize="isAnonymous()">
             <a th:href="@{/auth/login}" class="btn btn-ghost">로그인</a>
             <a th:href="@{/auth/member-type}" class="btn btn-primary">회원가입</a>
+        </div>
+
+        <div class="header-right" aria-label="회원 메뉴" sec:authorize="isAuthenticated()">
+            <span class="header-user-name">
+                <strong
+                        th:text="${#authentication.principal instanceof T(kr.co.firstdayproject.security.CustomUserDetails)
+                            ? #authentication.principal.displayName
+                            : #authentication.name}"
+                >회원</strong>님
+            </span>
+
+            <form class="header-logout-form" th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-ghost">로그아웃</button>
+            </form>
+
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}" class="btn btn-primary">관리자</a>
+            <a sec:authorize="hasRole('COMPANY')" th:href="@{/corp}" class="btn btn-primary">기업관리</a>
         </div>
     </div>
 </header>
