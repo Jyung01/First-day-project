@@ -1,5 +1,7 @@
 package kr.co.firstdayproject.controller.my;
 
+import kr.co.firstdayproject.service.job.JobService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,13 +11,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/my")
+@RequiredArgsConstructor
 public class MyPageController {
+
+    private final JobService jobService;
 
     @GetMapping({"", "/index"})
     public String index() { return "my/index"; }
 
     @GetMapping("/profile-edit")
-    public String profileEdit() { return "my/profile-edit"; }
+    public String profileEdit(Model model) {
+        model.addAttribute(
+                "jobCategoryGroups",
+                jobService.getActiveJobCategoryGroups()
+        );
+        return "my/profile-edit";
+    }
 
     @GetMapping("/applications")
     public String applications(Model model) {

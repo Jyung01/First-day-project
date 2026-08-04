@@ -334,6 +334,12 @@
                             placeholder="상세주소 입력"
                     />
 
+                    <p
+                            class="join-field-message"
+                            data-address-message
+                            aria-live="polite"
+                    ></p>
+
                     <p class="join-help">
                         Kakao Postcode 연동 · 우편번호와 기본주소는 검색
                         결과로 입력됩니다.
@@ -370,6 +376,8 @@
 
 <script th:src="@{/js/modal.js}"></script>
 <script th:src="@{/js/common.js}"></script>
+<script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script th:src="@{/js/common/postcode.js}"></script>
 <script th:src="@{/js/auth/join-form.js}"></script>
 </body>
 </html>

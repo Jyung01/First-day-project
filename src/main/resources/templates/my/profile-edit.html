@@ -278,6 +278,12 @@
                                     th:value="${addressDetail}"
                                     placeholder="상세주소 입력"
                                 />
+
+                                <p
+                                    class="profile-field-message"
+                                    data-address-message
+                                    aria-live="polite"
+                                ></p>
                             </fieldset>
 
                             <p class="profile-field-message" data-profile-form-message aria-live="polite"></p>
@@ -312,6 +318,8 @@
         <div th:replace="~{modal/my/password-change-modal :: passwordChangeModal}"></div>
 
         <script th:src="@{/js/common.js}"></script>
+        <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+        <script th:src="@{/js/common/postcode.js}"></script>
 
         <!-- 공통 확인 모달 -->
         <script th:src="@{/js/modal.js}"></script>

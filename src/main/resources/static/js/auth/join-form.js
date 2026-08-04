@@ -24,8 +24,45 @@ document.addEventListener("DOMContentLoaded", function () {
     const signupCancelLink = document.querySelector("[data-signup-cancel]");
 
 
-    let idChecked = false;
-    let emailVerified = false;
+    let idChecked = form.dataset.serverIdChecked === "true";
+    let emailVerified = form.dataset.serverEmailVerified === "true";
+
+    async function requestEmailVerification(url, body) {
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        const headers = {
+            "Content-Type": "application/json",
+        };
+
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(body),
+        });
+        const data = await response.json().catch(function () {
+            return {};
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                data.message ?? data.detail ?? "요청을 처리하지 못했습니다."
+            );
+        }
+
+        return data;
+    }
+
+    function setEmailButtonsDisabled(disabled) {
+        [sendCodeButton, resendCodeButton, confirmCodeButton]
+            .filter(Boolean)
+            .forEach(function (button) {
+                button.disabled = disabled;
+            });
+    }
 
     function showMessage(element, message, success = false) {
         if (!element) {
@@ -51,8 +88,20 @@ document.addEventListener("DOMContentLoaded", function () {
             return true;
         }
 
+        const policyValid = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d\s])\S{8,64}$/.test(
+            password.value
+        );
+
+        if (!policyValid) {
+            showMessage(
+                passwordMessage,
+                "비밀번호는 8~64자의 영문, 숫자, 특수문자를 포함해야 합니다."
+            );
+            return false;
+        }
+
         if (!passwordConfirm.value) {
-            clearMessage(passwordMessage);
+            showMessage(passwordMessage, "사용 가능한 비밀번호입니다.", true);
             return false;
         }
 
@@ -69,12 +118,19 @@ document.addEventListener("DOMContentLoaded", function () {
         return matched;
     }
 
+    if (idChecked) {
+        showMessage(idMessage, "사용 가능한 아이디입니다.", true);
+    }
+    if (emailVerified) {
+        showMessage(emailMessage, "이메일 인증이 완료되었습니다.", true);
+    }
+
     idInput?.addEventListener("input", function () {
         idChecked = false;
         clearMessage(idMessage);
     });
 
-    idCheckButton?.addEventListener("click", function () {
+    idCheckButton?.addEventListener("click", async function () {
         const memberId = idInput?.value.trim() ?? "";
         const valid = /^[a-zA-Z0-9]{6,20}$/.test(memberId);
 
@@ -90,11 +146,35 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        /*
-         * 추후 서버 중복확인 API 호출로 교체
-         */
-        idChecked = true;
-        showMessage(idMessage, "사용 가능한 아이디입니다.", true);
+        idChecked = false;
+        clearMessage(idMessage);
+        idCheckButton.disabled = true;
+
+        try {
+            const response = await fetch(
+                "/api/auth/login-id-availability?loginId="
+                    + encodeURIComponent(memberId)
+            );
+            const data = await response.json();
+
+            if (idInput?.value.trim() !== memberId) {
+                showMessage(
+                    idMessage,
+                    "아이디가 변경되었습니다. 중복확인을 다시 진행해주세요."
+                );
+                return;
+            }
+
+            idChecked = response.ok && data.available === true;
+            showMessage(idMessage, data.message, idChecked);
+        } catch (error) {
+            showMessage(
+                idMessage,
+                "아이디 중복확인을 처리하지 못했습니다."
+            );
+        } finally {
+            idCheckButton.disabled = false;
+        }
     });
 
     password?.addEventListener("input", validatePasswordMatch);
@@ -129,30 +209,52 @@ document.addEventListener("DOMContentLoaded", function () {
         clearMessage(emailMessage);
     });
 
-    function sendVerificationCode() {
+    async function sendVerificationCode() {
         if (!emailInput?.checkValidity()) {
             emailInput?.reportValidity();
             return;
         }
 
-        /*
-         * 추후 이메일 인증번호 발송 API 호출로 교체
-         */
+        const requestedEmail = emailInput.value.trim();
         emailVerified = false;
+        clearMessage(emailMessage);
+        setEmailButtonsDisabled(true);
 
-        showMessage(
-            emailMessage,
-            "인증번호를 발송했습니다. 이메일을 확인해주세요.",
-            true
-        );
+        try {
+            const data = await requestEmailVerification(
+                "/api/email-verifications/send",
+                { email: requestedEmail }
+            );
 
-        verificationCode?.focus();
+            if (emailInput.value.trim() !== requestedEmail) {
+                showMessage(
+                    emailMessage,
+                    "이메일이 변경되었습니다. 인증번호를 다시 요청해주세요."
+                );
+                return;
+            }
+
+            if (verificationCode) {
+                verificationCode.value = "";
+            }
+            showMessage(emailMessage, data.message, true);
+            verificationCode?.focus();
+        } catch (error) {
+            showMessage(
+                emailMessage,
+                error instanceof Error
+                    ? error.message
+                    : "인증번호를 발송하지 못했습니다."
+            );
+        } finally {
+            setEmailButtonsDisabled(false);
+        }
     }
 
     sendCodeButton?.addEventListener("click", sendVerificationCode);
     resendCodeButton?.addEventListener("click", sendVerificationCode);
 
-    confirmCodeButton?.addEventListener("click", function () {
+    confirmCodeButton?.addEventListener("click", async function () {
         const code = verificationCode?.value.trim() ?? "";
 
         if (!/^\d{6}$/.test(code)) {
@@ -167,16 +269,37 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        /*
-         * 추후 서버 인증번호 확인 API 호출로 교체
-         */
-        emailVerified = true;
+        const requestedEmail = emailInput?.value.trim() ?? "";
+        emailVerified = false;
+        clearMessage(emailMessage);
+        setEmailButtonsDisabled(true);
 
-        showMessage(
-            emailMessage,
-            "이메일 인증이 완료되었습니다.",
-            true
-        );
+        try {
+            const data = await requestEmailVerification(
+                "/api/email-verifications/verify",
+                { email: requestedEmail, code }
+            );
+
+            if (emailInput?.value.trim() !== requestedEmail) {
+                showMessage(
+                    emailMessage,
+                    "이메일이 변경되었습니다. 인증번호를 다시 요청해주세요."
+                );
+                return;
+            }
+
+            emailVerified = true;
+            showMessage(emailMessage, data.message, true);
+        } catch (error) {
+            showMessage(
+                emailMessage,
+                error instanceof Error
+                    ? error.message
+                    : "이메일 인증을 확인하지 못했습니다."
+            );
+        } finally {
+            setEmailButtonsDisabled(false);
+        }
     });
 
     signupCancelLink?.addEventListener("click", function (event) {

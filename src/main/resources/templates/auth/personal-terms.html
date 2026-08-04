@@ -33,7 +33,7 @@
                         </div>
                     </div>
 
-                    <form class="terms-form" th:action="@{/auth/personal-signup}" method="get" data-terms-form>
+                    <form class="terms-form" th:action="@{/auth/personal-terms}" method="post" data-terms-form>
                         <!-- 전체 동의 -->
                         <label class="terms-all">
                             <input type="checkbox" class="terms-checkbox-input" data-check-all />
@@ -45,105 +45,67 @@
 
                         <!-- 개별 약관 -->
                         <div class="terms-list">
-                            <div class="terms-item">
+                            <div
+                                class="terms-item"
+                                th:each="policy : ${policies}"
+                            >
                                 <label class="terms-item-label">
                                     <input
                                         type="checkbox"
-                                        name="serviceTermsAgreed"
-                                        value="true"
+                                        name="agreedPolicyIds"
+                                        th:value="${policy.policyId}"
                                         class="terms-checkbox-input"
                                         data-term-checkbox
-                                        data-required="true"
+                                        th:attr="data-required=${policy.consentType == '필수'}"
+                                        th:checked="${submittedPolicyIds != null and submittedPolicyIds.contains(policy.policyId)}"
                                     />
 
                                     <span class="terms-checkbox-box"></span>
 
                                     <span class="terms-item-content">
-                                        <strong>개인회원 서비스 이용약관 동의</strong>
-                                        <small>필수</small>
+                                        <strong th:text="${policy.title}">약관 제목</strong>
+                                        <small th:text="${policy.consentType}">필수</small>
                                     </span>
                                 </label>
 
-                                <button type="button" class="terms-view-button" data-modal-type="member-service">
+                                <button
+                                    type="button"
+                                    class="terms-view-button"
+                                    data-policy-modal
+                                    th:attr="data-policy-title=${policy.title},data-policy-content=${policy.content}"
+                                >
                                     보기
                                 </button>
                             </div>
 
-                            <div class="terms-item">
-                                <label class="terms-item-label">
-                                    <input
-                                        type="checkbox"
-                                        name="privacyAgreed"
-                                        value="true"
-                                        class="terms-checkbox-input"
-                                        data-term-checkbox
-                                        data-required="true"
-                                    />
-
-                                    <span class="terms-checkbox-box"></span>
-
-                                    <span class="terms-item-content">
-                                        <strong>개인정보 수집·이용 동의</strong>
-                                        <small>필수</small>
-                                    </span>
-                                </label>
-
-                                <button type="button" class="terms-view-button" data-modal-type="privacy">보기</button>
-                            </div>
-
-                            <div class="terms-item">
-                                <label class="terms-item-label">
-                                    <input
-                                        type="checkbox"
-                                        name="marketingAgreed"
-                                        value="true"
-                                        class="terms-checkbox-input"
-                                        data-term-checkbox
-                                    />
-
-                                    <span class="terms-checkbox-box"></span>
-
-                                    <span class="terms-item-content">
-                                        <strong>마케팅 정보 수신 동의</strong>
-                                        <small>선택</small>
-                                    </span>
-                                </label>
-
-                                <button type="button" class="terms-view-button" data-modal-type="marketing">
-                                    보기
-                                </button>
-                            </div>
-
-                            <div class="terms-item">
-                                <label class="terms-item-label">
-                                    <input
-                                        type="checkbox"
-                                        name="recruitEmailAgreed"
-                                        value="true"
-                                        class="terms-checkbox-input"
-                                        data-term-checkbox
-                                    />
-
-                                    <span class="terms-checkbox-box"></span>
-
-                                    <span class="terms-item-content">
-                                        <strong>채용정보 이메일 수신 동의</strong>
-                                        <small>선택</small>
-                                    </span>
-                                </label>
-
-                                <button type="button" class="terms-view-button" data-modal-type="recruit-email">
-                                    보기
-                                </button>
-                            </div>
+                            <p
+                                class="terms-error is-visible"
+                                th:if="${#lists.isEmpty(policies)}"
+                            >
+                                현재 확인할 수 있는 약관이 없습니다.
+                            </p>
                         </div>
 
-                        <p class="terms-error" data-terms-error aria-live="polite">필수 약관에 모두 동의해주세요.</p>
+                        <p
+                            class="terms-error"
+                            th:classappend="${termsError != null} ? 'is-visible' : ''"
+                            th:text="${termsError != null ? termsError : '필수 약관에 모두 동의해주세요.'}"
+                            data-terms-error
+                            aria-live="polite"
+                        >
+                            필수 약관에 모두 동의해주세요.
+                        </p>
 
                         <div class="terms-actions">
                             <a th:href="@{/auth/member-type}" class="terms-button terms-button-secondary"> 취소 </a>
 
-                            <button type="submit" class="terms-button terms-button-primary">다음</button>
+                            <button
+                                type="submit"
+                                class="terms-button terms-button-primary"
+                                th:disabled="${#lists.isEmpty(policies)}"
+                            >
+                                다음
+                            </button>
                         </div>
                     </form>
                 </section>
