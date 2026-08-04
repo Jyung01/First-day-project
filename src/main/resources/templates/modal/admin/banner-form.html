@@ -26,7 +26,8 @@
             </button>
         </header>
 
-        <form class="admin-modal__form"  id="bannerForm">
+        <form class="admin-modal__form"  id="bannerForm"
+              enctype="multipart/form-data">
 
             <div class="admin-modal__row">
 
@@ -34,7 +35,7 @@
                     <label class="admin-modal__label">배너 제목</label>
 
                     <input
-                            name="title"
+                            name="bannerName"
                             class="admin-modal__input"
                             type="text"
                             placeholder="배너 제목 입력"
@@ -48,10 +49,10 @@
                 <div class="admin-modal__field">
                     <label class="admin-modal__label">노출 위치</label>
 
-                    <select name="position"  class="admin-modal__select">
-                        <option>메인</option>
-                        <option>채용공고</option>
-                        <option>기업정보</option>
+                    <select name="placement"  class="admin-modal__select">
+                        <option value="main">메인</option>
+                        <option value="job">채용공고</option>
+                        <option value="companies">기업정보</option>
                     </select>
                 </div>
 
@@ -61,7 +62,7 @@
                     </label>
 
                     <input
-                            name="priority"
+                            name="displayOrder"
                             class="admin-modal__input"
                             type="number"
                             value="1"
@@ -80,7 +81,7 @@
                     <label class="admin-modal__label">연결 URL</label>
 
                     <input
-                            name="url"
+                            name="linkUrl"
                             class="admin-modal__input"
                             type="text"
                             placeholder="/jobs/event-new-developer"
@@ -113,6 +114,7 @@
                         <input
                                 id="bannerFile"
                                 type="file"
+                                name="bannerFile"
                         />
 
                     </div>
@@ -137,7 +139,7 @@
                     <label class="admin-modal__label">시작일</label>
 
                     <input
-                            name="startDate"
+                            name="startsAt"
                             class="admin-modal__input"
                             type="date"
                     />
@@ -147,7 +149,7 @@
                     <label class="admin-modal__label">종료일</label>
 
                     <input
-                            name="endDate"
+                            name="endsAt"
                             class="admin-modal__input"
                             type="date"
                     />
