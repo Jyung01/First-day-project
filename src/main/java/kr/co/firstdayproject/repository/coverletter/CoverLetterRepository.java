@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CoverLetterRepository extends JpaRepository<CoverLetter, Long> {
 
-    List<CoverLetter> findByUserIdAndDeletedAtIsNullOrderByUpdatedAtDesc(Long userId);
+    List<CoverLetter> findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(Long userId);
 }

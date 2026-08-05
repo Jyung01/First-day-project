@@ -42,6 +42,28 @@
             font-weight: 600;
         }
 
+.cl-new-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    /* 이력서 관리 페이지 버튼과 통일 */
+    height: 44px;
+    padding: 0 18px;
+    border: 1px solid var(--blue-600);
+    border-radius: 8px;
+    background-color: var(--blue-600);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.cl-new-btn:hover {
+    filter: brightness(0.94);
+}
+
         /* ---------- 자기소개서 카드 목록 ---------- */
         .cl-list {
             list-style: none;
@@ -75,21 +97,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .cl-card__icon--lilac {
-            background: #eee9ff;
-            color: #6c5ce7;
-        }
-
-        .cl-card__icon--peach {
-            background: #ffe9df;
-            color: #e07a45;
-        }
-
-        .cl-card__icon--mint {
-            background: #dff5ec;
-            color: #1f9d72;
         }
 
         .cl-card__body {

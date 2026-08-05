@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"><head>
-<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>첫출근 — 자기소개서 보기</title>
-<link rel="stylesheet" th:href="@{/css/common.css}" />
-<link rel="stylesheet" th:href="@{/css/my/common.css}" />
-<link rel="stylesheet" th:href="@{/css/my/cover-letter/detail.css}" />
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>첫출근 — 자기소개서 보기</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/my/cover-letter/detail.css}" />
 </head><body>
 <header th:replace="~{common/header :: header}"></header>
 <main class="mypage">
@@ -20,43 +20,22 @@
                     <h1 class="cl-page-header__title">자기소개서 보기</h1>
                     <p class="cl-page-header__desc">저장되거나 제출된 형태로 자기소개서 내용을 확인합니다.</p>
                 </div>
-                <a th:href="@{/my/cover-letter/list}" class="btn btn-outline">돌아가기</a>
+                <div class="cl-page-header__actions">
+                    <a th:href="@{/my/cover-letter/list}" class="btn btn-outline">돌아가기</a>
+                    <a th:href="@{/my/cover-letter/form(id=${coverLetter.coverLetterId})}" class="btn btn-outline">수정</a>
+                    <a href="#" id="btn-delete" class="btn btn-primary" th:attr="data-id=${coverLetter.coverLetterId}">삭제</a>
+                </div>
             </div>
 
-            <!--
-              정적 프로토타입 단계: 아래 항목은 직접 써놓았습니다.
-              나중에 백엔드 연동 시, title / memberName / updatedAt / jobTitle 값과
-              .cl-doc-section 반복(th:each="s : ${coverLetter.sections}")으로 채우면 됩니다.
-            -->
             <div class="cl-doc-card">
-                <h2 class="cl-doc-card__title">백엔드 개발자 지원 자기소개서</h2>
-                <p class="cl-doc-card__byline">김첫출 · 최종 수정 2026.07.22</p>
-                <p class="cl-doc-card__job">연결 공고: 첫출근테크 백엔드 개발자 채용</p>
+                <h2 class="cl-doc-card__title" th:text="${coverLetter.title}">백엔드 개발자 지원 자기소개서</h2>
+                <p class="cl-doc-card__byline"
+                   th:text="|최종 수정 ${#temporals.format(coverLetter.updatedAt, 'yyyy.MM.dd')}|">최종 수정 2026.07.22</p>
                 <hr class="cl-doc-card__divider" />
 
-                <div class="cl-doc-section">
-                    <h3 class="cl-doc-section__title">지원 동기</h3>
-                    <p class="cl-doc-section__text">사용자의 문제를 안정적인 서비스로 해결하는 백엔드 개발자가 되고 싶어 지원했습니다. 교육 과정과 팀 프로젝트에서 요청부터 DB 저장까지 데이터 흐름을 직접 점검하며 구현 경험을 쌓았습니다.</p>
-                </div>
-
-                <div class="cl-doc-section">
-                    <h3 class="cl-doc-section__title">성장 과정</h3>
-                    <p class="cl-doc-section__text">문제가 생기면 결과만 고치기보다 로그와 요청 값을 따라가며 원인을 확인하는 습관을 길렀습니다. 해결한 내용은 다시 같은 문제가 반복되지 않도록 서로 정리하고 팀원과 공유했습니다.</p>
-                </div>
-
-                <div class="cl-doc-section">
-                    <h3 class="cl-doc-section__title">직무 역량</h3>
-                    <p class="cl-doc-section__text">Spring Boot, MyBatis, MySQL을 활용한 CRUD와 주문·지원 흐름을 구현했고, Spring Security 기반 인증과 AWS EC2 배포 과정을 경험했습니다.</p>
-                </div>
-
-                <div class="cl-doc-section">
-                    <h3 class="cl-doc-section__title">협업 경험</h3>
-                    <p class="cl-doc-section__text">팀장으로서 기능 단위를 나누고 Git 브랜치·PR 흐름을 관리했습니다. 막히는 부분은 함께 원인을 확인하고, 경긴한 구조는 문서로 남겨 작업 기준을 맞췄습니다.</p>
-                </div>
-
-                <div class="cl-doc-section">
-                    <h3 class="cl-doc-section__title">입사 후 포부</h3>
-                    <p class="cl-doc-section__text">팀의 코드 기준과 업무 흐름을 빠르게 익히고, 피드백을 같은 실수로 반복되지 않는 개발자가 되겠습니다. 기능 구현뿐 아니라 운영 과정의 원인 분석과 기록에도 책임감을 갖겠습니다.</p>
+                <div class="cl-doc-section" th:each="item : ${coverLetterItems}">
+                    <h3 class="cl-doc-section__title" th:text="${item.question}">문항 질문</h3>
+                    <p class="cl-doc-section__text" th:text="${item.answer}">문항 답변</p>
                 </div>
             </div>
         </section>
@@ -64,4 +43,34 @@
 </main>
 <footer th:replace="~{common/footer :: footer}"></footer>
 <script th:src="@{/js/common.js}"></script>
-</body></html>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        const deleteBtn = document.getElementById('btn-delete');
+        deleteBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+
+            const id = deleteBtn.dataset.id;
+            try {
+                const res = await fetch(`/my/cover-letter/${id}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('삭제 실패');
+                alert('삭제되었습니다.');
+                location.href = '/my/cover-letter/list';
+            } catch (err) {
+                alert('삭제 중 오류가 발생했습니다.');
+            }
+        });
+    });
+</script>
+
+<!-- 공통 확인 모달 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+<script th:src="@{/js/common.js}"></script>
+
+<!-- 공통 모달 -->
+<script th:src="@{/js/modal.js}"></script>
+
+</body>
+</html>

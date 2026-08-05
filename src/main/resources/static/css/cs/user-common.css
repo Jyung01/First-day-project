@@ -391,6 +391,14 @@ select.filter-select {
 .badge-pin {
   background: var(--green-bg);
   color: var(--green-text);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;   /* 줄바꿈 방지 */
+  width: auto;           /* 고정 너비였다면 auto로 */
+  min-width: fit-content;
+  padding: 4px 10px;
 }
 
 .badge-normal {

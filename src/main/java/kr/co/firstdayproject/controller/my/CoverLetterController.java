@@ -3,12 +3,19 @@ package kr.co.firstdayproject.controller.my;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.firstdayproject.dto.my.CoverLetterDto;
 import kr.co.firstdayproject.entity.coverletter.CoverLetter;
+import kr.co.firstdayproject.entity.coverletter.CoverLetterItem;
 import kr.co.firstdayproject.service.my.CoverLetterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import kr.co.firstdayproject.security.CustomUserDetails;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,7 +35,6 @@ public class CoverLetterController {
 
     @GetMapping("/detail")
     public String detail(@RequestParam(required = false) Long id, Model model, HttpServletRequest request) {
-        // id 파라미터가 없으면 목록으로 리다이렉트
         if (id == null) {
             return "redirect:/my/cover-letter/list";
         }
@@ -38,6 +44,7 @@ public class CoverLetterController {
 
         model.addAttribute("activeMenu", "coverLetters");
         model.addAttribute("coverLetter", letter);
+        model.addAttribute("coverLetterItems", coverLetterService.getItems(id, userId));
         return "my/cover-letter/detail";
     }
 
@@ -49,17 +56,24 @@ public class CoverLetterController {
             Long userId = getCurrentUserId(request);
             CoverLetter letter = coverLetterService.getMine(id, userId);
             model.addAttribute("coverLetter", letter);
+            model.addAttribute("coverLetterItems", coverLetterService.getItems(id, userId));
         }
         return "my/cover-letter/form";
     }
 
     @GetMapping("/ai-result")
-    public String aiResult(@RequestParam Long id, Model model, HttpServletRequest request) {
+    public String aiResult(@RequestParam(required = false) Long id, Model model, HttpServletRequest request) {
+        if (id == null) {
+            return "redirect:/my/cover-letter/list";
+        }
+
         Long userId = getCurrentUserId(request);
         CoverLetter letter = coverLetterService.getMine(id, userId);
+        List<CoverLetterItem> items = coverLetterService.getItems(id, userId);
 
         model.addAttribute("activeMenu", "coverLetters");
         model.addAttribute("coverLetter", letter);
+        model.addAttribute("coverLetterItems", items);
         return "my/cover-letter/ai-result";
     }
 
@@ -74,6 +88,18 @@ public class CoverLetterController {
         return ResponseEntity.ok(id);
     }
 
+    @PutMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> update(
+            @PathVariable Long id,
+            @RequestBody CoverLetterDto.CreateRequest request,
+            HttpServletRequest servletRequest
+    ) {
+        Long userId = getCurrentUserId(servletRequest);
+        coverLetterService.update(id, userId, request);
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity<Void> delete(@PathVariable Long id, HttpServletRequest request) {
@@ -82,9 +108,15 @@ public class CoverLetterController {
         return ResponseEntity.noContent().build();
     }
 
-    private static final Long TEMP_USER_ID = 1L;
-
     private Long getCurrentUserId(HttpServletRequest request) {
-        return TEMP_USER_ID;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()
+                || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userDetails.getUserId();
     }
 }

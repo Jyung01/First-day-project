@@ -26,10 +26,10 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // TODO 나중에 자세히 권한별 세분화
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/corp/**").hasRole("COMPANY")
-                        .requestMatchers("/my/**").hasRole("PERSONAL")
+                        // TODO 권한 정책 확정 후 아래 규칙부터 순서대로 활성화
+                        // .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // .requestMatchers("/corp/**").hasRole("COMPANY")
+                        .requestMatchers("/my/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
