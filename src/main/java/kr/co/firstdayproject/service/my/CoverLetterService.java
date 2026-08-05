@@ -22,7 +22,7 @@ public class CoverLetterService {
 
     public List<CoverLetterDto.ListItem> findMyList(Long userId) {
         // userId에 해당하고 deletedAt이 null인 데이터만 조회
-        List<CoverLetter> letters = coverLetterRepository.findByUserIdAndDeletedAtIsNullOrderByUpdatedAtDesc(userId);
+        List<CoverLetter> letters = coverLetterRepository.findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(userId);
 
         List<CoverLetterDto.ListItem> result = new ArrayList<>();
         for (CoverLetter letter : letters) {
@@ -60,6 +60,40 @@ public class CoverLetterService {
     public void delete(Long coverLetterId, Long userId) {
         CoverLetter letter = getMine(coverLetterId, userId);
         letter.setDeletedAt(LocalDateTime.now());
+    }
+
+    /** 자기소개서 문항 목록만 조회 (수정 폼에서 기존 내용 표시할 때 사용) */
+    public List<CoverLetterItem> getItems(Long coverLetterId, Long userId) {
+        // 소유권 검증까지 같이 수행
+        getMine(coverLetterId, userId);
+        return coverLetterItemRepository.findByCoverLetterIdOrderByDisplayOrderAsc(coverLetterId);
+    }
+
+    @Transactional
+    public void update(Long coverLetterId, Long userId, CoverLetterDto.CreateRequest request) {
+        CoverLetter letter = getMine(coverLetterId, userId);
+        LocalDateTime now = LocalDateTime.now();
+
+        letter.setTitle(request.getTitle());
+        letter.setUpdatedAt(now);
+
+        // 기존 문항은 지우고 새로 저장 (가장 단순하고 안전한 방식)
+        List<CoverLetterItem> existingItems =
+                coverLetterItemRepository.findByCoverLetterIdOrderByDisplayOrderAsc(coverLetterId);
+        coverLetterItemRepository.deleteAll(existingItems);
+
+        if (request.getItems() != null) {
+            for (CoverLetterDto.CreateRequest.Item itemDto : request.getItems()) {
+                CoverLetterItem item = CoverLetterItem.builder()
+                        .coverLetterId(coverLetterId)
+                        .question(itemDto.getQuestion())
+                        .answer(itemDto.getAnswer())
+                        .displayOrder(itemDto.getDisplayOrder())
+                        .updatedAt(now)
+                        .build();
+                coverLetterItemRepository.save(item);
+            }
+        }
     }
 
     @Transactional

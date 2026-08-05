@@ -21,7 +21,7 @@
                     <p class="cl-page-header__desc">지원 목적에 맞게 다양한 자기소개서를 작성하고 AI 첨삭을 받아볼 수 있습니다.</p>
                 </div>
                 <a th:href="@{/my/cover-letter/form}" class="btn btn-primary cl-new-btn">
-                    <span class="cl-new-btn__plus">+</span> 새 자기소개서
+                    <span class="cl-new-btn__plus">+</span> 새 자기소개서 작성
                 </a>
             </div>
 
@@ -32,13 +32,8 @@
               title / questionCount / charCount / aiStatus 값을 th:text 로 채우면 됩니다.
             -->
             <ul class="cl-list" th:if="${not #lists.isEmpty(coverLetters)}">
-                <li class="cl-card" th:each="letter, iter : ${coverLetterList}">
+                <li class="cl-card" th:each="letter, iter : ${coverLetters}">
 
-                    <!-- 아이콘 div 클래스 부분 -->
-                    <div class="cl-card__icon"
-                         th:classappend="${{'cl-card__icon--lilac', 'cl-card__icon--orange', 'cl-card__icon--green'}[iter.index % 3]}">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">...</svg>
-                    </div>
                     <div class="cl-card__body">
                         <div class="cl-card__row">
                             <p class="cl-card__title" th:text="${letter.title}">백엔드 개발자 지원 자기소개서</p>
@@ -97,4 +92,14 @@
         });
     });
 </script>
-</body></html>
+
+<!-- 공통 확인 모달 -->
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+<script th:src="@{/js/common.js}"></script>
+
+<!-- 공통 모달 -->
+<script th:src="@{/js/modal.js}"></script>
+
+</body>
+</html>

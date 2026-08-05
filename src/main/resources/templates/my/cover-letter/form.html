@@ -21,6 +21,9 @@
             </div>
 
             <form class="cl-form-card" id="cl-form">
+                <!-- 수정 모드일 때 id를 담아둠 (신규 작성 시엔 빈 값) -->
+                <input type="hidden" id="cl-id" th:value="${coverLetter?.coverLetterId}" />
+
                 <!-- 제목 -->
                 <div class="cl-field">
                     <label class="cl-field__label" for="cl-title">자기소개서 제목<span class="required">*</span></label>
@@ -48,12 +51,25 @@
 
                 <!-- 문항 목록이 들어갈 컨테이너 -->
                 <div id="cl-questions">
-                    <div class="cl-question">
+                    <!-- 수정 모드: 기존 문항 반복 -->
+                    <div class="cl-question" th:if="${coverLetterItems != null and not #lists.isEmpty(coverLetterItems)}"
+                         th:each="item, iter : ${coverLetterItems}">
+                        <div class="cl-question__head">
+                            <span class="cl-question__label" th:text="|문항 ${iter.index + 1}|">문항 1</span>
+                            <button type="button" class="cl-question__remove">삭제</button>
+                        </div>
+                        <input type="text" class="cl-question__prompt" placeholder="문항 질문을 입력해주세요" th:value="${item.question}" />
+                        <textarea class="cl-textarea" maxlength="1000" placeholder="답변을 입력해주세요" th:text="${item.answer}"></textarea>
+                        <p class="cl-question__count" th:text="|${item.answer != null ? #strings.length(item.answer) : 0} / 1,000자|">0 / 1,000자</p>
+                    </div>
+
+                    <!-- 신규 작성 모드(문항이 없을 때): 빈 문항 1개 -->
+                    <div class="cl-question" th:if="${coverLetterItems == null or #lists.isEmpty(coverLetterItems)}">
                         <div class="cl-question__head">
                             <span class="cl-question__label">문항 1</span>
                             <button type="button" class="cl-question__remove">삭제</button>
                         </div>
-                        <input type="text" class="cl-question__prompt" placeholder="문항 질문을 입력해주세요" value="지원 동기와 입사 후 목표를 작성해주세요." />
+                        <input type="text" class="cl-question__prompt" placeholder="문항 질문을 입력해주세요" />
                         <textarea class="cl-textarea" maxlength="1000" placeholder="답변을 입력해주세요"></textarea>
                         <p class="cl-question__count">0 / 1,000자</p>
                     </div>
@@ -131,8 +147,11 @@
             bindRemove(div);
         });
 
-        // 폼 데이터 모아서 서버로 전송
+        // 폼 데이터 모아서 서버로 전송 (수정 모드면 PUT, 신규면 POST)
         async function submitForm() {
+            const idEl = document.getElementById('cl-id');
+            const id = idEl.value ? Number(idEl.value) : null;
+
             const title = document.getElementById('cl-title').value.trim();
             if (!title) {
                 alert('제목을 입력해주세요.');
@@ -156,13 +175,15 @@
             }
 
             try {
-                const res = await fetch('/my/cover-letter', {
-                    method: 'POST',
+                const url = id ? `/my/cover-letter/${id}` : '/my/cover-letter';
+                const method = id ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title, items })
                 });
                 if (!res.ok) throw new Error('저장 실패');
-                return await res.json(); // 새로 생성된 cover-letter id
+                return id ?? await res.json();
             } catch (err) {
                 alert('저장 중 오류가 발생했습니다.');
                 return null;

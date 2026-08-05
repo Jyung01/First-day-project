@@ -85,3 +85,8 @@
             white-space: pre-line;
         }
 
+        .cl-page-header__actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
