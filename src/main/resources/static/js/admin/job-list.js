@@ -1,18 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const filterButtons = document.querySelectorAll("[data-job-filter]");
-  const jobRows = document.querySelectorAll("[data-job-status]");
+  const parentSelect = document.getElementById("parentCategoryFilter");
+  const childSelect = document.getElementById("childCategoryFilter");
 
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const selectedStatus = button.dataset.jobFilter;
+  if (!parentSelect || !childSelect) return;
 
-      filterButtons.forEach((item) => item.classList.remove("is-active"));
-      button.classList.add("is-active");
+  const childOptions = [...childSelect.querySelectorAll("option[data-parent-id]")];
 
-      jobRows.forEach((row) => {
-        row.hidden = selectedStatus !== "ALL"
-          && row.dataset.jobStatus !== selectedStatus;
-      });
+  const updateChildOptions = (resetSelection = false) => {
+    const parentId = parentSelect.value;
+
+    childOptions.forEach((option) => {
+      const visible = !parentId || option.dataset.parentId === parentId;
+      option.hidden = !visible;
+      option.disabled = !visible;
     });
+
+    if (resetSelection) {
+      childSelect.value = "";
+    }
+  };
+
+  parentSelect.addEventListener("change", () => {
+    updateChildOptions(true);
   });
+
+  updateChildOptions();
 });

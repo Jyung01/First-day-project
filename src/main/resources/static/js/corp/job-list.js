@@ -1,46 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
   const jobTable = document.querySelector(".job-table");
-  const filterButtons = document.querySelectorAll("[data-job-filter]");
-  const jobRows = document.querySelectorAll("[data-job-status]");
 
   if (!jobTable) return;
-
-  const filterJobs = (status) => {
-    jobRows.forEach((row) => {
-      row.hidden = status !== "ALL" && row.dataset.jobStatus !== status;
-    });
-  };
-
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", (event) => {
-      event.preventDefault();
-      filterButtons.forEach((item) => item.classList.remove("is-active"));
-      button.classList.add("is-active");
-      filterJobs(button.dataset.jobFilter);
-    });
-  });
 
   const getJobRow = (button) => button.closest(".job-row");
 
   const getJobTitle = (row) =>
     row?.querySelector("strong")?.textContent.trim() || "선택한 채용공고";
 
-  const closeJob = (row, button) => {
-    const badge = row?.querySelector(".corp-badge");
-
-    if (badge) {
-      badge.textContent = "마감";
-      badge.className = "corp-badge";
-    }
-
-    if (row) {
-      row.dataset.jobStatus = "CLOSED";
-    }
-
-    button.remove();
+  const setHiddenReasonModalStyle = (enabled) => {
+    document
+      .querySelector("#confirmModal")
+      ?.classList.toggle("corp-hidden-reason-modal", enabled);
   };
 
   const openCloseModal = (button) => {
+    setHiddenReasonModalStyle(false);
     const row = getJobRow(button);
     const jobTitle = getJobTitle(row);
 
@@ -58,11 +33,16 @@ document.addEventListener("DOMContentLoaded", () => {
       leftText: "취소",
       rightText: "공고 마감",
       rightClass: "btn-primary",
-      onRight: () => closeJob(row, button),
+      onRight: () => {
+        document
+          .getElementById(button.dataset.closeFormId)
+          ?.requestSubmit();
+      },
     });
   };
 
   const openDeleteModal = (button) => {
+    setHiddenReasonModalStyle(false);
     const row = getJobRow(button);
     const jobTitle = getJobTitle(row);
 
@@ -80,13 +60,49 @@ document.addEventListener("DOMContentLoaded", () => {
       leftText: "취소",
       rightText: "공고 삭제",
       rightClass: "btn-danger",
-      onRight: () => row?.remove(),
+      onRight: () => {
+        document
+          .getElementById(button.dataset.deleteFormId)
+          ?.requestSubmit();
+      },
     });
+  };
+
+  const openHiddenReasonModal = (button) => {
+    const reason = button.dataset.hiddenReason?.trim()
+      || "등록된 숨김 사유가 없습니다.";
+
+    showConfirmModal({
+      iconClass: "info",
+      iconHtml: "!",
+      title: "숨김 사유 확인",
+      message: reason,
+      extraHtml: `
+        <div class="corp-job-modal-notice">
+          <strong>숨김 사유를 확인한 후 내용을 수정해 주세요.</strong>
+          <span>수정이 끝나면 관리자에게 재검토를 요청할 수 있습니다.</span>
+        </div>
+      `,
+      leftText: "취소",
+      rightText: "공고 수정",
+      rightClass: "btn-primary",
+      onRight: () => window.location.assign(button.dataset.editUrl),
+    });
+
+    setHiddenReasonModalStyle(true);
   };
 
   jobTable.addEventListener("click", (event) => {
     const closeButton = event.target.closest(".job-action--close");
     const deleteButton = event.target.closest(".job-action--delete");
+    const hiddenEditButton = event.target.closest(
+      ".job-action--hidden-edit",
+    );
+
+    if (hiddenEditButton) {
+      openHiddenReasonModal(hiddenEditButton);
+      return;
+    }
 
     if (closeButton) {
       openCloseModal(closeButton);

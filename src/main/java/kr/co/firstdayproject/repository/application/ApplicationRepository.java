@@ -12,6 +12,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
 
+    long countByJobPostingIdAndCurrentStatusNot(
+        Long jobPostingId,
+        String excludedStatus
+    );
+
     @Query(value = """
             SELECT COUNT(*)
               FROM applications a

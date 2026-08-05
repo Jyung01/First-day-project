@@ -2,7 +2,8 @@
 
 .job-tabs {
   display: flex;
-  gap: 58px;
+  justify-content: space-between;
+  gap: 24px;
   padding: 0 18px;
   margin-bottom: 18px;
   border: 1px solid var(--corp-border);
@@ -22,7 +23,7 @@
 
 .filter-bar {
   display: grid;
-  grid-template-columns: 1fr 170px 90px 90px;
+  grid-template-columns: minmax(240px, 1fr) 170px 90px;
   gap: 14px;
   padding: 14px;
   margin-bottom: 20px;
@@ -200,9 +201,43 @@
   color: #dc5260;
 }
 
+.job-action--delete:hover {
+  background: #fff0f2;
+}
+
 .corp-badge--hidden {
   color: #64748b;
   background: #f1f5f9;
+}
+
+.corp-badge--review {
+  color: #b7791f;
+  background: #fff8db;
+}
+
+.job-list-empty {
+  padding: 56px 20px;
+  color: var(--corp-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.corp-pagination .is-disabled {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.job-review-pending {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  height: 36px;
+  border-radius: 7px;
+  background: #fff8db;
+  color: #b7791f;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .job-list-footer {

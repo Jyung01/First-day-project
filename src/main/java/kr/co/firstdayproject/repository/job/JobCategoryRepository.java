@@ -26,6 +26,11 @@ public interface JobCategoryRepository
             Integer depth
         );
 
+    Optional<JobCategory> findByJobCategoryIdAndDepthAndIsActiveTrue(
+        Long jobCategoryId,
+        Integer depth
+    );
+
     // 활성화된 전체 카테고리 조회
     List<JobCategory> findByIsActiveTrue(Sort sort);
 

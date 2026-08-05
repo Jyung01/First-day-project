@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 /**
  * 채용공고 원장; 공고 승인 상태와 승인 이력은 사용하지 않음
@@ -34,21 +32,21 @@ public class JobPosting {
     private Long jobPostingId;
     @Column(name = "company_id", nullable = false)
     private Long companyId;
-    @Column(name = "job_category_id", nullable = false)
+    @Column(name = "job_category_id")
     private Long jobCategoryId;
     @Column(name = "title", nullable = false, length = 255)
     private String title;
-    @Column(name = "employment_type", nullable = false, length = 20)
+    @Column(name = "employment_type", length = 20)
     private String employmentType;
-    @Column(name = "career_type", nullable = false, length = 20)
+    @Column(name = "career_type", length = 20)
     private String careerType;
     @Column(name = "min_experience_years")
     private Integer minExperienceYears;
     @Column(name = "max_experience_years")
     private Integer maxExperienceYears;
-    @Column(name = "education_level", nullable = false, length = 30)
+    @Column(name = "education_level", length = 30)
     private String educationLevel;
-    @Column(name = "work_region", nullable = false, length = 100)
+    @Column(name = "work_region", length = 100)
     private String workRegion;
     @Column(name = "work_address", length = 500)
     private String workAddress;
@@ -60,7 +58,7 @@ public class JobPosting {
     /** 만원 단위 */
     @Column(name = "salary_max")
     private Integer salaryMax;
-    @Column(name = "headcount", nullable = false)
+    @Column(name = "headcount")
     private Integer headcount;
     @Column(name = "apply_start_at")
     private LocalDateTime applyStartAt;
@@ -68,13 +66,12 @@ public class JobPosting {
     private LocalDateTime applyEndAt;
     @Column(name = "introduction", columnDefinition = "LONGTEXT")
     private String introduction;
-    @Column(name = "main_tasks", nullable = false, columnDefinition = "LONGTEXT")
+    @Column(name = "main_tasks", columnDefinition = "LONGTEXT")
     private String mainTasks;
-    @Column(name = "qualifications", nullable = false, columnDefinition = "LONGTEXT")
+    @Column(name = "qualifications", columnDefinition = "LONGTEXT")
     private String qualifications;
     @Column(name = "preferred_conditions", columnDefinition = "LONGTEXT")
     private String preferredConditions;
-    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "benefits_json", columnDefinition = "json")
     private String benefitsJson;
     @Column(name = "process_text", columnDefinition = "TEXT")

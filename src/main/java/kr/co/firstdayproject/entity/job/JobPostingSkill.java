@@ -27,4 +27,16 @@ public class JobPostingSkill {
 
     @EmbeddedId
     private JobPostingSkillId id;
+
+    public static JobPostingSkill of(
+        Long jobPostingId,
+        Long skillId
+    ) {
+        return JobPostingSkill.builder()
+            .id(JobPostingSkillId.builder()
+                .jobPostingId(jobPostingId)
+                .skillId(skillId)
+                .build())
+            .build();
+    }
 }

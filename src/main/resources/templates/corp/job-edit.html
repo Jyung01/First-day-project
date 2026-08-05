@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title
-      th:text="${isHidden} ? '숨김 공고 수정 | 첫출근' : '채용공고 수정 | 첫출근'"
+      th:text="${isReadOnly} ? '마감 공고 보기 | 첫출근' :
+        (${isHidden} ? '숨김 공고 수정 | 첫출근' : '채용공고 수정 | 첫출근')"
     >
       채용공고 수정 | 첫출근
     </title>
@@ -25,11 +26,15 @@
         <section class="corp-content">
           <div class="corp-page-heading">
             <div>
-              <h1 th:text="${isHidden} ? '숨김 공고 수정' : '채용공고 수정'">
+              <h1
+                th:text="${isReadOnly} ? '마감 공고 보기' :
+                  (${isHidden} ? '숨김 공고 수정' : '채용공고 수정')"
+              >
                 채용공고 수정
               </h1>
               <p
-                th:text="${isHidden} ? '관리자에 의해 숨김 처리된 공고를 수정하고 재검토를 요청합니다.' : '모집 중 공고 내용을 수정합니다. 마감 공고는 수정할 수 없습니다.'"
+                th:text="${isReadOnly} ? '마감된 채용공고의 등록 내용을 확인합니다.' :
+                  (${isHidden} ? '관리자에 의해 숨김 처리된 공고를 수정하고 재검토를 요청합니다.' : '모집 중 공고 내용을 수정합니다. 마감 공고는 수정할 수 없습니다.')"
               >
                 모집 중 공고 내용을 수정합니다.
               </p>
@@ -37,6 +42,7 @@
             <div class="corp-actions">
               <a class="corp-button" th:href="@{/corp/job}">목록</a
               ><button
+                th:unless="${isReadOnly}"
                 form="jobEditForm"
                 class="corp-button corp-button--primary"
                 th:text="${isHidden} ? '저장 및 재검토 요청' : '수정 저장'"
@@ -45,7 +51,119 @@
               </button>
             </div>
           </div>
-          <form id="jobEditForm" class="corp-card job-form-card">
+          <section
+            class="corp-card job-form-card job-form-card--readonly"
+            th:if="${isReadOnly}"
+          >
+            <div class="job-readonly-heading">
+              <h2>공고 기본정보</h2>
+              <span class="corp-badge" th:text="${job.status()}">마감</span>
+            </div>
+            <div class="job-form-grid">
+              <div class="form-field form-field--wide">
+                <label>공고 제목</label>
+                <input th:value="${job.title()}" readonly />
+              </div>
+              <div class="form-field">
+                <label>직무 카테고리</label>
+                <input th:value="${job.category()}" readonly />
+              </div>
+              <div class="form-field">
+                <label>고용 형태</label>
+                <input th:value="${job.employmentType()}" readonly />
+              </div>
+              <div class="form-field">
+                <label>경력</label>
+                <input th:value="${job.career()}" readonly />
+              </div>
+              <div class="form-field">
+                <label>학력</label>
+                <input th:value="${job.educationLevel()}" readonly />
+              </div>
+              <div class="form-field">
+                <label>근무 지역</label>
+                <input th:value="${job.workRegion()}" readonly />
+              </div>
+              <div class="form-field">
+                <label>급여</label>
+                <input th:value="${job.salary()}" readonly />
+              </div>
+              <div class="form-field">
+                <label>접수 마감일</label>
+                <input
+                  th:value="${job.applyEndAt() == null
+                    ? '미설정'
+                    : #temporals.format(job.applyEndAt(), 'yyyy.MM.dd')}"
+                  readonly
+                />
+              </div>
+              <div class="form-field">
+                <label>모집 인원</label>
+                <input
+                  th:value="${job.headcount() == null
+                    ? '미설정'
+                    : job.headcount() + '명'}"
+                  readonly
+                />
+              </div>
+              <div class="form-field form-field--wide">
+                <label>상세 근무 주소</label>
+                <input th:value="${job.workAddress()}" readonly />
+              </div>
+              <div class="form-field form-field--wide">
+                <label>기술 스택</label>
+                <div class="skill-picker skill-picker--readonly">
+                  <span
+                    class="skill-chip"
+                    th:each="skill : ${job.skills()}"
+                    th:text="${skill}"
+                  >Java</span>
+                  <span
+                    class="skill-picker__empty"
+                    th:if="${job.skills().isEmpty()}"
+                  >선택된 기술이 없습니다.</span>
+                </div>
+              </div>
+              <div class="form-field form-field--wide">
+                <label>복리후생</label>
+                <div class="benefit-options benefit-options--readonly">
+                  <span
+                    class="benefit-readonly"
+                    th:each="benefit : ${job.benefits()}"
+                    th:text="${benefit}"
+                  >4대보험</span>
+                  <span
+                    class="skill-picker__empty"
+                    th:if="${job.benefits().isEmpty()}"
+                  >등록된 복리후생이 없습니다.</span>
+                </div>
+              </div>
+              <div class="form-field form-field--wide">
+                <label>공고 소개</label>
+                <textarea th:text="${job.introduction()}" readonly></textarea>
+              </div>
+              <div class="form-field form-field--wide">
+                <label>주요 업무</label>
+                <textarea th:text="${job.mainTasks()}" readonly></textarea>
+              </div>
+              <div class="form-field form-field--wide">
+                <label>자격요건</label>
+                <textarea th:text="${job.qualifications()}" readonly></textarea>
+              </div>
+              <div class="form-field form-field--wide">
+                <label>우대사항</label>
+                <textarea
+                  th:text="${job.preferredConditions()}"
+                  readonly
+                ></textarea>
+              </div>
+            </div>
+          </section>
+          <form
+            id="jobEditForm"
+            class="corp-card job-form-card"
+            th:unless="${isReadOnly}"
+          >
             <h2>공고 기본정보</h2>
             <div class="job-form-grid">
               <div class="form-field form-field--wide">
@@ -176,11 +294,21 @@
               </div>
             </div>
           </form>
-          <p class="corp-note corp-note--hidden" th:if="${isHidden}">
+          <p class="corp-note" th:if="${isReadOnly}">
+            지원자 <strong th:text="|${job.applicantCount()}명|">0명</strong> ·
+            마감된 공고는 수정할 수 없으며 기존 지원 내역은 유지됩니다.
+          </p>
+          <p
+            class="corp-note corp-note--hidden"
+            th:if="${!isReadOnly and isHidden}"
+          >
             <strong>숨김 사유:</strong>
             <span th:text="${hiddenReason}">회사 정보와 공고 내용 불일치</span>
           </p>
-          <p class="corp-note" th:unless="${isHidden}">
+          <p
+            class="corp-note"
+            th:if="${!isReadOnly and !isHidden}"
+          >
             지원자 18명 · 공고 마감은 채용공고 관리 목록에서 별도로 처리할 수
             있습니다.
           </p>
@@ -189,10 +317,20 @@
     </main>
     <footer th:replace="~{common/corp-footer :: corpFooter}"></footer>
     <div
+      th:unless="${isReadOnly}"
       th:replace="~{modal/common/skill-select-modal :: skillSelectModal}"
     ></div>
-    <div th:replace="~{modal/corp/ai-polish-modal :: aiPolishModal}"></div>
-    <script th:src="@{/js/modal/skill-select-modal.js}"></script>
-    <script th:src="@{/js/corp/job-form.js}"></script>
+    <div
+      th:unless="${isReadOnly}"
+      th:replace="~{modal/corp/ai-polish-modal :: aiPolishModal}"
+    ></div>
+    <script
+      th:unless="${isReadOnly}"
+      th:src="@{/js/modal/skill-select-modal.js}"
+    ></script>
+    <script
+      th:unless="${isReadOnly}"
+      th:src="@{/js/corp/job-form.js}"
+    ></script>
   </body>
 </html>
