@@ -26,27 +26,57 @@
             </div>
           </div>
 
+          <p
+            class="job-operation-message"
+            th:if="${operationMessage != null}"
+            th:text="${operationMessage}"
+          ></p>
+          <p
+            class="job-operation-message job-operation-message--error"
+            th:if="${operationError != null}"
+            th:text="${operationError}"
+          ></p>
+
           <div class="job-detail-layout">
             <article class="job-detail-card">
               <header class="job-detail-card__header">
                 <div>
                   <span
                     class="job-detail-company"
-                    th:text="${companyName}"
+                    th:text="${job.companyName()}"
                   >코드웨이브</span>
-                  <h2 th:text="${jobTitle}">백엔드 개발자 채용</h2>
+                  <h2 th:text="${job.title()}">백엔드 개발자 채용</h2>
                   <p>
-                    공고번호 <span th:text="${jobId}">J-2081</span>
+                    공고번호
+                    <span th:text="|J-${job.jobPostingId()}|">J-0</span>
                     <span aria-hidden="true">·</span>
-                    등록일 2026.07.22
+                    등록일
+                    <span
+                      th:text="${#temporals.format(job.createdAt(), 'yyyy.MM.dd')}"
+                    >2026.08.05</span>
                     <span aria-hidden="true">·</span>
-                    마감일 2026.08.15
+                    마감일
+                    <span
+                      th:text="${job.applyEndAt() == null
+                        ? '미설정'
+                        : #temporals.format(job.applyEndAt(), 'yyyy.MM.dd')}"
+                    >미설정</span>
                   </p>
                 </div>
                 <span
                   class="job-detail-status"
-                  th:classappend="${reviewRequested} ? ' job-detail-status--review' : (${closed} ? ' job-detail-status--closed' : (${hidden} ? ' job-detail-status--hidden' : ''))"
-                  th:text="${jobStatus}"
+                  th:classappend="${job.status() == '재검토요청'}
+                    ? 'job-detail-status--review'
+                    : (${job.status() == '마감'}
+                      ? 'job-detail-status--closed'
+                      : (${job.status() == '숨김'}
+                        ? 'job-detail-status--hidden'
+                        : ''))"
+                  th:text="${job.status() == '모집중'
+                    ? '게시 중'
+                    : (job.status() == '재검토요청'
+                      ? '재검토 요청'
+                      : job.status())}"
                 >게시 중</span>
               </header>
 
@@ -55,15 +85,15 @@
                 <dl class="job-detail-grid">
                   <div>
                     <dt>기업명</dt>
-                    <dd th:text="${companyName}">코드웨이브</dd>
+                    <dd th:text="${job.companyName()}">코드웨이브</dd>
                   </div>
                   <div>
                     <dt>업종</dt>
-                    <dd>IT·소프트웨어</dd>
+                    <dd th:text="${job.industryName()}">IT·소프트웨어</dd>
                   </div>
                   <div class="job-detail-grid__wide">
                     <dt>기업 주소</dt>
-                    <dd>서울특별시 강남구 테헤란로 123</dd>
+                    <dd th:text="${job.companyAddress()}">기업 주소</dd>
                   </div>
                 </dl>
               </section>
@@ -73,35 +103,51 @@
                 <dl class="job-detail-grid">
                   <div>
                     <dt>직무</dt>
-                    <dd>개발 · 백엔드</dd>
+                    <dd th:text="${job.category()}">직무</dd>
                   </div>
                   <div>
                     <dt>고용 형태</dt>
-                    <dd>정규직</dd>
+                    <dd th:text="${job.employmentType()}">정규직</dd>
                   </div>
                   <div>
                     <dt>경력</dt>
-                    <dd>신입·경력 3년 이하</dd>
+                    <dd th:text="${job.career()}">경력무관</dd>
                   </div>
                   <div>
                     <dt>학력</dt>
-                    <dd>학력 무관</dd>
+                    <dd th:text="${job.educationLevel()}">학력무관</dd>
                   </div>
                   <div>
                     <dt>근무 지역</dt>
-                    <dd>서울 강남구</dd>
+                    <dd th:text="${job.workRegion()}">근무 지역</dd>
                   </div>
                   <div>
                     <dt>급여</dt>
-                    <dd>회사 내규에 따름</dd>
+                    <dd th:text="${job.salary()}">회사 내규에 따름</dd>
                   </div>
                   <div>
                     <dt>모집 인원</dt>
-                    <dd>2명</dd>
+                    <dd
+                      th:text="${job.headcount() == null
+                        ? '미설정'
+                        : job.headcount() + '명'}"
+                    >미설정</dd>
+                  </div>
+                  <div>
+                    <dt>지원 인원</dt>
+                    <dd th:text="|${job.applicantCount()}명|">0명</dd>
                   </div>
                   <div>
                     <dt>마감일</dt>
-                    <dd>2026.08.15</dd>
+                    <dd
+                      th:text="${job.applyEndAt() == null
+                        ? '미설정'
+                        : #temporals.format(job.applyEndAt(), 'yyyy.MM.dd')}"
+                    >미설정</dd>
+                  </div>
+                  <div class="job-detail-grid__wide">
+                    <dt>상세 근무 주소</dt>
+                    <dd th:text="${job.workAddress()}">근무 주소</dd>
                   </div>
                 </dl>
               </section>
@@ -109,31 +155,50 @@
               <section class="job-detail-section">
                 <h3>기술 스택</h3>
                 <div class="job-detail-skills">
-                  <span>Java</span>
-                  <span>Spring Boot</span>
-                  <span>MySQL</span>
-                  <span>AWS</span>
-                  <span>Git</span>
+                  <span
+                    th:each="skill : ${job.skills()}"
+                    th:text="${skill}"
+                  >Java</span>
+                  <span th:if="${job.skills().isEmpty()}">미등록</span>
                 </div>
               </section>
 
               <section class="job-detail-section">
-                <h3>주요 업무</h3>
-                <ul class="job-detail-copy">
-                  <li>Spring Boot 기반 서비스 API 개발</li>
-                  <li>데이터베이스 설계 및 성능 개선</li>
-                  <li>서비스 운영과 코드 리뷰 참여</li>
-                </ul>
+                <h3>복리후생</h3>
+                <div class="job-detail-skills">
+                  <span
+                    th:each="benefit : ${job.benefits()}"
+                    th:text="${benefit}"
+                  >4대보험</span>
+                  <span th:if="${job.benefits().isEmpty()}">미등록</span>
+                </div>
               </section>
 
               <section class="job-detail-section">
-                <h3>자격 요건 및 우대사항</h3>
-                <ul class="job-detail-copy">
-                  <li>Java 또는 Kotlin 개발 경험</li>
-                  <li>관계형 데이터베이스와 REST API에 대한 이해</li>
-                </ul>
-                <p class="job-detail-preferred">
-                  우대 · AWS 운영 경험, 협업 도구를 활용한 프로젝트 경험
+                <h3>공고 소개</h3>
+                <p class="job-detail-text" th:text="${job.introduction()}">
+                  공고 소개
+                </p>
+              </section>
+
+              <section class="job-detail-section">
+                <h3>주요 업무</h3>
+                <p class="job-detail-text" th:text="${job.mainTasks()}">
+                  주요 업무
+                </p>
+              </section>
+
+              <section class="job-detail-section">
+                <h3>자격 요건</h3>
+                <p class="job-detail-text" th:text="${job.qualifications()}">
+                  자격 요건
+                </p>
+                <h3 class="job-detail-subheading">우대사항</h3>
+                <p
+                  class="job-detail-text"
+                  th:text="${job.preferredConditions()}"
+                >
+                  우대사항
                 </p>
               </section>
             </article>
@@ -144,39 +209,66 @@
               <div class="job-operation-field">
                 <span>현재 상태</span>
                 <strong
-                  th:classappend="${reviewRequested} ? ' is-review' : (${closed} ? ' is-closed' : (${hidden} ? ' is-hidden' : ''))"
-                  th:text="${jobStatus}"
+                  th:classappend="${job.status() == '재검토요청'}
+                    ? 'is-review'
+                    : (${job.status() == '마감'}
+                      ? 'is-closed'
+                      : (${job.status() == '숨김'} ? 'is-hidden' : ''))"
+                  th:text="${job.status() == '모집중'
+                    ? '게시 중'
+                    : (job.status() == '재검토요청'
+                      ? '재검토 요청'
+                      : job.status())}"
                 >게시 중</strong>
               </div>
 
               <div class="job-operation-field">
-                <span th:text="${reviewRequested} ? '재검토 요청일' : '게시 기간'">
-                  게시 기간
-                </span>
+                <span>게시 기간</span>
                 <p
-                  th:text="${reviewRequested} ? '2026.07.25 14:30' : '2026.07.22 - 2026.08.15'"
+                  th:text="${(job.publishedAt() == null
+                    ? '미게시'
+                    : #temporals.format(job.publishedAt(), 'yyyy.MM.dd'))
+                    + ' - '
+                    + (job.applyEndAt() == null
+                      ? '미설정'
+                      : #temporals.format(job.applyEndAt(), 'yyyy.MM.dd'))}"
                 >2026.07.22 - 2026.08.15</p>
               </div>
 
               <div class="job-operation-group">
                 <h3>기업 담당자</h3>
-                <strong>김채용</strong>
-                <p>recruit@codewave.co.kr</p>
-                <p>02-1234-5678</p>
+                <strong th:text="${job.contactName()}">담당자</strong>
+                <p th:text="${job.contactEmail()}">이메일</p>
+                <p th:text="${job.contactPhone()}">연락처</p>
               </div>
 
               <div
                 class="job-operation-group"
-                th:if="${reviewRequested}"
+                th:if="${job.status() == '숨김'
+                  or job.status() == '재검토요청'}"
               >
-                <h3>기존 숨김 사유</h3>
+                <h3 th:text="${job.status() == '재검토요청'
+                  ? '기존 숨김 사유'
+                  : '숨김 사유'}">숨김 사유</h3>
                 <div class="job-hide-reason">
-                  <strong>
-                    허위 또는 과장된 채용 정보가 포함되어 있습니다.
-                  </strong>
-                  <small>2026.07.22 관리자 숨김 처리</small>
+                  <strong
+                    th:text="${job.hiddenReason() == null
+                      ? '등록된 숨김 사유가 없습니다.'
+                      : job.hiddenReason()}"
+                  >숨김 사유</strong>
+                  <small
+                    th:text="${job.hiddenAt() == null
+                      ? '처리 일시 미등록'
+                      : #temporals.format(
+                        job.hiddenAt(),
+                        'yyyy.MM.dd HH:mm'
+                      ) + ' 관리자 숨김 처리'}"
+                  >처리 일시</small>
                 </div>
-                <p class="job-review-guide">
+                <p
+                  class="job-review-guide"
+                  th:if="${job.status() == '재검토요청'}"
+                >
                   현재 등록된 공고 내용을 직접 검토한 뒤 숨김 유지 또는 해제를
                   선택합니다.
                 </p>
@@ -185,31 +277,29 @@
               <div class="job-operation-actions">
                 <div
                   class="job-operation-actions__review"
-                  th:if="${reviewRequested}"
+                  th:if="${job.status() == '재검토요청'}"
                 >
                   <button
                     class="job-operation-button job-operation-button--danger"
                     type="button"
                     data-modal-open="job-keep-hidden"
-                  >
-                    숨김 유지
-                  </button>
+                    data-form-id="jobKeepHiddenForm"
+                    th:attr="data-hidden-reason=${job.hiddenReason()}"
+                  >숨김 유지</button>
                   <button
                     class="job-operation-button job-operation-button--primary"
                     type="button"
                     data-modal-open="job-release-hidden"
-                  >
-                    숨김 해제
-                  </button>
+                    data-form-id="jobReleaseHiddenForm"
+                  >숨김 해제</button>
                 </div>
                 <button
                   class="job-operation-button job-operation-button--danger"
                   type="button"
                   data-modal-open="job-hide"
-                  th:if="${canHide}"
-                >
-                  숨김 처리
-                </button>
+                  data-form-id="jobHideForm"
+                  th:if="${job.status() == '모집중'}"
+                >숨김 처리</button>
                 <a
                   class="job-operation-button job-operation-button--secondary"
                   th:href="@{/admin/job}"
@@ -221,6 +311,28 @@
       </div>
       <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
     </div>
+    <form
+      id="jobHideForm"
+      method="post"
+      th:action="@{/admin/job/{jobId}/hide(jobId=${job.jobPostingId()})}"
+      hidden
+    >
+      <input type="hidden" name="reason" data-job-hide-reason />
+    </form>
+    <form
+      id="jobKeepHiddenForm"
+      method="post"
+      th:action="@{/admin/job/{jobId}/keep-hidden(jobId=${job.jobPostingId()})}"
+      hidden
+    >
+      <input type="hidden" name="reason" data-job-keep-reason />
+    </form>
+    <form
+      id="jobReleaseHiddenForm"
+      method="post"
+      th:action="@{/admin/job/{jobId}/release-hidden(jobId=${job.jobPostingId()})}"
+      hidden
+    ></form>
     <div th:replace="~{modal/common/form-modal :: formModal}"></div>
     <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
     <script th:src="@{/js/modal.js}"></script>

@@ -12,12 +12,16 @@
 .job-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: start;
   gap: 17px 28px;
 }
 
 .form-field {
   display: grid;
+  grid-auto-rows: max-content;
+  align-content: start;
   gap: 8px;
+  min-width: 0;
 }
 
 .form-field--wide {
@@ -30,6 +34,24 @@
   font-weight: 700;
 }
 
+.form-field fieldset,
+.form-field legend,
+.address-fieldset,
+.benefits-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.address-fieldset legend,
+.benefits-fieldset legend {
+  margin-bottom: 8px;
+  color: var(--corp-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .form-field input,
 .form-field select,
 .form-field textarea {
@@ -37,6 +59,185 @@
   border: 1px solid var(--corp-border);
   border-radius: 8px;
   background: #fff;
+}
+
+.form-field input:read-only,
+.form-field input:disabled,
+.form-field select:disabled {
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.range-inputs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+
+.range-inputs__separator {
+  color: var(--corp-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.number-input {
+  position: relative;
+}
+
+.number-input input {
+  padding-right: 34px;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.number-input--salary input {
+  padding-right: 48px;
+}
+
+.number-input--headcount input {
+  padding-right: 40px;
+}
+
+.number-input input::-webkit-inner-spin-button,
+.number-input input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.number-input span {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  color: var(--corp-muted);
+  font-size: 11px;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.field-help,
+.address-message {
+  min-height: 16px;
+  color: var(--corp-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.field-help.is-error {
+  color: #dc2626;
+}
+
+.address-fieldset {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 10px 12px;
+  padding: 16px;
+  border: 1px solid var(--corp-border);
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.address-fieldset legend {
+  grid-column: 1 / -1;
+}
+
+.address-search-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 88px;
+  gap: 8px;
+}
+
+.address-search-button {
+  height: 43px;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: var(--corp-blue);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.address-search-button:hover,
+.address-search-button:focus-visible {
+  border-color: #60a5fa;
+  background: #dbeafe;
+  outline: none;
+}
+
+.address-inputs,
+.address-message {
+  grid-column: 2;
+}
+
+.address-inputs {
+  display: grid;
+  gap: 10px;
+}
+
+.address-message {
+  display: none;
+}
+
+.address-message.is-visible {
+  display: block;
+  color: #dc2626;
+}
+
+.benefits-fieldset {
+  padding: 16px;
+  border: 1px solid var(--corp-border);
+  border-radius: 10px;
+}
+
+.benefit-options {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.benefits-fieldset .benefit-option {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.benefit-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.benefit-option span {
+  display: grid;
+  min-height: 40px;
+  place-items: center;
+  padding: 7px 10px;
+  border: 1px solid var(--corp-border);
+  border-radius: 8px;
+  background: #fff;
+  color: #475569;
+  font-size: 12px;
+  text-align: center;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.benefit-option input:checked ~ span {
+  border-color: #60a5fa;
+  background: var(--corp-blue-soft);
+  color: var(--corp-blue);
+  font-weight: 700;
+}
+
+.benefit-option input:focus-visible ~ span {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
 }
 
 .form-field input,
@@ -109,6 +310,19 @@
   .form-field--wide {
       grid-column: auto;
     }
+
+  .address-fieldset {
+    grid-template-columns: 1fr;
+  }
+
+  .address-inputs,
+  .address-message {
+    grid-column: auto;
+  }
+
+  .benefit-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .resume-skill-chip {
@@ -153,4 +367,64 @@
 
 .corp-note--hidden strong {
   color: #66521f;
+}
+
+.job-hidden-reason {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 24px;
+}
+
+.job-readonly-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.job-readonly-heading h2 {
+  margin-bottom: 0;
+}
+
+.job-form-card--readonly input[readonly],
+.job-form-card--readonly textarea[readonly] {
+  color: var(--corp-ink);
+  background: #f8fafc;
+  cursor: default;
+}
+
+.skill-picker--readonly {
+  background: #f8fafc;
+}
+
+.benefit-options--readonly {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.benefit-readonly {
+  display: grid;
+  min-height: 40px;
+  place-items: center;
+  padding: 7px 10px;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: var(--corp-blue-soft);
+  color: var(--corp-blue);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+.job-form-error {
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.job-form-error p + p {
+  margin-top: 4px;
 }

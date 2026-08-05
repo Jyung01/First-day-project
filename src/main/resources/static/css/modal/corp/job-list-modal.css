@@ -28,3 +28,22 @@
 .corp-job-modal-notice--danger strong {
   color: #e63946;
 }
+
+.corp-hidden-reason-modal #modalMessage {
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid #f1d58a;
+  border-radius: 8px;
+  background: #fff9e9;
+  color: #66521f;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.corp-hidden-reason-modal .corp-job-modal-notice {
+  min-height: auto;
+  background: #f8fafc;
+}

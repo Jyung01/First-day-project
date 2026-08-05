@@ -64,6 +64,9 @@
   margin-bottom: 18px;
 }
 .operation-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 68px;
   padding: 10px 18px;
   border-radius: 8px;
@@ -76,8 +79,9 @@
 }
 .operation-search {
   display: grid;
-  grid-template-columns: 160px 1fr 90px;
+  grid-template-columns: 150px 170px minmax(240px, 1fr) 90px;
   gap: 12px;
+  justify-content: start;
   margin-bottom: 18px;
 }
 .operation-control {
@@ -110,6 +114,12 @@
   padding: 12px 8px;
   border-top: 1px solid #334155;
   color: #e2e8f0;
+}
+
+.operation-table .operation-table-empty {
+  height: 150px;
+  color: #94a3b8;
+  text-align: center;
 }
 .operation-table .status {
   font-weight: 700;
@@ -173,8 +183,29 @@
   font-weight: 700;
 }
 
+.operation-pagination a.is-disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
 .job-detail-heading {
   margin-bottom: 24px;
+}
+
+.job-operation-message {
+  margin-bottom: 20px;
+  padding: 13px 16px;
+  border: 1px solid #166534;
+  border-radius: 8px;
+  background: #052e16;
+  color: #86efac;
+  font-size: 13px;
+}
+
+.job-operation-message--error {
+  border-color: #7f1d1d;
+  background: #450a0a;
+  color: #fca5a5;
 }
 
 .job-detail-layout {
@@ -316,6 +347,17 @@
   margin-top: 16px;
   color: #60a5fa;
   font-size: 13px;
+}
+
+.job-detail-text {
+  color: #e2e8f0;
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.job-detail-subheading {
+  margin-top: 24px;
 }
 
 .job-operation-panel {

@@ -1,6 +1,7 @@
 package kr.co.firstdayproject.repository.job;
 
 import kr.co.firstdayproject.entity.job.Skill;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Sort;
@@ -24,6 +25,11 @@ public interface SkillRepository extends JpaRepository<Skill, Long> {
     List<Skill> findByParentIdAndIsActiveTrue(
         Long parentId,
         Sort sort
+    );
+
+    List<Skill> findAllBySkillIdInAndDepthAndIsActiveTrue(
+        Collection<Long> skillIds,
+        Integer depth
     );
 
     Optional<Skill> findByDepthAndSkillName(

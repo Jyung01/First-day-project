@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>채용공고 등록 | 첫출근</title>
+    <title
+      th:text="${isHiddenEdit} ? '숨김 공고 수정 | 첫출근' :
+        (${isEdit} ? '채용공고 수정 | 첫출근' : '채용공고 등록 | 첫출근')"
+    >채용공고 등록 | 첫출근</title>
     <link rel="stylesheet" th:href="@{/css/corp/common.css}" />
     <link rel="stylesheet" th:href="@{/css/corp/management/common.css}" />
     <link rel="stylesheet" th:href="@{/css/corp/management/job-form.css}" />
@@ -21,83 +24,326 @@
         <section class="corp-content">
           <div class="corp-page-heading">
             <div>
-              <h1>채용공고 등록</h1>
-              <p>필수 정보를 입력하고 공고를 등록합니다.</p>
+              <h1
+                th:text="${isHiddenEdit} ? '숨김 공고 수정' :
+                  (${isEdit} ? '채용공고 수정' : '채용공고 등록')"
+              >
+                채용공고 등록
+              </h1>
+              <p
+                th:text="${isHiddenEdit}
+                  ? '숨김 사유에 맞게 내용을 수정하고 재검토를 요청합니다.'
+                  : (${isEdit}
+                    ? '등록한 채용공고의 내용을 수정합니다.'
+                    : '필수 정보를 입력하고 공고를 등록합니다.')"
+              >필수 정보를 입력하고 공고를 등록합니다.</p>
             </div>
             <div class="corp-actions">
               <a class="corp-button" th:href="@{/corp/job}">목록</a
-              ><button form="jobForm" class="corp-button" type="button">
+              ><button
+                th:if="${!isEdit or isDraftEdit}"
+                form="jobForm"
+                class="corp-button"
+                type="submit"
+                name="submitType"
+                value="DRAFT"
+                formnovalidate
+              >
                 임시저장</button
-              ><button form="jobForm" class="corp-button corp-button--primary">
-                공고 등록
+              ><button
+                form="jobForm"
+                class="corp-button corp-button--primary"
+                type="submit"
+                name="submitType"
+                th:value="${isHiddenEdit} ? 'REVIEW' : 'PUBLISH'"
+              >
+                <span
+                  th:text="${isHiddenEdit}
+                    ? '저장 및 재검토 요청'
+                    : (${isEdit} ? '수정 저장' : '공고 등록')"
+                >
+                  공고 등록
+                </span>
               </button>
             </div>
           </div>
-          <form id="jobForm" class="corp-card job-form-card">
+          <form
+            id="jobForm"
+            class="corp-card job-form-card"
+            th:action="${isEdit}
+              ? @{/corp/job/{id}/edit(id=${jobPostingId})}
+              : @{/corp/job/create}"
+            th:object="${jobPostingCreateRequest}"
+            method="post"
+          >
+            <div
+              class="job-form-error"
+              th:if="${formError != null or #fields.hasAnyErrors()}"
+              role="alert"
+            >
+              <p th:if="${formError != null}" th:text="${formError}"></p>
+              <p
+                th:each="error : ${#fields.allErrors()}"
+                th:text="${error}"
+              ></p>
+            </div>
+            <div
+              class="corp-note corp-note--hidden job-hidden-reason"
+              th:if="${isHiddenEdit}"
+            >
+              <strong>숨김 사유</strong>
+              <span
+                th:text="${hiddenReason == null or hiddenReason.isBlank()
+                  ? '등록된 숨김 사유가 없습니다.'
+                  : hiddenReason}"
+              >숨김 사유</span>
+            </div>
             <h2>공고 기본정보</h2>
             <div class="job-form-grid">
               <div class="form-field form-field--wide">
                 <label for="jobTitle">공고 제목</label
                 ><input
                   id="jobTitle"
+                  name="title"
+                  th:field="*{title}"
                   required
                   placeholder="공고 제목을 입력하세요"
                 />
               </div>
               <div class="form-field">
-                <label for="category">직무 카테고리</label
-                ><select id="category">
-                  <option value="">직무를 선택하세요</option>
-                  <option>개발 · 백엔드 개발</option>
-                  <option>개발 · 프론트엔드 개발</option>
+                <label for="primaryJobCategory">1차 직무 카테고리</label
+                ><select id="primaryJobCategory" required>
+                  <option value="">1차 카테고리를 선택하세요</option>
+                  <option
+                    th:each="group : ${jobCategoryGroups}"
+                    th:value="${group.jobCategoryId}"
+                    th:text="${group.categoryName}"
+                  ></option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="category">2차 직무 카테고리</label
+                ><select
+                  id="category"
+                  name="jobCategoryId"
+                  th:field="*{jobCategoryId}"
+                  required
+                  disabled
+                  th:attr="data-selected-category=${jobPostingCreateRequest.jobCategoryId}"
+                >
+                  <option value="">먼저 1차 카테고리를 선택하세요</option>
+                  <th:block th:each="group : ${jobCategoryGroups}">
+                    <option
+                      th:each="child : ${group.children}"
+                      th:value="${child.jobCategoryId}"
+                      th:text="${child.categoryName}"
+                      th:attr="data-parent-category=${group.jobCategoryId}"
+                    ></option>
+                  </th:block>
                 </select>
               </div>
               <div class="form-field">
                 <label for="employment">고용 형태</label
-                ><select id="employment">
+                ><select
+                  id="employment"
+                  name="employmentType"
+                  th:field="*{employmentType}"
+                  required
+                >
                   <option value="">고용 형태 선택</option>
-                  <option>정규직</option>
-                  <option>계약직</option>
-                </select>
-              </div>
-              <div class="form-field">
-                <label for="career">경력</label
-                ><select id="career">
-                  <option>경력 조건 선택</option>
-                  <option>신입 · 경력 3년 이하</option>
+                  <option value="정규직">정규직</option>
+                  <option value="계약직">계약직</option>
+                  <option value="인턴">인턴</option>
+                  <option value="프리랜서">프리랜서</option>
+                  <option value="파견직">파견직</option>
+                  <option value="기타">기타</option>
                 </select>
               </div>
               <div class="form-field">
                 <label for="education">학력</label
-                ><select id="education">
-                  <option>학력 조건 선택</option>
-                  <option>학력무관</option>
+                ><select
+                  id="education"
+                  name="educationLevel"
+                  th:field="*{educationLevel}"
+                  required
+                >
+                  <option value="">학력 조건 선택</option>
+                  <option value="학력무관">학력무관</option>
+                  <option value="고졸이상">고졸이상</option>
+                  <option value="전문대졸이상">전문대졸이상</option>
+                  <option value="대졸이상">대졸이상</option>
+                  <option value="석사이상">석사이상</option>
+                  <option value="박사">박사</option>
                 </select>
               </div>
               <div class="form-field">
-                <label for="location">근무 지역</label
-                ><select id="location">
-                  <option>근무 지역 선택</option>
-                  <option>서울 강남구</option>
+                <label for="careerType">경력 구분</label
+                ><select
+                  id="careerType"
+                  name="careerType"
+                  th:field="*{careerType}"
+                  required
+                >
+                  <option value="">경력 조건 선택</option>
+                  <option value="신입">신입</option>
+                  <option value="경력">경력</option>
+                  <option value="경력무관">경력무관</option>
                 </select>
               </div>
               <div class="form-field">
-                <label for="salary">급여</label
-                ><input id="salary" placeholder="급여 조건 입력" />
+                <label>경력 연수</label>
+                <div class="range-inputs">
+                  <div class="number-input">
+                    <input
+                      id="minExperienceYears"
+                      name="minExperienceYears"
+                      th:field="*{minExperienceYears}"
+                      type="number"
+                      min="0"
+                      max="50"
+                      placeholder="최소"
+                      disabled
+                    />
+                    <span>년</span>
+                  </div>
+                  <span class="range-inputs__separator">~</span>
+                  <div class="number-input">
+                    <input
+                      id="maxExperienceYears"
+                      name="maxExperienceYears"
+                      th:field="*{maxExperienceYears}"
+                      type="number"
+                      min="0"
+                      max="50"
+                      placeholder="최대"
+                      disabled
+                    />
+                    <span>년</span>
+                  </div>
+                </div>
+                <small class="field-help" data-experience-help>
+                  경력을 선택하면 연수를 입력할 수 있습니다.
+                </small>
+              </div>
+              <div class="form-field">
+                <label for="salaryText">급여 표시</label
+                ><select
+                  id="salaryText"
+                  name="salaryText"
+                  th:field="*{salaryText}"
+                  required
+                >
+                  <option value="">급여 조건 선택</option>
+                  <option value="연봉">연봉</option>
+                  <option value="회사 내규에 따름">회사 내규에 따름</option>
+                  <option value="면접 후 결정">면접 후 결정</option>
+                  <option value="협의 후 결정">협의 후 결정</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>연봉 범위</label>
+                <div class="range-inputs">
+                  <div class="number-input number-input--salary">
+                    <input
+                      id="salaryMin"
+                      name="salaryMin"
+                      th:field="*{salaryMin}"
+                      type="number"
+                      min="0"
+                      placeholder="최소"
+                      disabled
+                    />
+                    <span>만원</span>
+                  </div>
+                  <span class="range-inputs__separator">~</span>
+                  <div class="number-input number-input--salary">
+                    <input
+                      id="salaryMax"
+                      name="salaryMax"
+                      th:field="*{salaryMax}"
+                      type="number"
+                      min="0"
+                      placeholder="최대"
+                      disabled
+                    />
+                    <span>만원</span>
+                  </div>
+                </div>
+                <small class="field-help" data-salary-help>
+                  연봉을 선택하면 금액을 입력할 수 있습니다.
+                </small>
+              </div>
+              <div class="form-field">
+                <label for="workRegion">근무 지역</label
+                ><input
+                  id="workRegion"
+                  name="workRegion"
+                  th:field="*{workRegion}"
+                  required
+                  readonly
+                  placeholder="주소 검색 시 자동 입력됩니다."
+                />
               </div>
               <div class="form-field">
                 <label for="deadline">접수 마감일</label
-                ><input id="deadline" type="date" />
-              </div>
-              <div class="form-field">
-                <label for="headcount">모집 인원</label
                 ><input
-                  id="headcount"
-                  type="number"
-                  min="1"
-                  placeholder="모집 인원 입력"
+                  id="deadline"
+                  name="applyEndDate"
+                  th:field="*{applyEndDate}"
+                  type="date"
+                  required
                 />
               </div>
+              <div class="form-field">
+                <label for="headcount">모집 인원</label>
+                <div class="number-input number-input--headcount">
+                  <input
+                    id="headcount"
+                    name="headcount"
+                    th:field="*{headcount}"
+                    type="number"
+                    min="1"
+                    required
+                    placeholder="모집 인원 입력"
+                  />
+                  <span>명</span>
+                </div>
+              </div>
+              <fieldset class="form-field form-field--wide address-fieldset">
+                <legend>상세 근무 주소</legend>
+                <div class="address-search-row">
+                  <input
+                    id="workPostcode"
+                    name="postcode"
+                    readonly
+                    placeholder="우편번호"
+                  />
+                  <button
+                    class="address-search-button"
+                    type="button"
+                    data-address-search
+                  >
+                    주소 검색
+                  </button>
+                </div>
+                <div class="address-inputs">
+                  <input
+                    id="workAddress"
+                    name="address"
+                    th:field="*{address}"
+                    required
+                    readonly
+                    placeholder="기본 주소"
+                  />
+                  <input
+                    id="workAddressDetail"
+                    name="addressDetail"
+                    th:field="*{addressDetail}"
+                    placeholder="상세 주소를 입력하세요."
+                  />
+                </div>
+                <small class="address-message" data-address-message></small>
+              </fieldset>
               <div class="form-field form-field--wide">
                 <label
                   >기술 스택 <span data-skill-selection-count>0/5</span></label
@@ -114,12 +360,117 @@
                 <button class="skill-open" type="button" data-skill-modal-open>
                   + 기술 선택
                 </button>
-                <div data-skill-hidden-inputs></div>
+                <div data-skill-hidden-inputs>
+                  <input
+                    th:each="skillId : *{skillIds}"
+                    type="hidden"
+                    name="skillIds"
+                    th:value="${skillId}"
+                  />
+                </div>
                 <small class="skill-help"
                   >채용 직무와 직접 관련된 기술을 최대 5개까지 선택할 수
                   있습니다.</small
                 >
               </div>
+              <fieldset class="form-field form-field--wide benefits-fieldset">
+                <legend>복리후생</legend>
+                <div class="benefit-options">
+                  <label class="benefit-option">
+                    <input
+                      name="benefits"
+                      th:field="*{benefits}"
+                      type="checkbox"
+                      value="4대보험"
+                    />
+                    <span>4대보험</span>
+                  </label>
+                  <label class="benefit-option">
+                    <input
+                      name="benefits"
+                      th:field="*{benefits}"
+                      type="checkbox"
+                      value="퇴직금"
+                    />
+                    <span>퇴직금</span>
+                  </label>
+                  <label class="benefit-option">
+                    <input
+                      name="benefits"
+                      th:field="*{benefits}"
+                      type="checkbox"
+                      value="식대 지원"
+                    />
+                    <span>식대 지원</span>
+                  </label>
+                  <label class="benefit-option">
+                    <input
+                      name="benefits"
+                      th:field="*{benefits}"
+                      type="checkbox"
+                      value="유연근무제"
+                    />
+                    <span>유연근무제</span>
+                  </label>
+                  <label class="benefit-option">
+                    <input
+                      name="benefits"
+                      th:field="*{benefits}"
+                      type="checkbox"
+                      value="재택근무"
+                    />
+                    <span>재택근무</span>
+                  </label>
+                  <label class="benefit-option">
+                    <input
+                      name="benefits"
+                      th:field="*{benefits}"
+                      type="checkbox"
+                      value="교육비 지원"
+                    />
+                    <span>교육비 지원</span>
+                  </label>
+                  <label class="benefit-option">
+                    <input
+                      name="benefits"
+                      th:field="*{benefits}"
+                      type="checkbox"
+                      value="건강검진"
+                    />
+                    <span>건강검진</span>
+                  </label>
+                  <label class="benefit-option">
+                    <input
+                      name="benefits"
+                      th:field="*{benefits}"
+                      type="checkbox"
+                      value="장비 지원"
+                    />
+                    <span>장비 지원</span>
+                  </label>
+                  <label class="benefit-option">
+                    <input
+                      name="benefits"
+                      th:field="*{benefits}"
+                      type="checkbox"
+                      value="경조사 지원"
+                    />
+                    <span>경조사 지원</span>
+                  </label>
+                  <label class="benefit-option">
+                    <input
+                      name="benefits"
+                      th:field="*{benefits}"
+                      type="checkbox"
+                      value="휴가 지원"
+                    />
+                    <span>휴가 지원</span>
+                  </label>
+                </div>
+                <small class="field-help">
+                  해당하는 복리후생을 모두 선택할 수 있습니다.
+                </small>
+              </fieldset>
               <div class="form-field form-field--wide">
                 <label for="intro"
                   >공고 소개
@@ -133,6 +484,8 @@
                   </button></label
                 ><textarea
                   id="intro"
+                  name="introduction"
+                  th:field="*{introduction}"
                   placeholder="회사와 포지션을 소개하는 문구를 입력하세요."
                 ></textarea>
               </div>
@@ -149,6 +502,9 @@
                   </button></label
                 ><textarea
                   id="tasks"
+                  name="mainTasks"
+                  th:field="*{mainTasks}"
+                  required
                   placeholder="담당할 주요 업무를 입력하세요."
                 ></textarea>
               </div>
@@ -165,6 +521,9 @@
                   </button></label
                 ><textarea
                   id="requirements"
+                  name="qualifications"
+                  th:field="*{qualifications}"
+                  required
                   placeholder="필수 자격요건을 입력하세요."
                 ></textarea>
               </div>
@@ -181,6 +540,8 @@
                   </button></label
                 ><textarea
                   id="preferred"
+                  name="preferredConditions"
+                  th:field="*{preferredConditions}"
                   placeholder="우대하는 경험과 역량을 입력하세요."
                 ></textarea>
               </div>
@@ -194,7 +555,18 @@
       th:replace="~{modal/common/skill-select-modal :: skillSelectModal}"
     ></div>
     <div th:replace="~{modal/corp/ai-polish-modal :: aiPolishModal}"></div>
-    <script th:src="@{/js/modal/skill-select-modal.js}"></script>
+    <div hidden data-job-skill-source>
+      <span
+        th:each="skill : ${activeSkills}"
+        th:attr="data-skill-id=${skill.skillId},
+          data-parent-id=${skill.parentId},
+          data-depth=${skill.depth},
+          data-skill-name=${skill.skillName}"
+      ></span>
+    </div>
+    <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script th:src="@{/js/common/postcode.js}"></script>
     <script th:src="@{/js/corp/job-form.js}"></script>
+    <script th:src="@{/js/modal/skill-select-modal.js}"></script>
   </body>
 </html>
