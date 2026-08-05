@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import kr.co.firstdayproject.dto.auth.CorporateTermsAgreement;
 import kr.co.firstdayproject.dto.auth.PersonalTermsAgreement;
 import kr.co.firstdayproject.entity.policy.Policy;
 import kr.co.firstdayproject.repository.policy.PolicyRepository;
@@ -64,12 +65,61 @@ class AuthServiceTest {
                 .containsExactlyInAnyOrder(1L, 2L);
     }
 
+    @Test
+    void acceptsRequiredCorporatePolicies() {
+        when(policyRepository.findActiveSignupPolicies(any(), any()))
+                .thenReturn(corporatePolicies());
+
+        Optional<CorporateTermsAgreement> result =
+                authService.validateCorporateTermsAgreement(Set.of(10L, 11L, 12L));
+
+        assertThat(result).isPresent();
+        assertThat(result.orElseThrow().agreedPolicyIds())
+                .containsExactlyInAnyOrder(10L, 11L, 12L);
+    }
+
+    @Test
+    void rejectsCorporateAgreementWhenRequiredPolicyIsMissing() {
+        when(policyRepository.findActiveSignupPolicies(any(), any()))
+                .thenReturn(corporatePolicies());
+
+        Optional<CorporateTermsAgreement> result =
+                authService.validateCorporateTermsAgreement(Set.of(10L, 12L));
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void listsRequiredCorporatePoliciesBeforeOptionalPolicies() {
+        when(policyRepository.findActiveSignupPolicies(any(), any()))
+                .thenReturn(List.of(
+                        policy(12L, "선택"),
+                        policy(10L, "필수"),
+                        policy(13L, "선택"),
+                        policy(11L, "필수")
+                ));
+
+        List<Policy> result = authService.getCorporateSignupPolicies();
+
+        assertThat(result)
+                .extracting(Policy::getPolicyId)
+                .containsExactly(10L, 11L, 12L, 13L);
+    }
+
     private List<Policy> personalPolicies() {
         return List.of(
                 policy(1L, "필수"),
                 policy(2L, "필수"),
                 policy(3L, "선택"),
                 policy(4L, "선택")
+        );
+    }
+
+    private List<Policy> corporatePolicies() {
+        return List.of(
+                policy(10L, "필수"),
+                policy(11L, "필수"),
+                policy(12L, "선택")
         );
     }
 

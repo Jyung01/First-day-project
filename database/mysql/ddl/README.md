@@ -1,13 +1,23 @@
-# MySQL 최신 DDL
+# MySQL 최신 전체 DDL
 
-`firstday_mysql_current.sql`은 모든 migration이 반영된 현재 최종 전체 스키마다.
+`firstday_mysql_current.sql`은 V1부터 V5까지의 모든 변경사항을 반영한 최신 전체 스키마다.
 
-- 새 데이터베이스 생성용으로 사용한다.
-- DB 구조가 바뀔 때마다 이 파일도 최신 상태로 수정한다.
-- 과거 구조 확인은 `../migration`의 버전별 SQL을 사용한다.
+## 사용 방법
 
+- 비어 있는 새 데이터베이스를 생성할 때 실행한다.
+- 이미 V1 이상이 적용된 DB에는 전체 DDL을 다시 실행하지 않고 `../migration/`의 다음 버전 SQL만 적용한다.
 
-현재 파일에는 V1~V3 변경사항이 모두 반영되어 있다.
+## V5 반영 내용
 
-- V2: `skills` 1·2차 계층 구조 적용
-- V3: `uk_skills_name` 제거 및 `uk_skills_parent_name (parent_id, skill_name)` 적용
+`job_postings`의 다음 컬럼을 NULL 허용으로 변경했다.
+
+- `job_category_id`
+- `employment_type`
+- `career_type`
+- `education_level`
+- `work_region`
+- `headcount`
+- `main_tasks`
+- `qualifications`
+
+문자열 컬럼에는 `utf8mb4_unicode_ci` collation을 명시했다.

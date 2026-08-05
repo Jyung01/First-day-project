@@ -11,6 +11,18 @@ document.addEventListener("DOMContentLoaded", function () {
     initializePasswordModal(passwordOpenButton);
     initializeWithdrawModal(withdrawButton);
 
+    if (document.querySelector("[data-corp-account-saved]")) {
+        showConfirmModal({
+            iconClass: "success",
+            iconHtml: "✓",
+            title: "담당자 정보가 저장되었습니다",
+            message: "변경한 부서와 직책이 정상적으로 반영되었습니다.",
+            leftVisible: false,
+            rightText: "확인",
+            rightClass: "btn-primary",
+        });
+    }
+
     rejectionGuideButton?.addEventListener("click", showCorpRejectionGuide);
 
     window.showCorpRejectionGuide = showCorpRejectionGuide;
@@ -24,8 +36,6 @@ function initializeManagerForm(form) {
     if (!form) {
         return;
     }
-
-    const phoneInput = form.querySelector("[data-corp-manager-phone]");
 
     const message = form.querySelector("[data-corp-manager-message]");
 
@@ -48,49 +58,15 @@ function initializeManagerForm(form) {
         message.classList.remove("is-visible", "is-success");
     }
 
-    phoneInput?.addEventListener("input", function () {
-        const number = phoneInput.value.replace(/[^0-9]/g, "").slice(0, 11);
-
-        if (number.length <= 3) {
-            phoneInput.value = number;
-            return;
-        }
-
-        if (number.length <= 7) {
-            phoneInput.value = number.slice(0, 3) + "-" + number.slice(3);
-
-            return;
-        }
-
-        phoneInput.value = number.slice(0, 3) + "-" + number.slice(3, 7) + "-" + number.slice(7);
-    });
-
     form.addEventListener("input", clearMessage);
 
     form.addEventListener("submit", function (event) {
-        event.preventDefault();
         clearMessage();
 
         if (!form.checkValidity()) {
+            event.preventDefault();
             form.reportValidity();
-            return;
         }
-
-        /*
-         * 실제 구현 시:
-         * POST /corp/account
-         * 담당자 이름, 부서·직책, 이메일, 휴대전화 전송
-         */
-
-        showConfirmModal({
-            iconClass: "success",
-            iconHtml: "✓",
-            title: "담당자 정보가 저장되었습니다",
-            message: "변경한 채용 담당자 정보가 정상적으로 반영되었습니다.",
-            leftVisible: false,
-            rightText: "확인",
-            rightClass: "btn-primary",
-        });
     });
 }
 
@@ -226,7 +202,7 @@ function initializePasswordToggleButtons() {
     });
 }
 
-function submitPasswordChange() {
+async function submitPasswordChange() {
     const currentPassword = document.querySelector("[data-corp-current-password]");
 
     const newPassword = document.querySelector("[data-corp-new-password]");
@@ -282,22 +258,44 @@ function submitPasswordChange() {
         return;
     }
 
-    /*
-     * 실제 구현 시:
-     * POST /corp/account/password
-     */
+    try {
+        const response = await fetch("/corp/account/password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                currentPassword: currentValue,
+                newPassword: newValue,
+                newPasswordConfirm: confirmValue,
+            }),
+        });
+        const result = await readJsonResponse(response);
+        if (!response.ok || !result.success) {
+            showError(result.message || "비밀번호를 변경하지 못했습니다.", currentPassword);
+            return;
+        }
 
-    closeModal("formModal");
-
-    showConfirmModal({
-        iconClass: "success",
-        iconHtml: "✓",
-        title: "비밀번호가 변경되었습니다",
-        message: "다음 로그인부터 새로운 비밀번호를 사용해주세요.",
-        leftVisible: false,
-        rightText: "확인",
-        rightClass: "btn-primary",
-    });
+        closeModal("formModal");
+        const changedAt = document.querySelector("[data-password-changed-at]");
+        if (changedAt) {
+            const today = new Intl.DateTimeFormat("ko-KR", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+            }).format(new Date()).replaceAll(". ", ".").replace(/\.$/, "");
+            changedAt.textContent = `마지막 변경 ${today}`;
+        }
+        showConfirmModal({
+            iconClass: "success",
+            iconHtml: "✓",
+            title: "비밀번호가 변경되었습니다",
+            message: "다음 로그인부터 새로운 비밀번호를 사용해주세요.",
+            leftVisible: false,
+            rightText: "확인",
+            rightClass: "btn-primary",
+        });
+    } catch (error) {
+        showError("요청 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", currentPassword);
+    }
 }
 
 /* =========================================================
@@ -342,26 +340,97 @@ function initializeWithdrawModal(button) {
 }
 
 function showFinalWithdrawModal() {
-    showConfirmModal({
-        iconClass: "danger",
-        iconHtml: "!",
+    const bodyHtml = `
+        <div class="corp-password-modal-form">
+            <p class="corp-modal-withdraw-guide">
+                탈퇴 처리는 되돌릴 수 없습니다.<br />
+                계속하려면 현재 비밀번호를 입력해주세요.
+            </p>
+            <div class="corp-password-modal-field">
+                <label for="corpWithdrawPassword">현재 비밀번호</label>
+                <div class="corp-password-input-wrap">
+                    <input
+                        type="password"
+                        id="corpWithdrawPassword"
+                        class="corp-password-modal-input"
+                        autocomplete="current-password"
+                        data-corp-withdraw-password
+                    />
+                    <button
+                        type="button"
+                        class="corp-password-toggle"
+                        data-corp-password-toggle
+                        data-target="corpWithdrawPassword"
+                    >보기</button>
+                </div>
+            </div>
+            <p class="corp-password-modal-message" data-corp-withdraw-message></p>
+        </div>
+    `;
+    showFormModal({
         title: "정말 기업회원에서 탈퇴할까요?",
-        message: "탈퇴 처리는 되돌릴 수 없습니다.\n계속 진행하려면 아래 확인 버튼을 눌러주세요.",
-
+        bodyHtml,
         leftText: "취소",
         rightText: "기업회원 탈퇴",
         leftClass: "btn-outline",
         rightClass: "btn-danger",
-
         onRight: function () {
-            /*
-             * 실제 구현 시:
-             * POST /corp/account/withdraw
-             */
-
-            console.log("기업회원 탈퇴 처리 예정");
+            submitCompanyWithdrawal();
         },
     });
+    initializePasswordToggleButtons();
+    window.setTimeout(function () {
+        document.querySelector("[data-corp-withdraw-password]")?.focus();
+    }, 0);
+}
+
+async function submitCompanyWithdrawal() {
+    const passwordInput = document.querySelector("[data-corp-withdraw-password]");
+    const message = document.querySelector("[data-corp-withdraw-message]");
+    const currentPassword = passwordInput?.value ?? "";
+
+    function showError(text) {
+        if (message) {
+            message.textContent = text;
+            message.classList.add("is-visible");
+        }
+        passwordInput?.classList.add("is-error");
+        passwordInput?.focus();
+    }
+
+    if (!currentPassword) {
+        showError("현재 비밀번호를 입력해주세요.");
+        return;
+    }
+
+    try {
+        const response = await fetch("/corp/account/withdraw", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ currentPassword }),
+        });
+        const result = await readJsonResponse(response);
+        if (!response.ok || !result.success) {
+            showError(result.message || "기업회원 탈퇴를 처리하지 못했습니다.");
+            return;
+        }
+        window.location.href = result.redirectUrl || "/auth/login?accountStatus=withdrawn";
+    } catch (error) {
+        showError("요청 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+}
+
+async function readJsonResponse(response) {
+    try {
+        return await response.json();
+    } catch (error) {
+        return {
+            success: false,
+            message: response.status === 401
+                ? "로그인이 만료되었습니다. 다시 로그인해주세요."
+                : "서버 응답을 확인할 수 없습니다.",
+        };
+    }
 }
 
 /* =========================================================

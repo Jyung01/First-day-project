@@ -131,6 +131,8 @@ CREATE TABLE companies (
                          COMMENT '가입 심사: 승인대기/승인/반려',
   company_status        VARCHAR(10) NOT NULL DEFAULT '정상'
                          COMMENT '운영 상태: 정상/이용정지/탈퇴',
+  latest_rejection_code  VARCHAR(50) NULL
+                         COMMENT '최근 가입 반려 사유 코드: MISSING_INFORMATION/FORMAT_ERROR/INAPPROPRIATE_INFORMATION',
   latest_rejection_reason VARCHAR(1000) NULL,
   reviewed_by           BIGINT UNSIGNED NULL,
   reviewed_at           DATETIME(6) NULL,
@@ -148,6 +150,15 @@ CREATE TABLE companies (
     CHECK (approval_status IN ('승인대기','승인','반려')),
   CONSTRAINT chk_companies_company_status
     CHECK (company_status IN ('정상','이용정지','탈퇴')),
+  CONSTRAINT chk_companies_rejection_code
+    CHECK (
+      latest_rejection_code IS NULL
+      OR latest_rejection_code IN (
+        'MISSING_INFORMATION',
+        'FORMAT_ERROR',
+        'INAPPROPRIATE_INFORMATION'
+      )
+    ),
   CONSTRAINT fk_companies_reviewer
     FOREIGN KEY (reviewed_by) REFERENCES users(user_id)
     ON DELETE SET NULL
@@ -209,7 +220,7 @@ CREATE TABLE skills (
 
 CREATE TABLE user_desired_jobs (
   user_id               BIGINT UNSIGNED NOT NULL,
-  job_category_id       BIGINT UNSIGNED NOT NULL,
+  job_category_id       BIGINT UNSIGNED NULL,
   display_order         TINYINT UNSIGNED NOT NULL DEFAULT 0,
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (user_id, job_category_id),
@@ -227,24 +238,24 @@ CREATE TABLE user_desired_jobs (
 CREATE TABLE job_postings (
   job_posting_id        BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   company_id            BIGINT UNSIGNED NOT NULL,
-  job_category_id       BIGINT UNSIGNED NOT NULL,
+  job_category_id       BIGINT UNSIGNED NULL,
   title                 VARCHAR(255) NOT NULL,
-  employment_type       VARCHAR(20) NOT NULL,
-  career_type           VARCHAR(20) NOT NULL DEFAULT '경력무관',
+  employment_type       VARCHAR(20) COLLATE utf8mb4_unicode_ci NULL,
+  career_type           VARCHAR(20) COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   min_experience_years  TINYINT UNSIGNED NULL,
   max_experience_years  TINYINT UNSIGNED NULL,
-  education_level       VARCHAR(30) NOT NULL DEFAULT '학력무관',
-  work_region           VARCHAR(100) NOT NULL,
+  education_level       VARCHAR(30) COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  work_region           VARCHAR(100) COLLATE utf8mb4_unicode_ci NULL,
   work_address          VARCHAR(500) NULL,
   salary_text           VARCHAR(100) NULL,
   salary_min            INT UNSIGNED NULL COMMENT '만원 단위',
   salary_max            INT UNSIGNED NULL COMMENT '만원 단위',
-  headcount             SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+  headcount             SMALLINT UNSIGNED NULL DEFAULT NULL,
   apply_start_at        DATETIME(6) NULL,
   apply_end_at          DATETIME(6) NULL,
   introduction          LONGTEXT NULL,
-  main_tasks            LONGTEXT NOT NULL,
-  qualifications        LONGTEXT NOT NULL,
+  main_tasks            LONGTEXT COLLATE utf8mb4_unicode_ci NULL,
+  qualifications        LONGTEXT COLLATE utf8mb4_unicode_ci NULL,
   preferred_conditions LONGTEXT NULL,
   benefits_json         JSON NULL,
   process_text          TEXT NULL,

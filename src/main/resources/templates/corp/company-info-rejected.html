@@ -41,14 +41,8 @@
                             <button
                                 type="submit"
                                 form="rejectedCompanyForm"
-                                class="rejected-save-button"
-                                name="submitMode"
-                                value="save"
+                                class="rejected-review-button"
                             >
-                                수정 저장
-                            </button>
-
-                            <button type="button" class="rejected-review-button" data-review-request>
                                 재심사 요청
                             </button>
                         </div>
@@ -62,7 +56,12 @@
                             사업자등록번호와 사업자명 및 설립일 정보가 제출된 정보와 일치하지 않습니다.
                         </p>
 
-                        <span> 확인할 항목: 기업명 · 사업자등록번호 · 대표자명 </span>
+                        <span
+                            th:if="${!#strings.isEmpty(rejectedFieldSummary)}"
+                            th:text="|확인할 항목: ${rejectedFieldSummary}|"
+                        >
+                            확인할 항목
+                        </span>
                     </section>
 
                     <form
@@ -71,6 +70,7 @@
                         th:action="@{/corp/company-info-rejected}"
                         method="post"
                         enctype="multipart/form-data"
+                        th:object="${companyForm}"
                         data-rejected-company-form
                         novalidate
                     >
@@ -86,9 +86,15 @@
                                             th:if="${companyLogoUrl != null}"
                                             th:src="${companyLogoUrl}"
                                             alt="기업 로고"
+                                            data-company-logo-image
                                         />
 
-                                        <span th:unless="${companyLogoUrl != null}"> 첫 </span>
+                                        <span
+                                            th:unless="${companyLogoUrl != null}"
+                                            data-company-logo-initial
+                                        >
+                                            첫
+                                        </span>
                                     </div>
 
                                     <label for="companyLogo" class="company-logo-change-button"> 로고 변경 </label>
@@ -102,7 +108,13 @@
                                         data-company-logo-input
                                     />
 
-                                    <p class="company-field-message" data-company-logo-message></p>
+                                    <p
+                                        class="company-field-message"
+                                        th:classappend="${companyLogoError != null} ? ' is-visible' : ''"
+                                        th:text="${companyLogoError}"
+                                        data-company-logo-message
+                                        aria-live="polite"
+                                    ></p>
                                 </div>
 
                                 <div class="company-basic-fields">
@@ -114,13 +126,18 @@
                                             <input
                                                 type="text"
                                                 id="companyName"
-                                                name="companyName"
-                                                class="company-input is-rejected"
-                                                value="첫출근랩"
+                                                class="company-input"
+                                                th:classappend="${rejectedFields.contains('COMPANY_NAME')} ? ' is-rejected' : ''"
+                                                th:field="*{companyName}"
                                                 required
                                             />
 
-                                            <p class="rejected-field-help">반려 사유와 관련된 항목입니다.</p>
+                                            <p
+                                                class="rejected-field-help"
+                                                th:if="${rejectedFields.contains('COMPANY_NAME')}"
+                                            >
+                                                반려 사유와 관련된 항목입니다.
+                                            </p>
                                         </div>
 
                                         <div class="company-field">
@@ -129,15 +146,30 @@
                                             <input
                                                 type="text"
                                                 id="businessNumber"
-                                                name="businessNumber"
-                                                class="company-input is-rejected"
-                                                value="123-45-67890"
+                                                class="company-input"
+                                                th:classappend="${rejectedFields.contains('BUSINESS_NUMBER') or #fields.hasErrors('businessNumber')} ? ' is-rejected' : ''"
+                                                th:field="*{businessNumber}"
                                                 maxlength="12"
                                                 required
                                                 data-business-number
                                             />
 
-                                            <p class="rejected-field-help">숫자 10자리를 확인해주세요.</p>
+                                            <p
+                                                class="rejected-field-help"
+                                                th:if="${rejectedFields.contains('BUSINESS_NUMBER')}"
+                                            >
+                                                숫자 10자리를 확인해주세요.
+                                            </p>
+
+                                            <p
+                                                class="company-field-message"
+                                                th:classappend="${#fields.hasErrors('businessNumber')} ? ' is-visible' : ''"
+                                                th:errors="*{businessNumber}"
+                                                data-business-number-error
+                                                aria-live="polite"
+                                            >
+                                                사업자등록번호 오류
+                                            </p>
                                         </div>
                                     </div>
 
@@ -148,13 +180,18 @@
                                             <input
                                                 type="text"
                                                 id="representativeName"
-                                                name="representativeName"
-                                                class="company-input is-rejected"
-                                                value="김첫출"
+                                                class="company-input"
+                                                th:classappend="${rejectedFields.contains('REPRESENTATIVE_NAME')} ? ' is-rejected' : ''"
+                                                th:field="*{representativeName}"
                                                 required
                                             />
 
-                                            <p class="rejected-field-help">사업자등록 정보와 동일해야 합니다.</p>
+                                            <p
+                                                class="rejected-field-help"
+                                                th:if="${rejectedFields.contains('REPRESENTATIVE_NAME')}"
+                                            >
+                                                사업자등록 정보와 동일해야 합니다.
+                                            </p>
                                         </div>
 
                                         <div class="company-field">
@@ -163,9 +200,9 @@
                                             <input
                                                 type="date"
                                                 id="establishedDate"
-                                                name="establishedDate"
                                                 class="company-input"
-                                                value="2021-03-15"
+                                                th:classappend="${rejectedFields.contains('ESTABLISHED_DATE')} ? ' is-rejected' : ''"
+                                                th:field="*{establishedDate}"
                                             />
                                         </div>
                                     </div>
@@ -181,22 +218,40 @@
                                 <div class="company-field">
                                     <label for="companySize"> 기업 규모 </label>
 
-                                    <select id="companySize" name="companySize" class="company-input company-select">
+                                    <select
+                                        id="companySize"
+                                        class="company-input company-select"
+                                        th:classappend="${rejectedFields.contains('COMPANY_SIZE')} ? ' is-rejected' : ''"
+                                        th:field="*{companySize}"
+                                    >
                                         <option value="">기업 규모 선택</option>
-                                        <option value="SMALL" selected>중소기업</option>
-                                        <option value="MEDIUM">중견기업</option>
-                                        <option value="LARGE">대기업</option>
+                                        <option value="스타트업">스타트업</option>
+                                        <option value="중소기업">중소기업</option>
+                                        <option value="중견기업">중견기업</option>
+                                        <option value="대기업">대기업</option>
+                                        <option value="공공기관">공공기관</option>
+                                        <option value="외국계기업">외국계기업</option>
                                     </select>
                                 </div>
 
                                 <div class="company-field">
                                     <label for="industry">업종</label>
 
-                                    <select id="industry" name="industry" class="company-input company-select">
+                                    <select
+                                        id="industry"
+                                        class="company-input company-select"
+                                        th:classappend="${rejectedFields.contains('INDUSTRY')} ? ' is-rejected' : ''"
+                                        th:field="*{industry}"
+                                    >
                                         <option value="">업종 선택</option>
-                                        <option value="IT_SOFTWARE" selected>IT·소프트웨어</option>
-                                        <option value="MANUFACTURING">제조</option>
-                                        <option value="SERVICE">서비스</option>
+                                        <option value="IT·인터넷">IT·인터넷</option>
+                                        <option value="금융">금융</option>
+                                        <option value="제조">제조</option>
+                                        <option value="유통·무역">유통·무역</option>
+                                        <option value="서비스">서비스</option>
+                                        <option value="교육">교육</option>
+                                        <option value="의료">의료</option>
+                                        <option value="기타">기타</option>
                                     </select>
                                 </div>
                             </div>
@@ -208,21 +263,21 @@
                                     <input
                                         type="url"
                                         id="homepage"
-                                        name="homepage"
                                         class="company-input"
-                                        value="https://firstwork.example"
+                                        th:field="*{homepage}"
                                     />
                                 </div>
 
                                 <div class="company-field">
-                                    <label for="companyPhone"> 대표 연락처 </label>
+                                    <label for="managerPhone"> 담당자 연락처 </label>
 
                                     <input
                                         type="tel"
-                                        id="companyPhone"
-                                        name="companyPhone"
+                                        id="managerPhone"
+                                        name="managerPhone"
                                         class="company-input"
-                                        value="02-1234-5678"
+                                        th:value="${managerPhone}"
+                                        readonly
                                     />
                                 </div>
                             </div>
@@ -236,7 +291,7 @@
                                         id="address"
                                         name="address"
                                         class="company-input"
-                                        value="서울특별시 강남구 테헤란로 123"
+                                        th:value="${companyAddress}"
                                         readonly
                                     />
                                 </div>
@@ -247,10 +302,10 @@
                                     <input
                                         type="text"
                                         id="shortDescription"
-                                        name="shortDescription"
                                         class="company-input"
-                                        value="기술로 더 나은 채용 경험을 만드는 기업입니다."
-                                        maxlength="100"
+                                        th:classappend="${rejectedFields.contains('SHORT_DESCRIPTION')} ? ' is-rejected' : ''"
+                                        th:field="*{shortDescription}"
+                                        maxlength="300"
                                     />
                                 </div>
                             </div>
@@ -261,20 +316,23 @@
                             <div class="company-field">
                                 <label for="benefits"> 기업 소개·복지 </label>
 
-                                <textarea id="benefits" name="benefits" class="company-textarea" maxlength="1000">
-자유로운 협업 문화 · 교육비 지원 · 유연근무제 · 최신 장비 제공</textarea
-                                >
+                                <textarea
+                                    id="benefits"
+                                    class="company-textarea"
+                                    th:classappend="${rejectedFields.contains('BENEFITS')} ? ' is-rejected' : ''"
+                                    th:field="*{benefits}"
+                                    maxlength="1000"
+                                ></textarea>
                             </div>
                         </section>
 
                         <p
                             class="company-field-message rejected-form-message"
+                            th:classappend="${#fields.hasGlobalErrors()} ? ' is-visible' : ''"
+                            th:text="${#fields.hasGlobalErrors() ? #strings.listJoin(#fields.globalErrors(), ' ') : ''}"
                             data-rejected-form-message
                             aria-live="polite"
                         ></p>
-
-                        <!-- 실제 제출용 -->
-                        <input type="hidden" name="submitMode" value="save" data-submit-mode-input />
                     </form>
                 </section>
             </div>
@@ -285,6 +343,13 @@
 
         <!-- 공통 확인 모달 -->
         <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+
+        <div
+            hidden
+            th:if="${param.showRejectionModal != null}"
+            data-login-rejection-modal
+            th:attr="data-rejection-reason=${rejectionReason}"
+        ></div>
 
         <script th:src="@{/js/modal.js}"></script>
         <script th:src="@{/js/corp/company-info-rejected.js}"></script>

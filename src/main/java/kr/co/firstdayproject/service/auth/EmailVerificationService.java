@@ -39,6 +39,18 @@ public class EmailVerificationService {
     }
 
     public void sendVerificationCode(String email, HttpSession session) {
+        sendVerificationCode(email, session, false);
+    }
+
+    public void sendPasswordResetCode(String email, HttpSession session) {
+        sendVerificationCode(email, session, true);
+    }
+
+    private void sendVerificationCode(
+            String email,
+            HttpSession session,
+            boolean passwordReset
+    ) {
         String normalizedEmail = normalizeEmail(email);
         LocalDateTime now = LocalDateTime.now();
 
@@ -60,11 +72,23 @@ public class EmailVerificationService {
         String code = String.format("%06d", secureRandom.nextInt(1_000_000));
 
         try {
-            emailSenderService.sendVerificationCode(
-                    normalizedEmail,
-                    code,
-                    Math.max(1, properties.expiration().toMinutes())
+            long expirationMinutes = Math.max(
+                    1,
+                    properties.expiration().toMinutes()
             );
+            if (passwordReset) {
+                emailSenderService.sendPasswordResetCode(
+                        normalizedEmail,
+                        code,
+                        expirationMinutes
+                );
+            } else {
+                emailSenderService.sendVerificationCode(
+                        normalizedEmail,
+                        code,
+                        expirationMinutes
+                );
+            }
         } catch (MailException exception) {
             log.error("이메일 인증번호 발송에 실패했습니다.", exception);
             throw new EmailVerificationException(
