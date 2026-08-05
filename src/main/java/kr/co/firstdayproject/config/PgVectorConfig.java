@@ -43,10 +43,11 @@ public class PgVectorConfig {
             EmbeddingModel embeddingModel
     ) {
         return PgVectorStore.builder(jdbcTemplate, embeddingModel)
+                .schemaName("ai")
                 .dimensions(1024)
                 .distanceType(PgVectorStore.PgDistanceType.COSINE_DISTANCE)
                 .indexType(PgVectorStore.PgIndexType.HNSW)
-                .initializeSchema(true)
+                .initializeSchema(false)
                 .build();
     }
 }
