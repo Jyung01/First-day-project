@@ -46,6 +46,7 @@
                         th:action="@{/corp/company-info}"
                         method="post"
                         enctype="multipart/form-data"
+                        th:object="${companyForm}"
                         data-company-info-form
                         novalidate
                     >
@@ -96,11 +97,9 @@
                                             <input
                                                 type="text"
                                                 id="companyName"
-                                                name="companyName"
                                                 class="company-input"
-                                                th:value="${companyName}"
-                                                value="첫출근랩"
-                                                maxlength="100"
+                                                th:field="*{companyName}"
+                                                maxlength="200"
                                                 required
                                             />
                                         </div>
@@ -114,7 +113,6 @@
                                                 name="managerName"
                                                 class="company-input"
                                                 th:value="${managerName}"
-                                                value="김지웅"
                                                 readonly
                                             />
                                         </div>
@@ -130,7 +128,6 @@
                                                 name="businessNumber"
                                                 class="company-input"
                                                 th:value="${businessNumber}"
-                                                value="123-45-67890"
                                                 readonly
                                             />
                                         </div>
@@ -143,7 +140,6 @@
                                                 id="approvalStatus"
                                                 class="company-input"
                                                 th:value="${approvalStatus}"
-                                                value="인증 완료"
                                                 readonly
                                             />
                                         </div>
@@ -156,10 +152,8 @@
                                             <input
                                                 type="text"
                                                 id="representativeName"
-                                                name="representativeName"
                                                 class="company-input"
-                                                th:value="${representativeName}"
-                                                value="김첫출"
+                                                th:field="*{representativeName}"
                                                 required
                                             />
                                         </div>
@@ -170,10 +164,8 @@
                                             <input
                                                 type="date"
                                                 id="establishedDate"
-                                                name="establishedDate"
                                                 class="company-input"
-                                                th:value="${establishedDate}"
-                                                value="2021-03-15"
+                                                th:field="*{establishedDate}"
                                             />
                                         </div>
                                     </div>
@@ -191,30 +183,38 @@
                                 <div class="company-field">
                                     <label for="companySize"> 기업 규모 </label>
 
-                                    <select id="companySize" name="companySize" class="company-input company-select">
+                                    <select
+                                        id="companySize"
+                                        class="company-input company-select"
+                                        th:field="*{companySize}"
+                                    >
                                         <option value="">기업 규모 선택</option>
-                                        <option value="STARTUP">스타트업</option>
-                                        <option value="SMALL" selected>중소기업</option>
-                                        <option value="MEDIUM">중견기업</option>
-                                        <option value="LARGE">대기업</option>
-                                        <option value="PUBLIC">공공기관</option>
-                                        <option value="FOREIGN">외국계기업</option>
+                                        <option value="스타트업">스타트업</option>
+                                        <option value="중소기업">중소기업</option>
+                                        <option value="중견기업">중견기업</option>
+                                        <option value="대기업">대기업</option>
+                                        <option value="공공기관">공공기관</option>
+                                        <option value="외국계기업">외국계기업</option>
                                     </select>
                                 </div>
 
                                 <div class="company-field">
                                     <label for="industry"> 업종 </label>
 
-                                    <select id="industry" name="industry" class="company-input company-select">
+                                    <select
+                                        id="industry"
+                                        class="company-input company-select"
+                                        th:field="*{industry}"
+                                    >
                                         <option value="">업종 선택</option>
-                                        <option value="IT_SOFTWARE" selected>IT·소프트웨어</option>
-                                        <option value="MANUFACTURING">제조</option>
-                                        <option value="FINANCE">금융</option>
-                                        <option value="DISTRIBUTION">유통·무역</option>
-                                        <option value="EDUCATION">교육</option>
-                                        <option value="MEDICAL">의료</option>
-                                        <option value="SERVICE">서비스</option>
-                                        <option value="ETC">기타</option>
+                                        <option value="IT·인터넷">IT·인터넷</option>
+                                        <option value="금융">금융</option>
+                                        <option value="제조">제조</option>
+                                        <option value="유통·무역">유통·무역</option>
+                                        <option value="서비스">서비스</option>
+                                        <option value="교육">교육</option>
+                                        <option value="의료">의료</option>
+                                        <option value="기타">기타</option>
                                     </select>
                                 </div>
                             </div>
@@ -226,27 +226,21 @@
                                     <input
                                         type="url"
                                         id="homepage"
-                                        name="homepage"
                                         class="company-input"
-                                        th:value="${homepage}"
-                                        value="https://firstwork.example"
+                                        th:field="*{homepage}"
                                         placeholder="https://example.com"
                                     />
                                 </div>
 
                                 <div class="company-field">
-                                    <label for="companyPhone"> 대표 연락처 </label>
+                                    <label for="managerPhone"> 담당자 연락처 </label>
 
                                     <input
                                         type="tel"
-                                        id="companyPhone"
-                                        name="companyPhone"
+                                        id="managerPhone"
                                         class="company-input"
-                                        th:value="${companyPhone}"
-                                        value="02-1234-5678"
-                                        maxlength="13"
-                                        inputmode="numeric"
-                                        data-company-phone
+                                        th:value="${managerPhone}"
+                                        readonly
                                     />
                                 </div>
                             </div>
@@ -259,15 +253,14 @@
                                     <input
                                         type="text"
                                         id="postcode"
-                                        name="postcode"
                                         class="company-input"
-                                        th:value="${postcode}"
-                                        value="06236"
+                                        th:field="*{postcode}"
                                         placeholder="우편번호"
                                         readonly
+                                        required
                                     />
 
-                                    <button type="button" class="company-outline-button" data-company-address-search>
+                                    <button type="button" class="company-outline-button" data-address-search>
                                         주소 검색
                                     </button>
                                 </div>
@@ -275,22 +268,22 @@
                                 <input
                                     type="text"
                                     id="address"
-                                    name="address"
                                     class="company-input"
-                                    th:value="${address}"
-                                    value="서울특별시 강남구 테헤란로 123"
+                                    th:field="*{address}"
                                     placeholder="기본주소"
                                     readonly
+                                    required
                                 />
 
                                 <input
                                     type="text"
                                     id="addressDetail"
-                                    name="addressDetail"
                                     class="company-input"
-                                    th:value="${addressDetail}"
+                                    th:field="*{addressDetail}"
                                     placeholder="상세주소 입력"
                                 />
+
+                                <p class="company-field-message" data-address-message aria-live="polite"></p>
                             </fieldset>
 
                             <!-- 기업 한 줄 소개 -->
@@ -300,17 +293,15 @@
                                 <input
                                     type="text"
                                     id="shortDescription"
-                                    name="shortDescription"
                                     class="company-input"
-                                    th:value="${shortDescription}"
-                                    value="기술로 더 나은 채용 경험을 만드는 기업입니다."
-                                    maxlength="100"
+                                    th:field="*{shortDescription}"
+                                    maxlength="300"
                                     placeholder="기업을 한 문장으로 소개해주세요"
                                 />
 
                                 <div class="company-character-count">
                                     <span data-company-count="shortDescription"> 0 </span>
-                                    / 100
+                                    / 300
                                 </div>
                             </div>
                         </section>
@@ -324,14 +315,11 @@
 
                                 <textarea
                                     id="benefits"
-                                    name="benefits"
                                     class="company-textarea"
-                                    th:text="${benefits}"
+                                    th:field="*{benefits}"
                                     maxlength="1000"
                                     placeholder="기업 소개와 복지 정보를 입력해주세요"
-                                >
-자유로운 협업 문화 · 교육비 지원 · 유연근무제 · 최신 장비 제공</textarea
-                                >
+                                ></textarea>
 
                                 <div class="company-character-count">
                                     <span data-company-count="benefits"> 0 </span>
@@ -342,6 +330,8 @@
 
                         <p
                             class="company-field-message company-form-message"
+                            th:classappend="${#fields.hasAnyErrors()} ? ' is-visible' : ''"
+                            th:text="${#fields.hasAnyErrors() ? #strings.listJoin(#fields.allErrors(), ' ') : ''}"
                             data-company-form-message
                             aria-live="polite"
                         ></p>
@@ -359,7 +349,11 @@
         <!-- 저장 완료 모달 -->
         <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
 
+        <div hidden th:if="${param.saved != null}" data-company-info-saved></div>
+
         <script th:src="@{/js/modal.js}"></script>
+        <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+        <script th:src="@{/js/common/postcode.js}"></script>
         <script th:src="@{/js/corp/company-info.js}"></script>
     </body>
 </html>

@@ -11,26 +11,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            new Swiper(".bannerSwiper", {
-                loop: true,
 
-                autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
-                },
-
-                pagination: {
-                    el: ".swiper-pagination",
-                    clickable: true,
-                },
-
-                navigation: {
-                    nextEl: ".swiper-button-next",
-                    prevEl: ".swiper-button-prev",
-                },
-            });
-        })
     </script>
 </head>
 <body>
@@ -79,17 +60,53 @@
                     <div class="block-title">채용공고 모아보기</div>
                     <div class="block-sub">희망 직무 기반 AI 추천 · 인기 공고 · 최신 공고</div>
                 </div>
-                <a href="#" class="more-link">전체보기 →</a>
+                <a th:href="@{/job/list}" class="more-link">전체보기 →</a>
             </div>
 
             <div class="tabs">
                 <div class="tab locked"><span class="lock-ic">🔒</span>AI 맞춤 추천</div>
-                <div class="tab active">인기 공고</div>
-                <div class="tab">최신 공고</div>
+                <div class="tab active" data-tab="popular">인기 공고</div>
+                <div class="tab" data-tab="latest">최신 공고</div>
             </div>
 
-            <div class="job-grid">
-                <div class="job-card" th:each="job : ${jobPostingList}">
+            <!--인기순-->
+            <div class="job-grid popular-grid">
+                <div class="job-card" th:each="job : ${popularJobs}">
+
+                    <div class="co-row">
+                        <img class="co-logo"
+                             th:src="${job.logoUrl}"
+                             alt="회사 로고">
+
+                        <div class="co-name"
+                             th:text="${job.companyName}">
+                        </div>
+                    </div>
+
+                    <div class="job-title"
+                         th:text="${job.title}">
+                    </div>
+
+                    <div class="job-loc">
+                        <span th:text="${job.workRegion}"></span>
+                        ·
+                        <span th:text="${job.careerType}"></span>
+                    </div>
+
+                    <div class="tag-row">
+                        <span class="tag"
+                              th:text="${job.employmentType}"></span>
+
+                        <span class="tag"
+                              th:text="${job.categoryName}"></span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!--최신순-->
+            <div class="job-grid latest-grid" style="display:none;">
+                <div class="job-card" th:each="job : ${latestJobs}">
 
                     <div class="co-row">
                         <img class="co-logo"
@@ -130,39 +147,44 @@
                     <div class="block-title">지금 주목받는 인기 기업</div>
                     <div class="block-sub">채용 중인 공고가 있는 기업 우선 노출</div>
                 </div>
-                <a href="#" class="more-link">기업 전체보기 →</a>
+                <a th:href="@{/company/list}" class="more-link">기업 전체보기 →</a>
             </div>
 
             <div class="company-grid">
-                <div class="company-card">
-                    <div class="company-logo c1">무</div>
-                    <div class="company-name">무신사</div>
-                    <div class="company-desc">패션 커머스 플랫폼</div>
-                    <div class="rating-row"><span class="star">★</span>4.3 · 리뷰 128</div>
-                    <div class="review-line">"성장 기회가 많은 조직 문화"</div>
+
+                <div class="company-card"
+                     th:each="company : ${popularCompanies}">
+
+                    <img class="company-logo"
+                         th:src="${company.logoUrl}"
+                         alt="기업 로고">
+
+                    <div class="company-name"
+                         th:text="${company.companyName}">
+                    </div>
+
+                    <div class="company-desc"
+                         th:text="${company.shortDescription}">
+                    </div>
+
+                    <div class="rating-row"
+                         th:if="${company.averageRating != null}">
+                        <span class="star">★</span>
+                        <span th:text="${company.averageRating}"></span>
+                        · 리뷰
+                        <span th:text="${company.reviewCount}"></span>
+                    </div>
+
+                    <div class="review-line"
+                         th:if="${!#strings.isEmpty(company.summary)}"
+                         th:text="${company.summary}">
+                    </div>
+
                 </div>
-                <div class="company-card">
-                    <div class="company-logo c2">오</div>
-                    <div class="company-name">오늘의집</div>
-                    <div class="company-desc">라이프스타일 커머스</div>
-                    <div class="rating-row"><span class="star">★</span>4.1 · 리뷰 96</div>
-                    <div class="review-line">"수평적인 커뮤니케이션 문화"</div>
-                </div>
-                <div class="company-card">
-                    <div class="company-logo c3">야</div>
-                    <div class="company-name">야놀자</div>
-                    <div class="company-desc">여가 플랫폼</div>
-                    <div class="rating-row"><span class="star">★</span>4.0 · 리뷰 74</div>
-                    <div class="review-line">"복지 제도가 잘 갖춰짐"</div>
-                </div>
-                <div class="company-card">
-                    <div class="company-logo c4">직</div>
-                    <div class="company-name">직방</div>
-                    <div class="company-desc">부동산 플랫폼</div>
-                    <div class="rating-row"><span class="star">★</span>4.2 · 리뷰 61</div>
-                    <div class="review-line"><!-- 리뷰 없음: 영역 숨김 --></div>
-                </div>
+
             </div>
+
+
         </section>
 
         <!-- ============ AI와 함께 준비하는 첫 자기소개서 ============ -->

@@ -3,5 +3,263 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.firstdayproject.dao.company.CompanyDao">
+    <!-- 메인 : 인기 기업 -->
+    <select id="selectPopularCompanyList"
+            resultType="kr.co.firstdayproject.dto.company.CompanyDTO">
 
+        SELECT
+        c.company_id,
+        c.company_name,
+        c.logo_url,
+        c.short_description,
+
+        ROUND(AVG(cr.overall_rating), 1) AS averageRating,
+        COUNT(cr.company_review_id) AS reviewCount,
+        MAX(cr.summary) AS summary,
+
+        <!-- 채용 중인 공고 존재 여부 -->
+        CASE
+        WHEN COUNT(jp.job_posting_id) > 0 THEN 1
+        ELSE 0
+        END AS hasJobPosting
+
+        FROM companies c
+
+        <!-- 기업 리뷰 (리뷰가 없는 기업도 조회하기 위해 LEFT JOIN) -->
+        LEFT JOIN company_reviews cr
+        ON c.company_id = cr.company_id
+        AND cr.status = '정상'
+
+        <!-- 채용공고 (공고가 없는 기업도 조회하기 위해 LEFT JOIN) -->
+        LEFT JOIN job_postings jp
+        ON c.company_id = jp.company_id
+        AND jp.status = '모집중'
+
+        GROUP BY
+        c.company_id,
+        c.company_name,
+        c.logo_url,
+        c.short_description
+
+        ORDER BY
+        hasJobPosting DESC,
+        averageRating DESC,
+        reviewCount DESC
+
+        LIMIT 4;
+
+    </select>
+
+    <!-- 기업정보 :  기업 갯수 -->
+    <select id="selectCompanyCount"
+            resultType="int">
+        SELECT COUNT(*) FROM companies c
+        <where>
+
+            <!-- 키워드 검색 (기업명, 한 줄 소개, 업종명) -->
+            <if test="keyword != null and keyword != ''">
+                (
+                c.company_name LIKE CONCAT('%', #{keyword}, '%')
+                OR c.short_description LIKE CONCAT('%', #{keyword}, '%')
+                OR c.industry_name LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+
+            <!-- 업종 필터 -->
+            <if test="industry != null and industry != ''">
+                AND c.industry_name = #{industry}
+            </if>
+
+            <!-- 지역 필터 -->
+            <if test="region != null and region != ''">
+                AND c.address_line1 LIKE CONCAT('%', #{region}, '%')
+            </if>
+
+            <!-- 기업 규모 필터 -->
+            <if test="companySize != null and companySize != ''">
+                AND c.company_size = #{companySize}
+            </if>
+
+            <!-- 직무 필터 -->
+            <if test="jobCategory != null and jobCategory != ''">
+                AND jc.category_name = #{jobCategory}
+            </if>
+        </where>
+    </select>
+
+    <!-- 기업정보 :  기업 목록 조회 -->
+    <select id="selectCompanyList"
+            parameterType="kr.co.firstdayproject.dto.company.CompanySearchDTO"
+            resultType="kr.co.firstdayproject.dto.company.CompanyDTO">
+
+        SELECT
+        c.company_id,
+        c.company_name,
+        c.logo_url,
+        c.industry_name,
+        c.address_line1,
+        c.short_description,
+
+        ROUND(AVG(cr.overall_rating), 1) AS averageRating,
+        COUNT(cr.company_review_id) AS reviewCount,
+        MAX(cr.summary) AS summary,
+
+        <!--  공고가 하나라도 있으면 1, 없으면 0 반환 -->
+        CASE
+        WHEN COUNT(jp.job_posting_id) > 0 THEN 1
+        ELSE 0
+        END AS hasJobPosting
+
+        FROM companies c
+
+        LEFT JOIN company_reviews cr
+        ON c.company_id = cr.company_id
+        AND cr.status = '정상'
+
+        LEFT JOIN job_postings jp
+        ON c.company_id = jp.company_id
+        AND jp.status = '모집중'
+
+        LEFT JOIN job_categories jc
+        ON jp.job_category_id = jc.job_category_id
+
+        <where>
+
+            <!-- 키워드 검색 (기업명, 한 줄 소개, 업종명) -->
+            <if test="keyword != null and keyword != ''">
+                (
+                c.company_name LIKE CONCAT('%', #{keyword}, '%')
+                OR c.short_description LIKE CONCAT('%', #{keyword}, '%')
+                OR c.industry_name LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+
+            <!-- 업종 필터 -->
+            <if test="industry != null and industry != ''">
+                AND c.industry_name = #{industry}
+            </if>
+
+            <!-- 지역 필터 -->
+            <if test="region != null and region != ''">
+                AND c.address_line1 LIKE CONCAT('%', #{region}, '%')
+            </if>
+
+            <!-- 기업 규모 필터 -->
+            <if test="companySize != null and companySize != ''">
+                AND c.company_size = #{companySize}
+            </if>
+
+            <!-- 직무 필터-->
+            <if test="jobCategory != null and jobCategory != ''">
+                AND jc.category_name = #{jobCategory}
+            </if>
+        </where>
+
+
+        GROUP BY
+        c.company_id,
+        c.company_name,
+        c.logo_url,
+        c.industry_name,
+        c.address_line1,
+        c.short_description
+
+        ORDER BY
+        hasJobPosting DESC,
+        averageRating DESC,
+        reviewCount DESC
+
+
+
+        LIMIT #{offset}, #{pageSize}
+
+    </select>
+
+    <!-- 검색 select의 option값을 db에서 가져오기 -->
+    <!-- 업종 목록 -->
+    <select id="selectIndustryList" resultType="string">
+        SELECT DISTINCT industry_name
+        FROM companies
+        WHERE industry_name IS NOT NULL
+        ORDER BY industry_name
+    </select>
+
+    <!-- 지역 목록 -->
+    <select id="selectRegionList" resultType="string">
+        SELECT DISTINCT
+        SUBSTRING_INDEX(address_line1, ' ', 1) AS region
+        FROM companies
+        WHERE address_line1 IS NOT NULL
+        ORDER BY region;
+    </select>
+
+    <!-- 기업 규모 목록 -->
+    <select id="selectCompanySizeList" resultType="string">
+        SELECT DISTINCT company_size
+        FROM companies
+        WHERE company_size IS NOT NULL
+        ORDER BY company_size
+    </select>
+
+    <!-- 직무 목록 -->
+    <select id="selectJobCategoryList"
+            resultType="kr.co.firstdayproject.dto.job.JobCategoryOption">
+
+        SELECT
+        job_category_id,
+        category_name
+        FROM job_categories
+        ORDER BY category_name
+
+    </select>
+
+    <!-- 기업 상세 -->
+    <select id="selectCompanyDetail"
+            parameterType="long"
+            resultType="kr.co.firstdayproject.dto.company.CompanyDTO">
+
+        SELECT
+
+        c.company_id,
+        c.company_name,
+        c.logo_url,
+        c.industry_name,
+        c.company_size,
+        c.established_date,
+        c.address_line1,
+        c.homepage_url,
+        c.short_description,
+        c.introduction,
+        c.benefits,
+
+        ROUND(AVG(cr.overall_rating),1) AS averageRating,
+        COUNT(DISTINCT cr.company_review_id) AS reviewCount,
+        COUNT(DISTINCT jp.job_posting_id) AS jobPostingCount
+
+        FROM companies c
+
+        LEFT JOIN company_reviews cr
+        ON c.company_id = cr.company_id
+        AND cr.status='정상'
+
+        LEFT JOIN job_postings jp
+        ON c.company_id = jp.company_id
+        AND jp.status='모집중'
+
+        WHERE c.company_id = #{companyId}
+
+        GROUP BY
+        c.company_id,
+        c.company_name,
+        c.logo_url,
+        c.industry_name,
+        c.company_size,
+        c.established_date,
+        c.address_line1,
+        c.homepage_url,
+        c.short_description,
+        c.introduction,
+        c.benefits
+
+    </select>
 </mapper>

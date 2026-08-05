@@ -198,32 +198,6 @@
 }
 
 /* =========================================================
-   보안 안내
-========================================================= */
-
-.corp-account-security {
-    margin-bottom: 20px;
-    padding: 20px 22px;
-    border: 1px solid #bfdbfe;
-    border-radius: 10px;
-    background-color: #eff6ff;
-}
-
-.corp-account-security h2 {
-    margin: 0;
-    color: var(--corp-blue);
-    font-size: 13px;
-    font-weight: 800;
-}
-
-.corp-account-security p {
-    margin: 10px 0 0;
-    color: #52627b;
-    font-size: 11px;
-    line-height: 1.7;
-}
-
-/* =========================================================
    기업회원 탈퇴
 ========================================================= */
 

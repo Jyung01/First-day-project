@@ -48,7 +48,6 @@
                                         id="corpLoginId"
                                         class="corp-account-input"
                                         th:value="${loginId}"
-                                        value="corp@firstwork.co.kr"
                                         readonly
                                     />
 
@@ -61,7 +60,7 @@
                                     비밀번호 변경
                                 </button>
 
-                                <span> 마지막 변경 2026.06.30 </span>
+                                <span data-password-changed-at th:text="|마지막 변경 ${passwordChangedAt}|">마지막 변경 -</span>
                             </div>
                         </div>
                     </section>
@@ -70,7 +69,14 @@
                     <section class="corp-account-card">
                         <h2 class="corp-account-card-title">채용 담당자 정보</h2>
 
-                        <form class="corp-manager-form" data-corp-manager-form novalidate>
+                        <form
+                            class="corp-manager-form"
+                            th:action="@{/corp/account}"
+                            method="post"
+                            th:object="${accountForm}"
+                            data-corp-manager-form
+                            novalidate
+                        >
                             <div class="corp-account-grid">
                                 <div class="corp-account-field">
                                     <label for="managerName"> 담당자 이름 </label>
@@ -78,61 +84,65 @@
                                     <input
                                         type="text"
                                         id="managerName"
-                                        name="managerName"
                                         class="corp-account-input"
                                         th:value="${managerName}"
-                                        value="김담당"
-                                        maxlength="30"
-                                        required
+                                        readonly
                                     />
                                 </div>
 
-                                <div class="corp-account-field">
-                                    <label for="managerDepartment"> 부서·직책 </label>
-
-                                    <input
-                                        type="text"
-                                        id="managerDepartment"
-                                        name="managerDepartment"
-                                        class="corp-account-input"
-                                        th:value="${managerDepartment}"
-                                        value="인사팀 매니저"
-                                        maxlength="50"
-                                    />
-                                </div>
-                            </div>
-
-                            <div class="corp-account-grid">
                                 <div class="corp-account-field">
                                     <label for="managerEmail"> 이메일 </label>
 
                                     <input
                                         type="email"
                                         id="managerEmail"
-                                        name="managerEmail"
                                         class="corp-account-input"
                                         th:value="${managerEmail}"
-                                        value="recruit@firstwork.co.kr"
-                                        required
+                                        readonly
                                     />
                                 </div>
+                            </div>
 
+                            <div class="corp-account-grid">
                                 <div class="corp-account-field">
                                     <label for="managerPhone"> 휴대전화 </label>
 
                                     <input
                                         type="tel"
                                         id="managerPhone"
-                                        name="managerPhone"
                                         class="corp-account-input"
                                         th:value="${managerPhone}"
-                                        value="010-9876-5432"
-                                        inputmode="numeric"
-                                        maxlength="13"
-                                        required
-                                        data-corp-manager-phone
+                                        readonly
                                     />
                                 </div>
+
+                                <div class="corp-account-field">
+                                    <label for="department"> 부서 </label>
+
+                                    <input
+                                        type="text"
+                                        id="department"
+                                        class="corp-account-input"
+                                        th:field="*{department}"
+                                        maxlength="100"
+                                        placeholder="예: 인사팀"
+                                    />
+                                    <p class="corp-account-message is-visible" th:if="${#fields.hasErrors('department')}" th:errors="*{department}"></p>
+                                </div>
+                            </div>
+
+                            <div class="corp-account-field">
+                                <label for="positionTitle"> 직책 </label>
+
+                                <input
+                                    type="text"
+                                    id="positionTitle"
+                                    class="corp-account-input"
+                                    th:field="*{positionTitle}"
+                                    maxlength="100"
+                                    placeholder="예: 채용 매니저"
+                                />
+                                <p class="corp-account-message is-visible" th:if="${#fields.hasErrors('positionTitle')}" th:errors="*{positionTitle}"></p>
                             </div>
 
                             <p class="corp-account-message" data-corp-manager-message aria-live="polite"></p>
@@ -141,16 +151,7 @@
                                 <button type="submit" class="corp-account-primary-button">변경사항 저장</button>
                             </div>
                         </form>
-                    </section>
-
-                    <!-- 보안 안내 -->
-                    <section class="corp-account-security">
-                        <h2>보안 안내</h2>
-
-                        <p>
-                            담당자 정보는 지원자 문의와 채용 운영에 사용됩니다. 공용 계정보다 담당자별 안전한 비밀번호
-                            사용을 권장합니다.
-                        </p>
+                        <span data-corp-account-saved th:if="${param.saved}" hidden></span>
                     </section>
 
                     <!-- 기업회원 탈퇴 -->
@@ -167,8 +168,9 @@
                             type="button"
                             class="corp-withdraw-button"
                             data-corp-withdraw
-                            data-active-job-count="1"
-                            data-applicant-count="3"
+                            th:attr="data-active-job-count=${activeJobCount},data-applicant-count=${activeApplicantCount}"
+                            data-active-job-count="0"
+                            data-applicant-count="0"
                         >
                             기업회원 탈퇴
                         </button>

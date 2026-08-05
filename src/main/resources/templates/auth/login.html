@@ -152,7 +152,7 @@
                 function showRestrictedAccountModal() {
                     showConfirmModal({
                         iconClass: "danger",
-                        iconHtml: '<i class="fa-solid fa-exclamation"></i>',
+                        iconHtml: "!",
 
                         title: "이용이 제한된 계정입니다",
                         message:
@@ -172,6 +172,86 @@
                             window.location.href = "/cs/notice";
                         }
                     });
+                }
+
+                function showWithdrawnAccountModal() {
+                    showConfirmModal({
+                        iconClass: "success",
+                        iconHtml: "✓",
+                        title: "기업회원 탈퇴가 완료되었습니다",
+                        message:
+                            "모집 중 공고가 마감되고 계정이 안전하게 탈퇴 처리되었습니다.",
+                        leftVisible: false,
+                        rightText: "확인",
+                        rightClass: "btn-primary"
+                    });
+                }
+
+                function showPendingCompanyApprovalModal() {
+                    showConfirmModal({
+                        iconClass: "warning",
+                        iconHtml: "!",
+                        title: "기업회원 승인 대기 중입니다",
+                        message:
+                            "관리자 승인 완료 후 기업회원으로 로그인할 수 있습니다.\n승인 처리까지 잠시만 기다려주세요.",
+                        leftVisible: false,
+                        rightText: "확인",
+                        rightClass: "btn-primary"
+                    });
+                }
+
+                function showCompanyReapplyCompletedModal() {
+                    showConfirmModal({
+                        iconClass: "success",
+                        iconHtml: "✓",
+                        title: "재심사 요청이 완료되었습니다",
+                        message:
+                            "수정한 기업정보가 관리자에게 제출되었습니다.\n심사가 완료될 때까지 기업회원 로그인이 제한됩니다.",
+                        leftVisible: false,
+                        rightText: "확인",
+                        rightClass: "btn-primary"
+                    });
+                }
+
+                const queryParameters = new URLSearchParams(window.location.search);
+                const companyApproval = queryParameters.get("companyApproval");
+                const accountStatus = queryParameters.get("accountStatus");
+                if (accountStatus === "withdrawn") {
+                    showWithdrawnAccountModal();
+                    queryParameters.delete("accountStatus");
+                    const queryString = queryParameters.toString();
+                    history.replaceState(
+                        null,
+                        "",
+                        window.location.pathname + (queryString ? "?" + queryString : "")
+                    );
+                } else if (accountStatus === "restricted") {
+                    showRestrictedAccountModal();
+                    queryParameters.delete("accountStatus");
+                    const queryString = queryParameters.toString();
+                    history.replaceState(
+                        null,
+                        "",
+                        window.location.pathname + (queryString ? "?" + queryString : "")
+                    );
+                } else if (companyApproval === "reapplied") {
+                    showCompanyReapplyCompletedModal();
+                    queryParameters.delete("companyApproval");
+                    const queryString = queryParameters.toString();
+                    history.replaceState(
+                        null,
+                        "",
+                        window.location.pathname + (queryString ? "?" + queryString : "")
+                    );
+                } else if (companyApproval === "pending") {
+                    showPendingCompanyApprovalModal();
+                    queryParameters.delete("companyApproval");
+                    const queryString = queryParameters.toString();
+                    history.replaceState(
+                        null,
+                        "",
+                        window.location.pathname + (queryString ? "?" + queryString : "")
+                    );
                 }
             });
         </script>

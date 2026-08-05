@@ -1,7 +1,43 @@
-// 탭 전환 (인기 공고 / 최신 공고, AI 추천은 잠금 표시)
-  document.querySelectorAll('.tab:not(.locked)').forEach(tab=>{
-    tab.addEventListener('click', ()=>{
-      document.querySelectorAll('.tab:not(.locked)').forEach(t=>t.classList.remove('active'));
-      tab.classList.add('active');
+document.addEventListener("DOMContentLoaded", function () {
+    // 배너 스와이퍼
+    new Swiper(".bannerSwiper", {
+        loop: true,
+
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
     });
-  });
+
+    // 탭 전환 (인기 공고 / 최신 공고, AI 추천은 잠금 표시)
+    const popularGrid = document.querySelector(".popular-grid");
+    const latestGrid = document.querySelector(".latest-grid");
+
+    document.querySelectorAll(".tab:not(.locked)").forEach(tab => {
+        tab.addEventListener("click", () => {
+
+            document.querySelectorAll(".tab:not(.locked)")
+                .forEach(t => t.classList.remove("active"));
+
+            tab.classList.add("active");
+
+            if (tab.dataset.tab === "popular") {
+                popularGrid.style.display = "grid";
+                latestGrid.style.display = "none";
+            } else {
+                popularGrid.style.display = "none";
+                latestGrid.style.display = "grid";
+            }
+        });
+    });
+})

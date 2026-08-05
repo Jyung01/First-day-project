@@ -6,5 +6,9 @@ import java.util.List;
 
 @Mapper
 public interface JobDao {
-    List<JobDTO> selectJobPostingList();
+    // 메인 : 채용 공고 인기순
+    List<JobDTO> selectLatestJobPostingList();
+
+    // 메인 : 채용 공고 인기순
+    List<JobDTO> selectPopularJobPostingList();
 }

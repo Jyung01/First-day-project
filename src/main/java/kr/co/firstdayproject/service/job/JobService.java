@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import kr.co.firstdayproject.dao.job.JobDao;
+import kr.co.firstdayproject.dto.company.CompanyDTO;
 import kr.co.firstdayproject.dto.job.JobCategoryGroup;
 import kr.co.firstdayproject.dto.job.JobCategoryOption;
 import kr.co.firstdayproject.dto.job.JobDTO;
@@ -23,9 +24,15 @@ public class JobService {
     private final JobDao jobDao;
     private final JobCategoryRepository jobCategoryRepository;
 
-    public List<JobDTO> getJobPostingList() {
-        return jobDao.selectJobPostingList();
+    // 메인 : 채용 공고 최신순
+    public List<JobDTO> getLatestJobPostingList() {
+        return jobDao.selectLatestJobPostingList();
     }
+    // 메인 : 채용 공고 인기순
+    public List<JobDTO> getPopularJobPostingList() {
+        return jobDao.selectPopularJobPostingList();
+    }
+
 
     public List<JobCategoryGroup> getActiveJobCategoryGroups() {
         List<JobCategory> parents = jobCategoryRepository

@@ -27,6 +27,24 @@ function clearAccountMessage(element) {
     element.classList.remove("is-visible", "is-success");
 }
 
+async function postAccountJson(url, body) {
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    });
+    const data = await response.json().catch(function () {
+        return {};
+    });
+
+    if (!response.ok) {
+        throw new Error(data.message || "요청을 처리하지 못했습니다.");
+    }
+    return data;
+}
+
 /* =========================================================
    아이디 찾기
 ========================================================= */
@@ -42,6 +60,9 @@ function initializeFindId() {
     const emailInput = form.querySelector("[data-find-email]");
     const message = form.querySelector("[data-find-message]");
     const result = document.querySelector("[data-find-result]");
+    const maskedId = result?.querySelector("[data-masked-id]");
+    const joinedDate = result?.querySelector("[data-joined-date]");
+    const submitButton = form.querySelector("[type='submit']");
 
     nameInput?.addEventListener("input", function () {
         clearAccountMessage(message);
@@ -53,7 +74,7 @@ function initializeFindId() {
         result.hidden = true;
     });
 
-    form.addEventListener("submit", function (event) {
+    form.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const name = nameInput?.value.trim() ?? "";
@@ -71,22 +92,21 @@ function initializeFindId() {
             return;
         }
 
-        /*
-         * 추후 아이디 조회 API로 교체
-         *
-         * 예시:
-         * fetch("/auth/find-id", {
-         *     method: "POST",
-         *     headers: {
-         *         "Content-Type": "application/json"
-         *     },
-         *     body: JSON.stringify({ name, email })
-         * });
-         */
+        submitButton.disabled = true;
+        try {
+            const data = await postAccountJson("/api/auth/find-id", {
+                name,
+                email
+            });
 
-        const matched = name === "홍길동" || email.includes("@");
+            if (data.found) {
+                clearAccountMessage(message);
+                maskedId.textContent = data.maskedLoginId;
+                joinedDate.textContent = data.joinedDate;
+                result.hidden = false;
+                return;
+            }
 
-        if (!matched) {
             showConfirmModal({
                 iconClass: "danger",
                 iconHtml: "!",
@@ -101,12 +121,14 @@ function initializeFindId() {
                     window.location.href = "/auth/member-type";
                 }
             });
-
-            return;
+        } catch (error) {
+            showAccountMessage(
+                message,
+                error.message || "아이디 조회 중 오류가 발생했습니다."
+            );
+        } finally {
+            submitButton.disabled = false;
         }
-
-        clearAccountMessage(message);
-        result.hidden = false;
     });
 }
 
@@ -125,6 +147,7 @@ function initializeResetPassword() {
     const emailInput = form.querySelector("[data-reset-email]");
     const codeInput = form.querySelector("[data-reset-code]");
     const sendCodeButton = form.querySelector("[data-send-reset-code]");
+    const verifyCodeButton = form.querySelector("[data-verify-reset-code]");
 
     const newPassword = form.querySelector("[data-new-password]");
     const newPasswordConfirm = form.querySelector(
@@ -137,8 +160,29 @@ function initializeResetPassword() {
     const passwordMessage = form.querySelector(
         "[data-reset-password-message]"
     );
+    const submitButton = form.querySelector("[type='submit']");
 
     let verificationCodeSent = false;
+    let emailVerified = false;
+
+    function setPasswordFieldsEnabled(enabled) {
+        newPassword.disabled = !enabled;
+        newPasswordConfirm.disabled = !enabled;
+        submitButton.disabled = !enabled;
+    }
+
+    function resetEmailVerification() {
+        verificationCodeSent = false;
+        emailVerified = false;
+        codeInput.value = "";
+        codeInput.disabled = true;
+        verifyCodeButton.disabled = true;
+        setPasswordFieldsEnabled(false);
+    }
+
+    codeInput.disabled = true;
+    verifyCodeButton.disabled = true;
+    setPasswordFieldsEnabled(false);
 
     function validatePassword() {
         const password = newPassword?.value ?? "";
@@ -177,8 +221,9 @@ function initializeResetPassword() {
         return true;
     }
 
-    sendCodeButton?.addEventListener("click", function () {
+    sendCodeButton?.addEventListener("click", async function () {
         const memberId = memberIdInput?.value.trim() ?? "";
+        const email = emailInput?.value.trim() ?? "";
 
         if (!memberId) {
             showAccountMessage(
@@ -198,47 +243,49 @@ function initializeResetPassword() {
             return;
         }
 
-        /*
-         * 추후 인증번호 발송 API로 교체
-         */
-        verificationCodeSent = true;
-
-        showAccountMessage(
-            emailMessage,
-            "인증번호를 발송했습니다.",
-            true
-        );
-
-        codeInput?.focus();
+        sendCodeButton.disabled = true;
+        try {
+            const data = await postAccountJson(
+                "/api/auth/password-reset/code",
+                { loginId: memberId, email }
+            );
+            verificationCodeSent = true;
+            emailVerified = false;
+            codeInput.disabled = false;
+            verifyCodeButton.disabled = false;
+            setPasswordFieldsEnabled(false);
+            showAccountMessage(emailMessage, data.message, true);
+            codeInput?.focus();
+        } catch (error) {
+            resetEmailVerification();
+            showAccountMessage(emailMessage, error.message);
+        } finally {
+            sendCodeButton.disabled = false;
+        }
     });
 
     memberIdInput?.addEventListener("input", function () {
-        verificationCodeSent = false;
+        resetEmailVerification();
         clearAccountMessage(emailMessage);
     });
 
     emailInput?.addEventListener("input", function () {
-        verificationCodeSent = false;
+        resetEmailVerification();
         clearAccountMessage(emailMessage);
     });
 
-    newPassword?.addEventListener("input", validatePassword);
-    newPasswordConfirm?.addEventListener("input", validatePassword);
+    codeInput?.addEventListener("input", function () {
+        clearAccountMessage(emailMessage);
+    });
 
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
-
+    verifyCodeButton?.addEventListener("click", async function () {
         if (!verificationCodeSent) {
-            showAccountMessage(
-                emailMessage,
-                "먼저 인증번호를 받아주세요."
-            );
-            emailInput?.focus();
+            showAccountMessage(emailMessage, "먼저 인증번호를 받아주세요.");
             return;
         }
 
+        const email = emailInput?.value.trim() ?? "";
         const code = codeInput?.value.trim() ?? "";
-
         if (!/^\d{6}$/.test(code)) {
             showAccountMessage(
                 emailMessage,
@@ -248,30 +295,79 @@ function initializeResetPassword() {
             return;
         }
 
+        verifyCodeButton.disabled = true;
+        try {
+            const data = await postAccountJson(
+                "/api/email-verifications/verify",
+                { email, code }
+            );
+            emailVerified = true;
+            memberIdInput.disabled = true;
+            emailInput.disabled = true;
+            codeInput.disabled = true;
+            sendCodeButton.disabled = true;
+            setPasswordFieldsEnabled(true);
+            showAccountMessage(emailMessage, data.message, true);
+            newPassword?.focus();
+        } catch (error) {
+            emailVerified = false;
+            verifyCodeButton.disabled = false;
+            setPasswordFieldsEnabled(false);
+            showAccountMessage(emailMessage, error.message);
+        }
+    });
+
+    newPassword?.addEventListener("input", validatePassword);
+    newPasswordConfirm?.addEventListener("input", validatePassword);
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (!emailVerified) {
+            showAccountMessage(
+                emailMessage,
+                "이메일 인증을 먼저 완료해주세요."
+            );
+            return;
+        }
+
         if (!validatePassword()) {
             newPasswordConfirm?.focus();
             return;
         }
 
-        /*
-         * 기존 비밀번호와 같은지 여부는
-         * 서버에서 현재 암호화된 비밀번호와 비교해야 한다.
-         */
+        const loginId = memberIdInput?.value.trim() ?? "";
+        const email = emailInput?.value.trim() ?? "";
 
-        showConfirmModal({
-            iconClass: "success",
-            iconHtml: "✓",
-            title: "비밀번호가 변경되었습니다",
-            message:
-                "새로운 비밀번호로 로그인해주세요.",
-            leftText: "",
-            rightText: "로그인으로 이동",
-            leftClass: "btn-outline",
-            rightClass: "btn-primary",
-            onRight: function () {
-                window.location.href = "/auth/login";
-            }
-        });
+        submitButton.disabled = true;
+        try {
+            await postAccountJson("/api/auth/password-reset", {
+                loginId,
+                email,
+                newPassword: newPassword.value,
+                newPasswordConfirm: newPasswordConfirm.value
+            });
+
+            showConfirmModal({
+                iconClass: "success",
+                iconHtml: "✓",
+                title: "비밀번호가 변경되었습니다",
+                message: "새로운 비밀번호로 로그인해주세요.",
+                leftVisible: false,
+                rightText: "로그인으로 이동",
+                rightClass: "btn-primary",
+                onRight: function () {
+                    window.location.href = "/auth/login";
+                }
+            });
+        } catch (error) {
+            showAccountMessage(
+                emailVerified ? passwordMessage : emailMessage,
+                error.message || "비밀번호 변경 중 오류가 발생했습니다."
+            );
+        } finally {
+            submitButton.disabled = !emailVerified;
+        }
     });
 }
 

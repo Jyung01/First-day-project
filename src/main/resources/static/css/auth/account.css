@@ -219,3 +219,15 @@
         padding: 17px;
     }
 }
+
+.account-outline-button:disabled,
+.account-submit-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.account-form .auth-input:disabled {
+    background-color: #f4f6f9;
+    color: #8a96a9;
+    cursor: not-allowed;
+}

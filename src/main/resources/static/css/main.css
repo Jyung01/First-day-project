@@ -176,6 +176,7 @@ section.block.tight {
     padding: 9px 16px;
     border-radius: 20px;
     border: 1px solid var(--line);
+    cursor: pointer;
 }
 
 .tab.active {
