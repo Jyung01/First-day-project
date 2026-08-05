@@ -106,12 +106,14 @@
 
 /* 반려 항목 */
 
-.company-input.is-rejected {
+.company-input.is-rejected,
+.company-textarea.is-rejected {
     border-color: #ef4444;
     background-color: #fffafa;
 }
 
-.company-input.is-rejected:focus {
+.company-input.is-rejected:focus,
+.company-textarea.is-rejected:focus {
     border-color: #dc2626;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }

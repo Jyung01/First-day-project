@@ -19,16 +19,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            LoginSuccessHandler loginSuccessHandler
+            LoginSuccessHandler loginSuccessHandler,
+            LoginFailureHandler loginFailureHandler
     ) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // TODO 권한 정책 확정 후 아래 규칙부터 순서대로 활성화
-                        // .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // .requestMatchers("/corp/**").hasRole("COMPANY")
-                        // .requestMatchers("/my/**").hasRole("PERSONAL")
+                        // TODO 나중에 자세히 권한별 세분화
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/corp/**").hasRole("COMPANY")
+                        .requestMatchers("/my/**").hasRole("PERSONAL")
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
@@ -37,7 +38,7 @@ public class SecurityConfig {
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .successHandler(loginSuccessHandler)
-                        .failureUrl("/auth/login?error")
+                        .failureHandler(loginFailureHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout

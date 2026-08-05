@@ -1,10 +1,30 @@
 <aside xmlns:th="http://www.thymeleaf.org" class="corp-sidebar" aria-label="기업관리 메뉴" th:fragment="corpAside">
     <!-- 기업 프로필 -->
     <div class="company-profile">
-        <div class="company-profile__logo" aria-hidden="true">ㅊ</div>
+        <div class="company-profile__logo" aria-hidden="true">
+            <img
+                th:if="${companySidebarLogoUrl != null}"
+                th:src="${companySidebarLogoUrl}"
+                alt=""
+                onerror="this.hidden=true; this.nextElementSibling.hidden=false"
+            />
+
+            <span
+                th:text="${companySidebarInitial ?: '기'}"
+                th:hidden="${companySidebarLogoUrl != null}"
+            >
+                기
+            </span>
+        </div>
 
         <div>
-            <strong class="company-profile__name"> 첫출근랩 </strong>
+            <strong
+                class="company-profile__name"
+                th:text="${companySidebarName ?: '기업회원'}"
+                th:title="${companySidebarName ?: '기업회원'}"
+            >
+                기업회원
+            </strong>
 
             <span class="company-profile__type"> 기업회원 </span>
         </div>
@@ -14,9 +34,14 @@
     <nav class="corp-nav">
         <a
             class="corp-nav__item"
-            th:classappend="${activeMenu == 'dashboard'} ? ' is-active'"
-            th:href="@{/corp}"
-            th:attr="aria-current=${activeMenu == 'dashboard'} ? 'page' : null"
+            th:classappend="${companyStatus == 'REJECTED'}
+                ? ' is-disabled'
+                : (${activeMenu == 'dashboard'} ? ' is-active' : '')"
+            th:href="${companyStatus == 'REJECTED'} ? null : @{/corp}"
+            th:attr="aria-current=${activeMenu == 'dashboard'} ? 'page' : null,
+                aria-disabled=${companyStatus == 'REJECTED'} ? 'true' : null,
+                tabindex=${companyStatus == 'REJECTED'} ? '-1' : null,
+                title=${companyStatus == 'REJECTED'} ? '기업 승인 후 이용할 수 있습니다.' : null"
         >
             대시보드
         </a>
@@ -38,27 +63,42 @@
 
         <a
             class="corp-nav__item"
-            th:classappend="${activeMenu == 'jobs'} ? ' is-active'"
-            th:href="@{/corp/job}"
-            th:attr="aria-current=${activeMenu == 'jobs'} ? 'page' : null"
+            th:classappend="${companyStatus == 'REJECTED'}
+                ? ' is-disabled'
+                : (${activeMenu == 'jobs'} ? ' is-active' : '')"
+            th:href="${companyStatus == 'REJECTED'} ? null : @{/corp/job}"
+            th:attr="aria-current=${activeMenu == 'jobs'} ? 'page' : null,
+                aria-disabled=${companyStatus == 'REJECTED'} ? 'true' : null,
+                tabindex=${companyStatus == 'REJECTED'} ? '-1' : null,
+                title=${companyStatus == 'REJECTED'} ? '기업 승인 후 이용할 수 있습니다.' : null"
         >
             채용공고 관리
         </a>
 
         <a
             class="corp-nav__item"
-            th:classappend="${activeMenu == 'applicants'} ? ' is-active'"
-            th:href="@{/corp/applicant}"
-            th:attr="aria-current=${activeMenu == 'applicants'} ? 'page' : null"
+            th:classappend="${companyStatus == 'REJECTED'}
+                ? ' is-disabled'
+                : (${activeMenu == 'applicants'} ? ' is-active' : '')"
+            th:href="${companyStatus == 'REJECTED'} ? null : @{/corp/applicant}"
+            th:attr="aria-current=${activeMenu == 'applicants'} ? 'page' : null,
+                aria-disabled=${companyStatus == 'REJECTED'} ? 'true' : null,
+                tabindex=${companyStatus == 'REJECTED'} ? '-1' : null,
+                title=${companyStatus == 'REJECTED'} ? '기업 승인 후 이용할 수 있습니다.' : null"
         >
             지원자 관리
         </a>
 
         <a
             class="corp-nav__item"
-            th:classappend="${activeMenu == 'account'} ? ' is-active'"
-            th:href="@{/corp/account}"
-            th:attr="aria-current=${activeMenu == 'account'} ? 'page' : null"
+            th:classappend="${companyStatus == 'REJECTED'}
+                ? ' is-disabled'
+                : (${activeMenu == 'account'} ? ' is-active' : '')"
+            th:href="${companyStatus == 'REJECTED'} ? null : @{/corp/account}"
+            th:attr="aria-current=${activeMenu == 'account'} ? 'page' : null,
+                aria-disabled=${companyStatus == 'REJECTED'} ? 'true' : null,
+                tabindex=${companyStatus == 'REJECTED'} ? '-1' : null,
+                title=${companyStatus == 'REJECTED'} ? '기업 승인 후 이용할 수 있습니다.' : null"
         >
             계정관리
         </a>

@@ -41,10 +41,23 @@
             <form
                     class="join-form"
                     th:action="@{/auth/company/form}"
+                    th:object="${signupRequest}"
+                    th:attr="data-server-id-checked=${loginIdAvailable},data-server-email-verified=${emailVerified},data-server-business-number-checked=${businessNumberAvailable}"
                     method="post"
                     data-join-form
                     data-company-form
             >
+                <div th:if="${#fields.hasAnyErrors()}">
+                    <p
+                            class="join-field-message is-visible"
+                            th:each="error : ${#fields.allErrors()}"
+                            th:text="${error}"
+                            aria-live="polite"
+                    >
+                        입력값을 확인해주세요.
+                    </p>
+                </div>
+
                 <h2 class="join-section-title">담당자 계정</h2>
 
                 <!-- 아이디 -->
@@ -64,6 +77,8 @@
                                 maxlength="20"
                                 autocomplete="username"
                                 required
+                                data-id-input
+                                th:field="*{memberId}"
                         />
 
                         <button
@@ -110,6 +125,7 @@
                         <input
                                 type="password"
                                 id="companyPasswordConfirm"
+                                name="passwordConfirm"
                                 class="auth-input"
                                 placeholder="비밀번호 다시 입력"
                                 minlength="8"
@@ -140,6 +156,7 @@
                                 class="auth-input"
                                 placeholder="이름 입력"
                                 required
+                                th:field="*{managerName}"
                         />
                     </div>
 
@@ -157,6 +174,8 @@
                                 placeholder="010-0000-0000"
                                 inputmode="numeric"
                                 required
+                                data-phone-input
+                                th:field="*{managerPhone}"
                         />
                     </div>
                 </div>
@@ -177,6 +196,8 @@
                                 placeholder="example@company.com"
                                 autocomplete="email"
                                 required
+                                data-email-input
+                                th:field="*{managerEmail}"
                         />
 
                         <button
@@ -227,6 +248,39 @@
                     기업 기본정보
                 </h2>
 
+                <!-- 사업자등록번호 -->
+                <div class="join-field join-field-full">
+                    <label for="businessNumber" class="auth-label">
+                        사업자등록번호 <span class="join-required">*</span>
+                    </label>
+
+                    <div class="join-input-action">
+                        <input
+                                type="text"
+                                id="businessNumber"
+                                name="businessNumber"
+                                class="auth-input"
+                                placeholder="000-00-00000"
+                                maxlength="12"
+                                inputmode="numeric"
+                                autocomplete="off"
+                                required
+                                data-business-number-input
+                                th:field="*{businessNumber}"
+                        />
+
+                        <button
+                                type="button"
+                                class="join-outline-button"
+                                data-business-number-check
+                        >
+                            중복확인
+                        </button>
+                    </div>
+
+                    <p class="join-field-message" data-business-number-message></p>
+                </div>
+
                 <div class="join-field-row">
                     <div class="join-field">
                         <label for="companyName" class="auth-label">
@@ -240,6 +294,7 @@
                                 class="auth-input"
                                 placeholder="기업명 입력"
                                 required
+                                th:field="*{companyName}"
                         />
                     </div>
 
@@ -253,6 +308,7 @@
                                 name="industry"
                                 class="auth-input join-select"
                                 required
+                                th:field="*{industry}"
                         >
                             <option value="">업종 선택</option>
                             <option value="IT·인터넷">IT·인터넷</option>
@@ -276,16 +332,17 @@
                     <select
                             id="companySize"
                             name="companySize"
-                            class="auth-input join-select"
-                            required
+                                class="auth-input join-select"
+                                required
+                                th:field="*{companySize}"
                     >
                         <option value="">규모 선택</option>
-                        <option value="STARTUP">스타트업</option>
-                        <option value="SMALL">중소기업</option>
-                        <option value="MEDIUM">중견기업</option>
-                        <option value="LARGE">대기업</option>
-                        <option value="PUBLIC">공공기관</option>
-                        <option value="FOREIGN">외국계기업</option>
+                        <option value="스타트업">스타트업</option>
+                        <option value="중소기업">중소기업</option>
+                        <option value="중견기업">중견기업</option>
+                        <option value="대기업">대기업</option>
+                        <option value="공공기관">공공기관</option>
+                        <option value="외국계기업">외국계기업</option>
                     </select>
                 </div>
 
@@ -305,6 +362,7 @@
                                 placeholder="우편번호"
                                 readonly
                                 required
+                                th:field="*{postcode}"
                         />
 
                         <button
@@ -322,16 +380,18 @@
                             name="address"
                             class="auth-input"
                             placeholder="주소 찾기 선택 시 기본주소 자동 입력"
-                            readonly
-                            required
+                                readonly
+                                required
+                                th:field="*{address}"
                     />
 
                     <input
                             type="text"
                             id="companyAddressDetail"
                             name="addressDetail"
-                            class="auth-input"
-                            placeholder="상세주소 입력"
+                                class="auth-input"
+                                placeholder="상세주소 입력"
+                                th:field="*{addressDetail}"
                     />
 
                     <p

@@ -63,6 +63,8 @@ public class Company {
     private String approvalStatus;
     @Column(name = "company_status", nullable = false, length = 10)
     private String companyStatus;
+    @Column(name = "latest_rejection_code", length = 50)
+    private String latestRejectionCode;
     @Column(name = "latest_rejection_reason", length = 1000)
     private String latestRejectionReason;
     @Column(name = "reviewed_by")

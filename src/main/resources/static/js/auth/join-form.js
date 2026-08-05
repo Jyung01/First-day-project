@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const phoneInput = form.querySelector("[data-phone-input]");
 
+    const businessNumberInput = form.querySelector("[data-business-number-input]");
+    const businessNumberCheckButton = form.querySelector("[data-business-number-check]");
+    const businessNumberMessage = form.querySelector("[data-business-number-message]");
+
     const emailInput = form.querySelector("[data-email-input]");
     const sendCodeButton = form.querySelector("[data-send-code]");
     const resendCodeButton = form.querySelector("[data-resend-code]");
@@ -26,6 +30,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let idChecked = form.dataset.serverIdChecked === "true";
     let emailVerified = form.dataset.serverEmailVerified === "true";
+    let businessNumberChecked = !businessNumberInput
+        || form.dataset.serverBusinessNumberChecked === "true";
 
     async function requestEmailVerification(url, body) {
         const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
@@ -124,6 +130,13 @@ document.addEventListener("DOMContentLoaded", function () {
     if (emailVerified) {
         showMessage(emailMessage, "이메일 인증이 완료되었습니다.", true);
     }
+    if (businessNumberInput && businessNumberChecked) {
+        showMessage(
+            businessNumberMessage,
+            "사용 가능한 사업자등록번호입니다.",
+            true
+        );
+    }
 
     idInput?.addEventListener("input", function () {
         idChecked = false;
@@ -202,6 +215,81 @@ document.addEventListener("DOMContentLoaded", function () {
             number.slice(3, 7) +
             "-" +
             number.slice(7);
+    });
+
+    businessNumberInput?.addEventListener("input", function () {
+        const number = businessNumberInput.value
+            .replace(/[^0-9]/g, "")
+            .slice(0, 10);
+
+        businessNumberChecked = false;
+        clearMessage(businessNumberMessage);
+
+        if (number.length <= 3) {
+            businessNumberInput.value = number;
+            return;
+        }
+
+        if (number.length <= 5) {
+            businessNumberInput.value =
+                number.slice(0, 3) + "-" + number.slice(3);
+            return;
+        }
+
+        businessNumberInput.value =
+            number.slice(0, 3) +
+            "-" +
+            number.slice(3, 5) +
+            "-" +
+            number.slice(5);
+    });
+
+    businessNumberCheckButton?.addEventListener("click", async function () {
+        const businessNumber = businessNumberInput?.value.trim() ?? "";
+
+        if (!/^\d{3}-\d{2}-\d{5}$/.test(businessNumber)) {
+            businessNumberChecked = false;
+            showMessage(
+                businessNumberMessage,
+                "사업자등록번호 10자리를 정확히 입력해주세요."
+            );
+            businessNumberInput?.focus();
+            return;
+        }
+
+        businessNumberChecked = false;
+        clearMessage(businessNumberMessage);
+        businessNumberCheckButton.disabled = true;
+
+        try {
+            const response = await fetch(
+                "/api/auth/business-number-availability?businessNumber="
+                    + encodeURIComponent(businessNumber)
+            );
+            const data = await response.json();
+
+            if (businessNumberInput?.value.trim() !== businessNumber) {
+                showMessage(
+                    businessNumberMessage,
+                    "사업자등록번호가 변경되었습니다. 중복확인을 다시 진행해주세요."
+                );
+                return;
+            }
+
+            businessNumberChecked = response.ok && data.available === true;
+            showMessage(
+                businessNumberMessage,
+                data.message,
+                businessNumberChecked
+            );
+        } catch (error) {
+            showMessage(
+                businessNumberMessage,
+                "사업자등록번호 중복확인을 처리하지 못했습니다."
+            );
+        } finally {
+            businessNumberCheckButton.disabled = false;
+        }
     });
 
     emailInput?.addEventListener("input", function () {
@@ -344,6 +432,18 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!validatePasswordMatch()) {
             event.preventDefault();
             passwordConfirm?.focus();
+            return;
+        }
+
+        if (!businessNumberChecked) {
+            event.preventDefault();
+
+            showMessage(
+                businessNumberMessage,
+                "사업자등록번호 중복확인을 진행해주세요."
+            );
+
+            businessNumberInput?.focus();
             return;
         }
 
