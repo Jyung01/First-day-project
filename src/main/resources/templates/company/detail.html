@@ -36,29 +36,30 @@
         <div class="profile-left">
 
             <div class="company-logo">
-                네
+                <img th:src="${company.logoUrl}" alt="기업 로고" style="width: 100%; height: 100%; object-fit: cover;" th:if="${company.logoUrl != null}">
+                <span th:if="${company.logoUrl == null}" th:text="${#strings.substring(company.companyName, 0, 1)}">네</span>
             </div>
 
             <div class="company-summary">
 
-                <h2>네이버클라우드</h2>
+                <h2 th:text="${company.companyName}">네이버클라우드</h2>
 
                 <p class="company-category">
-                    IT 서비스 · 서울 강남 · 중견기업
+                    <span th:text="${company.industryName}">IT 서비스</span> · <span th:text="${company.addressLine1}">서울 강남</span> · <span th:text="${company.companySize}">중견기업</span>
                 </p>
 
                 <div class="company-rating">
 
                     <span>
-                        ⭐ 4.5
+                        ⭐ <span th:text="${company.averageRating != null ? company.averageRating : '4.5'}">4.5</span>
                     </span>
 
                     <span>
-                        리뷰 328개
+                        리뷰 <span th:text="${company.reviewCount}">328</span>개
                     </span>
 
                     <span>
-                        진행 중 공고 12개
+                        진행 중 공고 <span th:text="${company.jobPostingCount}">12</span>개
                     </span>
 
                 </div>
@@ -69,10 +70,8 @@
 
         <div class="profile-right">
 
-            <button
-                    class="wish-btn" >
-<!--                    th:data-company-id="${company.companyNo}"-->
-
+            <button class="wish-btn"
+                    th:data-company-id="${company.companyId}">
 
                 <i class="fa-regular fa-heart"></i>
 
@@ -80,12 +79,11 @@
 
             </button>
 
-            <button
-                    class="report-btn"
+            <button class="report-btn"
                     data-report-type="company"
-                    >
-<!--                data-target-id="1"-->
-<!--                data-target-name="네이버"-->
+                    th:data-target-id="${company.companyId}"
+                    th:data-target-name="${company.companyName}">
+
                 신고
 
             </button>
@@ -101,35 +99,24 @@
 
     <section class="company-tab">
 
-        <a
-                class="tab-btn active">
-            <!--                th:href="@{/company/detail(companyNo=${company.companyNo})}"-->
-
+        <a class="tab-btn active"
+           th:href="@{/company/detail(companyId=${company.companyId})}">
             기업소개
-
         </a>
 
-        <a
-                class="tab-btn">
-<!--            th:href="@{/company/recruit(companyNo=${company.companyNo})}"-->
-
+        <a class="tab-btn"
+           th:href="@{/company/recruit(companyId=${company.companyId})}">
             채용공고
-
         </a>
 
-        <a
-                class="tab-btn">
-<!--            th:href="@{/company/review(companyNo=${company.companyNo})}"-->
+        <a class="tab-btn"
+           th:href="@{/company/review(companyId=${company.companyId})}">
             기업리뷰
-
         </a>
 
-        <a
-                class="tab-btn">
-<!--            th:href="@{/company/interview(companyNo=${company.companyNo})}"-->
-
+        <a class="tab-btn"
+           th:href="@{/company/interview(companyId=${company.companyId})}">
             면접후기
-
         </a>
 
     </section>
@@ -151,14 +138,12 @@
                     기업 소개
                 </h3>
 
-                <p class="company-description">
-
+                <p class="company-description" th:text="${company.introduction}">
                     네이버클라우드는 클라우드 플랫폼과 AI 기술을 기반으로
                     기업의 디지털 전환을 지원합니다.
 
                     다양한 인프라와 AI 서비스를 제공하며
                     글로벌 수준의 기술력을 갖춘 기업입니다.
-
                 </p>
 
             </div>
@@ -176,7 +161,7 @@
 
                         <span>업종</span>
 
-                        <strong>IT 서비스</strong>
+                        <strong th:text="${company.industryName}">IT 서비스</strong>
 
                     </div>
 
@@ -184,7 +169,7 @@
 
                         <span>기업 규모</span>
 
-                        <strong>중견기업</strong>
+                        <strong th:text="${company.companySize}">중견기업</strong>
 
                     </div>
 
@@ -192,7 +177,7 @@
 
                         <span>설립연도</span>
 
-                        <strong>2009년</strong>
+                        <strong th:text="${company.establishedDate}">2009년</strong>
 
                     </div>
 
@@ -208,7 +193,7 @@
 
                         <span>주소</span>
 
-                        <strong>서울특별시 강남구</strong>
+                        <strong th:text="${company.addressLine1}">서울특별시 강남구</strong>
 
                     </div>
 
@@ -216,7 +201,9 @@
 
                         <span>홈페이지</span>
 
-                        <strong>기업 홈페이지 이동</strong>
+                        <strong>
+                            <a th:href="${company.homepageUrl}" th:text="${company.homepageUrl}" target="_blank">기업 홈페이지 이동</a>
+                        </strong>
 
                     </div>
 
@@ -235,17 +222,7 @@
 
                 <div class="benefit-list">
 
-                    <span>#유연근무</span>
-
-                    <span>#식대 지원</span>
-
-                    <span>#건강검진</span>
-
-                    <span>#교육비 지원</span>
-
-                    <span>#성과급</span>
-
-                    <span>#재택근무</span>
+                    <span th:each="benefit : ${company.benefitList}" th:text="'#' + ${benefit}">#유연근무</span>
 
                 </div>
 
@@ -268,7 +245,7 @@
                     </h3>
 
                     <span>
-                        12건
+                        <span th:text="${company.jobPostingCount}">12</span>건
                     </span>
 
                 </div>
@@ -328,13 +305,13 @@
 
                     <span>
 
-                        4.5 / 5.0
+                        <span th:text="${company.averageRating != null ? company.averageRating : '4.5'}">4.5</span> / 5.0
 
                     </span>
 
                     <small>
 
-                        기업리뷰 328건
+                        기업리뷰 <span th:text="${company.reviewCount}">328</span>건
 
                     </small>
 

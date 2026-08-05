@@ -4,8 +4,8 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.firstdayproject.dao.job.JobDao">
 
-    <!-- 인덱스 : 채용 공고 -->
-    <select id="selectJobPostingList"
+    <!-- 메인 : 채용 공고 최신순 -->
+    <select id="selectLatestJobPostingList"
             resultType="kr.co.firstdayproject.dto.job.JobDTO">
 
         SELECT
@@ -31,5 +31,35 @@
         ORDER BY jp.published_at DESC
         LIMIT 6;
     </select>
+
+    <!-- 메인 : 채용 공고 인기순 -->
+    <select id="selectPopularJobPostingList"
+            resultType="kr.co.firstdayproject.dto.job.JobDTO">
+
+        SELECT
+        jp.job_posting_id,
+        jp.title,
+        jp.work_region,
+        jp.career_type,
+        jp.employment_type,
+        jc.category_name,
+        c.company_name,
+        c.logo_url
+
+        FROM job_postings jp
+
+        INNER JOIN companies c
+        ON jp.company_id = c.company_id
+
+        INNER JOIN job_categories jc
+        ON jp.job_category_id = jc.job_category_id
+
+        WHERE jp.status = '모집중'
+
+        ORDER BY jp.view_count DESC
+        LIMIT 6;
+    </select>
+
+
 
 </mapper>
