@@ -18,11 +18,11 @@
                     <h1>고객센터 관리 · 공지사항</h1>
                     <p>공지사항·FAQ를 관리하고 회원 문의에 답변합니다.</p>
                 </div>
-                <a class="btn btn-primary" href="#">+ 공지사항 등록</a>
+                <button type="button" class="btn btn-primary" id="btn-open-create">+ 공지사항 등록</button>
             </div>
             <div class="stat-grid">
                 <div class="stat-card"><div class="label">미답변 문의</div><div class="value">7건</div></div>
-                <div class="stat-card orange"><div class="label">공지사항</div><div class="value">24건</div></div>
+                <div class="stat-card orange"><div class="label">공지사항</div><div class="value" th:text="${noticePage.totalElements} + '건'">24건</div></div>
                 <div class="stat-card green"><div class="label">FAQ</div><div class="value">38건</div></div>
             </div>
             <div class="panel">
@@ -31,30 +31,282 @@
                     <a class="tab" th:href="@{/admin/cs/faq}">FAQ</a>
                     <a class="tab" th:href="@{/admin/cs/qna}">1:1 문의</a>
                 </nav>
-                <div class="filter-bar">
-                    <select aria-label="카테고리"><option>카테고리 전체</option><option>서비스 안내</option><option>채용정보</option><option>호환</option></select>
-                    <input type="text" placeholder="제목 검색" aria-label="제목 검색" />
-                    <button type="button" class="btn-search">검색</button>
-                    <span class="result-count">총 24건</span>
-                </div>
+                <form class="filter-bar" th:action="@{/admin/cs/notice}" method="get">
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="제목 검색" aria-label="제목 검색" />
+                    <button type="submit" class="btn-search">검색</button>
+                    <span class="result-count" th:text="'총 ' + ${noticePage.totalElements} + '건'">총 24건</span>
+                </form>
                 <div class="table-wrap">
                     <table class="data-table">
-                        <thead><tr><th>번호</th><th>카테고리</th><th>제목</th><th>등록일</th><th>수정일</th><th>관리</th></tr></thead>
+                        <thead><tr><th>번호</th><th>상태</th><th>제목</th><th>등록일</th><th>수정일</th><th>관리</th></tr></thead>
                         <tbody>
-                        <tr><td>24</td><td><span class="tag blue">서비스 안내</span></td><td>첫출근 서비스 이용 안내</td><td>07.22</td><td>07.22</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
-                        <tr><td>23</td><td><span class="tag orange">채용정보</span></td><td>채용공고 작성 방법 안내</td><td>07.20</td><td>07.21</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
-                        <tr><td>22</td><td><span class="tag gray">호환</span></td><td>개인정보 수정 기능 안내</td><td>07.14</td><td>07.18</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
-                        <tr><td>21</td><td><span class="tag blue">서비스 안내</span></td><td>기업회원 승인 절차 안내</td><td>07.15</td><td>07.16</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
-                        <tr><td>20</td><td><span class="tag orange">채용정보</span></td><td>지원 취소 기한 안내</td><td>07.12</td><td>07.12</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
-                        <tr><td>19</td><td><span class="tag gray">기타</span></td><td>고객센터 운영시간 안내</td><td>07.10</td><td>07.10</td><td class="row-actions"><a href="#">수정</a><span class="sep">·</span><a href="#">삭제</a></td></tr>
+                        <tr th:each="notice : ${noticeList}" th:attr="data-id=${notice.noticeId}">
+                            <td>
+                                <span th:if="${notice.isPinned}" class="tag blue">고정</span>
+                                <span th:unless="${notice.isPinned}" th:text="${notice.noticeId}">24</span>
+                            </td>
+                            <td>
+                                <span th:text="${notice.status}"
+                                      th:classappend="${notice.status == '공개'} ? 'tag green' : (${notice.status == '비공개'} ? 'tag gray' : 'tag orange')"
+                                      class="tag">공개</span>
+                            </td>
+                            <td>
+                                <a href="#" class="js-edit-link" th:attr="data-id=${notice.noticeId}" th:text="${notice.title}">제목</a>
+                            </td>
+                            <td th:text="${notice.createdAtText}">07.22</td>
+                            <td th:text="${notice.updatedAtText}">07.22</td>
+                            <td class="row-actions">
+                                <a href="#" class="js-edit-link" th:attr="data-id=${notice.noticeId}">수정</a>
+                                <span class="sep">·</span>
+                                <a href="#" class="js-delete-link" th:attr="data-id=${notice.noticeId}">삭제</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(noticeList)}">
+                            <td colspan="6" style="text-align:center;">등록된 공지사항이 없습니다.</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
-                <nav class="pagination" aria-label="공지사항 페이지"><a class="active" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a></nav>
+                <nav class="pagination" aria-label="공지사항 페이지">
+                    <a th:each="p : ${#numbers.sequence(1, noticePage.totalPages)}"
+                       th:classappend="${p == currentPage} ? 'active' : ''"
+                       th:href="@{/admin/cs/notice(page=${p}, keyword=${keyword})}"
+                       th:text="${p}">1</a>
+                </nav>
             </div>
         </main>
     </div>
     <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
 </div>
+
+<!-- 등록/수정 모달 -->
+<div id="notice-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-box">
+        <h2 id="notice-modal-title">공지사항 등록</h2>
+        <form id="notice-form">
+            <input type="hidden" id="noticeId" name="noticeId" />
+            <div class="form-row">
+                <label for="title">제목</label>
+                <input type="text" id="title" name="title" required />
+            </div>
+            <div class="form-row">
+                <label for="content">내용</label>
+                <textarea id="content" name="content" rows="10" required></textarea>
+            </div>
+            <div class="form-row form-row-inline">
+                <label><input type="checkbox" id="isPinned" name="isPinned" /> 상단 고정</label>
+                <label for="status">게시 상태</label>
+                <select id="status" name="status">
+                    <option value="임시저장">임시저장</option>
+                    <option value="공개">공개</option>
+                    <option value="비공개">비공개</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn" id="btn-cancel">취소</button>
+                <button type="submit" class="btn btn-primary" id="btn-submit">등록</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .modal-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,.6);
+        display:flex; align-items:center; justify-content:center;
+        z-index: 1000;
+    }
+    .modal-box {
+        background: #1b2436;
+        color: #e8ebf1;
+        padding: 28px;
+        border-radius: 12px;
+        width: 560px;
+        max-width: 92vw;
+        max-height: 88vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,.5);
+        border: 1px solid #2c3750;
+    }
+    .modal-box h2 {
+        margin: 0 0 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+    }
+    .form-row { margin-bottom: 16px; display:flex; flex-direction:column; gap:8px; }
+    .form-row label { font-size: 13px; color: #a8b0c3; font-weight: 500; }
+    .form-row input[type=text],
+    .form-row textarea,
+    .form-row select {
+        background: #10182a;
+        border: 1px solid #2c3750;
+        color: #e8ebf1;
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;
+    }
+    .form-row input[type=text]:focus,
+    .form-row textarea:focus,
+    .form-row select:focus {
+        border-color: #4c6fff;
+    }
+    .modal-box * { box-sizing: border-box; }
+    .form-row input[type=text],
+    .form-row textarea {
+        width: 100%;
+    }
+    .form-row textarea {
+        resize: vertical;
+        min-height: 160px;
+        line-height: 1.5;
+        font-family: inherit; /* 부모(상위) 폰트 상속 */
+    }
+    .form-row-inline {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .form-row-inline label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #e8ebf1;
+        font-size: 14px;
+    }
+    .form-row-inline select { width: auto; min-width: 120px; }
+    .form-actions {
+        display:flex;
+        justify-content:flex-end;
+        gap:10px;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid #2c3750;
+    }
+    .form-actions .btn {
+        padding: 9px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        border: 1px solid #2c3750;
+        background: transparent;
+        color: #a8b0c3;
+        cursor: pointer;
+    }
+    .form-actions .btn:hover { background: #232e47; }
+    .form-actions .btn-primary {
+        background: #4c6fff;
+        border-color: #4c6fff;
+        color: #fff;
+    }
+    .form-actions .btn-primary:hover { background: #3d5be0; }
+</style>
+
+<script th:inline="javascript">
+    (function () {
+        const baseUrl = /*[[@{/admin/cs/notice}]]*/ '/admin/cs/notice';
+        const modal = document.getElementById('notice-modal');
+        const form = document.getElementById('notice-form');
+        const titleInput = document.getElementById('title');
+        const contentInput = document.getElementById('content');
+        const isPinnedInput = document.getElementById('isPinned');
+        const statusInput = document.getElementById('status');
+        const noticeIdInput = document.getElementById('noticeId');
+        const modalTitle = document.getElementById('notice-modal-title');
+        const submitBtn = document.getElementById('btn-submit');
+
+        function openModal(mode) {
+            modal.style.display = 'flex';
+            modalTitle.textContent = mode === 'edit' ? '공지사항 수정' : '공지사항 등록';
+            submitBtn.textContent = mode === 'edit' ? '수정 저장' : '등록';
+        }
+        function closeModal() {
+            modal.style.display = 'none';
+            form.reset();
+            noticeIdInput.value = '';
+        }
+        function resetForm() {
+            titleInput.value = '';
+            contentInput.value = '';
+            isPinnedInput.checked = false;
+            statusInput.value = '임시저장';
+            noticeIdInput.value = '';
+        }
+
+        document.getElementById('btn-open-create').addEventListener('click', function () {
+            resetForm();
+            openModal('create');
+        });
+        document.getElementById('btn-cancel').addEventListener('click', closeModal);
+
+        document.querySelectorAll('.js-edit-link').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                e.preventDefault();
+                const id = this.getAttribute('data-id');
+                fetch(baseUrl + '/' + id)
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('조회 실패');
+                        return res.json();
+                    })
+                    .then(function (notice) {
+                        noticeIdInput.value = notice.noticeId;
+                        titleInput.value = notice.title;
+                        contentInput.value = notice.content;
+                        isPinnedInput.checked = !!notice.isPinned;
+                        statusInput.value = notice.status;
+                        openModal('edit');
+                    })
+                    .catch(function () {
+                        alert('공지사항을 불러오지 못했습니다.');
+                    });
+            });
+        });
+
+        document.querySelectorAll('.js-delete-link').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (!confirm('삭제하시겠습니까?')) return;
+                const id = this.getAttribute('data-id');
+                fetch(baseUrl + '/' + id + '/delete', { method: 'POST' })
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('삭제 실패');
+                        location.reload();
+                    })
+                    .catch(function () {
+                        alert('삭제에 실패했습니다.');
+                    });
+            });
+        });
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const id = noticeIdInput.value;
+            const payload = {
+                title: titleInput.value,
+                content: contentInput.value,
+                isPinned: isPinnedInput.checked,
+                status: statusInput.value
+            };
+            const url = id ? (baseUrl + '/' + id) : baseUrl;
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+                .then(function (res) {
+                    if (!res.ok) throw new Error('저장 실패');
+                    location.reload();
+                })
+                .catch(function () {
+                    alert('저장에 실패했습니다.');
+                });
+        });
+    })();
+</script>
+<script th:src="@{/js/admin/common.js}"></script>
 </body>
 </html>

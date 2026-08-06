@@ -51,11 +51,7 @@ public class AdminController {
     @GetMapping("/salary")
     public String salary() { return "admin/salary/index"; }
 
-    @GetMapping("/cs/notice")
-    public String notice(Model model) {
-        model.addAttribute("activeMenu", "cs");
-        return "admin/cs/notice";
-    }
+    // notice 메서드 삭제됨 -> AdminNoticeController 가 전담
 
     @GetMapping("/cs/faq")
     public String faq(Model model) {
