@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>이력서 작성·수정 | 첫출근</title>
+        <title th:text="${editMode} ? '이력서 수정 | 첫출근' : '이력서 등록 | 첫출근'">이력서 작성·수정 | 첫출근</title>
 
         <!-- 사이트 공통 -->
         <link rel="stylesheet" th:href="@{/css/common.css}" />
@@ -34,7 +34,7 @@
                 <!-- 이력서 작성·수정 -->
                 <section class="mypage-content resume-form-content">
                     <div class="resume-form-heading">
-                        <h1 class="resume-form-title">이력서 작성·수정</h1>
+                        <h1 class="resume-form-title" th:text="${editMode} ? '이력서 수정' : '이력서 등록'">이력서 작성·수정</h1>
 
                         <p class="resume-form-description">기본정보·학력/경력·기술/프로젝트를 탭으로 입력합니다.</p>
                     </div>
@@ -78,13 +78,10 @@
                         </button>
                     </div>
 
-                    <!--
-                        등록·수정 공통 폼
-                        실제 POST 매핑 구현 후 th:object를 연결하면 됨
-                    -->
+                    <!-- 등록·수정 공통 폼 -->
                     <form class="resume-form" th:action="@{/my/resume/form}" method="post" data-resume-form novalidate>
                         <!-- 수정 시 이력서 ID -->
-                        <input type="hidden" name="resumeId" th:value="${resumeId}" />
+                        <input type="hidden" name="resumeId" th:value="${resumeForm.resumeId}" />
 
                         <!-- =================================================
                              1. 기본정보
@@ -115,8 +112,7 @@
                                         id="resumeTitle"
                                         name="title"
                                         class="resume-input"
-                                        th:value="${resume?.title}"
-                                        value="기본 이력서"
+                                        th:value="${resumeForm.title}"
                                         placeholder="이력서 제목을 입력해주세요"
                                         maxlength="100"
                                         required
@@ -135,10 +131,8 @@
                                         <input
                                             type="text"
                                             id="memberName"
-                                            name="memberName"
                                             class="resume-input"
                                             th:value="${memberName}"
-                                            value="김첫출"
                                             readonly
                                         />
                                     </div>
@@ -149,10 +143,8 @@
                                         <input
                                             type="email"
                                             id="email"
-                                            name="email"
                                             class="resume-input"
                                             th:value="${email}"
-                                            value="user@firstwork.co.kr"
                                             readonly
                                         />
                                     </div>
@@ -163,10 +155,8 @@
                                         <input
                                             type="tel"
                                             id="phone"
-                                            name="phone"
                                             class="resume-input"
                                             th:value="${phone}"
-                                            value="010-1234-5678"
                                             readonly
                                         />
                                     </div>
@@ -187,9 +177,9 @@
                                         data-required-field
                                         data-required-tab="basic"
                                     >
-                                        <option value="">경력 구분 선택</option>
-                                        <option value="NEW" selected>신입</option>
-                                        <option value="EXPERIENCED">경력</option>
+                                        <option value="" th:selected="${resumeForm.careerType == null}">경력 구분 선택</option>
+                                        <option value="신입" th:selected="${resumeForm.careerType == '신입'}">신입</option>
+                                        <option value="경력" th:selected="${resumeForm.careerType == '경력'}">경력</option>
                                     </select>
 
                                     <p class="resume-field-message" data-field-message="careerType"></p>
@@ -205,9 +195,8 @@
                                         class="resume-textarea resume-summary-textarea"
                                         placeholder="자신을 소개하는 한 줄을 입력해주세요"
                                         maxlength="300"
-                                    >
-문제를 끝까지 추적하고 데이터 흐름을 검증하는 백엔드 개발자입니다.</textarea
-                                    >
+                                        th:text="${resumeForm.summary}"
+                                    ></textarea>
 
                                     <div class="resume-text-counter"><span data-text-count="summary">0</span>/300</div>
                                 </div>
@@ -238,7 +227,7 @@
                             <div class="resume-panel-actions">
                                 <a th:href="@{/my/resume}" class="resume-secondary-button" data-resume-cancel> 취소 </a>
 
-                                <button type="submit" class="resume-primary-button" data-submit-mode="preview">
+                                <button type="submit" class="resume-primary-button" name="submitMode" value="preview">
                                     저장 후 보기
                                 </button>
                             </div>
@@ -263,10 +252,13 @@
                             </div>
 
                             <div class="resume-repeat-list" data-education-list>
-                                <!-- 학력 예시 -->
-                                <article class="resume-repeat-card" data-education-item>
+                                <article
+                                    class="resume-repeat-card"
+                                    data-education-item
+                                    th:each="education, eduStat : ${resumeForm.educations}"
+                                >
                                     <div class="resume-repeat-header">
-                                        <h3 data-education-title>학력 1</h3>
+                                        <h3 data-education-title th:text="|학력 ${eduStat.count}|">학력 1</h3>
 
                                         <button
                                             type="button"
@@ -287,9 +279,9 @@
 
                                             <input
                                                 type="text"
-                                                name="educations[0].schoolName"
+                                                th:attr="name=|educations[${eduStat.index}].schoolName|"
                                                 class="resume-input"
-                                                value="한국대학교"
+                                                th:value="${education.schoolName}"
                                                 placeholder="학교명 입력"
                                                 required
                                                 data-education-field="schoolName"
@@ -303,30 +295,30 @@
 
                                             <input
                                                 type="text"
-                                                name="educations[0].major"
+                                                th:attr="name=|educations[${eduStat.index}].major|"
                                                 class="resume-input"
-                                                value="컴퓨터공학과"
+                                                th:value="${education.major}"
                                                 placeholder="전공 입력"
                                                 data-education-field="major"
                                             />
                                         </div>
                                     </div>
 
-                                    <div class="resume-field-grid resume-field-grid-five">
+                                    <div class="resume-field-grid resume-field-grid-six">
                                         <div class="resume-field">
                                             <label>학위</label>
 
                                             <select
-                                                name="educations[0].degree"
+                                                th:attr="name=|educations[${eduStat.index}].degree|"
                                                 class="resume-input resume-select"
                                                 data-education-field="degree"
                                             >
-                                                <option value="">학위 선택</option>
-                                                <option value="HIGH_SCHOOL">고등학교</option>
-                                                <option value="ASSOCIATE">전문학사</option>
-                                                <option value="BACHELOR" selected>학사</option>
-                                                <option value="MASTER">석사</option>
-                                                <option value="DOCTOR">박사</option>
+                                                <option value="" th:selected="${education.degree == null}">학위 선택</option>
+                                                <option value="고등학교" th:selected="${education.degree == '고등학교'}">고등학교</option>
+                                                <option value="전문학사" th:selected="${education.degree == '전문학사'}">전문학사</option>
+                                                <option value="학사" th:selected="${education.degree == '학사'}">학사</option>
+                                                <option value="석사" th:selected="${education.degree == '석사'}">석사</option>
+                                                <option value="박사" th:selected="${education.degree == '박사'}">박사</option>
                                             </select>
                                         </div>
 
@@ -335,9 +327,9 @@
 
                                             <input
                                                 type="month"
-                                                name="educations[0].admissionDate"
+                                                th:attr="name=|educations[${eduStat.index}].admissionDate|"
                                                 class="resume-input"
-                                                value="2020-03"
+                                                th:value="${education.admissionDate}"
                                                 data-education-field="admissionDate"
                                             />
                                         </div>
@@ -347,9 +339,9 @@
 
                                             <input
                                                 type="month"
-                                                name="educations[0].graduationDate"
+                                                th:attr="name=|educations[${eduStat.index}].graduationDate|"
                                                 class="resume-input"
-                                                value="2026-02"
+                                                th:value="${education.graduationDate}"
                                                 data-education-field="graduationDate"
                                             />
                                         </div>
@@ -358,29 +350,49 @@
                                             <label>졸업 상태</label>
 
                                             <select
-                                                name="educations[0].graduationStatus"
+                                                th:attr="name=|educations[${eduStat.index}].graduationStatus|"
                                                 class="resume-input resume-select"
                                                 data-education-field="graduationStatus"
                                             >
-                                                <option value="">상태 선택</option>
-                                                <option value="ENROLLED">재학</option>
-                                                <option value="EXPECTED">졸업 예정</option>
-                                                <option value="GRADUATED" selected>졸업</option>
-                                                <option value="LEAVE">휴학</option>
-                                                <option value="DROPOUT">중퇴</option>
+                                                <option value="" th:selected="${education.graduationStatus == null}">상태 선택</option>
+                                                <option value="재학" th:selected="${education.graduationStatus == '재학'}">재학</option>
+                                                <option value="휴학" th:selected="${education.graduationStatus == '휴학'}">휴학</option>
+                                                <option value="졸업예정" th:selected="${education.graduationStatus == '졸업예정'}">졸업 예정</option>
+                                                <option value="졸업" th:selected="${education.graduationStatus == '졸업'}">졸업</option>
+                                                <option value="수료" th:selected="${education.graduationStatus == '수료'}">수료</option>
+                                                <option value="중퇴" th:selected="${education.graduationStatus == '중퇴'}">중퇴</option>
                                             </select>
                                         </div>
 
                                         <div class="resume-field">
-                                            <label>학점 / 기준</label>
+                                            <label>학점</label>
 
                                             <input
-                                                type="text"
-                                                name="educations[0].grade"
+                                                type="number"
+                                                th:attr="name=|educations[${eduStat.index}].gpaScore|"
                                                 class="resume-input"
-                                                value="3.8 / 4.5"
-                                                placeholder="예: 3.8 / 4.5"
-                                                data-education-field="grade"
+                                                th:value="${education.gpaScore}"
+                                                placeholder="예: 3.8"
+                                                step="0.01"
+                                                min="0"
+                                                max="9.99"
+                                                data-education-field="gpaScore"
+                                            />
+                                        </div>
+
+                                        <div class="resume-field">
+                                            <label>학점 기준</label>
+
+                                            <input
+                                                type="number"
+                                                th:attr="name=|educations[${eduStat.index}].gpaScale|"
+                                                class="resume-input"
+                                                th:value="${education.gpaScale}"
+                                                placeholder="예: 4.5"
+                                                step="0.01"
+                                                min="0"
+                                                max="9.99"
+                                                data-education-field="gpaScale"
                                             />
                                         </div>
                                     </div>
@@ -395,10 +407,13 @@
                             </div>
 
                             <div class="resume-repeat-list" data-career-list>
-                                <!-- 경력 예시 -->
-                                <article class="resume-repeat-card" data-career-item>
+                                <article
+                                    class="resume-repeat-card"
+                                    data-career-item
+                                    th:each="career, careerStat : ${resumeForm.careers}"
+                                >
                                     <div class="resume-repeat-header">
-                                        <h3 data-career-title>경력 1</h3>
+                                        <h3 data-career-title th:text="|경력 ${careerStat.count}|">경력 1</h3>
 
                                         <button
                                             type="button"
@@ -416,9 +431,9 @@
 
                                             <input
                                                 type="text"
-                                                name="careers[0].companyName"
+                                                th:attr="name=|careers[${careerStat.index}].companyName|"
                                                 class="resume-input"
-                                                value="첫출근테크"
+                                                th:value="${career.companyName}"
                                                 placeholder="회사명 입력"
                                                 data-career-field="companyName"
                                             />
@@ -429,11 +444,11 @@
 
                                             <input
                                                 type="text"
-                                                name="careers[0].position"
+                                                th:attr="name=|careers[${careerStat.index}].positionTitle|"
                                                 class="resume-input"
-                                                value="백엔드 개발"
+                                                th:value="${career.positionTitle}"
                                                 placeholder="담당 업무 입력"
-                                                data-career-field="position"
+                                                data-career-field="positionTitle"
                                             />
                                         </div>
                                     </div>
@@ -444,9 +459,9 @@
 
                                             <input
                                                 type="month"
-                                                name="careers[0].startDate"
+                                                th:attr="name=|careers[${careerStat.index}].startDate|"
                                                 class="resume-input"
-                                                value="2025-03"
+                                                th:value="${career.startDate}"
                                                 data-career-field="startDate"
                                             />
                                         </div>
@@ -456,9 +471,9 @@
 
                                             <input
                                                 type="month"
-                                                name="careers[0].endDate"
+                                                th:attr="name=|careers[${careerStat.index}].endDate|"
                                                 class="resume-input"
-                                                value="2026-02"
+                                                th:value="${career.endDate}"
                                                 data-career-field="endDate"
                                             />
                                         </div>
@@ -467,13 +482,13 @@
                                             <label>재직 상태</label>
 
                                             <select
-                                                name="careers[0].employmentStatus"
+                                                th:attr="name=|careers[${careerStat.index}].employmentStatus|"
                                                 class="resume-input resume-select"
                                                 data-career-field="employmentStatus"
                                             >
-                                                <option value="">상태 선택</option>
-                                                <option value="WORKING">재직</option>
-                                                <option value="RESIGNED" selected>퇴사</option>
+                                                <option value="" th:selected="${career.employmentStatus == null}">상태 선택</option>
+                                                <option value="재직" th:selected="${career.employmentStatus == '재직'}">재직</option>
+                                                <option value="퇴사" th:selected="${career.employmentStatus == '퇴사'}">퇴사</option>
                                             </select>
                                         </div>
 
@@ -481,15 +496,17 @@
                                             <label>고용 형태</label>
 
                                             <select
-                                                name="careers[0].employmentType"
+                                                th:attr="name=|careers[${careerStat.index}].employmentType|"
                                                 class="resume-input resume-select"
                                                 data-career-field="employmentType"
                                             >
-                                                <option value="">형태 선택</option>
-                                                <option value="FULL_TIME">정규직</option>
-                                                <option value="CONTRACT">계약직</option>
-                                                <option value="INTERN" selected>인턴</option>
-                                                <option value="PART_TIME">아르바이트</option>
+                                                <option value="" th:selected="${career.employmentType == null}">형태 선택</option>
+                                                <option value="정규직" th:selected="${career.employmentType == '정규직'}">정규직</option>
+                                                <option value="계약직" th:selected="${career.employmentType == '계약직'}">계약직</option>
+                                                <option value="인턴" th:selected="${career.employmentType == '인턴'}">인턴</option>
+                                                <option value="프리랜서" th:selected="${career.employmentType == '프리랜서'}">프리랜서</option>
+                                                <option value="파견직" th:selected="${career.employmentType == '파견직'}">파견직</option>
+                                                <option value="기타" th:selected="${career.employmentType == '기타'}">기타</option>
                                             </select>
                                         </div>
                                     </div>
@@ -498,20 +515,19 @@
                                         <label>담당 업무 상세</label>
 
                                         <textarea
-                                            name="careers[0].description"
+                                            th:attr="name=|careers[${careerStat.index}].description|"
                                             class="resume-textarea"
                                             placeholder="담당 업무와 성과를 입력해주세요"
                                             maxlength="1000"
                                             data-career-field="description"
-                                        >
-Spring Boot 기반 채용·지원 API 개발</textarea
-                                        >
+                                            th:text="${career.description}"
+                                        ></textarea>
                                     </div>
                                 </article>
                             </div>
 
                             <div class="resume-panel-actions resume-panel-actions-end">
-                                <button type="submit" class="resume-primary-button" data-submit-mode="save">
+                                <button type="submit" class="resume-primary-button" name="submitMode" value="save">
                                     저장
                                 </button>
                             </div>
@@ -544,7 +560,7 @@ Spring Boot 기반 채용·지원 API 개발</textarea
                                         <span class="resume-label-option">(최대 10개)</span>
                                     </label>
 
-                                    <span class="resume-skill-count" data-skill-selection-count> 6/10 </span>
+                                    <span class="resume-skill-count" data-skill-selection-count th:text="|${#lists.size(skillChips)}/10|"> 0/10 </span>
                                 </div>
 
                                 <div class="resume-skill-selection-box">
@@ -552,73 +568,23 @@ Spring Boot 기반 채용·지원 API 개발</textarea
                                         <button
                                             type="button"
                                             class="resume-skill-chip"
-                                            data-skill-id="1"
-                                            data-skill-name="Java"
+                                            th:each="chip : ${skillChips}"
+                                            th:attr="data-skill-id=${chip.id},data-skill-name=${chip.name}"
                                         >
-                                            Java
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            class="resume-skill-chip"
-                                            data-skill-id="2"
-                                            data-skill-name="Spring Boot"
-                                        >
-                                            Spring Boot
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            class="resume-skill-chip"
-                                            data-skill-id="3"
-                                            data-skill-name="MyBatis"
-                                        >
-                                            MyBatis
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            class="resume-skill-chip"
-                                            data-skill-id="4"
-                                            data-skill-name="MySQL"
-                                        >
-                                            MySQL
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            class="resume-skill-chip"
-                                            data-skill-id="5"
-                                            data-skill-name="AWS"
-                                        >
-                                            AWS
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            class="resume-skill-chip"
-                                            data-skill-id="6"
-                                            data-skill-name="Docker"
-                                        >
-                                            Docker
+                                            <span th:text="${chip.name}">Java</span>
                                             <span aria-hidden="true">×</span>
                                         </button>
                                     </div>
 
-                                    <p class="resume-skill-empty" data-skill-empty hidden>선택한 기술이 없습니다.</p>
+                                    <p class="resume-skill-empty" data-skill-empty th:hidden="${not #lists.isEmpty(skillChips)}">선택한 기술이 없습니다.</p>
 
                                     <div data-skill-hidden-inputs>
-                                        <input type="hidden" name="skillIds" value="1" />
-                                        <input type="hidden" name="skillIds" value="2" />
-                                        <input type="hidden" name="skillIds" value="3" />
-                                        <input type="hidden" name="skillIds" value="4" />
-                                        <input type="hidden" name="skillIds" value="5" />
-                                        <input type="hidden" name="skillIds" value="6" />
+                                        <input
+                                            type="hidden"
+                                            name="skillIds"
+                                            th:each="chip : ${skillChips}"
+                                            th:value="${chip.id}"
+                                        />
                                     </div>
 
                                     <button type="button" class="resume-skill-open-button" data-skill-modal-open>
@@ -631,9 +597,13 @@ Spring Boot 기반 채용·지원 API 개발</textarea
 
                             <!-- 프로젝트 목록 -->
                             <div class="resume-repeat-list resume-project-list" data-project-list>
-                                <article class="resume-repeat-card" data-project-item>
+                                <article
+                                    class="resume-repeat-card"
+                                    data-project-item
+                                    th:each="project, projectStat : ${resumeForm.projects}"
+                                >
                                     <div class="resume-repeat-header">
-                                        <h3 data-project-title>프로젝트 1</h3>
+                                        <h3 data-project-title th:text="|프로젝트 ${projectStat.count}|">프로젝트 1</h3>
 
                                         <button
                                             type="button"
@@ -654,9 +624,9 @@ Spring Boot 기반 채용·지원 API 개발</textarea
 
                                             <input
                                                 type="text"
-                                                name="projects[0].projectName"
+                                                th:attr="name=|projects[${projectStat.index}].projectName|"
                                                 class="resume-input"
-                                                value="첫출근 채용 플랫폼"
+                                                th:value="${project.projectName}"
                                                 placeholder="프로젝트명 입력"
                                                 required
                                                 data-project-field="projectName"
@@ -670,11 +640,11 @@ Spring Boot 기반 채용·지원 API 개발</textarea
 
                                             <input
                                                 type="text"
-                                                name="projects[0].role"
+                                                th:attr="name=|projects[${projectStat.index}].roleText|"
                                                 class="resume-input"
-                                                value="이력서·AI 첨삭 기능 설계"
+                                                th:value="${project.roleText}"
                                                 placeholder="담당 역할 입력"
-                                                data-project-field="role"
+                                                data-project-field="roleText"
                                             />
                                         </div>
                                     </div>
@@ -683,20 +653,19 @@ Spring Boot 기반 채용·지원 API 개발</textarea
                                         <label>프로젝트 설명</label>
 
                                         <textarea
-                                            name="projects[0].description"
+                                            th:attr="name=|projects[${projectStat.index}].description|"
                                             class="resume-textarea resume-project-textarea"
                                             placeholder="프로젝트 내용과 담당 기능을 입력해주세요"
                                             maxlength="1500"
                                             data-project-field="description"
-                                        >
-채용공고, 지원 문서, AI 자기소개서 첨삭 흐름을 설계하고 구현했습니다.</textarea
-                                        >
+                                            th:text="${project.description}"
+                                        ></textarea>
                                     </div>
                                 </article>
                             </div>
 
                             <div class="resume-panel-actions resume-panel-actions-end">
-                                <button type="submit" class="resume-primary-button" data-submit-mode="preview">
+                                <button type="submit" class="resume-primary-button" name="submitMode" value="preview">
                                     저장 후 보기
                                 </button>
                             </div>
@@ -742,17 +711,17 @@ Spring Boot 기반 채용·지원 API 개발</textarea
                     </div>
                 </div>
 
-                <div class="resume-field-grid resume-field-grid-five">
+                <div class="resume-field-grid resume-field-grid-six">
                     <div class="resume-field">
                         <label>학위</label>
 
                         <select class="resume-input resume-select" data-education-field="degree">
                             <option value="">학위 선택</option>
-                            <option value="HIGH_SCHOOL">고등학교</option>
-                            <option value="ASSOCIATE">전문학사</option>
-                            <option value="BACHELOR">학사</option>
-                            <option value="MASTER">석사</option>
-                            <option value="DOCTOR">박사</option>
+                            <option value="고등학교">고등학교</option>
+                            <option value="전문학사">전문학사</option>
+                            <option value="학사">학사</option>
+                            <option value="석사">석사</option>
+                            <option value="박사">박사</option>
                         </select>
                     </div>
 
@@ -773,22 +742,40 @@ Spring Boot 기반 채용·지원 API 개발</textarea
 
                         <select class="resume-input resume-select" data-education-field="graduationStatus">
                             <option value="">상태 선택</option>
-                            <option value="ENROLLED">재학</option>
-                            <option value="EXPECTED">졸업 예정</option>
-                            <option value="GRADUATED">졸업</option>
-                            <option value="LEAVE">휴학</option>
-                            <option value="DROPOUT">중퇴</option>
+                            <option value="재학">재학</option>
+                            <option value="휴학">휴학</option>
+                            <option value="졸업예정">졸업 예정</option>
+                            <option value="졸업">졸업</option>
+                            <option value="수료">수료</option>
+                            <option value="중퇴">중퇴</option>
                         </select>
                     </div>
 
                     <div class="resume-field">
-                        <label>학점 / 기준</label>
+                        <label>학점</label>
 
                         <input
-                            type="text"
+                            type="number"
                             class="resume-input"
-                            placeholder="예: 3.8 / 4.5"
-                            data-education-field="grade"
+                            placeholder="예: 3.8"
+                            step="0.01"
+                            min="0"
+                            max="9.99"
+                            data-education-field="gpaScore"
+                        />
+                    </div>
+
+                    <div class="resume-field">
+                        <label>학점 기준</label>
+
+                        <input
+                            type="number"
+                            class="resume-input"
+                            placeholder="예: 4.5"
+                            step="0.01"
+                            min="0"
+                            max="9.99"
+                            data-education-field="gpaScale"
                         />
                     </div>
                 </div>
@@ -825,7 +812,7 @@ Spring Boot 기반 채용·지원 API 개발</textarea
                             type="text"
                             class="resume-input"
                             placeholder="담당 업무 입력"
-                            data-career-field="position"
+                            data-career-field="positionTitle"
                         />
                     </div>
                 </div>
@@ -848,8 +835,8 @@ Spring Boot 기반 채용·지원 API 개발</textarea
 
                         <select class="resume-input resume-select" data-career-field="employmentStatus">
                             <option value="">상태 선택</option>
-                            <option value="WORKING">재직</option>
-                            <option value="RESIGNED">퇴사</option>
+                            <option value="재직">재직</option>
+                            <option value="퇴사">퇴사</option>
                         </select>
                     </div>
 
@@ -858,10 +845,12 @@ Spring Boot 기반 채용·지원 API 개발</textarea
 
                         <select class="resume-input resume-select" data-career-field="employmentType">
                             <option value="">형태 선택</option>
-                            <option value="FULL_TIME">정규직</option>
-                            <option value="CONTRACT">계약직</option>
-                            <option value="INTERN">인턴</option>
-                            <option value="PART_TIME">아르바이트</option>
+                            <option value="정규직">정규직</option>
+                            <option value="계약직">계약직</option>
+                            <option value="인턴">인턴</option>
+                            <option value="프리랜서">프리랜서</option>
+                            <option value="파견직">파견직</option>
+                            <option value="기타">기타</option>
                         </select>
                     </div>
                 </div>
@@ -915,7 +904,7 @@ Spring Boot 기반 채용·지원 API 개발</textarea
                             type="text"
                             class="resume-input"
                             placeholder="담당 역할 입력"
-                            data-project-field="role"
+                            data-project-field="roleText"
                         />
                     </div>
                 </div>
@@ -941,6 +930,17 @@ Spring Boot 기반 채용·지원 API 개발</textarea
 
         <!-- 기술 선택 모달 -->
         <div th:replace="~{modal/common/skill-select-modal :: skillSelectModal}"></div>
+
+        <!-- 기술 선택 모달에 실제 DB 기술 목록을 채우기 위한 데이터 소스 -->
+        <div hidden data-resume-skill-source>
+            <span
+                th:each="skill : ${activeSkills}"
+                th:attr="data-skill-id=${skill.skillId},
+                    data-parent-id=${skill.parentId},
+                    data-depth=${skill.depth},
+                    data-skill-name=${skill.skillName}"
+            ></span>
+        </div>
 
         <script th:src="@{/js/common.js}"></script>
         <script th:src="@{/js/modal.js}"></script>

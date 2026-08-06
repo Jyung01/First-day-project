@@ -141,6 +141,10 @@
     grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
+.resume-field-grid-six {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .resume-field {
     position: relative;
     display: flex;
@@ -562,7 +566,8 @@
 ========================================================= */
 
 @media (max-width: 1100px) {
-    .resume-field-grid-five {
+    .resume-field-grid-five,
+    .resume-field-grid-six {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
@@ -592,7 +597,8 @@
 
     .resume-field-grid,
     .resume-field-grid-four,
-    .resume-field-grid-five {
+    .resume-field-grid-five,
+    .resume-field-grid-six {
         grid-template-columns: 1fr;
     }
 

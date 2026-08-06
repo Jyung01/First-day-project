@@ -45,8 +45,6 @@
 
                     <!-- 이력서 목록 -->
                     <div class="resume-list" data-resume-list>
-                        <!-- 서버 연결 후 사용 -->
-                        <!--
                         <article
                             class="resume-card"
                             th:each="resume : ${resumes}"
@@ -94,97 +92,6 @@
                                         data-resume-delete=${resume.id},
                                         data-resume-title=${resume.title}
                                     "
-                                >
-                                    삭제
-                                </button>
-                            </div>
-                        </article>
-                        -->
-
-                        <!-- 화면 확인용 예시 1 -->
-                        <article class="resume-card" data-resume-id="1">
-                            <div class="resume-card-main">
-                                <div class="resume-card-icon" aria-hidden="true"></div>
-
-                                <div class="resume-card-info">
-                                    <h2 class="resume-card-title">백엔드 개발 이력서</h2>
-
-                                    <p class="resume-card-summary">백엔드 개발 · 경력</p>
-                                </div>
-                            </div>
-
-                            <div class="resume-card-actions">
-                                <a th:href="@{/my/resume/detail(id=1)}" class="resume-action-button resume-view-button">
-                                    이력서 보기
-                                </a>
-
-                                <a th:href="@{/my/resume/form(id=1)}" class="resume-action-button"> 수정 </a>
-
-                                <button
-                                    type="button"
-                                    class="resume-action-button"
-                                    data-resume-delete="1"
-                                    data-resume-title="백엔드 개발 이력서"
-                                >
-                                    삭제
-                                </button>
-                            </div>
-                        </article>
-
-                        <!-- 화면 확인용 예시 2 -->
-                        <article class="resume-card" data-resume-id="2">
-                            <div class="resume-card-main">
-                                <div class="resume-card-icon" aria-hidden="true"></div>
-
-                                <div class="resume-card-info">
-                                    <h2 class="resume-card-title">클라우드 엔지니어 지원용</h2>
-
-                                    <p class="resume-card-summary">클라우드·DevOps · 경력</p>
-                                </div>
-                            </div>
-
-                            <div class="resume-card-actions">
-                                <a th:href="@{/my/resume/detail(id=2)}" class="resume-action-button resume-view-button">
-                                    이력서 보기
-                                </a>
-
-                                <a th:href="@{/my/resume/form(id=2)}" class="resume-action-button"> 수정 </a>
-
-                                <button
-                                    type="button"
-                                    class="resume-action-button"
-                                    data-resume-delete="2"
-                                    data-resume-title="클라우드 엔지니어 지원용"
-                                >
-                                    삭제
-                                </button>
-                            </div>
-                        </article>
-
-                        <!-- 화면 확인용 예시 3 -->
-                        <article class="resume-card" data-resume-id="3">
-                            <div class="resume-card-main">
-                                <div class="resume-card-icon" aria-hidden="true"></div>
-
-                                <div class="resume-card-info">
-                                    <h2 class="resume-card-title">신입 지원 이력서</h2>
-
-                                    <p class="resume-card-summary">웹 개발 · 프로젝트 중심</p>
-                                </div>
-                            </div>
-
-                            <div class="resume-card-actions">
-                                <a th:href="@{/my/resume/detail(id=3)}" class="resume-action-button resume-view-button">
-                                    이력서 보기
-                                </a>
-
-                                <a th:href="@{/my/resume/form(id=3)}" class="resume-action-button"> 수정 </a>
-
-                                <button
-                                    type="button"
-                                    class="resume-action-button"
-                                    data-resume-delete="3"
-                                    data-resume-title="신입 지원 이력서"
                                 >
                                     삭제
                                 </button>
