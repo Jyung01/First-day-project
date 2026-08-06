@@ -1,6 +1,7 @@
 package kr.co.firstdayproject.service.admin;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.entity.job.JobPosting;
 import kr.co.firstdayproject.entity.member.User;
@@ -34,9 +35,9 @@ public class AdminJobModerationService {
                 "채용공고를 찾을 수 없습니다."
             ));
 
-        if (!"모집중".equals(posting.getStatus())) {
+        if (!Set.of("모집예정", "모집중").contains(posting.getStatus())) {
             throw new IllegalArgumentException(
-                "게시 중인 채용공고만 숨김 처리할 수 있습니다."
+                "모집예정 또는 모집중인 채용공고만 숨김 처리할 수 있습니다."
             );
         }
 
@@ -77,7 +78,12 @@ public class AdminJobModerationService {
             posting.setClosedAt(now);
         } else {
             validatePublishableCompany(posting.getCompanyId());
-            posting.setStatus("모집중");
+            boolean scheduled = posting.getApplyStartAt() != null
+                && posting.getApplyStartAt().isAfter(now);
+            posting.setStatus(scheduled ? "모집예정" : "모집중");
+            if (!scheduled && posting.getPublishedAt() == null) {
+                posting.setPublishedAt(now);
+            }
             posting.setCloseReason(null);
             posting.setClosedAt(null);
         }

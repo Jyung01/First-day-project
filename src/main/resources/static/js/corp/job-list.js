@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
       message: `“${jobTitle}” 채용공고를 삭제할까요?`,
       extraHtml: `
         <div class="corp-job-modal-notice corp-job-modal-notice--danger">
-          <strong>임시저장·마감 공고만 삭제할 수 있습니다.</strong>
+          <strong>임시저장·모집예정·마감 공고만 삭제할 수 있습니다.</strong>
           <span>마감 공고의 기존 지원 내역은 유지됩니다.</span>
         </div>
       `,

@@ -210,6 +210,16 @@
   background: #f1f5f9;
 }
 
+.corp-badge--scheduled {
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.corp-badge--closed {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
 .corp-badge--review {
   color: #b7791f;
   background: #fff8db;

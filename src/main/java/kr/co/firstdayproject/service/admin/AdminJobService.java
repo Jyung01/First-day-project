@@ -40,6 +40,7 @@ public class AdminJobService {
     private static final int PAGE_SIZE = 10;
     private static final String CANCELLED_APPLICATION_STATUS = "지원취소";
     private static final List<String> MANAGED_STATUSES = List.of(
+        "모집예정",
         "모집중",
         "마감",
         "숨김",
@@ -95,7 +96,9 @@ public class AdminJobService {
             posting.getHeadcount(),
             posting.getCreatedAt(),
             posting.getPublishedAt(),
+            posting.getApplyStartAt(),
             posting.getApplyEndAt(),
+            posting.getClosedAt(),
             posting.getHiddenAt(),
             posting.getHiddenReason(),
             applicationRepository
@@ -218,6 +221,7 @@ public class AdminJobService {
         }
 
         return switch (status) {
+            case "SCHEDULED" -> "모집예정";
             case "POSTED" -> "모집중";
             case "CLOSED" -> "마감";
             case "HIDDEN" -> "숨김";

@@ -283,6 +283,20 @@ public class CorpJobController {
         boolean hiddenEdit = "REVIEW".equals(request.getSubmitType());
         model.addAttribute("isHiddenEdit", hiddenEdit);
         model.addAttribute(
+            "isRecruitingEdit",
+            corpJobQueryService.isRecruitingJobPosting(
+                companyId,
+                jobPostingId
+            )
+        );
+        model.addAttribute(
+            "isScheduledEdit",
+            corpJobQueryService.isScheduledJobPosting(
+                companyId,
+                jobPostingId
+            )
+        );
+        model.addAttribute(
             "hiddenReason",
             hiddenEdit
                 ? corpJobQueryService.getHiddenReason(

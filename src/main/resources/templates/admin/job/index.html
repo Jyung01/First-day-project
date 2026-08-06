@@ -28,7 +28,7 @@
               </small>
             </article>
             <article class="operation-stat">
-              <span>게시 중</span>
+              <span>모집중</span>
               <strong th:text="|${statistics['open']}건|">0건</strong>
               <small th:text="|마감 임박 ${statistics['closingSoon']}건|">
                 마감 임박 0건
@@ -53,7 +53,12 @@
                 class="operation-tab"
                 th:classappend="${selectedStatus == 'POSTED'} ? 'is-active'"
                 th:href="@{/admin/job(status='POSTED')}"
-              >게시 중</a>
+              >모집중</a>
+              <a
+                class="operation-tab"
+                th:classappend="${selectedStatus == 'SCHEDULED'} ? 'is-active'"
+                th:href="@{/admin/job(status='SCHEDULED')}"
+              >모집예정</a>
               <a
                 class="operation-tab"
                 th:classappend="${selectedStatus == 'CLOSED'} ? 'is-active'"
@@ -120,8 +125,7 @@
                   <th>기업명</th>
                   <th>공고 제목</th>
                   <th>직무</th>
-                  <th>등록일</th>
-                  <th>마감일</th>
+                  <th>공고 작성일</th>
                   <th>상태</th>
                   <th>관리</th>
                 </tr>
@@ -136,24 +140,23 @@
                     th:text="${#temporals.format(job.createdAt(), 'MM.dd')}"
                   >08.05</td>
                   <td
-                    th:text="${job.applyEndAt() == null
-                      ? '미설정'
-                      : #temporals.format(job.applyEndAt(), 'MM.dd')}"
-                  >08.31</td>
-                  <td
                     class="status"
                     th:classappend="${job.status() == '모집중'}
                       ? 'status--posted'
+                      : (${job.status() == '모집예정'}
+                        ? 'status--scheduled'
                       : (${job.status() == '마감'}
                         ? 'status--closed'
                         : (${job.status() == '숨김'}
                           ? 'status--hidden'
-                          : 'status--review'))"
+                          : 'status--review')))"
                     th:text="${job.status() == '모집중'
-                      ? '게시 중'
+                      ? '모집중'
+                      : (job.status() == '모집예정'
+                        ? '모집예정'
                       : (job.status() == '재검토요청'
                         ? '재검토 요청'
-                        : job.status())}"
+                        : job.status()))}"
                   >상태</td>
                   <td>
                     <a
@@ -163,7 +166,7 @@
                   </td>
                 </tr>
                 <tr th:if="${jobPage.empty}">
-                  <td class="operation-table-empty" colspan="8">
+                  <td class="operation-table-empty" colspan="7">
                     조건에 맞는 채용공고가 없습니다.
                   </td>
                 </tr>

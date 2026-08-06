@@ -89,11 +89,36 @@
                 <input th:value="${job.salary()}" readonly />
               </div>
               <div class="form-field">
-                <label>접수 마감일</label>
+                <label>공고 작성일</label>
+                <input
+                  th:value="${#temporals.format(job.createdAt(), 'yyyy.MM.dd')}"
+                  readonly
+                />
+              </div>
+              <div class="form-field">
+                <label>실제 공개일</label>
+                <input
+                  th:value="${job.publishedAt() == null
+                    ? '미등록'
+                    : #temporals.format(job.publishedAt(), 'yyyy.MM.dd')}"
+                  readonly
+                />
+              </div>
+              <div class="form-field">
+                <label>모집 마감 예정일</label>
                 <input
                   th:value="${job.applyEndAt() == null
                     ? '미설정'
                     : #temporals.format(job.applyEndAt(), 'yyyy.MM.dd')}"
+                  readonly
+                />
+              </div>
+              <div class="form-field">
+                <label>실제 마감일</label>
+                <input
+                  th:value="${job.closedAt() == null
+                    ? '미설정'
+                    : #temporals.format(job.closedAt(), 'yyyy.MM.dd HH:mm')}"
                   readonly
                 />
               </div>
@@ -189,7 +214,7 @@
                 <label>급여</label><input value="회사 내규에 따름" />
               </div>
               <div class="form-field">
-                <label>접수 마감일</label
+                <label>모집 마감 예정일</label
                 ><input type="date" value="2026-07-29" />
               </div>
               <div class="form-field">
