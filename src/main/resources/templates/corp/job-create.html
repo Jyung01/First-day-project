@@ -70,6 +70,9 @@
           <form
             id="jobForm"
             class="corp-card job-form-card"
+            th:attr="data-edit=${isEdit},
+              data-scheduled-edit=${isScheduledEdit == true},
+              data-draft-edit=${isDraftEdit == true}"
             th:action="${isEdit}
               ? @{/corp/job/{id}/edit(id=${jobPostingId})}
               : @{/corp/job/create}"
@@ -101,7 +104,7 @@
             <h2>공고 기본정보</h2>
             <div class="job-form-grid">
               <div class="form-field form-field--wide">
-                <label for="jobTitle">공고 제목</label
+                <label class="field-required" for="jobTitle">공고 제목</label
                 ><input
                   id="jobTitle"
                   name="title"
@@ -111,7 +114,7 @@
                 />
               </div>
               <div class="form-field">
-                <label for="primaryJobCategory">1차 직무 카테고리</label
+                <label class="field-required" for="primaryJobCategory">1차 직무 카테고리</label
                 ><select id="primaryJobCategory" required>
                   <option value="">1차 카테고리를 선택하세요</option>
                   <option
@@ -122,7 +125,7 @@
                 </select>
               </div>
               <div class="form-field">
-                <label for="category">2차 직무 카테고리</label
+                <label class="field-required" for="category">2차 직무 카테고리</label
                 ><select
                   id="category"
                   name="jobCategoryId"
@@ -143,7 +146,7 @@
                 </select>
               </div>
               <div class="form-field">
-                <label for="employment">고용 형태</label
+                <label class="field-required" for="employment">고용 형태</label
                 ><select
                   id="employment"
                   name="employmentType"
@@ -160,7 +163,7 @@
                 </select>
               </div>
               <div class="form-field">
-                <label for="education">학력</label
+                <label class="field-required" for="education">학력</label
                 ><select
                   id="education"
                   name="educationLevel"
@@ -177,7 +180,7 @@
                 </select>
               </div>
               <div class="form-field">
-                <label for="careerType">경력 구분</label
+                <label class="field-required" for="careerType">경력 구분</label
                 ><select
                   id="careerType"
                   name="careerType"
@@ -191,7 +194,7 @@
                 </select>
               </div>
               <div class="form-field">
-                <label>경력 연수</label>
+                <label class="field-conditional">경력 연수</label>
                 <div class="range-inputs">
                   <div class="number-input">
                     <input
@@ -226,7 +229,7 @@
                 </small>
               </div>
               <div class="form-field">
-                <label for="salaryText">급여 표시</label
+                <label class="field-required" for="salaryText">급여 표시</label
                 ><select
                   id="salaryText"
                   name="salaryText"
@@ -241,7 +244,7 @@
                 </select>
               </div>
               <div class="form-field">
-                <label>연봉 범위</label>
+                <label class="field-conditional">연봉 범위</label>
                 <div class="range-inputs">
                   <div class="number-input number-input--salary">
                     <input
@@ -274,7 +277,7 @@
                 </small>
               </div>
               <div class="form-field">
-                <label for="workRegion">근무 지역</label
+                <label class="field-required" for="workRegion">근무 지역</label
                 ><input
                   id="workRegion"
                   name="workRegion"
@@ -284,18 +287,50 @@
                   placeholder="주소 검색 시 자동 입력됩니다."
                 />
               </div>
-              <div class="form-field">
-                <label for="deadline">접수 마감일</label
-                ><input
-                  id="deadline"
-                  name="applyEndDate"
-                  th:field="*{applyEndDate}"
-                  type="date"
-                  required
-                />
+              <div class="application-period-fields form-field--wide">
+                <div class="form-field">
+                  <label
+                    class="field-required"
+                    for="applyStartDate"
+                    th:text="${!isEdit or isDraftEdit or isScheduledEdit}
+                      ? '모집 시작 예정일'
+                      : '실제 공개일'"
+                    >모집 시작 예정일</label
+                  >
+                  <input
+                    id="applyStartDate"
+                    name="applyStartDate"
+                    th:field="*{applyStartDate}"
+                    th:attr="data-original-value=*{applyStartDate}"
+                    th:readonly="${isRecruitingEdit == true}"
+                    type="date"
+                    required
+                  />
+                  <small
+                    class="field-help"
+                    th:if="${isRecruitingEdit == true}"
+                  >모집 중인 공고의 모집 시작일은 변경할 수 없습니다.</small>
+                </div>
+                <div class="form-field">
+                  <label class="field-required" for="deadline"
+                    >모집 마감 예정일</label
+                  >
+                  <input
+                    id="deadline"
+                    name="applyEndDate"
+                    th:field="*{applyEndDate}"
+                    type="date"
+                    required
+                  />
+                </div>
               </div>
+              <small
+                class="application-period-help form-field--wide"
+                data-application-period-help
+                hidden
+              ></small>
               <div class="form-field">
-                <label for="headcount">모집 인원</label>
+                <label class="field-required" for="headcount">모집 인원</label>
                 <div class="number-input number-input--headcount">
                   <input
                     id="headcount"
@@ -310,7 +345,7 @@
                 </div>
               </div>
               <fieldset class="form-field form-field--wide address-fieldset">
-                <legend>상세 근무 주소</legend>
+                <legend class="field-required">근무 주소</legend>
                 <div class="address-search-row">
                   <input
                     id="workPostcode"
@@ -345,7 +380,7 @@
                 <small class="address-message" data-address-message></small>
               </fieldset>
               <div class="form-field form-field--wide">
-                <label
+                <label class="field-optional"
                   >기술 스택 <span data-skill-selection-count>0/5</span></label
                 >
                 <div
@@ -374,7 +409,7 @@
                 >
               </div>
               <fieldset class="form-field form-field--wide benefits-fieldset">
-                <legend>복리후생</legend>
+                <legend class="field-optional">복리후생</legend>
                 <div class="benefit-options">
                   <label class="benefit-option">
                     <input
@@ -472,7 +507,7 @@
                 </small>
               </fieldset>
               <div class="form-field form-field--wide">
-                <label for="intro"
+                <label class="field-optional" for="intro"
                   >공고 소개
                   <button
                     class="ai-polish-open"
@@ -490,7 +525,7 @@
                 ></textarea>
               </div>
               <div class="form-field form-field--wide">
-                <label for="tasks"
+                <label class="field-required" for="tasks"
                   >주요 업무
                   <button
                     class="ai-polish-open"
@@ -509,7 +544,7 @@
                 ></textarea>
               </div>
               <div class="form-field form-field--wide">
-                <label for="requirements"
+                <label class="field-required" for="requirements"
                   >자격요건
                   <button
                     class="ai-polish-open"
@@ -528,7 +563,7 @@
                 ></textarea>
               </div>
               <div class="form-field form-field--wide">
-                <label for="preferred"
+                <label class="field-optional" for="preferred"
                   >우대사항
                   <button
                     class="ai-polish-open"

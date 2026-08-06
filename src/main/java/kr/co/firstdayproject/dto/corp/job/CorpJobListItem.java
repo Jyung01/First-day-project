@@ -7,7 +7,7 @@ public record CorpJobListItem(
     String title,
     String status,
     long applicantCount,
-    LocalDateTime applyEndAt,
+    LocalDateTime createdAt,
     LocalDateTime updatedAt,
     String hiddenReason
 ) {

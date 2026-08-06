@@ -42,6 +42,11 @@
               th:text="|모집중 ${statusCounts['open']}|"
             >모집중 0</a>
             <a
+              th:classappend="${selectedStatus == 'SCHEDULED'} ? 'is-active'"
+              th:href="@{/corp/job(status='SCHEDULED')}"
+              th:text="|모집예정 ${statusCounts['scheduled']}|"
+            >모집예정 0</a>
+            <a
               th:classappend="${selectedStatus == 'DRAFT'} ? 'is-active'"
               th:href="@{/corp/job(status='DRAFT')}"
               th:text="|임시저장 ${statusCounts['draft']}|"
@@ -77,6 +82,7 @@
             <select class="corp-control" name="status" aria-label="공고 상태">
               <option value="ALL" th:selected="${selectedStatus == 'ALL'}">상태: 전체</option>
               <option value="OPEN" th:selected="${selectedStatus == 'OPEN'}">모집중</option>
+              <option value="SCHEDULED" th:selected="${selectedStatus == 'SCHEDULED'}">모집예정</option>
               <option value="DRAFT" th:selected="${selectedStatus == 'DRAFT'}">임시저장</option>
               <option value="CLOSED" th:selected="${selectedStatus == 'CLOSED'}">마감</option>
               <option value="HIDDEN" th:selected="${selectedStatus == 'HIDDEN'}">숨김</option>
@@ -90,7 +96,7 @@
           <section class="corp-card job-table" aria-label="채용공고 목록">
             <div class="job-row job-row--head">
               <span>공고 제목</span><span>상태</span><span>지원자</span>
-              <span>마감일</span><span>수정일</span><span>관리</span>
+              <span>공고 작성일</span><span>수정일</span><span>관리</span>
             </div>
             <div
               class="job-row"
@@ -101,18 +107,18 @@
               <em
                 class="corp-badge"
                 th:classappend="${job.status() == '모집중'} ? 'corp-badge--green' :
+                  (${job.status() == '모집예정'} ? 'corp-badge--scheduled' :
                   (${job.status() == '임시저장'} ? 'corp-badge--orange' :
+                  (${job.status() == '마감'} ? 'corp-badge--closed' :
                   (${job.status() == '숨김'} ? 'corp-badge--hidden' :
-                  (${job.status() == '재검토요청'} ? 'corp-badge--review' : '')))"
+                  (${job.status() == '재검토요청'} ? 'corp-badge--review' : '')))))"
                 th:text="${job.status() == '재검토요청' ? '재검토 요청' : job.status()}"
               >상태</em>
               <span th:text="|${job.applicantCount()}명|">0명</span>
               <time
-                th:if="${job.applyEndAt() != null}"
-                th:datetime="${job.applyEndAt()}"
-                th:text="${#temporals.format(job.applyEndAt(), 'yyyy.MM.dd')}"
+                th:datetime="${job.createdAt()}"
+                th:text="${#temporals.format(job.createdAt(), 'yyyy.MM.dd')}"
               >2026.08.05</time>
-              <span th:unless="${job.applyEndAt() != null}">미설정</span>
               <time
                 th:datetime="${job.updatedAt()}"
                 th:text="${#temporals.format(job.updatedAt(), 'yyyy.MM.dd')}"
@@ -151,13 +157,17 @@
                   hidden
                 ></form>
                 <button
-                  th:if="${job.status() == '임시저장' or job.status() == '마감'}"
+                  th:if="${job.status() == '임시저장'
+                    or job.status() == '모집예정'
+                    or job.status() == '마감'}"
                   class="job-action job-action--delete"
                   type="button"
                   th:attr="data-delete-form-id=|jobDeleteForm-${job.jobPostingId()}|"
                 >삭제</button>
                 <form
-                  th:if="${job.status() == '임시저장' or job.status() == '마감'}"
+                  th:if="${job.status() == '임시저장'
+                    or job.status() == '모집예정'
+                    or job.status() == '마감'}"
                   th:id="|jobDeleteForm-${job.jobPostingId()}|"
                   th:action="@{/corp/job/{id}/delete(id=${job.jobPostingId()})}"
                   method="post"
@@ -202,8 +212,8 @@
             </nav>
           </div>
           <p class="corp-note">
-            임시저장 공고와 마감 공고는 삭제할 수 있습니다. 마감 공고의 기존
-            지원 내역은 유지됩니다.
+            임시저장, 모집예정, 마감 공고는 삭제할 수 있습니다. 마감 공고의
+            기존 지원 내역은 유지됩니다.
           </p>
         </section>
       </div>

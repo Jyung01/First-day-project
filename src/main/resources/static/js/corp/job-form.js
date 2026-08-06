@@ -141,6 +141,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const salaryHelp = document.querySelector("[data-salary-help]");
   const address = document.querySelector("#workAddress");
   const workRegion = document.querySelector("#workRegion");
+  const applyStartDate = document.querySelector("#applyStartDate");
+  const applyEndDate = document.querySelector("#deadline");
+  const applicationPeriodHelp = document.querySelector(
+    "[data-application-period-help]",
+  );
 
   function updateJobCategoryOptions() {
     if (!primaryJobCategory || !jobCategory) return;
@@ -271,10 +276,82 @@ document.addEventListener("DOMContentLoaded", function () {
     return false;
   }
 
+  function getTodayValue() {
+    const today = new Date();
+    const offset = today.getTimezoneOffset() * 60 * 1000;
+
+    return new Date(today.getTime() - offset).toISOString().slice(0, 10);
+  }
+
+  function setApplicationPeriodMessage(message, error) {
+    if (!applicationPeriodHelp) return;
+
+    applicationPeriodHelp.textContent = message;
+    applicationPeriodHelp.hidden = !message;
+    applicationPeriodHelp.classList.toggle("is-error", error);
+  }
+
+  function validateApplicationPeriod() {
+    if (!applyStartDate?.value || !applyEndDate?.value) {
+      setApplicationPeriodMessage(
+        "모집 시작 예정일과 모집 마감 예정일을 모두 선택해 주세요.",
+        true,
+      );
+      (applyStartDate?.value ? applyEndDate : applyStartDate)?.focus();
+      return false;
+    }
+
+    const todayValue = getTodayValue();
+    const originalStartDate = applyStartDate.dataset.originalValue;
+    const unchangedPastDate = form?.dataset.edit === "true"
+      && originalStartDate
+      && applyStartDate.value === originalStartDate;
+
+    if (applyStartDate.value < todayValue && !unchangedPastDate) {
+      setApplicationPeriodMessage(
+        "모집 시작 예정일은 오늘 이후로 선택해 주세요.",
+        true,
+      );
+      applyStartDate.focus();
+      return false;
+    }
+
+    if (applyEndDate.value < applyStartDate.value) {
+      setApplicationPeriodMessage(
+        "모집 마감 예정일은 모집 시작 예정일 이후로 선택해 주세요.",
+        true,
+      );
+      applyEndDate.focus();
+      return false;
+    }
+
+    setApplicationPeriodMessage("", false);
+    return true;
+  }
+
+  function updateApplicationPeriodLimits() {
+    if (!applyStartDate || !applyEndDate) return;
+
+    if (
+      form?.dataset.edit !== "true"
+      || form?.dataset.scheduledEdit === "true"
+      || form?.dataset.draftEdit === "true"
+    ) {
+      applyStartDate.min = getTodayValue();
+    }
+
+    applyEndDate.min = applyStartDate.value || getTodayValue();
+    setApplicationPeriodMessage("", false);
+  }
+
   careerType?.addEventListener("change", updateExperienceFields);
   primaryJobCategory?.addEventListener("change", updateJobCategoryOptions);
   salaryText?.addEventListener("change", updateSalaryFields);
   address?.addEventListener("input", updateWorkRegion);
+  applyStartDate?.addEventListener("change", updateApplicationPeriodLimits);
+  applyEndDate?.addEventListener("change", function () {
+    setApplicationPeriodMessage("", false);
+  });
 
   form?.addEventListener("submit", function (event) {
     if (event.submitter?.value === "DRAFT") {
@@ -295,8 +372,9 @@ document.addEventListener("DOMContentLoaded", function () {
       "최소 연봉 또는 최대 연봉 중 하나를 입력하세요.",
       "최대 연봉은 최소 연봉 이상이어야 합니다.",
     );
+    const applicationPeriodValid = validateApplicationPeriod();
 
-    if (!experienceValid || !salaryValid) {
+    if (!experienceValid || !salaryValid || !applicationPeriodValid) {
       event.preventDefault();
     }
   });
@@ -309,6 +387,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   updateSalaryFields();
   updateWorkRegion();
+  updateApplicationPeriodLimits();
 
   const modal = document.querySelector("[data-ai-polish-modal]");
   if (!modal) return;

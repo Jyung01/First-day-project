@@ -69,7 +69,11 @@ public class CorpJobQueryService {
             display(posting.getWorkRegion()),
             display(posting.getWorkAddress()),
             getSalaryText(posting),
+            posting.getCreatedAt(),
+            posting.getApplyStartAt(),
+            posting.getPublishedAt(),
             posting.getApplyEndAt(),
+            posting.getClosedAt(),
             posting.getHeadcount(),
             getSkillNames(posting.getJobPostingId()),
             parseBenefits(posting.getBenefitsJson()),
@@ -94,7 +98,7 @@ public class CorpJobQueryService {
                 "채용공고를 찾을 수 없습니다."
             ));
 
-        if (!List.of("임시저장", "모집중", "숨김")
+        if (!List.of("임시저장", "모집예정", "모집중", "숨김")
             .contains(posting.getStatus())) {
             throw new IllegalArgumentException(
                 "수정할 수 없는 상태의 채용공고입니다."
@@ -115,6 +119,9 @@ public class CorpJobQueryService {
         request.setSalaryMin(posting.getSalaryMin());
         request.setSalaryMax(posting.getSalaryMax());
         request.setHeadcount(posting.getHeadcount());
+        request.setApplyStartDate(posting.getApplyStartAt() == null
+            ? null
+            : posting.getApplyStartAt().toLocalDate());
         request.setApplyEndDate(posting.getApplyEndAt() == null
             ? null
             : posting.getApplyEndAt().toLocalDate());
@@ -146,6 +153,35 @@ public class CorpJobQueryService {
         }
 
         return posting.getHiddenReason();
+    }
+
+    public boolean isRecruitingJobPosting(
+        Long companyId,
+        Long jobPostingId
+    ) {
+        return hasJobPostingStatus(companyId, jobPostingId, "모집중");
+    }
+
+    public boolean isScheduledJobPosting(
+        Long companyId,
+        Long jobPostingId
+    ) {
+        return hasJobPostingStatus(companyId, jobPostingId, "모집예정");
+    }
+
+    private boolean hasJobPostingStatus(
+        Long companyId,
+        Long jobPostingId,
+        String status
+    ) {
+        validateCompanyId(companyId);
+
+        return jobPostingRepository
+            .findByJobPostingIdAndCompanyId(jobPostingId, companyId)
+            .map(posting -> status.equals(posting.getStatus()))
+            .orElseThrow(() -> new IllegalArgumentException(
+                "채용공고를 찾을 수 없습니다."
+            ));
     }
 
     public Page<CorpJobListItem> getJobPostings(
@@ -183,6 +219,7 @@ public class CorpJobQueryService {
             )
         );
         counts.put("open", countByStatus(companyId, "모집중"));
+        counts.put("scheduled", countByStatus(companyId, "모집예정"));
         counts.put("draft", countByStatus(companyId, "임시저장"));
         counts.put("closed", countByStatus(companyId, "마감"));
         counts.put("hidden", countByStatus(companyId, "숨김"));
@@ -196,7 +233,7 @@ public class CorpJobQueryService {
             posting.getTitle(),
             posting.getStatus(),
             countApplicants(posting.getJobPostingId()),
-            posting.getApplyEndAt(),
+            posting.getCreatedAt(),
             posting.getUpdatedAt(),
             posting.getHiddenReason()
         );
@@ -230,6 +267,7 @@ public class CorpJobQueryService {
 
         return switch (status) {
             case "OPEN" -> "모집중";
+            case "SCHEDULED" -> "모집예정";
             case "DRAFT" -> "임시저장";
             case "CLOSED" -> "마감";
             case "HIDDEN" -> "숨김";

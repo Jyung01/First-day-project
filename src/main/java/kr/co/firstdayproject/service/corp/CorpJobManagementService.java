@@ -15,6 +15,7 @@ public class CorpJobManagementService {
 
     private static final Set<String> DELETABLE_STATUSES = Set.of(
         "임시저장",
+        "모집예정",
         "마감"
     );
 
@@ -41,7 +42,7 @@ public class CorpJobManagementService {
 
         if (!DELETABLE_STATUSES.contains(posting.getStatus())) {
             throw new IllegalArgumentException(
-                "임시저장 또는 마감된 채용공고만 삭제할 수 있습니다."
+                "임시저장, 모집예정 또는 마감된 채용공고만 삭제할 수 있습니다."
             );
         }
 

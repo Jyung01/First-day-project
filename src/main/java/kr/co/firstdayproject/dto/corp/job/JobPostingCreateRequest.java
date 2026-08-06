@@ -62,7 +62,10 @@ public class JobPostingCreateRequest {
     @Max(value = 65535, message = "모집 인원은 65,535명 이하로 입력해 주세요.")
     private Integer headcount;
 
-    @FutureOrPresent(message = "접수 마감일은 오늘 이후여야 합니다.")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate applyStartDate;
+
+    @FutureOrPresent(message = "모집 마감 예정일은 오늘 이후여야 합니다.")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate applyEndDate;
 

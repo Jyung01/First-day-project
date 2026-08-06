@@ -50,12 +50,12 @@
                     공고번호
                     <span th:text="|J-${job.jobPostingId()}|">J-0</span>
                     <span aria-hidden="true">·</span>
-                    등록일
+                    공고 작성일
                     <span
                       th:text="${#temporals.format(job.createdAt(), 'yyyy.MM.dd')}"
                     >2026.08.05</span>
                     <span aria-hidden="true">·</span>
-                    마감일
+                    모집 마감 예정일
                     <span
                       th:text="${job.applyEndAt() == null
                         ? '미설정'
@@ -67,17 +67,21 @@
                   class="job-detail-status"
                   th:classappend="${job.status() == '재검토요청'}
                     ? 'job-detail-status--review'
+                    : (${job.status() == '모집예정'}
+                      ? 'job-detail-status--scheduled'
                     : (${job.status() == '마감'}
                       ? 'job-detail-status--closed'
                       : (${job.status() == '숨김'}
                         ? 'job-detail-status--hidden'
-                        : ''))"
+                        : '')))"
                   th:text="${job.status() == '모집중'
-                    ? '게시 중'
+                    ? '모집중'
+                    : (job.status() == '모집예정'
+                      ? '모집예정'
                     : (job.status() == '재검토요청'
                       ? '재검토 요청'
-                      : job.status())}"
-                >게시 중</span>
+                      : job.status()))}"
+                >모집중</span>
               </header>
 
               <section class="job-detail-section">
@@ -138,11 +142,41 @@
                     <dd th:text="|${job.applicantCount()}명|">0명</dd>
                   </div>
                   <div>
-                    <dt>마감일</dt>
+                    <dt>공고 작성일</dt>
+                    <dd
+                      th:text="${#temporals.format(job.createdAt(), 'yyyy.MM.dd')}"
+                    >미설정</dd>
+                  </div>
+                  <div th:if="${job.publishedAt() == null}">
+                    <dt>모집 시작 예정일</dt>
+                    <dd
+                      th:text="${job.applyStartAt() == null
+                        ? '미설정'
+                        : #temporals.format(job.applyStartAt(), 'yyyy.MM.dd')}"
+                    >미설정</dd>
+                  </div>
+                  <div th:if="${job.publishedAt() != null}">
+                    <dt>실제 공개일</dt>
+                    <dd
+                      th:text="${job.publishedAt() == null
+                        ? '미게시'
+                        : #temporals.format(job.publishedAt(), 'yyyy.MM.dd')}"
+                    >미게시</dd>
+                  </div>
+                  <div>
+                    <dt>모집 마감 예정일</dt>
                     <dd
                       th:text="${job.applyEndAt() == null
                         ? '미설정'
                         : #temporals.format(job.applyEndAt(), 'yyyy.MM.dd')}"
+                    >미설정</dd>
+                  </div>
+                  <div th:if="${job.status() == '마감'}">
+                    <dt>실제 마감일</dt>
+                    <dd
+                      th:text="${job.closedAt() == null
+                        ? '미설정'
+                        : #temporals.format(job.closedAt(), 'yyyy.MM.dd HH:mm')}"
                     >미설정</dd>
                   </div>
                   <div class="job-detail-grid__wide">
@@ -211,28 +245,73 @@
                 <strong
                   th:classappend="${job.status() == '재검토요청'}
                     ? 'is-review'
+                    : (${job.status() == '모집예정'}
+                      ? 'is-scheduled'
                     : (${job.status() == '마감'}
                       ? 'is-closed'
-                      : (${job.status() == '숨김'} ? 'is-hidden' : ''))"
+                      : (${job.status() == '숨김'} ? 'is-hidden' : '')))"
                   th:text="${job.status() == '모집중'
-                    ? '게시 중'
+                    ? '모집중'
+                    : (job.status() == '모집예정'
+                      ? '모집예정'
                     : (job.status() == '재검토요청'
                       ? '재검토 요청'
-                      : job.status())}"
-                >게시 중</strong>
+                      : job.status()))}"
+                >모집중</strong>
+              </div>
+
+              <div
+                class="job-operation-field"
+              >
+                <span>공고 작성일</span>
+                <p
+                  th:text="${#temporals.format(job.createdAt(), 'yyyy.MM.dd')}"
+                >미설정</p>
+              </div>
+
+              <div
+                class="job-operation-field"
+                th:if="${job.publishedAt() == null}"
+              >
+                <span>모집 시작 예정일</span>
+                <p
+                  th:text="${job.applyStartAt() == null
+                    ? '미설정'
+                    : #temporals.format(job.applyStartAt(), 'yyyy.MM.dd')}"
+                >미설정</p>
+              </div>
+
+              <div
+                class="job-operation-field"
+                th:if="${job.publishedAt() != null}"
+              >
+                <span>실제 공개일</span>
+                <p
+                  th:text="${job.publishedAt() == null
+                    ? '미게시'
+                    : #temporals.format(job.publishedAt(), 'yyyy.MM.dd')}"
+                >미게시</p>
               </div>
 
               <div class="job-operation-field">
-                <span>게시 기간</span>
+                <span>모집 마감 예정일</span>
                 <p
-                  th:text="${(job.publishedAt() == null
-                    ? '미게시'
-                    : #temporals.format(job.publishedAt(), 'yyyy.MM.dd'))
-                    + ' - '
-                    + (job.applyEndAt() == null
-                      ? '미설정'
-                      : #temporals.format(job.applyEndAt(), 'yyyy.MM.dd'))}"
-                >2026.07.22 - 2026.08.15</p>
+                  th:text="${job.applyEndAt() == null
+                    ? '미설정'
+                    : #temporals.format(job.applyEndAt(), 'yyyy.MM.dd')}"
+                >미설정</p>
+              </div>
+
+              <div
+                class="job-operation-field"
+                th:if="${job.status() == '마감'}"
+              >
+                <span>실제 마감일</span>
+                <p
+                  th:text="${job.closedAt() == null
+                    ? '미설정'
+                    : #temporals.format(job.closedAt(), 'yyyy.MM.dd HH:mm')}"
+                >미설정</p>
               </div>
 
               <div class="job-operation-group">
@@ -298,7 +377,8 @@
                   type="button"
                   data-modal-open="job-hide"
                   data-form-id="jobHideForm"
-                  th:if="${job.status() == '모집중'}"
+                  th:if="${job.status() == '모집예정'
+                    or job.status() == '모집중'}"
                 >숨김 처리</button>
                 <a
                   class="job-operation-button job-operation-button--secondary"

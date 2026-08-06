@@ -1,6 +1,7 @@
 package kr.co.firstdayproject.service.corp;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import kr.co.firstdayproject.dto.corp.job.JobPostingCreateRequest;
@@ -50,15 +51,21 @@ public class CorpJobService {
 
         if (publish) {
             requestValidator.validatePublishableCompany(company);
-            requestValidator.validatePublishRequest(request);
-        } else if (request.getJobCategoryId() != null) {
-            requestValidator.validateCategory(request.getJobCategoryId());
+            requestValidator.validatePublishRequest(request, null);
+        } else {
+            requestValidator.validateDraftApplicationPeriod(request);
+            if (request.getJobCategoryId() != null) {
+                requestValidator.validateCategory(request.getJobCategoryId());
+            }
         }
 
         List<Long> skillIds = requestValidator.normalizeAndValidateSkills(
             request.getSkillIds()
         );
         LocalDateTime now = LocalDateTime.now();
+        String publishingStatus = publish
+            ? resolvePublishingStatus(request.getApplyStartDate(), now)
+            : "임시저장";
 
         JobPosting jobPosting = JobPosting.builder()
             .companyId(companyId)
@@ -78,7 +85,7 @@ public class CorpJobService {
             .salaryMin(request.getSalaryMin())
             .salaryMax(request.getSalaryMax())
             .headcount(request.getHeadcount())
-            .applyStartAt(publish ? now : null)
+            .applyStartAt(toStartAt(request.getApplyStartDate()))
             .applyEndAt(request.getApplyEndDate() == null
                 ? null
                 : request.getApplyEndDate().atTime(23, 59, 59))
@@ -90,8 +97,8 @@ public class CorpJobService {
             ))
             .benefitsJson(toBenefitsJson(request.getBenefits()))
             .processText(null)
-            .status(publish ? "모집중" : "임시저장")
-            .publishedAt(publish ? now : null)
+            .status(publishingStatus)
+            .publishedAt("모집중".equals(publishingStatus) ? now : null)
             .build();
 
         JobPosting savedJobPosting = jobPostingRepository.save(jobPosting);
@@ -123,7 +130,7 @@ public class CorpJobService {
                 "채용공고를 찾을 수 없습니다."
             ));
 
-        if (!Set.of("임시저장", "모집중", "숨김")
+        if (!Set.of("임시저장", "모집예정", "모집중", "숨김")
             .contains(posting.getStatus())) {
             throw new IllegalArgumentException(
                 "수정할 수 없는 상태의 채용공고입니다."
@@ -160,16 +167,38 @@ public class CorpJobService {
 
         if (publish || review) {
             requestValidator.validatePublishableCompany(company);
-            requestValidator.validatePublishRequest(request);
-        } else if (request.getJobCategoryId() != null) {
-            requestValidator.validateCategory(request.getJobCategoryId());
+            requestValidator.validatePublishRequest(
+                request,
+                toLocalDate(posting.getApplyStartAt())
+            );
+        } else {
+            requestValidator.validateDraftApplicationPeriod(request);
+            if (request.getJobCategoryId() != null) {
+                requestValidator.validateCategory(request.getJobCategoryId());
+            }
         }
 
         List<Long> skillIds = requestValidator.normalizeAndValidateSkills(
             request.getSkillIds()
         );
-        boolean firstPublish = publish
-            && "임시저장".equals(posting.getStatus());
+        String originalStatus = posting.getStatus();
+        LocalDate originalStartDate = toLocalDate(posting.getApplyStartAt());
+        LocalDateTime now = LocalDateTime.now();
+
+        if ("모집중".equals(originalStatus)
+            && !request.getApplyStartDate().equals(originalStartDate)) {
+            throw new IllegalArgumentException(
+                "모집 중인 공고의 모집 시작일은 변경할 수 없습니다."
+            );
+        }
+
+        String nextStatus = resolveNextStatus(
+            originalStatus,
+            request,
+            publish,
+            review,
+            now
+        );
 
         posting.setJobCategoryId(request.getJobCategoryId());
         posting.setTitle(request.getTitle().trim());
@@ -187,6 +216,7 @@ public class CorpJobService {
         posting.setSalaryMin(request.getSalaryMin());
         posting.setSalaryMax(request.getSalaryMax());
         posting.setHeadcount(request.getHeadcount());
+        posting.setApplyStartAt(toStartAt(request.getApplyStartDate()));
         posting.setApplyEndAt(request.getApplyEndDate() == null
             ? null
             : request.getApplyEndDate().atTime(23, 59, 59));
@@ -197,13 +227,10 @@ public class CorpJobService {
             request.getPreferredConditions()
         ));
         posting.setBenefitsJson(toBenefitsJson(request.getBenefits()));
-        posting.setStatus(review
-            ? "재검토요청"
-            : (publish ? "모집중" : "임시저장"));
+        posting.setStatus(nextStatus);
 
-        if (firstPublish) {
-            LocalDateTime now = LocalDateTime.now();
-            posting.setApplyStartAt(now);
+        if ("모집중".equals(nextStatus)
+            && posting.getPublishedAt() == null) {
             posting.setPublishedAt(now);
         }
 
@@ -217,6 +244,42 @@ public class CorpJobService {
                 ))
                 .toList()
         );
+    }
+
+    private String resolveNextStatus(
+        String originalStatus,
+        JobPostingCreateRequest request,
+        boolean publish,
+        boolean review,
+        LocalDateTime now
+    ) {
+        if (review) {
+            return "재검토요청";
+        }
+        if (!publish) {
+            return "임시저장";
+        }
+        if ("모집중".equals(originalStatus)) {
+            return "모집중";
+        }
+        return resolvePublishingStatus(request.getApplyStartDate(), now);
+    }
+
+    private String resolvePublishingStatus(
+        LocalDate applyStartDate,
+        LocalDateTime now
+    ) {
+        return applyStartDate.isAfter(now.toLocalDate())
+            ? "모집예정"
+            : "모집중";
+    }
+
+    private LocalDateTime toStartAt(LocalDate date) {
+        return date == null ? null : date.atStartOfDay();
+    }
+
+    private LocalDate toLocalDate(LocalDateTime dateTime) {
+        return dateTime == null ? null : dateTime.toLocalDate();
     }
 
     private String joinNullableAddress(String address, String detail) {

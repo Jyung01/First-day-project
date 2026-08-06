@@ -139,6 +139,17 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
         @Param("closedAt") LocalDateTime closedAt
     );
 
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE JobPosting posting "
+        + "SET posting.status = '모집중', "
+        + "posting.publishedAt = :publishedAt "
+        + "WHERE posting.status = '모집예정' "
+        + "AND posting.applyStartAt IS NOT NULL "
+        + "AND posting.applyStartAt <= :publishedAt")
+    int publishScheduledPostings(
+        @Param("publishedAt") LocalDateTime publishedAt
+    );
+
     @Modifying(flushAutomatically = true)
     @Query("""
             UPDATE JobPosting jobPosting

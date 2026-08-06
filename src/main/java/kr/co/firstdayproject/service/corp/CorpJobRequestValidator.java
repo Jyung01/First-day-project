@@ -1,5 +1,6 @@
 package kr.co.firstdayproject.service.corp;
 
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,7 +72,10 @@ public class CorpJobRequestValidator {
             ));
     }
 
-    public void validatePublishRequest(JobPostingCreateRequest request) {
+    public void validatePublishRequest(
+        JobPostingCreateRequest request,
+        LocalDate allowedPastStartDate
+    ) {
         requireText(request.getEmploymentType(), "고용 형태를 선택해 주세요.");
         requireText(request.getCareerType(), "경력 구분을 선택해 주세요.");
         requireText(request.getEducationLevel(), "학력 조건을 선택해 주세요.");
@@ -84,12 +88,59 @@ public class CorpJobRequestValidator {
         if (request.getHeadcount() == null) {
             throw new IllegalArgumentException("모집 인원을 입력해 주세요.");
         }
-        if (request.getApplyEndDate() == null) {
-            throw new IllegalArgumentException("접수 마감일을 선택해 주세요.");
+        if (request.getApplyStartDate() == null) {
+            throw new IllegalArgumentException("모집 시작 예정일을 선택해 주세요.");
         }
+        if (request.getApplyEndDate() == null) {
+            throw new IllegalArgumentException("모집 마감 예정일을 선택해 주세요.");
+        }
+
+        validateApplicationPeriod(request, allowedPastStartDate);
 
         validateConditionalFields(request);
         validateCategory(request.getJobCategoryId());
+    }
+
+    public void validateDraftApplicationPeriod(
+        JobPostingCreateRequest request
+    ) {
+        LocalDate startDate = request.getApplyStartDate();
+        LocalDate endDate = request.getApplyEndDate();
+
+        if (startDate == null) {
+            return;
+        }
+        if (startDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                "모집 시작 예정일은 오늘 이후로 선택해 주세요."
+            );
+        }
+        if (endDate != null && endDate.isBefore(startDate)) {
+            throw new IllegalArgumentException(
+                "모집 마감 예정일은 모집 시작 예정일 이후로 선택해 주세요."
+            );
+        }
+    }
+
+    private void validateApplicationPeriod(
+        JobPostingCreateRequest request,
+        LocalDate allowedPastStartDate
+    ) {
+        LocalDate startDate = request.getApplyStartDate();
+        LocalDate endDate = request.getApplyEndDate();
+
+        if (startDate.isBefore(LocalDate.now())
+            && !startDate.equals(allowedPastStartDate)) {
+            throw new IllegalArgumentException(
+                "모집 시작 예정일은 오늘 이후로 선택해 주세요."
+            );
+        }
+
+        if (endDate.isBefore(startDate)) {
+            throw new IllegalArgumentException(
+                "모집 마감 예정일은 모집 시작 예정일 이후로 선택해 주세요."
+            );
+        }
     }
 
     public List<Long> normalizeAndValidateSkills(List<Long> requestedIds) {

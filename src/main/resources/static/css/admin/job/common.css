@@ -134,8 +134,12 @@
   color: #10b981;
 }
 
+.operation-table .status--scheduled {
+  color: #60a5fa;
+}
+
 .operation-table .status--closed {
-  color: #94a3b8;
+  color: #fb7185;
 }
 
 .operation-table .status--hidden {
@@ -266,9 +270,14 @@
   color: #f59e0b;
 }
 
+.job-detail-status--scheduled {
+  color: #93c5fd;
+  background: #172554;
+}
+
 .job-detail-status--closed {
-  background: #1e293b;
-  color: #94a3b8;
+  background: #4c0519;
+  color: #fb7185;
 }
 
 .job-detail-status--hidden {
@@ -389,8 +398,12 @@
   color: #f59e0b;
 }
 
+.job-operation-field > strong.is-scheduled {
+  color: #60a5fa;
+}
+
 .job-operation-field > strong.is-closed {
-  color: #94a3b8;
+  color: #fb7185;
 }
 
 .job-operation-field > strong.is-hidden {
