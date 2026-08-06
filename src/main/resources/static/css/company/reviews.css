@@ -635,3 +635,31 @@
     }
 
 }
+
+/* 리뷰 없을 때 */
+.empty-review{
+    width:100%;
+    padding:80px 20px;
+    background:#fff;
+    border:1px solid #e8e8e8;
+    border-radius:16px;
+    text-align:center;
+}
+
+.empty-review i{
+    font-size:48px;
+    color:#c8d0e0;
+    margin-bottom:16px;
+}
+
+.empty-review p{
+    font-size:20px;
+    font-weight:700;
+    color:#333;
+    margin-bottom:8px;
+}
+
+.empty-review span{
+    font-size:15px;
+    color:#888;
+}

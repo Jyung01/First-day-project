@@ -34,6 +34,7 @@ public class CompanyDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime withdrawnAt;
+    private Integer employeeCount;
 
     // 추가 필드
     private BigDecimal averageRating;

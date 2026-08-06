@@ -36,8 +36,10 @@
         <div class="profile-left">
 
             <div class="company-logo">
-                <img th:src="${company.logoUrl}" alt="기업 로고" style="width: 100%; height: 100%; object-fit: cover;" th:if="${company.logoUrl != null}">
-                <span th:if="${company.logoUrl == null}" th:text="${#strings.substring(company.companyName, 0, 1)}">네</span>
+                <img th:src="${company.logoUrl}" alt="기업 로고" style="width: 100%; height: 100%; object-fit: cover;"
+                     th:if="${company.logoUrl != null}">
+                <span th:if="${company.logoUrl == null}"
+                      th:text="${#strings.substring(company.companyName, 0, 1)}">네</span>
             </div>
 
             <div class="company-summary">
@@ -45,7 +47,8 @@
                 <h2 th:text="${company.companyName}">네이버클라우드</h2>
 
                 <p class="company-category">
-                    <span th:text="${company.industryName}">IT 서비스</span> · <span th:text="${company.addressLine1}">서울 강남</span> · <span th:text="${company.companySize}">중견기업</span>
+                    <span th:text="${company.industryName}">IT 서비스</span> · <span th:text="${company.addressLine1}">서울 강남</span>
+                    · <span th:text="${company.companySize}">중견기업</span>
                 </p>
 
                 <div class="company-rating">
@@ -105,17 +108,17 @@
         </a>
 
         <a class="tab-btn"
-           th:href="@{/company/recruit(companyId=${company.companyId})}">
+           th:href="@{/company/jobs(companyId=${company.companyId})}">
             채용공고
         </a>
 
         <a class="tab-btn"
-           th:href="@{/company/review(companyId=${company.companyId})}">
+           th:href="@{/company/reviews(companyId=${company.companyId})}">
             기업리뷰
         </a>
 
         <a class="tab-btn"
-           th:href="@{/company/interview(companyId=${company.companyId})}">
+           th:href="@{/company/interview-reviews(companyId=${company.companyId})}">
             면접후기
         </a>
 
@@ -185,7 +188,7 @@
 
                         <span>사원수</span>
 
-                        <strong>1,240명</strong>
+                        <strong th:text="${company.employeeCount}">1,240명</strong>
 
                     </div>
 
@@ -202,7 +205,8 @@
                         <span>홈페이지</span>
 
                         <strong>
-                            <a th:href="${company.homepageUrl}" th:text="${company.homepageUrl}" target="_blank">기업 홈페이지 이동</a>
+                            <a th:href="${company.homepageUrl}" th:text="${company.homepageUrl}" target="_blank">기업 홈페이지
+                                이동</a>
                         </strong>
 
                     </div>
@@ -231,7 +235,6 @@
         </div>
 
 
-
         <!-- 오른쪽 -->
 
         <aside class="content-right">
@@ -245,53 +248,41 @@
                     </h3>
 
                     <span>
-                        <span th:text="${company.jobPostingCount}">12</span>건
-                    </span>
+            <span th:text="${company.jobPostingCount}"></span>건
+        </span>
 
                 </div>
 
                 <ul class="recruit-list">
 
-                    <li>
+                    <li th:each="job : ${jobPostingList}">
 
-                        <strong>
-                            Java/Spring 백엔드 개발자
+                        <strong th:text="${job.title}">
+                            채용공고명
                         </strong>
 
                         <span>
-                            서울 · D-9
-                        </span>
+
+                <span th:text="${job.workRegion}">
+                    서울
+                </span>
+
+                ·
+
+                D-<span th:text="${job.dday}">0</span>
+
+            </span>
 
                     </li>
 
-                    <li>
-
-                        <strong>
-                            클라우드 플랫폼 엔지니어
-                        </strong>
-
-                        <span>
-                            서울 · D-11
-                        </span>
-
-                    </li>
-
-                    <li>
-
-                        <strong>
-                            AI 서비스 개발자
-                        </strong>
-
-                        <span>
-                            서울 · D-14
-                        </span>
-
+                    <!-- 채용공고가 없는 경우 -->
+                    <li th:if="${#lists.isEmpty(jobPostingList)}">
+                        진행 중인 채용공고가 없습니다.
                     </li>
 
                 </ul>
 
             </div>
-
 
             <div class="side-card">
 

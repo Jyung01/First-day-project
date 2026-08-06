@@ -4,4 +4,95 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.firstdayproject.dao.company.CompanyReviewDao">
 
+    <!-- 기업 상세 : 기업리뷰 요약 -->
+    <select id="selectCompanyReviewSummary"
+            parameterType="long"
+            resultType="kr.co.firstdayproject.dto.company.CompanyReviewsDTO">
+
+        SELECT
+
+        ROUND(AVG(overall_rating),1) AS overallRating,
+
+        COUNT(*) AS reviewCount,
+
+        ROUND(AVG(career_growth_rating),1) AS careerGrowthRating,
+
+        ROUND(AVG(work_satisfaction_rating),1) AS workSatisfactionRating,
+
+        ROUND(AVG(compensation_rating),1) AS compensationRating,
+
+        ROUND(AVG(culture_rating),1) AS cultureRating,
+
+        SUM(CASE WHEN ROUND(overall_rating) = 5 THEN 1 ELSE 0 END) AS rating5Count,
+        SUM(CASE WHEN ROUND(overall_rating) = 4 THEN 1 ELSE 0 END) AS rating4Count,
+        SUM(CASE WHEN ROUND(overall_rating) = 3 THEN 1 ELSE 0 END) AS rating3Count,
+        SUM(CASE WHEN ROUND(overall_rating) = 2 THEN 1 ELSE 0 END) AS rating2Count,
+        SUM(CASE WHEN ROUND(overall_rating) = 1 THEN 1 ELSE 0 END) AS rating1Count
+
+        FROM company_reviews
+
+        WHERE company_id = #{companyId}
+        AND status='정상'
+
+    </select>
+
+    <!-- 기업 상세 : 기업리뷰 리뷰목록 -->
+    <select id="selectCompanyReviewList"
+            resultType="kr.co.firstdayproject.dto.company.CompanyReviewsDTO">
+
+        SELECT
+
+        company_review_id,
+        company_id,
+        author_user_id,
+        eligibility_application_id,
+
+        employment_status,
+        job_category_id,
+
+        career_growth_rating,
+        work_satisfaction_rating,
+        compensation_rating,
+        culture_rating,
+
+        overall_rating,
+
+        pros,
+        cons,
+        summary,
+
+        status,
+
+        hidden_reason,
+        hidden_by,
+
+        created_at,
+        updated_at
+
+        FROM company_reviews
+
+        WHERE company_id = #{companyId}
+        AND status='정상'
+
+
+
+        ORDER BY created_at DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 기업 상세 :  리뷰 개수 조회 -->
+    <select id="selectCompanyReviewCount"
+            parameterType="long"
+            resultType="int">
+
+        SELECT COUNT(*)
+
+        FROM company_reviews
+
+        WHERE company_id = #{companyId}
+        AND status='정상'
+
+    </select>
+
+
 </mapper>

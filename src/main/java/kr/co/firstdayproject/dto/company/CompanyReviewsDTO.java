@@ -15,10 +15,10 @@ public class CompanyReviewsDTO {
     private String employmentStatus;
     private Long jobCategoryId;
 
-    private Integer careerGrowthRating;
-    private Integer workSatisfactionRating;
-    private Integer compensationRating;
-    private Integer cultureRating;
+    private Double  careerGrowthRating;
+    private Double  workSatisfactionRating;
+    private Double  compensationRating;
+    private Double  cultureRating;
 
     private BigDecimal overallRating;
 
@@ -32,4 +32,14 @@ public class CompanyReviewsDTO {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    // 리뷰 개수
+    private Integer reviewCount;
+
+    // 평점 분포
+    private Integer rating5Count;
+    private Integer rating4Count;
+    private Integer rating3Count;
+    private Integer rating2Count;
+    private Integer rating1Count;
 }

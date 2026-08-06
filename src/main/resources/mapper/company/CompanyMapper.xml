@@ -231,6 +231,7 @@
         c.short_description,
         c.introduction,
         c.benefits,
+        c.employee_count,
 
         ROUND(AVG(cr.overall_rating),1) AS averageRating,
         COUNT(DISTINCT cr.company_review_id) AS reviewCount,
@@ -259,7 +260,88 @@
         c.homepage_url,
         c.short_description,
         c.introduction,
-        c.benefits
+        c.benefits,
+        c.employee_count
 
     </select>
+
+    <!-- 기업 상세 : 진행 중인 채용공고 -->
+    <select id="selectCompanyJobPostingList"
+            parameterType="long"
+            resultType="kr.co.firstdayproject.dto.job.JobDTO">
+
+        SELECT
+        job_posting_id,
+        title,
+        work_region,
+        apply_end_at,
+        DATEDIFF(apply_end_at, CURDATE()) AS dday
+        FROM job_postings
+
+        WHERE company_id = #{companyId}
+        AND status = '모집중'
+
+        ORDER BY apply_end_at ASC
+
+        LIMIT 5
+
+    </select>
+
+    <!-- 기업 상세 : 채용공고 -->
+    <select id="selectCompanyRecruitList"
+            parameterType="long"
+            resultType="kr.co.firstdayproject.dto.job.JobDTO">
+
+        SELECT
+        jp.job_posting_id,
+        jp.company_id,
+        jp.title,
+        jp.career_type,
+        jp.min_experience_years,
+        jp.max_experience_years,
+        jp.work_region,
+        jp.education_level,
+        jp.salary_text,
+        jp.apply_end_at,
+
+        DATEDIFF(jp.apply_end_at, CURDATE()) AS dday,
+
+        c.company_name,
+        c.logo_url
+
+        FROM job_postings jp
+
+        INNER JOIN companies c
+        ON jp.company_id = c.company_id
+
+        WHERE jp.company_id = #{companyId}
+        AND jp.status = '모집중'
+
+        ORDER BY jp.apply_end_at ASC
+
+    </select>
+
+    <!-- 기업 상세 : 채용공고 스킬 -->
+    <select id="selectSkillListByJobPostingId"
+            parameterType="long"
+            resultType="string">
+
+        SELECT s.skill_name
+
+        FROM job_posting_skills jps
+
+        JOIN skills s
+        ON jps.skill_id = s.skill_id
+
+        WHERE jps.job_posting_id = #{jobPostingId}
+
+        ORDER BY s.display_order
+
+    </select>
+
+
+
+
+
+
 </mapper>
