@@ -7,7 +7,7 @@
 > **구직자와 기업을 연결하는 AI 기반 채용 플랫폼**
 
 개인회원, 기업회원, 관리자 서비스를 분리하고  
-Spring AI와 Ollama를 활용한 채용 지원 기능을 제공합니다.
+Spring AI와 OpenAI를 활용한 채용 지원 기능을 제공합니다.
 
 </div>
 
@@ -65,21 +65,21 @@ Spring AI와 Ollama를 활용한 채용 지원 기능을 제공합니다.
 ### 🗄️ Database
 
 <p>
-  <img src="https://skillicons.dev/icons?i=postgres" alt="Database Tech Stack" />
+  <img src="https://skillicons.dev/icons?i=mysql,postgres" alt="Database Tech Stack" />
 </p>
 
-- PostgreSQL
-- pgvector
+- MySQL (회원·기업·공고·지원 등 업무 데이터 원본)
+- PostgreSQL + pgvector (AI 임베딩 검색 전용 파생 데이터)
 
 ### 🤖 AI
 
 <p>
-  <img src="https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white" alt="Ollama" />
-  <img src="https://img.shields.io/badge/Qwen-3.5%209B-615CED?style=for-the-badge" alt="Qwen 3.5 9B" />
+  <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI" />
 </p>
 
-- Ollama
-- Qwen 3.5 9B
+- Spring AI (OpenAI 연동)
+- Chat: `gpt-5-mini`
+- Embedding: `text-embedding-3-small` (dimension 1024)
 
 ### ☁️ Infrastructure
 
@@ -137,6 +137,7 @@ flowchart TB
                 Security --> Controller
                 Controller --> Service
                 Service --> DataRepository
+                Service --> PgVectorRepository
                 Service <--> SpringAI
             end
         end
@@ -144,15 +145,17 @@ flowchart TB
         S3[("Amazon S3<br/>이미지 파일 저장")]
     end
 
-    PostgreSQL[("PostgreSQL<br/>pgvector")]
-    Ollama["Ollama Server<br/>Qwen 3.5 9B"]
+    MySQL[("MySQL<br/>업무 데이터 원본")]
+    PostgreSQL[("PostgreSQL<br/>pgvector 임베딩 저장")]
+    OpenAI["OpenAI API<br/>gpt-5-mini · text-embedding-3-small"]
 
     Developer -->|"Push / Pull Request"| Repository
     Actions -.->|"Build / Deploy"| Application
     Browser -->|"HTTP / HTTPS"| Security
-    DataRepository --> PostgreSQL
+    DataRepository --> MySQL
+    PgVectorRepository["Repository<br/>PgVectorStore"] --> PostgreSQL
     Service -->|"이미지 저장"| S3
-    SpringAI <-->|"AI 요청 / 응답"| Ollama
+    SpringAI <-->|"AI 요청 / 응답"| OpenAI
 ```
 
 </details>
