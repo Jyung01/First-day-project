@@ -41,43 +41,57 @@
             resultType="kr.co.firstdayproject.dto.company.CompanyReviewsDTO">
 
         SELECT
+        cr.company_review_id,
+        cr.company_id,
+        cr.author_user_id,
+        cr.eligibility_application_id,
 
-        company_review_id,
-        company_id,
-        author_user_id,
-        eligibility_application_id,
+        cr.employment_status,
+        cr.job_category_id,
+        jc.category_name AS jobCategoryName,
 
-        employment_status,
-        job_category_id,
+        cr.career_growth_rating,
+        cr.work_satisfaction_rating,
+        cr.compensation_rating,
+        cr.culture_rating,
 
-        career_growth_rating,
-        work_satisfaction_rating,
-        compensation_rating,
-        culture_rating,
+        cr.overall_rating,
 
-        overall_rating,
+        cr.pros,
+        cr.cons,
+        cr.summary,
 
-        pros,
-        cons,
-        summary,
+        cr.status,
 
-        status,
+        cr.hidden_reason,
+        cr.hidden_by,
 
-        hidden_reason,
-        hidden_by,
+        cr.help_count,
 
-        created_at,
-        updated_at
+        cr.created_at,
+        cr.updated_at
 
-        FROM company_reviews
+        FROM company_reviews cr
 
-        WHERE company_id = #{companyId}
-        AND status='정상'
+        LEFT JOIN job_categories jc
+        ON cr.job_category_id = jc.job_category_id
 
+        WHERE cr.company_id = #{companyId}
+        AND cr.status = '정상'
 
+        <choose>
+            <when test="sort == 'helpful'">
+                ORDER BY cr.help_count DESC,
+                cr.created_at DESC
+            </when>
 
-        ORDER BY created_at DESC
+            <otherwise>
+                ORDER BY cr.created_at DESC
+            </otherwise>
+        </choose>
+
         LIMIT #{offset}, #{pageSize}
+
     </select>
 
     <!-- 기업 상세 :  리뷰 개수 조회 -->
@@ -93,6 +107,176 @@
         AND status='정상'
 
     </select>
+
+    <!-- 기업 상세 : 면접리뷰 요약 조회 -->
+    <select id="selectInterviewReviewSummary"
+            resultType="kr.co.firstdayproject.dto.company.InterviewReviewsDTO">
+
+        SELECT
+
+        COUNT(*) AS reviewCount,
+
+        SUM(CASE WHEN ir.interview_result = '합격' THEN 1 ELSE 0 END) AS passCount,
+        SUM(CASE WHEN ir.interview_result = '불합격' THEN 1 ELSE 0 END) AS failCount,
+        SUM(CASE WHEN ir.interview_result = '대기' THEN 1 ELSE 0 END) AS waitingCount,
+
+        ROUND(
+        SUM(CASE WHEN ir.interview_result = '합격' THEN 1 ELSE 0 END)
+        * 100.0 / COUNT(*), 0
+        ) AS passPercent,
+
+        ROUND(
+        SUM(CASE WHEN ir.interview_result = '불합격' THEN 1 ELSE 0 END)
+        * 100.0 / COUNT(*), 0
+        ) AS failPercent,
+
+        ROUND(
+        SUM(CASE WHEN ir.interview_result = '대기' THEN 1 ELSE 0 END)
+        * 100.0 / COUNT(*), 0
+        ) AS waitingPercent,
+
+        (
+        SELECT difficulty
+        FROM interview_reviews
+        WHERE company_id = #{companyId}
+        AND status = '정상'
+        GROUP BY difficulty
+        ORDER BY COUNT(*) DESC
+        LIMIT 1
+        ) AS difficulty,
+
+        MAX(jp.process_text) AS processText
+
+        FROM interview_reviews ir
+
+        LEFT JOIN job_postings jp
+        ON ir.job_posting_id = jp.job_posting_id
+
+        WHERE ir.company_id = #{companyId}
+        AND ir.status = '정상'
+
+    </select>
+
+    <!-- 기업상세 : 면접후기 목록 -->
+    <select id="selectInterviewReviewList"
+            resultType="kr.co.firstdayproject.dto.company.InterviewReviewsDTO">
+
+        SELECT
+
+        ir.interview_review_id,
+        ir.company_id,
+        ir.author_user_id,
+        ir.job_posting_id,
+        ir.application_id,
+
+        ir.interview_month,
+        ir.interview_type,
+        ir.interview_result,
+        ir.difficulty,
+
+        ir.process_text,
+
+        ir.content,
+        ir.tips,
+
+        ir.status,
+
+        ir.hidden_reason,
+        ir.hidden_by,
+
+        ir.help_count,
+
+        ir.created_at,
+        ir.updated_at,
+
+        jp.title,
+        jp.career_type
+
+        FROM interview_reviews ir
+
+        LEFT JOIN job_postings jp
+        ON ir.job_posting_id = jp.job_posting_id
+
+        WHERE ir.company_id = #{companyId}
+        AND ir.status = '정상'
+
+        <choose>
+            <!-- 도움순 -->
+            <when test="sort == 'helpful'">
+                ORDER BY ir.help_count DESC,
+                ir.created_at DESC
+            </when>
+            <!-- 최신순 -->
+            <otherwise>
+                ORDER BY ir.created_at DESC
+            </otherwise>
+
+        </choose>
+
+        LIMIT #{offset}, #{pageSize}
+
+    </select>
+
+    <!-- 기업상세 : 면접후기 총 개수 -->
+    <select id="selectInterviewReviewCount"
+            parameterType="long"
+            resultType="int">
+
+        SELECT COUNT(*)
+
+        FROM interview_reviews
+
+        WHERE company_id = #{companyId}
+        AND status = '정상'
+
+    </select>
+
+    <!-- 기업리뷰 등록 -->
+    <insert id="insertCompanyReview"
+            parameterType="kr.co.firstdayproject.dto.company.CompanyReviewsDTO"
+            useGeneratedKeys="true"
+            keyProperty="companyReviewId">
+
+        INSERT INTO company_reviews
+        (
+        company_id,
+        author_user_id,
+        eligibility_application_id,
+        employment_status,
+        job_category_id,
+
+        career_growth_rating,
+        work_satisfaction_rating,
+        compensation_rating,
+        culture_rating,
+        overall_rating,
+
+        pros,
+        cons,
+        summary
+        )
+        VALUES
+        (
+        #{companyId},
+        #{authorUserId},
+        #{eligibilityApplicationId},
+        #{employmentStatus},
+        #{jobCategoryId},
+
+        #{careerGrowthRating},
+        #{workSatisfactionRating},
+        #{compensationRating},
+        #{cultureRating},
+        #{overallRating},
+
+        #{pros},
+        #{cons},
+        #{summary}
+        )
+
+    </insert>
+
+
 
 
 </mapper>

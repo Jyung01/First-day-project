@@ -1,15 +1,14 @@
 package kr.co.firstdayproject.controller.company;
 
 import kr.co.firstdayproject.dto.company.CompanyReviewsDTO;
+import kr.co.firstdayproject.dto.company.InterviewReviewsDTO;
 import kr.co.firstdayproject.service.company.CompanyReviewService;
 import kr.co.firstdayproject.service.company.CompanyService;
 import kr.co.firstdayproject.util.PageHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +23,7 @@ public class CompanyReviewController {
     @GetMapping("/reviews")
     public String reviews(@RequestParam Long companyId,
                           @RequestParam(defaultValue = "1") int page,
+                          @RequestParam(defaultValue = "latest") String sort,
                           Model model) {
 
         int pageSize = 4;
@@ -38,7 +38,9 @@ public class CompanyReviewController {
                 companyReviewService.getCompanyReviewList(
                         companyId,
                         pageHandler.getOffset(),
-                        pageSize);
+                        pageSize,
+                        sort
+                );
 
         model.addAttribute("company",
                 companyService.getCompanyDetail(companyId));
@@ -49,18 +51,59 @@ public class CompanyReviewController {
         model.addAttribute("reviewList", reviewList);
 
         model.addAttribute("pageHandler", pageHandler);
+
+        model.addAttribute("sort", sort);
+
         return "company/reviews";
     }
 
     @GetMapping("/review/write")
-    public String reviewWrite() {
+    public String reviewWrite(Model model) {
+        model.addAttribute("companyReviewsDTO", new CompanyReviewsDTO());
         return "company/review-write";
     }
 
+    @PostMapping("/review/write")
+    public String reviewWrite(@ModelAttribute CompanyReviewsDTO dto) {
+
+        companyReviewService.insertCompanyReview(dto);
+
+        return "redirect:/company/detail/" + dto.getCompanyId();
+    }
+
     @GetMapping("/interview-reviews")
-    public String interviewReviews(@RequestParam Long companyId, Model model) {
+    public String interviewReviews(@RequestParam Long companyId,
+                                   @RequestParam(defaultValue = "1") int page,
+                                   @RequestParam(defaultValue = "latest") String sort,
+                                   Model model) {
         model.addAttribute("company",
                 companyService.getCompanyDetail(companyId));
+
+        InterviewReviewsDTO summary =
+                companyReviewService.getInterviewReviewSummary(companyId);
+
+        int total =
+                companyReviewService.getInterviewReviewCount(companyId);
+
+        PageHandler pageHandler =
+                new PageHandler(page, total, 4);
+
+        List<InterviewReviewsDTO> reviewList =
+                companyReviewService.getInterviewReviewList(
+                        companyId,
+                        pageHandler.getOffset(),
+                        4,
+                        sort
+                );
+
+        model.addAttribute("summary", summary);
+        model.addAttribute("reviewList", reviewList);
+
+        model.addAttribute("pageHandler", pageHandler);
+        model.addAttribute("sort", sort);
+
+
+
         return "company/interview-reviews";
     }
 
