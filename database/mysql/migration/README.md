@@ -11,6 +11,7 @@
 | V3 | `V3__change_skills_unique_key.sql` | 기술명 고유 기준을 전체 기술명에서 `(parent_id, skill_name)` 조합으로 변경 |
 | V4 | `V4__add_company_rejection_code.sql` | `companies.latest_rejection_code`와 허용 코드 CHECK 제약 추가 |
 | V5 | `V5__make_job_posting_draft_fields_nullable.sql` | 채용공고 임시저장 입력 항목 8개의 NULL 허용 및 문자열 collation 명시 |
+| V6 | `V6__add_scheduled_job_posting_status.sql` | 채용공고 상태 CHECK에 `모집예정` 추가 |
 
 ## 적용 규칙
 
@@ -35,3 +36,10 @@
 - 문자열 컬럼에 `utf8mb4_unicode_ci` collation을 명시한다.
 - 기존 V4 DB에는 `V5__make_job_posting_draft_fields_nullable.sql`을 한 번 실행한다.
 - 공고를 `모집중`으로 공개할 때 필수 입력값 검증은 서비스 계층에서 수행해야 한다.
+
+## V6 반영 내용
+
+- `job_postings.status` 허용값에 `모집예정`을 추가한다.
+- 기존 V5 DB에는 `V6__add_scheduled_job_posting_status.sql`을 한 번 실행한다.
+- 기존 CHECK 제약 `chk_job_posting_status`를 삭제한 뒤 같은 이름으로 다시 생성한다.
+- 허용 상태: `임시저장`, `모집예정`, `모집중`, `마감`, `숨김`, `재검토요청`, `삭제`

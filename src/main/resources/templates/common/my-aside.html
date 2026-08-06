@@ -1,15 +1,24 @@
 <aside class="mypage-side" th:fragment="myAside">
     <div class="mypage-side__profile">
-        <div
-            class="mypage-side__avatar"
-            th:text="${#strings.isEmpty(memberName) ? '김' : #strings.substring(memberName, 0, 1)}"
-        >
-            김
+        <div class="mypage-side__avatar">
+            <img
+                th:if="${mySidebarProfileImageUrl != null}"
+                th:src="${mySidebarProfileImageUrl}"
+                alt=""
+                onerror="this.hidden=true; this.nextElementSibling.hidden=false"
+            />
+
+            <span
+                th:text="${#strings.isEmpty(mySidebarName) ? '김' : #strings.substring(mySidebarName, 0, 1)}"
+                th:hidden="${mySidebarProfileImageUrl != null}"
+            >
+                김
+            </span>
         </div>
 
         <div class="mypage-side__info">
             <p class="mypage-side__name">
-                <span th:text="${#strings.isEmpty(memberName) ? '김첫출' : memberName}"> 김첫출 </span>
+                <span th:text="${#strings.isEmpty(mySidebarName) ? '김첫출' : mySidebarName}"> 김첫출 </span>
                 &nbsp;님
             </p>
 

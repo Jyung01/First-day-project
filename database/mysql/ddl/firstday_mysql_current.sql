@@ -260,7 +260,7 @@ CREATE TABLE job_postings (
   benefits_json         JSON NULL,
   process_text          TEXT NULL,
   status                VARCHAR(10) NOT NULL DEFAULT '임시저장'
-                         COMMENT '임시저장/모집중/마감/숨김/재검토요청/삭제',
+                         COMMENT '임시저장/모집예정/모집중/마감/숨김/재검토요청/삭제',
   close_reason          VARCHAR(20) NULL
                          COMMENT '기업마감/마감일도래/기업탈퇴',
   hidden_reason         VARCHAR(1000) NULL COMMENT '관리자가 공고를 숨긴 구체적인 사유',
@@ -288,7 +288,7 @@ CREATE TABLE job_postings (
   CONSTRAINT chk_job_posting_education_level
     CHECK (education_level IN ('학력무관','고졸이상','전문대졸이상','대졸이상','석사이상','박사')),
   CONSTRAINT chk_job_posting_status
-    CHECK (status IN ('임시저장','모집중','마감','숨김','재검토요청','삭제')),
+    CHECK (status IN ('임시저장','모집예정','모집중','마감','숨김','재검토요청','삭제')),
   CONSTRAINT chk_job_posting_close_reason
     CHECK (close_reason IS NULL OR close_reason IN
       ('기업마감','마감일도래','기업탈퇴')),

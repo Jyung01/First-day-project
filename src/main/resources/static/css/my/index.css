@@ -213,6 +213,23 @@
     color: var(--navy-900);
 }
 
+.status-badge--success {
+    background: #e4f6ec;
+    color: #1f9d55;
+}
+
+.status-badge--closed {
+    background: var(--bg-soft);
+    color: var(--ink-300);
+}
+
+.application-empty {
+    padding: 24px 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-500);
+}
+
 /* ---------------- 내 문서 패널 ---------------- */
 
 .document-block {

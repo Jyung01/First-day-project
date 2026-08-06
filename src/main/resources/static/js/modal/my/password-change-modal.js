@@ -268,89 +268,59 @@ document.addEventListener("DOMContentLoaded", function () {
             newPasswordConfirm: newPasswordConfirm.value,
         };
 
-        /*
-         * 실제 기능 구현 시 아래 fetch 주석을 해제하고,
-         * 컨트롤러의 실제 POST 매핑에 맞춰 URL을 지정한다.
-         */
-
-        /*
         try {
             const response = await fetch("/my/password-change", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(requestData)
+                body: JSON.stringify(requestData),
             });
 
-            const result = await response.json();
+            const result = await readJsonResponse(response);
 
-            if (!response.ok) {
-                if (result.field === "currentPassword") {
-                    showMessage(
-                        currentPasswordMessage,
-                        result.message ||
-                            "현재 비밀번호가 일치하지 않습니다."
-                    );
-
-                    showInputError(currentPassword);
-                    currentPassword.focus();
-
-                    return;
-                }
-
+            if (!response.ok || !result.success) {
                 showMessage(
-                    formMessage,
-                    result.message ||
-                        "비밀번호 변경에 실패했습니다."
+                    currentPasswordMessage,
+                    result.message || "현재 비밀번호가 일치하지 않습니다."
                 );
+
+                showInputError(currentPassword);
+                currentPassword.focus();
 
                 return;
             }
 
             closeModal();
 
-            showConfirmModal({
-                iconClass: "success",
-                iconHtml: "✓",
-                title: "비밀번호가 변경되었습니다",
-                message:
-                    "다음 로그인부터 새로운 비밀번호를 사용해주세요.",
-                leftText: "",
-                rightText: "확인",
-                rightClass: "btn-primary"
-            });
+            if (typeof showConfirmModal === "function") {
+                showConfirmModal({
+                    iconClass: "success",
+                    iconHtml: "✓",
+                    title: "비밀번호가 변경되었습니다",
+                    message: "다음 로그인부터 새로운 비밀번호를 사용해주세요.",
+                    leftText: "",
+                    rightText: "확인",
+                    rightClass: "btn-primary",
+                });
+            }
         } catch (error) {
-            console.error(error);
-
-            showMessage(
-                formMessage,
-                "잠시 후 다시 시도해주세요."
-            );
-        }
-        */
-
-        /*
-         * 현재 화면 테스트용 처리
-         * 실제 API 연결 시 아래 코드는 삭제한다.
-         */
-
-        console.log("비밀번호 변경 요청 데이터", requestData);
-
-        closeModal();
-
-        if (typeof showConfirmModal === "function") {
-            showConfirmModal({
-                iconClass: "success",
-                iconHtml: "✓",
-                title: "비밀번호가 변경되었습니다",
-                message: "다음 로그인부터 새로운 비밀번호를 사용해주세요.",
-                leftText: "",
-                rightText: "확인",
-                rightClass: "btn-primary",
-            });
+            showMessage(formMessage, "잠시 후 다시 시도해주세요.");
         }
     });
+
+    async function readJsonResponse(response) {
+        try {
+            return await response.json();
+        } catch (error) {
+            return {
+                success: false,
+                message: response.status === 401
+                    ? "로그인이 만료되었습니다. 다시 로그인해주세요."
+                    : "서버 응답을 확인할 수 없습니다.",
+            };
+        }
+    }
 
     /* =====================================================
        ESC 키 닫기
