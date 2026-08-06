@@ -8,7 +8,7 @@
 - **이름**: 첫출근 — 구직자와 기업을 연결하는 AI 기반 채용 플랫폼
 - **개발 기간**: 2026.07.20 ~ 2026.09.03
 - **구성**: 개인회원 / 기업회원 / 관리자 3개 서비스로 분리
-- **핵심 특징**: 실제 채용 프로세스를 반영한 입사지원·채용관리 + Spring AI(Ollama) 기반 AI 보조 기능
+- **핵심 특징**: 실제 채용 프로세스를 반영한 입사지원·채용관리 + Spring AI(OpenAI) 기반 AI 보조 기능
 
 ## 2. 기술 스택
 
@@ -17,7 +17,7 @@
 | Frontend | HTML5, CSS3, JavaScript, Thymeleaf |
 | Backend | Java 21, Spring Boot, Spring Security, Spring Data JPA, MyBatis, Spring AI, Gradle |
 | Database | MySQL(업무 데이터, 원본), PostgreSQL + pgvector(임베딩 검색 전용 파생 데이터) |
-| AI | Ollama — chat: `qwen3.5:9b`, embedding: `qwen3-embedding:0.6b` (dimension 1024) |
+| AI | OpenAI — chat: `gpt-5-mini`, embedding: `text-embedding-3-small` (dimension 1024) |
 | Infra | AWS EC2, Amazon S3, GitHub Actions(적용 예정) |
 
 **원칙**: PostgreSQL은 임베딩 검색용 파생 데이터만 저장. 회원·기업·공고·지원의 원본은 MySQL이며, **DB 간 외래키는 만들지 않는다.**
@@ -45,7 +45,7 @@
 ## 5. AI 기능 (3가지 확정 범위)
 
 1. **자기소개서 AI 첨삭** (REQ-901~903) — 첨삭 버튼 클릭 시 대상 채용공고를 선택 → 해당 공고를 pgvector에서 유사도 검색(RAG) → 자소서와 대조해 맞춤 첨삭 생성
-2. **채용공고 문장 다듬기** (REQ-506) — 기업회원이 작성한 공고 문장을 Ollama로 교정
+2. **채용공고 문장 다듬기** (REQ-506) — 기업회원이 작성한 공고 문장을 OpenAI(`gpt-5-mini`)로 교정
 3. **희망직무 기반 맞춤 추천** (REQ-104) — 개인회원의 희망직무 기반으로 관련 채용공고 추천
 
 선행 작업: **REQ-507(채용공고 등록·수정 시 텍스트 임베딩 → pgvector 저장)** — 1·2·3 모두의 전제 조건.
@@ -53,10 +53,12 @@
 ## 6. 현재 구현 상태 (수시 업데이트 필요)
 
 - ✅ 회원가입, 로그인 화면, 기업승인, 자기소개서 CRUD 완료
-- ✅ 채용공고 마감 자동화: `JobPostingClosingScheduler`(매분 실행) — `모집중` + 마감일 도래 시 자동 `마감` 처리
+- ✅ `모집예정` 상태 구현 완료 — V6 마이그레이션(`V6__add_scheduled_job_posting_status.sql`)으로 DB CHECK 제약에 추가됨. `CorpJobService`·`CorpJobQueryService`·`CorpJobManagementService`·`AdminJobService`·`AdminJobModerationService` 전반에 상태 분기 반영됨
+- ✅ 채용공고 발행·마감 자동화: `JobPostingScheduleScheduler`(매분 실행, 기존 `JobPostingClosingScheduler`에서 이름 변경)
+  - `JobPostingPublishingService.publishScheduledPostings()` — `모집예정` + 시작일 도래 시 자동 `모집중` 전환
+  - `JobPostingClosingService.closeExpiredPostings()` — `모집중` + 마감일 도래 시 자동 `마감` 전환
 - ⚠️ 입사지원(JobApplicationService), 자소서 AI 첨삭 실제 연동, 지원자관리 서비스 로직: 부분/미구현 — 진행 중
-- ❌ `모집예정` 상태 — DB CHECK 제약에도, 마이그레이션(V6)에도 아직 없음. 자동 시작 전환 로직도 미구현
-- 기준 문서: **요구사항정의서 / WBS(2026-08-05 갱신본)**가 최신. 노션의 "역할분배"·"사이트구조요약" 문서는 초기 설계 스냅샷이라 갱신되지 않은 부분이 있을 수 있음 — 상충 시 요구사항정의서·WBS 우선.
+- 기준 문서: **요구사항정의서 / WBS(2026-08-05 갱신본)**가 최신. 노션의 "역할분배"·"사이트구조요약" 문서는 초기 설계 스냅샷이었으나, 게시중→모집중/정지→이용정지 표기 및 AI 첨삭 흐름(공고선택→RAG첨삭)은 2026-08-06 기준 최신화 반영함. 상충 시 요구사항정의서·WBS 우선.
 
 ## 7. 참고 링크
 
