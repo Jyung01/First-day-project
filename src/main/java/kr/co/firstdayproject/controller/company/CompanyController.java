@@ -61,11 +61,19 @@ public class CompanyController {
 
         model.addAttribute("company",
                 companyService.getCompanyDetail(companyId));
+
+        model.addAttribute("jobPostingList",
+                companyService.getCompanyJobPostingList(companyId));
+
         return "company/detail";
     }
 
     @GetMapping("/jobs")
-    public String jobs() {
+    public String jobs(@RequestParam Long companyId, Model model) {
+        model.addAttribute("company",
+                companyService.getCompanyDetail(companyId));
+        model.addAttribute("recruitList",
+                companyService.getCompanyRecruitList(companyId));
         return "company/jobs";
     }
 }

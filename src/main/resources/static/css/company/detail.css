@@ -262,9 +262,9 @@
 
 }
 
-.review-score span{
+.review-score span:not(small span){
 
-    display:block;
+    display:flex;
 
     font-size:34px;
 

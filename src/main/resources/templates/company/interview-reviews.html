@@ -79,28 +79,39 @@
 
 <main class="interview-reviews-main company-detail-main">
 
-    <!-- 기업 헤더 -->
+    <!-- =========================
+         기업 헤더
+    ========================== -->
     <section class="company-profile">
 
         <div class="profile-left">
 
             <div class="company-logo">
-                네
+                <img th:src="${company.logoUrl}" alt="기업 로고" style="width: 100%; height: 100%; object-fit: cover;" th:if="${company.logoUrl != null}">
+                <span th:if="${company.logoUrl == null}" th:text="${#strings.substring(company.companyName, 0, 1)}">네</span>
             </div>
 
             <div class="company-summary">
 
-                <h2>네이버클라우드</h2>
+                <h2 th:text="${company.companyName}">네이버클라우드</h2>
 
                 <p class="company-category">
-                    IT 서비스 · 서울 강남 · 중견기업
+                    <span th:text="${company.industryName}">IT 서비스</span> · <span th:text="${company.addressLine1}">서울 강남</span> · <span th:text="${company.companySize}">중견기업</span>
                 </p>
 
                 <div class="company-rating">
 
-                    <span>⭐ 4.5</span>
-                    <span>리뷰 328개</span>
-                    <span>진행 중 공고 12개</span>
+                    <span>
+                        ⭐ <span th:text="${company.averageRating != null ? company.averageRating : '4.5'}">4.5</span>
+                    </span>
+
+                    <span>
+                        리뷰 <span th:text="${company.reviewCount}">328</span>개
+                    </span>
+
+                    <span>
+                        진행 중 공고 <span th:text="${company.jobPostingCount}">12</span>개
+                    </span>
 
                 </div>
 
@@ -110,10 +121,8 @@
 
         <div class="profile-right">
 
-            <button
-                    class="wish-btn"
-            >
-                <!--                    th:data-company-id="${company.companyNo}"-->
+            <button class="wish-btn"
+                    th:data-company-id="${company.companyId}">
 
                 <i class="fa-regular fa-heart"></i>
 
@@ -121,54 +130,44 @@
 
             </button>
 
-            <button
-                    class="report-btn"
+            <button class="report-btn"
                     data-report-type="company"
-            >
-                <!--                data-target-id="1"-->
-                <!--                data-target-name="네이버"-->
+                    th:data-target-id="${company.companyId}"
+                    th:data-target-name="${company.companyName}">
+
                 신고
 
             </button>
+
         </div>
 
     </section>
 
 
-    <!-- 메뉴 -->
+    <!-- =========================
+            탭
+    ========================== -->
 
     <section class="company-tab">
 
-        <a
-                class="tab-btn">
-            <!--            th:href="@{/company/detail(companyNo=${company.companyNo})}"-->
-
+        <a class="tab-btn "
+           th:href="@{/company/detail(companyId=${company.companyId})}">
             기업소개
-
         </a>
 
-        <a
-                class="tab-btn">
-            <!--            th:href="@{/company/recruit(companyNo=${company.companyNo})}"-->
-
+        <a class="tab-btn"
+           th:href="@{/company/jobs(companyId=${company.companyId})}">
             채용공고
-
         </a>
 
-        <a
-                class="tab-btn">
-            <!--            th:href="@{/company/review(companyNo=${company.companyNo})}"-->
-
+        <a class="tab-btn"
+           th:href="@{/company/reviews(companyId=${company.companyId})}">
             기업리뷰
-
         </a>
 
-        <a
-                class="tab-btn  active">
-            <!--            th:href="@{/company/interview(companyNo=${company.companyNo})}"-->
-
+        <a class="tab-btn active"
+           th:href="@{/company/interview-reviews(companyId=${company.companyId})}">
             면접후기
-
         </a>
 
     </section>

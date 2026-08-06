@@ -2,8 +2,10 @@ package kr.co.firstdayproject.service.company;
 
 import kr.co.firstdayproject.dao.company.CompanyDao;
 import kr.co.firstdayproject.dto.company.CompanyDTO;
+import kr.co.firstdayproject.dto.company.CompanyReviewsDTO;
 import kr.co.firstdayproject.dto.company.CompanySearchDTO;
 import kr.co.firstdayproject.dto.job.JobCategoryOption;
+import kr.co.firstdayproject.dto.job.JobDTO;
 import kr.co.firstdayproject.util.PageHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -63,4 +65,28 @@ public class CompanyService {
 
         return company;
     }
+
+    // 기업 상세 : 진행 중인 채용공고
+    public List<JobDTO> getCompanyJobPostingList(Long companyId) {
+        return companyDao.selectCompanyJobPostingList(companyId);
+    }
+
+    // 기업 상세 : 채용공고 탭
+    public List<JobDTO> getCompanyRecruitList(Long companyId) {
+
+        List<JobDTO> list =
+                companyDao.selectCompanyRecruitList(companyId);
+
+        // 채용공고 스킬
+        for (JobDTO job : list) {
+
+            job.setSkillList(
+                    companyDao.selectSkillListByJobPostingId(job.getJobPostingId())
+            );
+        }
+
+        return list;
+    }
+
+
 }

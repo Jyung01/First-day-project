@@ -3,6 +3,7 @@ package kr.co.firstdayproject.dto.job;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class JobDTO {
@@ -51,4 +52,8 @@ public class JobDTO {
     private String companyName;
     private String logoUrl;
     private String categoryName;
+
+    // 기업정보 상세 : 채용공고 조회
+    private Integer dday;
+    private List<String> skillList;
 }
