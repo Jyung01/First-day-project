@@ -45,6 +45,7 @@
                     <form
                         class="profile-edit-form"
                         th:action="@{/my/profile-edit}"
+                        th:object="${profileForm}"
                         method="post"
                         enctype="multipart/form-data"
                         data-profile-edit-form
@@ -64,9 +65,9 @@
                                     <!-- 등록된 이미지가 없을 때 -->
                                     <span
                                         th:unless="${profileImageUrl != null}"
-                                        th:text="${#strings.isEmpty(memberName)
+                                        th:text="${#strings.isEmpty(profileForm.memberName)
                                             ? '김'
-                                            : #strings.substring(memberName, 0, 1)}"
+                                            : #strings.substring(profileForm.memberName, 0, 1)}"
                                         data-profile-initial
                                     >
                                         김
@@ -101,7 +102,7 @@
                                         id="memberName"
                                         name="memberName"
                                         class="profile-input"
-                                        th:value="${memberName}"
+                                        th:value="${profileForm.memberName}"
                                         value="김첫출"
                                         required
                                     />
@@ -132,7 +133,7 @@
                                         id="phone"
                                         name="phone"
                                         class="profile-input"
-                                        th:value="${phone}"
+                                        th:value="${profileForm.phone}"
                                         value="010-1234-5678"
                                         maxlength="13"
                                         inputmode="numeric"
@@ -145,64 +146,35 @@
                                     <div class="profile-label-row">
                                         <span class="profile-label"> 희망 직무 (최대 3개) </span>
 
-                                        <span class="profile-job-count" data-job-selection-count> 3/3 </span>
+                                        <span
+                                            class="profile-job-count"
+                                            data-job-selection-count
+                                            th:text="${#lists.size(desiredJobs)} + '/3'"
+                                        >
+                                            0/3
+                                        </span>
                                     </div>
 
                                     <div class="profile-job-box">
                                         <!-- 선택 직무 표시 -->
                                         <div class="job-selected-list" data-job-selected-list>
-                                            <!-- DB 연결 전 예시 -->
                                             <span
                                                 class="job-selected-chip"
-                                                data-initial-job-id="101"
-                                                data-initial-job-name="백엔드 개발"
+                                                th:each="job : ${desiredJobs}"
+                                                th:attr="
+                                                    data-initial-job-id=${job.jobCategoryId},
+                                                    data-initial-job-name=${job.categoryName}
+                                                "
                                             >
-                                                백엔드 개발
+                                                <span th:text="${job.categoryName}">백엔드 개발</span>
 
-                                                <button type="button" aria-label="백엔드 개발 삭제">×</button>
+                                                <button
+                                                    type="button"
+                                                    th:attr="aria-label=${job.categoryName + ' 삭제'}"
+                                                >
+                                                    ×
+                                                </button>
                                             </span>
-
-                                            <span
-                                                class="job-selected-chip"
-                                                data-initial-job-id="103"
-                                                data-initial-job-name="서버 개발"
-                                            >
-                                                서버 개발
-
-                                                <button type="button" aria-label="서버 개발 삭제">×</button>
-                                            </span>
-
-                                            <span
-                                                class="job-selected-chip"
-                                                data-initial-job-id="106"
-                                                data-initial-job-name="데이터 엔지니어"
-                                            >
-                                                데이터 엔지니어
-
-                                                <button type="button" aria-label="데이터 엔지니어 삭제">×</button>
-                                            </span>
-
-                                            <!-- 서버 연결 후 사용 예시
-                                    <span
-                                        class="job-selected-chip"
-                                        th:each="job : ${desiredJobs}"
-                                        th:attr="
-                                            data-initial-job-id=${job.id},
-                                            data-initial-job-name=${job.name}
-                                        "
-                                    >
-                                        <span th:text="${job.name}">
-                                            백엔드 개발
-                                        </span>
-
-                                        <button
-                                            type="button"
-                                            th:attr="aria-label=${job.name + ' 삭제'}"
-                                        >
-                                            ×
-                                        </button>
-                                    </span>
-                                    -->
                                         </div>
 
                                         <!-- 서버 전달용 직무 ID -->
@@ -210,22 +182,9 @@
                                             <input
                                                 type="hidden"
                                                 name="desiredJobIds"
-                                                value="101"
-                                                data-job-name="백엔드 개발"
-                                            />
-
-                                            <input
-                                                type="hidden"
-                                                name="desiredJobIds"
-                                                value="103"
-                                                data-job-name="서버 개발"
-                                            />
-
-                                            <input
-                                                type="hidden"
-                                                name="desiredJobIds"
-                                                value="106"
-                                                data-job-name="데이터 엔지니어"
+                                                th:each="job : ${desiredJobs}"
+                                                th:value="${job.jobCategoryId}"
+                                                th:attr="data-job-name=${job.categoryName}"
                                             />
                                         </div>
 
@@ -248,7 +207,7 @@
                                         id="postcode"
                                         name="postcode"
                                         class="profile-input"
-                                        th:value="${postcode}"
+                                        th:value="${profileForm.postcode}"
                                         value="06236"
                                         placeholder="우편번호"
                                         readonly
@@ -264,7 +223,7 @@
                                     id="address"
                                     name="address"
                                     class="profile-input"
-                                    th:value="${address}"
+                                    th:value="${profileForm.address}"
                                     value="서울특별시 강남구 테헤란로 123"
                                     placeholder="기본주소"
                                     readonly
@@ -275,7 +234,7 @@
                                     id="addressDetail"
                                     name="addressDetail"
                                     class="profile-input"
-                                    th:value="${addressDetail}"
+                                    th:value="${profileForm.addressDetail}"
                                     placeholder="상세주소 입력"
                                 />
 
@@ -286,7 +245,20 @@
                                 ></p>
                             </fieldset>
 
-                            <p class="profile-field-message" data-profile-form-message aria-live="polite"></p>
+                            <p
+                                class="profile-form-message is-visible is-success"
+                                th:if="${param.saved != null}"
+                            >
+                                변경사항이 저장되었습니다.
+                            </p>
+
+                            <p
+                                class="profile-form-message"
+                                th:classappend="${#fields.hasAnyErrors()} ? ' is-visible' : ''"
+                                th:text="${#fields.hasAnyErrors() ? #strings.listJoin(#fields.allErrors(), ' ') : ''}"
+                                data-profile-form-message
+                                aria-live="polite"
+                            ></p>
 
                             <!-- 하단 버튼 -->
                             <div class="profile-form-actions">

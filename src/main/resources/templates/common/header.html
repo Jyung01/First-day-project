@@ -90,6 +90,7 @@
                 <button type="submit" class="btn btn-ghost">로그아웃</button>
             </form>
 
+            <a sec:authorize="hasRole('PERSONAL')" th:href="@{/my}" class="btn btn-primary">마이페이지</a>
             <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}" class="btn btn-primary">관리자</a>
             <a sec:authorize="hasRole('COMPANY')" th:href="@{/corp}" class="btn btn-primary">기업관리</a>
         </div>

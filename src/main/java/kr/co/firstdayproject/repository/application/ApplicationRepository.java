@@ -1,8 +1,11 @@
 package kr.co.firstdayproject.repository.application;
 
+import kr.co.firstdayproject.dto.my.ApplicationSummaryProjection;
 import kr.co.firstdayproject.entity.application.Application;
 import java.util.Collection;
+import java.util.List;
 import java.time.LocalDateTime;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +18,30 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     long countByJobPostingIdAndCurrentStatusNot(
         Long jobPostingId,
         String excludedStatus
+    );
+
+    long countByApplicantUserId(Long userId);
+
+    long countByApplicantUserIdAndCurrentStatusIn(
+        Long userId,
+        Collection<String> statuses
+    );
+
+    @Query("""
+            select a.applicationId as applicationId,
+                   c.companyName as companyName,
+                   jp.title as jobTitle,
+                   a.currentStatus as currentStatus,
+                   a.appliedAt as appliedAt
+              from Application a
+              join JobPosting jp on jp.jobPostingId = a.jobPostingId
+              join Company c on c.companyId = jp.companyId
+             where a.applicantUserId = :userId
+             order by a.appliedAt desc
+            """)
+    List<ApplicationSummaryProjection> findRecentByApplicantUserId(
+            @Param("userId") Long userId,
+            Pageable pageable
     );
 
     @Query(value = """

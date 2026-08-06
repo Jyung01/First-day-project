@@ -116,34 +116,69 @@ document.addEventListener("DOMContentLoaded", function () {
        회원 탈퇴 확인 모달
     ===================================================== */
 
+    const formMessage = form.querySelector("[data-profile-form-message]");
+
     withdrawButton?.addEventListener("click", function () {
+        clearMessage(formMessage);
+
         showConfirmModal({
             iconClass: "danger",
             iconHtml: "!",
             title: "회원 탈퇴를 진행할까요?",
             message:
-                "탈퇴하면 작성한 이력서와 지원 정보 등 일부 데이터를 더 이상 이용할 수 없습니다.\n탈퇴 처리는 되돌릴 수 없습니다.",
+                "탈퇴하면 작성한 이력서와 지원 정보 등 일부 데이터를 더 이상 이용할 수 없습니다.\n탈퇴 처리는 되돌릴 수 없습니다.\n계속하려면 현재 비밀번호를 입력해주세요.",
+            extraHtml:
+                '<input type="password" id="withdrawPassword" class="profile-input" placeholder="현재 비밀번호" autocomplete="current-password" />',
             leftText: "취소",
             rightText: "회원 탈퇴",
             leftClass: "btn-outline",
             rightClass: "btn-danger",
 
-            onRight: function () {
-                /*
-                 * 실제 구현 시 회원 탈퇴 POST API로 교체
-                 *
-                 * 예:
-                 * fetch("/my/withdraw", {
-                 *     method: "POST",
-                 *     headers: {
-                 *         "X-CSRF-TOKEN": csrfToken
-                 *     }
-                 * });
-                 */
-                console.log("회원 탈퇴 처리 예정");
+            onRight: async function () {
+                const passwordInput = document.getElementById("withdrawPassword");
+                const currentPassword = passwordInput?.value ?? "";
+
+                if (!currentPassword.trim()) {
+                    showMessage(formMessage, "현재 비밀번호를 입력해주세요.");
+                    return;
+                }
+
+                try {
+                    const response = await fetch("/my/withdraw", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ currentPassword: currentPassword }),
+                    });
+
+                    const result = await readJsonResponse(response);
+
+                    if (!response.ok || !result.success) {
+                        showMessage(formMessage, result.message || "회원 탈퇴에 실패했습니다.");
+                        return;
+                    }
+
+                    window.location.href = result.redirectUrl || "/auth/login";
+                } catch (error) {
+                    showMessage(formMessage, "잠시 후 다시 시도해주세요.");
+                }
             },
         });
     });
+
+    async function readJsonResponse(response) {
+        try {
+            return await response.json();
+        } catch (error) {
+            return {
+                success: false,
+                message: response.status === 401
+                    ? "로그인이 만료되었습니다. 다시 로그인해주세요."
+                    : "서버 응답을 확인할 수 없습니다.",
+            };
+        }
+    }
 
     /* =====================================================
        폼 제출

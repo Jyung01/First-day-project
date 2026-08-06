@@ -10,10 +10,12 @@
 
 ## 현재 버전
 
-- 최신 변경 버전: V5
+- 최신 변경 버전: V6
 - 신규 DB 생성: `ddl/firstday_mysql_current.sql` 실행
-- V4 DB 업데이트: `migration/V5__make_job_posting_draft_fields_nullable.sql` 실행
+- V5 DB 업데이트: `migration/V6__add_scheduled_job_posting_status.sql` 실행
 
-## V5 핵심 변경
+## V6 핵심 변경
 
 채용공고 임시저장을 위해 `job_postings`의 직무 카테고리, 고용형태, 경력, 학력, 근무지역, 모집인원, 주요업무, 자격요건을 NULL 허용으로 변경했다.
+
+- `job_postings.status` CHECK 허용값에 `모집예정`을 추가한다.

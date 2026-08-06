@@ -44,6 +44,7 @@ public class PgVectorConfig {
     ) {
         return PgVectorStore.builder(jdbcTemplate, embeddingModel)
                 .schemaName("ai")
+                .vectorTableName("vector_store")
                 .dimensions(1024)
                 .distanceType(PgVectorStore.PgDistanceType.COSINE_DISTANCE)
                 .indexType(PgVectorStore.PgIndexType.HNSW)

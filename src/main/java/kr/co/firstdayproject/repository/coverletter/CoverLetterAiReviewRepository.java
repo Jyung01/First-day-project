@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CoverLetterAiReviewRepository extends JpaRepository<CoverLetterAiReview, Long> {
+
+    boolean existsByCoverLetterId(Long coverLetterId);
 }
