@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const educationList = form.querySelector("[data-education-list]");
     const careerList = form.querySelector("[data-career-list]");
     const projectList = form.querySelector("[data-project-list]");
+    const skillChipList = form.querySelector("[data-skill-chip-list]");
 
     const educationTemplate = document.getElementById("educationItemTemplate");
     const careerTemplate = document.getElementById("careerItemTemplate");
@@ -26,12 +27,95 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const cancelLink = form.querySelector("[data-resume-cancel]");
 
-    let submitMode = "save";
+    /* =====================================================
+       기술 선택 모달 - 실제 DB 기술 목록 채우기
+       (skill-select-modal.html 자체 옵션은 화면 목업용 더미 값이라
+        resume_skills.skill_id 외래키와 맞지 않는다. 여기서 실제
+        DB 기술 목록(data-resume-skill-source)으로 모달 내용을 교체한다.)
+    ===================================================== */
 
-    /*
-     * DB 연결 전 화면 테스트용 기술 목록.
-     * 실제 구현 시 서버에서 받은 기술 카테고리 목록으로 교체한다.
-     */
+    function renderDatabaseSkills() {
+        const sourceItems = Array.from(
+            document.querySelectorAll("[data-resume-skill-source] [data-skill-id]")
+        );
+        const modal = document.querySelector("[data-skill-modal]");
+
+        if (sourceItems.length === 0 || !modal) {
+            return;
+        }
+
+        const categoryList = modal.querySelector(".skill-category-list");
+        const optionList = modal.querySelector("[data-skill-option-list]");
+        const groups = sourceItems.filter(function (item) {
+            return item.dataset.depth === "1";
+        });
+        const skills = sourceItems.filter(function (item) {
+            return item.dataset.depth === "2";
+        });
+
+        if (!categoryList || !optionList || groups.length === 0) {
+            return;
+        }
+
+        categoryList.querySelectorAll("[data-skill-category]").forEach(function (button) {
+            button.remove();
+        });
+        optionList.replaceChildren();
+
+        groups.forEach(function (group, index) {
+            const categoryKey = "skill-group-" + group.dataset.skillId;
+            const button = document.createElement("button");
+            const name = document.createElement("span");
+            const arrow = document.createElement("span");
+
+            button.type = "button";
+            button.className = "skill-category-button";
+            button.dataset.skillCategory = categoryKey;
+
+            if (index === 0) {
+                button.classList.add("is-active");
+            }
+
+            name.textContent = group.dataset.skillName;
+            arrow.textContent = "›";
+            arrow.setAttribute("aria-hidden", "true");
+            button.append(name, arrow);
+            categoryList.appendChild(button);
+
+            skills
+                .filter(function (skill) {
+                    return skill.dataset.parentId === group.dataset.skillId;
+                })
+                .forEach(function (skill) {
+                    const label = document.createElement("label");
+                    const checkbox = document.createElement("input");
+                    const skillName = document.createElement("span");
+
+                    label.className = "skill-option";
+                    label.dataset.skillOptionItem = "";
+                    label.dataset.skillCategoryName = categoryKey;
+                    label.dataset.skillSearchName = skill.dataset.skillName.toLowerCase();
+                    label.hidden = index !== 0;
+
+                    checkbox.type = "checkbox";
+                    checkbox.value = skill.dataset.skillId;
+                    checkbox.dataset.skillOption = "";
+                    checkbox.dataset.skillName = skill.dataset.skillName;
+                    skillName.textContent = skill.dataset.skillName;
+
+                    label.append(checkbox, skillName);
+                    optionList.appendChild(label);
+                });
+        });
+
+        const categoryTitle = modal.querySelector("[data-skill-category-title]");
+
+        if (categoryTitle) {
+            categoryTitle.textContent = groups[0].dataset.skillName;
+        }
+    }
+
+    renderDatabaseSkills();
 
     /* =====================================================
        탭
@@ -409,12 +493,6 @@ document.addEventListener("DOMContentLoaded", function () {
        제출
     ===================================================== */
 
-    form.querySelectorAll("[data-submit-mode]").forEach(function (button) {
-        button.addEventListener("click", function () {
-            submitMode = button.dataset.submitMode || "save";
-        });
-    });
-
     form.addEventListener("submit", function (event) {
         if (!validateForm()) {
             event.preventDefault();
@@ -424,33 +502,6 @@ document.addEventListener("DOMContentLoaded", function () {
         reindexEducations();
         reindexCareers();
         reindexProjects();
-
-        /*
-         * 현재 ResumeController에는 GET 화면 매핑만 있으므로
-         * 화면 테스트 단계에서는 제출을 막는다.
-         * POST 구현 후 아래 event.preventDefault()와
-         * 테스트 모달 부분을 제거하면 된다.
-         */
-        event.preventDefault();
-
-        showConfirmModal({
-            iconClass: "success",
-            iconHtml: "✓",
-            title: "이력서가 저장되었습니다",
-            message:
-                submitMode === "preview"
-                    ? "저장한 이력서를 확인 화면에서 확인할 수 있습니다."
-                    : "입력한 이력서 정보가 저장되었습니다.",
-            leftText: "",
-            rightText: submitMode === "preview" ? "이력서 보기" : "확인",
-            rightClass: "btn-primary",
-
-            onRight: function () {
-                if (submitMode === "preview") {
-                    window.location.href = "/my/resume/detail";
-                }
-            },
-        });
     });
 
     /* =====================================================

@@ -47,7 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let confirmedSkills = readPageSkills();
     let temporarySkills = [];
-    let activeCategory = "backend";
     let previouslyFocusedElement = null;
 
     const categoryNames = {
@@ -58,6 +57,17 @@ document.addEventListener("DOMContentLoaded", function () {
         "data-ai": "데이터·AI 기술",
         etc: "협업·기타 기술",
     };
+
+    /*
+     * 카테고리 버튼이 DB 기술 목록(job-form.js/resume/form.js)으로 동적 교체된 경우
+     * "skill-group-N" 같은 키가 쓰이므로, 고정된 backend/frontend/... 키를
+     * 기본값으로 가정하면 안 된다. 실제 존재하는 첫 번째 카테고리 버튼을 기본값으로 쓴다.
+     */
+    function firstCategoryKey() {
+        return categoryButtons[0]?.dataset.skillCategory || "backend";
+    }
+
+    let activeCategory = firstCategoryKey();
 
     function readPageSkills() {
         return Array.from(pageChipList?.querySelectorAll("[data-skill-id]") ?? []).map(function (chip) {
@@ -268,7 +278,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (categoryTitle) {
-            categoryTitle.textContent = keyword.length > 0 ? "검색 결과" : categoryNames[activeCategory];
+            const activeCategoryButton = categoryButtons.find(function (button) {
+                return button.dataset.skillCategory === activeCategory;
+            });
+            const fallbackLabel = activeCategoryButton?.querySelector("span")?.textContent ?? "";
+
+            categoryTitle.textContent = keyword.length > 0
+                ? "검색 결과"
+                : (categoryNames[activeCategory] ?? fallbackLabel);
         }
 
         if (categoryDescription) {
@@ -301,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
         clearMessage();
         synchronizeCheckboxes();
         renderModalSelectedSkills();
-        activateCategory("backend");
+        activateCategory(firstCategoryKey());
 
         modal.classList.add("is-open");
         modal.setAttribute("aria-hidden", "false");
@@ -368,5 +385,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     renderPageSkills();
-    activateCategory("backend");
+    activateCategory(firstCategoryKey());
 });
