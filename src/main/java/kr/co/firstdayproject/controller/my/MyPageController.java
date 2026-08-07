@@ -70,7 +70,7 @@ public class MyPageController {
         }
 
         User user = myPageService.getUser(userDetails.getUserId());
-        PersonalProfile profile = myPageService.getProfile(userDetails.getUserId());
+        PersonalProfile profile = resolveProfile(model, userDetails.getUserId());
 
         model.addAttribute("profileForm", ProfileEditRequest.from(user, profile));
         addProfileEditModel(model, userDetails.getUserId(), user, profile);
@@ -108,9 +108,20 @@ public class MyPageController {
         }
 
         User user = myPageService.getUser(userDetails.getUserId());
-        PersonalProfile profile = myPageService.getProfile(userDetails.getUserId());
+        PersonalProfile profile = resolveProfile(model, userDetails.getUserId());
         addProfileEditModel(model, userDetails.getUserId(), user, profile);
         return "my/profile-edit";
+    }
+
+    /**
+     * {@link MySidebarAdvice}가 이미 같은 요청에서 조회해둔 PersonalProfile이 있으면 재사용하고,
+     * 없으면(예: 사이드바 대상이 아닌 경우) 새로 조회합니다.
+     */
+    private PersonalProfile resolveProfile(Model model, Long userId) {
+        if (model.getAttribute("personalProfile") instanceof PersonalProfile cachedProfile) {
+            return cachedProfile;
+        }
+        return myPageService.getProfile(userId);
     }
 
     private void addProfileEditModel(
@@ -121,12 +132,23 @@ public class MyPageController {
     ) {
         model.addAttribute("activeMenu", "edit");
         model.addAttribute("email", user.getEmail());
-        model.addAttribute("profileImageUrl", profile.getProfileImageUrl());
+        model.addAttribute("profileImageUrl", resolveProfileImageUrl(model, profile));
         model.addAttribute("desiredJobs", myPageService.getDesiredJobs(userId));
         model.addAttribute(
                 "jobCategoryGroups",
                 jobService.getActiveJobCategoryGroups()
         );
+    }
+
+    /**
+     * {@link MySidebarAdvice}가 이미 같은 요청에서 발급해둔 presigned URL이 있으면 재사용해서,
+     * S3Presigner 서명 계산과 DB 조회가 요청당 두 번씩 일어나지 않도록 합니다.
+     */
+    private String resolveProfileImageUrl(Model model, PersonalProfile profile) {
+        if (model.containsAttribute("personalProfile")) {
+            return (String) model.getAttribute("mySidebarProfileImageUrl");
+        }
+        return myPageService.getProfileImageDisplayUrl(profile);
     }
 
     @PostMapping("/password-change")

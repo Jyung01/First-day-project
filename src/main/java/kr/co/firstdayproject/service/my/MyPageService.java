@@ -79,6 +79,14 @@ public class MyPageService {
                 .orElseGet(() -> PersonalProfile.builder().userId(userId).build());
     }
 
+    /**
+     * 비공개 버킷에 저장된 프로필 이미지 storageKey로부터, 화면에 표시할 임시 접근 URL을 발급합니다.
+     * 호출 시점마다 새로 발급되므로 저장하거나 재사용하지 않아야 합니다.
+     */
+    public String getProfileImageDisplayUrl(PersonalProfile profile) {
+        return awsS3Service.getPresignedUrl(profile.getProfileImageUrl());
+    }
+
     public List<JobCategory> getDesiredJobs(Long userId) {
         return userDesiredJobRepository.findJobCategoriesByUserId(userId);
     }
@@ -205,9 +213,10 @@ public class MyPageService {
 
         if (profileImage != null && !profileImage.isEmpty()) {
             validateProfileImage(profileImage);
+            String previousImageKey = profile.getProfileImageUrl();
             try {
                 profile.setProfileImageUrl(
-                        awsS3Service.upload(profileImage, "personal_profile")
+                        awsS3Service.uploadPrivate(profileImage, "personal_profile")
                 );
             } catch (IOException | RuntimeException exception) {
                 throw new MyPageException(
@@ -215,6 +224,7 @@ public class MyPageService {
                         "프로필 이미지를 업로드하지 못했습니다. 다시 시도해주세요."
                 );
             }
+            awsS3Service.deletePrivate(previousImageKey);
         }
         profile.setUpdatedAt(now);
         personalProfileRepository.save(profile);

@@ -33,7 +33,8 @@ public class MySidebarAdvice {
         User user = myPageService.getUser(userDetails.getUserId());
         PersonalProfile profile = myPageService.getProfile(userDetails.getUserId());
 
-        model.addAttribute("mySidebarProfileImageUrl", profile.getProfileImageUrl());
+        model.addAttribute("personalProfile", profile);
+        model.addAttribute("mySidebarProfileImageUrl", myPageService.getProfileImageDisplayUrl(profile));
         model.addAttribute("mySidebarName", user.getName());
     }
 }

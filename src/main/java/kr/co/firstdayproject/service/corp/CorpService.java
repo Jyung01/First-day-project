@@ -184,6 +184,7 @@ public class CorpService {
 
         if (companyLogo != null && !companyLogo.isEmpty()) {
             validateCompanyLogo(companyLogo);
+            String previousLogoUrl = company.getLogoUrl();
             try {
                 company.setLogoUrl(
                         awsS3Service.upload(companyLogo, "companies_logo")
@@ -195,6 +196,7 @@ public class CorpService {
                         exception
                 );
             }
+            awsS3Service.deletePublicByUrl(previousLogoUrl);
         }
 
         company.setCompanyName(request.getCompanyName().trim());
@@ -238,6 +240,7 @@ public class CorpService {
         }
 
         if (companyLogo != null && !companyLogo.isEmpty()) {
+            String previousLogoUrl = company.getLogoUrl();
             try {
                 validateCompanyLogo(companyLogo);
                 company.setLogoUrl(
@@ -254,6 +257,7 @@ public class CorpService {
                         "기업 로고를 업로드하지 못했습니다. 다시 시도해주세요."
                 );
             }
+            awsS3Service.deletePublicByUrl(previousLogoUrl);
         }
 
         LocalDateTime now = LocalDateTime.now();
