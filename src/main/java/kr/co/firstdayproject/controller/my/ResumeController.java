@@ -29,6 +29,7 @@ public class ResumeController {
             return "redirect:/auth/login";
         }
 
+        model.addAttribute("activeMenu", "resumes");
         model.addAttribute("resumes", resumeService.findMyList(userDetails.getUserId()));
         return "my/resume/list";
     }
@@ -49,6 +50,7 @@ public class ResumeController {
         Long userId = userDetails.getUserId();
         Resume resume = resumeService.getMine(id, userId);
 
+        model.addAttribute("activeMenu", "resumes");
         model.addAttribute("resume", resume);
         model.addAttribute("careers", resumeService.getCareers(id));
         model.addAttribute("educations", resumeService.getEducations(id));
@@ -78,6 +80,7 @@ public class ResumeController {
                 : List.of();
         User applicant = resumeService.getApplicant(userId);
 
+        model.addAttribute("activeMenu", "resumes");
         model.addAttribute("editMode", editMode);
         model.addAttribute("resumeForm", formRequest);
         model.addAttribute("skillChips", skillChips);

@@ -27,7 +27,10 @@ public class AdminController {
     }
 
     @GetMapping("/banner")
-    public String banner() { return "admin/banner/index"; }
+    public String banner(Model model) {
+        model.addAttribute("activeMenu", "banner");
+        return "admin/banner/index";
+    }
 
     // 배너 등록
     @PostMapping("/banner/register")
@@ -43,13 +46,22 @@ public class AdminController {
     }
 
     @GetMapping("/review")
-    public String review() { return "admin/review/index"; }
+    public String review(Model model) {
+        model.addAttribute("activeMenu", "review");
+        return "admin/review/index";
+    }
 
     @GetMapping("/report")
-    public String report() { return "admin/report/index"; }
+    public String report(Model model) {
+        model.addAttribute("activeMenu", "report");
+        return "admin/report/index";
+    }
 
     @GetMapping("/salary")
-    public String salary() { return "admin/salary/index"; }
+    public String salary(Model model) {
+        model.addAttribute("activeMenu", "salary");
+        return "admin/salary/index";
+    }
 
     // notice 메서드 삭제됨 -> AdminNoticeController 가 전담
 
