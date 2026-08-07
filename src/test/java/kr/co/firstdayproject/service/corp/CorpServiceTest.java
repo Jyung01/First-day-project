@@ -195,7 +195,7 @@ class CorpServiceTest {
 
     @Test
     void countsWithdrawalSummaryWithoutLoadingJsonEntities() {
-        when(jobPostingRepository.countByCompanyIdAndStatus(10L, "모집중"))
+        when(jobPostingRepository.countByCompanyIdAndStatusIn(10L, List.of("모집중", "모집예정")))
                 .thenReturn(2L);
         when(applicationRepository.countActiveApplicantsOfRecruitingCompany(
                 org.mockito.ArgumentMatchers.eq(10L),
@@ -284,7 +284,7 @@ class CorpServiceTest {
         request.setAddress("서울특별시 강남구 테헤란로 123");
         request.setAddressDetail("4층");
         request.setShortDescription("기업 한 줄 소개");
-        request.setBenefits("복지 정보");
+        request.setBenefits(List.of("복지 정보"));
         when(companyRepository.findById(10L)).thenReturn(Optional.of(company));
 
         corpService.updateCompanyProfile(10L, request, null);
@@ -339,7 +339,7 @@ class CorpServiceTest {
         request.setIndustry("IT·인터넷");
         request.setHomepage("https://example.com");
         request.setShortDescription("기업 한 줄 소개");
-        request.setBenefits("복지 정보");
+        request.setBenefits(List.of("복지 정보"));
         return request;
     }
 }
