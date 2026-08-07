@@ -4,317 +4,176 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>연봉정보 목록</title>
-    <!-- 메인 헤더 푸터 css -->
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
-    <!-- 연봉정보 목록 css -->
     <link rel="stylesheet" th:href="@{/css/salary/list.css}"/>
-    <!-- 모달 css -->
     <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
     <link rel="stylesheet" th:href="@{/css/modal/common/salary-create.css}"/>
-    <!-- 모달 js -->
     <script th:src="@{/js/modal.js}"></script>
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
     <script th:src="@{/js/salary/list.js}"></script>
-
+    <script th:src="@{/js/salary/feedback-modal.js}"></script>
 </head>
 <body>
 <header th:replace="~{common/header :: header}"></header>
 
 <main class="salary-list-page">
-    <!-- 상단 배너 -->
+    <div id="salaryFeedback" th:if="${errorMessage != null or successMessage != null}" th:data-message="${successMessage != null ? successMessage : errorMessage}" th:data-type="${successMessage != null ? 'success' : 'error'}"></div>
     <section class="salary-hero">
         <div class="hero-left">
-            <span class="hero-sub-title"> 첫출근 연봉 데이터 </span>
-
+            <span class="hero-sub-title">첫출근 연봉 데이터</span>
             <h1>내 연봉, 어느 정도인지 비교해보세요</h1>
-
-            <p>
-                기업과 직무별 평균 연봉을 확인하고 내 연봉정보도 익명으로 등록할 수
-                있어요.
-            </p>
+            <p>기업과 직무별 평균 연봉을 확인하고 내 연봉정보도 익명으로 등록할 수 있어요.</p>
         </div>
 
         <div class="hero-right">
-            <form action="/salary/list" method="get" class="">
-
+            <form id="salarySearchForm" th:action="@{/salary/list}" method="get">
+                <input type="hidden" name="companySize" th:value="${companySize}">
+                <input type="hidden" name="industry" th:value="${industry}">
+                <input type="hidden" name="career" th:value="${career}">
+                <input type="hidden" name="sort" th:value="${sort}">
                 <div class="search-box">
-
-                    <input
-                            type="text"
-                            name="keyword"
-                            placeholder="기업명을 입력하세요">
+                    <input type="text" name="keyword" th:value="${keyword}"
+                           placeholder="기업명을 입력하세요">
                     <button type="submit">검색</button>
                 </div>
             </form>
-            <a th:href="@{/salary/my-list}" class="my-salary-btn">
-                내 연봉정보
-            </a>
+            <a th:href="@{/salary/my-list}" class="my-salary-btn">내 연봉정보</a>
         </div>
     </section>
 
-    <!-- 내용 -->
     <section class="salary-container">
-        <!-- 통계 카드 -->
         <section class="summary-section">
             <article class="summary-card">
                 <div class="summary-title">전체 평균 연봉</div>
-
                 <div class="summary-bottom">
-                    <strong>4,820만원</strong>
-
-                    <span>최근 1년 기준</span>
+                    <strong th:text="|${#numbers.formatInteger(summary.overallAverageSalary, 1, 'COMMA')}만원|">0만원</strong>
+                    <span>공개 데이터 기준</span>
                 </div>
             </article>
 
             <article class="summary-card">
                 <div class="summary-title">신입 평균 연봉</div>
-
                 <div class="summary-bottom">
-                    <strong>3,420만원</strong>
-
-                    <span>경력 1년 미만</span>
+                    <strong th:text="|${#numbers.formatInteger(summary.overallNewcomerAverageSalary, 1, 'COMMA')}만원|">0만원</strong>
+                    <span>경력 1년 이하</span>
                 </div>
             </article>
 
             <article class="summary-card">
                 <div class="summary-title">등록된 연봉정보</div>
-
                 <div class="summary-bottom">
-                    <strong>1,284건</strong>
-
+                    <strong th:text="|${#numbers.formatInteger(summary.totalRecordCount, 1, 'COMMA')}건|">0건</strong>
                     <span>현재 기준 데이터</span>
                 </div>
             </article>
         </section>
 
-        <!-- 기업별 연봉정보 -->
         <section class="salary-list-section">
             <div class="section-header">
                 <h2>기업별 연봉정보</h2>
-
-                <span class="company-count"> 총 246개 기업 </span>
+                <span class="company-count" th:text="|총 ${companyCount}개 기업|">총 0개 기업</span>
             </div>
 
-            <div class="filter-row">
+            <form id="salaryFilterForm" th:action="@{/salary/list}" method="get" class="filter-row">
+                <input type="hidden" name="keyword" th:value="${keyword}">
                 <div class="filter-group">
-                    <select>
-                        <option>기업규모 · 전체</option>
+                    <select name="companySize" class="salary-filter">
+                        <option value="">기업규모 · 전체</option>
+                        <option th:each="item : ${companySizeList}" th:value="${item}"
+                                th:text="${item}" th:selected="${item == companySize}"></option>
                     </select>
 
-                    <select>
-                        <option>업종 · 전체</option>
+                    <select name="industry" class="salary-filter">
+                        <option value="">업종 · 전체</option>
+                        <option th:each="item : ${industryList}" th:value="${item}"
+                                th:text="${item}" th:selected="${item == industry}"></option>
                     </select>
 
-                    <select>
-                        <option>경력 · 전체</option>
+                    <select name="career" class="salary-filter">
+                        <option value="" th:selected="${career == null or career == ''}">경력 · 전체</option>
+                        <option value="newcomer" th:selected="${career == 'newcomer'}">신입 · 1년 이하</option>
+                        <option value="junior" th:selected="${career == 'junior'}">1~3년</option>
+                        <option value="middle" th:selected="${career == 'middle'}">4~7년</option>
+                        <option value="senior" th:selected="${career == 'senior'}">8년 이상</option>
                     </select>
                 </div>
 
                 <div class="sort-group">
-                    <select>
-                        <option>평균 연봉 높은순</option>
-                        <option>최신순</option>
-                        <option>등록순</option>
+                    <select name="sort" class="salary-filter">
+                        <option value="salary" th:selected="${sort == 'salary'}">평균 연봉 높은순</option>
+                        <option value="latest" th:selected="${sort == 'latest'}">최신순</option>
+                        <option value="count" th:selected="${sort == 'count'}">등록순</option>
                     </select>
                 </div>
-            </div>
+            </form>
 
             <div class="company-list">
-                <!-- 기업 카드 1 -->
-                <article class="company-card">
+                <article class="company-card" th:each="salary : ${salaryList}">
                     <div class="company-info">
-                        <div class="company-logo bg-blue">N</div>
-
+                        <div class="company-logo" th:if="${salary.logoUrl != null and !salary.logoUrl.isBlank()}">
+                            <img th:src="${salary.logoUrl}" th:alt="${salary.companyName}">
+                        </div>
+                        <div class="company-logo bg-blue"
+                             th:unless="${salary.logoUrl != null and !salary.logoUrl.isBlank()}"
+                             th:text="${#strings.substring(salary.companyName, 0, 1)}">기</div>
                         <div class="company-text">
-                            <h3>네이버클라우드</h3>
-
-                            <p>IT · 클라우드 · 성남시</p>
+                            <h3 th:text="${salary.companyName}">기업명</h3>
+                            <p>
+                                <span th:text="${salary.industryName ?: '업종 정보 없음'}">업종</span>
+                                ·
+                                <span th:text="${salary.addressLine1 ?: '지역 정보 없음'}">지역</span>
+                            </p>
                         </div>
                     </div>
 
                     <div class="company-item">
-                        <span class="item-title"> 평균 연봉 </span>
-
-                        <strong> 5,480만원 </strong>
+                        <span class="item-title">평균 연봉</span>
+                        <strong th:text="|${#numbers.formatInteger(salary.averageSalary, 1, 'COMMA')}만원|">0만원</strong>
                     </div>
-
                     <div class="company-item">
-                        <span class="item-title"> 신입 평균 </span>
-
-                        <strong> 3,900만원 </strong>
+                        <span class="item-title">신입 평균</span>
+                        <strong th:text="${salary.newcomerAverageSalary != null
+                            ? #numbers.formatInteger(salary.newcomerAverageSalary, 1, 'COMMA') + '만원'
+                            : '-'}">-</strong>
                     </div>
-
                     <div class="company-item">
-                        <span class="item-title"> 등록 정보 </span>
-
-                        <strong> 128건 </strong>
+                        <span class="item-title">등록 정보</span>
+                        <strong th:text="|${salary.recordCount}건|">0건</strong>
                     </div>
-
                     <div class="company-item">
-                        <span class="item-title"> 최근 갱신 </span>
-
-                        <strong class="date"> 2026.07.18 </strong>
+                        <span class="item-title">최근 갱신</span>
+                        <strong class="date"
+                                th:text="${#temporals.format(salary.latestUpdatedAt, 'yyyy.MM.dd')}">-</strong>
                     </div>
-
                     <div class="company-link">
-                        <a th:href="@{/salary/detail}"> 기업별 상세 보기 → </a>
+                        <a th:href="@{/salary/detail(companyId=${salary.companyId})}">기업별 상세 보기 →</a>
                     </div>
                 </article>
 
-                <!-- 기업 카드 2 -->
-
-                <article class="company-card">
-                    <div class="company-info">
-                        <div class="company-logo bg-yellow">K</div>
-
-                        <div class="company-text">
-                            <h3>카카오엔터프라이즈</h3>
-
-                            <p>IT · 플랫폼 · 성남시</p>
-                        </div>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 평균 연봉 </span>
-
-                        <strong> 5,260만원 </strong>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 신입 평균 </span>
-
-                        <strong> 3,780만원 </strong>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 등록 정보 </span>
-
-                        <strong> 96건 </strong>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 최근 갱신 </span>
-
-                        <strong class="date"> 2026.07.16 </strong>
-                    </div>
-
-                    <div class="company-link">
-                        <a href="#"> 기업별 상세 보기 → </a>
-                    </div>
-                </article>
-                <!-- 기업 카드 3 -->
-                <article class="company-card">
-                    <div class="company-info">
-                        <div class="company-logo bg-purple">T</div>
-
-                        <div class="company-text">
-                            <h3>토스페이먼츠</h3>
-
-                            <p>핀테크 · 서울 강남구</p>
-                        </div>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 평균 연봉 </span>
-
-                        <strong> 5,120만원 </strong>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 신입 평균 </span>
-
-                        <strong> 3,850만원 </strong>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 등록 정보 </span>
-
-                        <strong> 84건 </strong>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 최근 갱신 </span>
-
-                        <strong class="date"> 2026.07.14 </strong>
-                    </div>
-
-                    <div class="company-link">
-                        <a href="#"> 기업별 상세 보기 → </a>
-                    </div>
-                </article>
-
-                <!-- 기업 카드 4 -->
-                <article class="company-card">
-                    <div class="company-info">
-                        <div class="company-logo bg-green">우</div>
-
-                        <div class="company-text">
-                            <h3>우아한형제들</h3>
-
-                            <p>IT · 푸드테크 · 서울 송파구</p>
-                        </div>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 평균 연봉 </span>
-
-                        <strong> 4,980만원 </strong>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 신입 평균 </span>
-
-                        <strong> 3,700만원 </strong>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 등록 정보 </span>
-
-                        <strong> 73건 </strong>
-                    </div>
-
-                    <div class="company-item">
-                        <span class="item-title"> 최근 갱신 </span>
-
-                        <strong class="date"> 2026.07.12 </strong>
-                    </div>
-
-                    <div class="company-link">
-                        <a href="#"> 기업별 상세 보기 → </a>
-                    </div>
-                </article>
+                <div class="salary-empty" th:if="${#lists.isEmpty(salaryList)}">
+                    조건에 맞는 연봉정보가 없습니다.
+                </div>
             </div>
         </section>
 
-        <!-- 페이지네이션 -->
-        <section class="pagination">
-            <button class="page-btn">&lt;</button>
+        <section class="pagination" th:if="${pageHandler.lastPage > 0}">
+            <button class="page-btn" th:if="${pageHandler.currentPage > 1}"
+                    th:onclick="|location.href='@{/salary/list(page=${pageHandler.currentPage - 1},keyword=${keyword},companySize=${companySize},industry=${industry},career=${career},sort=${sort})}'|">&lt;</button>
 
-            <button class="page-btn active">1</button>
+            <button class="page-btn" th:each="pageNo : ${#numbers.sequence(pageHandler.startPage, pageHandler.endPage)}"
+                    th:classappend="${pageNo == pageHandler.currentPage} ? ' active'"
+                    th:text="${pageNo}"
+                    th:onclick="|location.href='@{/salary/list(page=${pageNo},keyword=${keyword},companySize=${companySize},industry=${industry},career=${career},sort=${sort})}'|">1</button>
 
-            <button class="page-btn">2</button>
-
-            <button class="page-btn">3</button>
-
-            <button class="page-btn">4</button>
-
-            <button class="page-btn">5</button>
-
-            <button class="page-btn">&gt;</button>
+            <button class="page-btn" th:if="${pageHandler.currentPage < pageHandler.lastPage}"
+                    th:onclick="|location.href='@{/salary/list(page=${pageHandler.currentPage + 1},keyword=${keyword},companySize=${companySize},industry=${industry},career=${career},sort=${sort})}'|">&gt;</button>
         </section>
     </section>
 </main>
 
-<!-- ============ 푸터 (공통 영역) ============ -->
 <footer th:replace="~{common/footer :: footer}"></footer>
-
-<!-- 모달 불러오기 -->
 <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
-
-<!-- 공통 헤더·푸터 불러오기 -->
-<script th:src="@{../js/common.js}"></script>
+<script th:src="@{/js/common.js}"></script>
 </body>
 </html>

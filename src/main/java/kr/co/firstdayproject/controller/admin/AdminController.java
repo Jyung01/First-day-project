@@ -57,10 +57,17 @@ public class AdminController {
         return "admin/report/index";
     }
 
+<<<<<<< Updated upstream
     @GetMapping("/salary")
     public String salary(Model model) {
         model.addAttribute("activeMenu", "salary");
         return "admin/salary/index";
+=======
+    @GetMapping("/cs/notice")
+    public String notice(Model model) {
+        model.addAttribute("activeMenu", "cs");
+        return "admin/cs/notice";
+>>>>>>> Stashed changes
     }
 
     // notice 메서드 삭제됨 -> AdminNoticeController 가 전담

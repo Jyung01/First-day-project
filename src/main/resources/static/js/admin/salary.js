@@ -1,110 +1,68 @@
 document.addEventListener("DOMContentLoaded", () => {
-    salaryData.normal = salaryData.all.filter((v) => v.state === "정상");
-
-    salaryData.review = salaryData.all.filter((v) => v.state === "검토 필요");
-
-    salaryData.hidden = salaryData.all.filter((v) => v.state === "숨김");
-
-    //  ==========================
-    //  탭 메뉴
-    //  ==========================
-    const salaryBody = document.getElementById("salaryBody");
-    const tabs = document.querySelectorAll(".tab-btn");
-
-    function render(type) {
-        salaryBody.innerHTML = "";
-
-        salaryData[type].forEach((item) => {
-            salaryBody.innerHTML += `
-
-                                                    <tr>
-
-                                                        <td>${item.no}</td>
-
-                                                        <td>${item.company}</td>
-
-                                                        <td>${item.job}</td>
-
-                                                        <td>${item.career}</td>
-
-                                                        <td>${item.salary}</td>
-
-                                                        <td>${item.year}</td>
-
-                                                        <td>${item.sample}</td>
-
-                                                        <td class="${item.state === "정상" ? "normal" : item.state === "검토 필요" ? "review" : "hidden"}">
-
-                                                            ${item.state}
-
-                                                        </td>
-
-                                                        <td>
-
-                                                            <a href="#" class="open-salary-review-modal">
-                                                            <!--    data-salary-id="15"-->
-                                                               검토</a>
-
-                                                        </td>
-
-                                                    </tr>
-
-                        `;
-        });
-    }
-
-    // 최초 출력
-    render("all");
-
-    // 탭 클릭 이벤트
-    tabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-            tabs.forEach((btn) => btn.classList.remove("active"));
-            tab.classList.add("active");
-
-            render(tab.dataset.tab);
-        });
-    });
-
-    //  ==========================
-    //  연봉 제보 검토 모달
-    //  ==========================
     const modal = document.querySelector("[data-salary-review-modal]");
+    const form = document.getElementById("salaryReviewForm");
+    if (!modal || !form) return;
+    const status = document.getElementById("reviewStatus");
+    const reasonField = document.getElementById("hiddenReasonField");
+    const reason = document.getElementById("reviewHiddenReason");
+    const toggleReason = () => reasonField.style.display = status.value === "숨김" ? "block" : "none";
+    status.addEventListener("change", toggleReason);
 
-    if (!modal) return;
-
-    salaryBody.addEventListener("click", (e) => {
-
-        const btn = e.target.closest(".open-salary-review-modal");
-
-        if (!btn) return;
-
-        e.preventDefault();
-
-        // TODO
-        // const salaryId = btn.dataset.salaryId;
-        // fetch(`/admin/salary-report/${salaryId}`)
-
-        modal.classList.add("is-open");
-
-    });
-
-    modal.querySelectorAll("[data-salary-review-close]").forEach((btn) => {
-
-        btn.addEventListener("click", () => {
-            modal.classList.remove("is-open");
+    document.querySelectorAll(".open-salary-review-modal").forEach(button => {
+        button.addEventListener("click", async () => {
+            try {
+                const response = await fetch(`/admin/salary/detail?salaryRecordId=${encodeURIComponent(button.dataset.salaryId)}`);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || "연봉정보를 불러오지 못했습니다.");
+                document.getElementById("reviewSalaryRecordId").value = data.salaryRecordId;
+                document.getElementById("reviewCompany").value = data.companyName || "-";
+                document.getElementById("reviewJob").value = data.categoryName || "-";
+                document.getElementById("reviewCareer").value = data.careerYears === 0 ? "신입" : `${data.careerYears}년`;
+                document.getElementById("reviewSalary").value = `${Number(data.baseSalary).toLocaleString()}만원`;
+                document.getElementById("reviewYear").value = data.salaryYear;
+                document.getElementById("reviewEmployment").value = `${data.employmentStatus} · ${data.employmentType}`;
+                status.value = data.status === "숨김" ? "숨김" : "정상";
+                reason.value = data.hiddenReason || "";
+                toggleReason();
+                modal.classList.add("is-open");
+                modal.setAttribute("aria-hidden", "false");
+            } catch (error) { showSalaryMessage(false, error.message); }
         });
-
     });
 
-    modal.querySelector("form").addEventListener("submit", (e) => {
+    modal.querySelectorAll("[data-salary-review-close]").forEach(button =>
+        button.addEventListener("click", () => closeSalaryReviewModal(modal)));
 
-        e.preventDefault();
-
-        // TODO
-        // fetch("/admin/salary-report/process")
-
-        modal.classList.remove("is-open");
-
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+        if (status.value === "숨김" && !reason.value.trim()) {
+            showSalaryMessage(false, "숨김 사유를 입력해주세요.");
+            return;
+        }
+        try {
+            const response = await fetch("/admin/salary/review", {
+                method: "POST", headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: new URLSearchParams(new FormData(form))
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || "검토 결과를 저장하지 못했습니다.");
+            closeSalaryReviewModal(modal);
+            showSalaryMessage(true, result.message, true);
+        } catch (error) { showSalaryMessage(false, error.message); }
     });
 });
+
+function closeSalaryReviewModal(modal) {
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+}
+
+function showSalaryMessage(success, message, reload = false) {
+    showConfirmModal({
+        iconClass: success ? "success" : "danger",
+        iconHtml: success ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-exclamation"></i>',
+        title: success ? "처리가 완료되었습니다" : "처리할 수 없습니다", message,
+        leftVisible: false, rightText: "확인", rightClass: "btn-primary",
+        onRight: reload ? () => location.reload() : null
+    });
+}

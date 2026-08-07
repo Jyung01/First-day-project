@@ -10,6 +10,9 @@ import java.util.List;
 @Mapper
 public interface CompanyReviewDao {
 
+    CompanyReviewsDTO selectReviewEligibility(@Param("userId") Long userId,
+                                              @Param("companyId") Long companyId);
+
     // 기업리뷰 등록
     int insertCompanyReview(CompanyReviewsDTO dto);
 
@@ -38,4 +41,27 @@ public interface CompanyReviewDao {
 
     // 기업 상세 - 면접후기 : 후기 개수
     int selectInterviewReviewCount(Long companyId);
+
+    InterviewReviewsDTO selectInterviewReviewEligibility(@Param("userId") Long userId,
+                                                         @Param("companyId") Long companyId);
+
+    int insertInterviewReview(InterviewReviewsDTO dto);
+
+    int selectReviewTargetCount(@Param("reviewType") String reviewType,
+                                @Param("reviewId") Long reviewId);
+
+    int selectReviewReactionCount(@Param("reviewType") String reviewType,
+                                  @Param("reviewId") Long reviewId);
+
+    int selectUserReviewReactionCount(@Param("userId") Long userId,
+                                      @Param("reviewType") String reviewType,
+                                      @Param("reviewId") Long reviewId);
+
+    int insertReviewReaction(@Param("userId") Long userId,
+                             @Param("reviewType") String reviewType,
+                             @Param("reviewId") Long reviewId);
+
+    int deleteReviewReaction(@Param("userId") Long userId,
+                             @Param("reviewType") String reviewType,
+                             @Param("reviewId") Long reviewId);
 }

@@ -422,6 +422,15 @@ body{
     font-weight: 700;
 
     flex-shrink: 0;
+
+    overflow: hidden;
+}
+
+.company-logo img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
 }
 
 .bg-blue{
@@ -767,4 +776,9 @@ body{
     border-color:#6366F1;
 
     box-shadow:0 0 0 3px rgba(99,102,241,.12);
+}
+
+.salary-empty {
+    padding: 5rem;
+    text-align: center;
 }

@@ -1,179 +1,84 @@
 <!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>마이페이지 - 관심공고</title>
-    <!-- 메인 헤더 푸터 css -->
-    <link rel="stylesheet" th:href="@{/css/common.css}" />
-    <!-- 마이페이지 공통 css -->
-    <link rel="stylesheet" th:href="@{/css/my/common.css}" />
-    <!-- 마이페이지 관심공고 css   -->
-    <link rel="stylesheet" th:href="@{/css/my/saved-jobs.css}" />
-    <!-- 모달 css -->
-    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
-    <!-- 모달 js -->
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/my/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/my/saved-jobs.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
     <script th:src="@{/js/modal.js}"></script>
-    <!-- 하트 이모티콘 cdn -->
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
     <script th:src="@{/js/my/saved-jobs.js}"></script>
 </head>
 <body>
-    <header th:replace="~{common/header :: header}"></header>
-    <main class="mypage">
-        <div class="wrap">
-            <div class="mypage-layout">
-                <!-- 좌측 사이드바 -->
-                <aside th:replace="~{common/my-aside :: myAside}"></aside>
+<header th:replace="~{common/header :: header}"></header>
+<main class="mypage">
+    <div class="wrap">
+        <div class="mypage-layout">
+            <aside th:replace="~{common/my-aside :: myAside}"></aside>
+            <div class="mypage-content">
+                <div class="page-header"><h2>관심 공고</h2><p>관심 등록한 채용공고를 모아서 확인할 수 있습니다.</p></div>
 
-                <!-- 오른쪽 -->
-                <div class="mypage-content">
-                    <div class="page-header">
-                        <h2>관심 공고</h2>
-                        <p>관심 등록한 채용공고를 모아서 확인할 수 있습니다.</p>
+                <div class="page-filter">
+                    <div class="job-count">총 <strong th:text="|${savedJobCount}건|">0건</strong></div>
+                    <div class="job-filter">
+                        <a class="job-tab" th:classappend="${filter == 'all'} ? ' active'" th:href="@{/my/saved-jobs(filter=all,page=1)}">전체</a>
+                        <a class="job-tab" th:classappend="${filter == 'open'} ? ' active'" th:href="@{/my/saved-jobs(filter=open,page=1)}">채용 중</a>
+                        <a class="job-tab" th:classappend="${filter == 'deadline'} ? ' active'" th:href="@{/my/saved-jobs(filter=deadline,page=1)}">마감 임박</a>
                     </div>
+                </div>
 
-                    <div class="page-filter">
-                        <div class="job-count">총 <strong>4건</strong></div>
-
-                        <div class="job-filter">
-                            <button class="job-tab active" data-status="all">전체</button>
-                            <button class="job-tab" data-status="open">채용 중</button>
-                            <button class="job-tab" data-status="closed">마감 임박</button>
+                <div class="saved-job-list">
+                    <div class="saved-job-card" th:each="job : ${savedJobs}">
+                        <div class="company-logo" th:if="${job.logoUrl != null and !job.logoUrl.isBlank()}">
+                            <img th:src="${job.logoUrl}" th:alt="${job.companyName}">
                         </div>
-                    </div>
+                        <div class="company-logo" th:unless="${job.logoUrl != null and !job.logoUrl.isBlank()}"
+                             th:text="${#strings.substring(job.companyName, 0, 1)}">기</div>
 
-                    <div class="saved-job-list">
-                        <!-- 카드 -->
-                        <div class="saved-job-card" data-status="open">
-                            <div class="company-logo">N</div>
-
-                            <div class="job-info">
-                                <span class="company-name"> 네이버클라우드 </span>
-
-                                <h3>백엔드 개발자</h3>
-
-                                <p>서울 강남구 · 정규직</p>
-                            </div>
-
-                            <div class="job-right">
-                                <div class="job-top">
-                                    <span class="deadline">D-7</span>
-
-                                    <button class="favorite-btn active "  data-job-id="1">
-                                        <i class="fa-solid fa-heart"></i>
-                                    </button>
-                                </div>
-
-                                <button class="btn-outline">공고 보기</button>
-                            </div>
+                        <div class="job-info">
+                            <span class="company-name" th:text="${job.companyName}">기업명</span>
+                            <h3 th:text="${job.title}">공고명</h3>
+                            <p>
+                                <span th:text="${job.workRegion ?: '지역 미정'}">지역</span> ·
+                                <span th:text="${job.employmentType ?: '고용형태 미정'}">고용형태</span>
+                            </p>
                         </div>
 
-                        <!-- 카드 -->
-
-                        <div class="saved-job-card" data-status="closed">
-                            <div class="company-logo">K</div>
-
-                            <div class="job-info">
-                                <span class="company-name"> 카카오모빌리티 </span>
-
-                                <h3>클라우드 엔지니어</h3>
-
-                                <p>경기 성남시 · 정규직</p>
+                        <div class="job-right">
+                            <div class="job-top">
+                                <span class="deadline"
+                                      th:text="${job.status == '마감' or (job.dday != null and job.dday < 0)
+                                          ? '마감'
+                                          : (job.dday == null ? '상시' : (job.dday == 0 ? 'D-Day' : 'D-' + job.dday))}">D-Day</span>
+                                <button type="button" class="favorite-btn active"
+                                        th:data-job-id="${job.jobPostingId}" aria-label="관심 공고 해제">
+                                    <i class="fa-solid fa-heart"></i>
+                                </button>
                             </div>
-
-                            <div class="job-right">
-                                <div class="job-top">
-                                    <span class="deadline"> D-12 </span>
-                                    <button class="favorite-btn">
-                                        <i class="fa-solid fa-heart"></i>
-                                    </button>
-                                </div>
-
-                                <button class="btn-outline">공고 보기</button>
-                            </div>
-                        </div>
-
-                        <!-- 카드 -->
-
-                        <div class="saved-job-card" data-status="closed">
-                            <div class="company-logo">T</div>
-
-                            <div class="job-info">
-                                <span class="company-name"> 토스페이먼츠 </span>
-
-                                <h3>플랫폼 개발자</h3>
-
-                                <p>서울 강남구 · 정규직</p>
-                            </div>
-
-                            <div class="job-right">
-                                <div class="job-top">
-                                    <span class="deadline"> D-5 </span>
-                                    <button class="favorite-btn">
-                                        <i class="fa-solid fa-heart"></i>
-                                    </button>
-                                </div>
-
-                                <button class="btn-outline">공고 보기</button>
-                            </div>
-                        </div>
-
-                        <!-- 카드 -->
-
-                        <div class="saved-job-card" data-status="open">
-                            <div class="company-logo">D</div>
-
-                            <div class="job-info">
-                                <span class="company-name"> 당근 </span>
-
-                                <h3>데이터 엔지니어</h3>
-
-                                <p>서울 서초구 · 정규직</p>
-                            </div>
-
-                            <div class="job-right">
-                                <div class="job-top">
-                                    <span class="deadline"> D-9 </span>
-                                    <button class="favorite-btn">
-                                        <i class="fa-solid fa-heart"></i>
-                                    </button>
-                                </div>
-
-                                <button class="btn-outline">공고 보기</button>
-                            </div>
+                            <a class="btn-outline job-view-btn"
+                               th:href="@{/job/detail(jobPostingId=${job.jobPostingId})}">공고 보기</a>
                         </div>
                     </div>
 
-                    <div class="pagination">
-                        <button>&lt;</button>
+                    <p class="saved-job-empty" th:if="${#lists.isEmpty(savedJobs)}">조건에 맞는 관심 공고가 없습니다.</p>
+                </div>
 
-                        <button class="active">1</button>
-
-                        <button>2</button>
-
-                        <button>3</button>
-
-                        <button>4</button>
-
-                        <button>5</button>
-
-                        <button>&gt;</button>
-                    </div>
+                <div class="pagination" th:if="${pageHandler.lastPage > 0}">
+                    <a th:if="${pageHandler.currentPage > 1}" th:href="@{/my/saved-jobs(filter=${filter},page=${pageHandler.currentPage - 1})}">&lt;</a>
+                    <a th:each="pageNo : ${#numbers.sequence(pageHandler.startPage, pageHandler.endPage)}"
+                       th:classappend="${pageNo == pageHandler.currentPage} ? ' active'"
+                       th:text="${pageNo}" th:href="@{/my/saved-jobs(filter=${filter},page=${pageNo})}">1</a>
+                    <a th:if="${pageHandler.currentPage < pageHandler.lastPage}" th:href="@{/my/saved-jobs(filter=${filter},page=${pageHandler.currentPage + 1})}">&gt;</a>
                 </div>
             </div>
         </div>
-    </main>
-
-    <!-- 모달 불러오기 -->
-    <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
-
-    <!-- ============ 푸터 (공통 영역) ============ -->
-    <footer th:replace="~{common/footer :: footer}"></footer>
-    <!-- 공통 헤더·푸터 불러오기 -->
-    <script th:src="@{../js/common.js}"></script>
+    </div>
+</main>
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<footer th:replace="~{common/footer :: footer}"></footer>
+<script th:src="@{/js/common.js}"></script>
 </body>
 </html>

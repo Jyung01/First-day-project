@@ -458,6 +458,10 @@
 
     background:#EEF0FF;
 
+    border:0;
+
+    cursor:pointer;
+
     color:#6F78D8;
 
     font-size:12px;

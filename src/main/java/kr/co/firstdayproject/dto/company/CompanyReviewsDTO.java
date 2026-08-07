@@ -46,4 +46,5 @@ public class CompanyReviewsDTO {
     // 리뷰 도움순
     private Integer helpCount;
     private String jobCategoryName;
+    private String companyName;
 }
