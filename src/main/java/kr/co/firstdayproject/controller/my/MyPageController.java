@@ -232,24 +232,6 @@ public class MyPageController {
     }
 
     @GetMapping("/saved-jobs")
-<<<<<<< Updated upstream
-    public String savedJobs(Model model) {
-        model.addAttribute("activeMenu", "interestJobs");
-        return "my/saved-jobs";
-    }
-
-    @GetMapping("/saved-companies")
-    public String savedCompanies(Model model) {
-        model.addAttribute("activeMenu", "interestCompanies");
-        return "my/saved-companies";
-    }
-
-    @GetMapping("/reviews")
-    public String reviews(Model model) {
-        model.addAttribute("activeMenu", "reviews");
-        return "my/reviews";
-    }
-=======
     public String savedJobs(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "all") String filter,
@@ -420,5 +402,4 @@ public class MyPageController {
             return ResponseEntity.badRequest().body(MyAccountActionResponse.failure(e.getMessage()));
         }
     }
->>>>>>> Stashed changes
 }
