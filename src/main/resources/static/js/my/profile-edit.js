@@ -133,6 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
             rightText: "회원 탈퇴",
             leftClass: "btn-outline",
             rightClass: "btn-danger",
+            closeOnOverlay: false,
 
             onRight: async function () {
                 const passwordInput = document.getElementById("withdrawPassword");

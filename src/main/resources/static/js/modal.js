@@ -78,6 +78,8 @@ function showConfirmModal({
   leftVisible = true,
   rightVisible = true,
 
+  closeOnOverlay = true,
+
   onLeft = null,
   onRight = null,
 }) {
@@ -120,7 +122,11 @@ function showConfirmModal({
     onRight?.();
   };
 
-  bindOverlayClose("confirmModal", onLeft);
+  if (closeOnOverlay) {
+    bindOverlayClose("confirmModal", onLeft);
+  } else {
+    modal.onclick = null;
+  }
 
   openModal("confirmModal");
 }
@@ -137,6 +143,8 @@ function showFormModal({
   rightText = "저장",
   leftClass = "btn-outline",
   rightClass = "btn-primary",
+
+  closeOnOverlay = true,
 
   onLeft = null,
   onRight = null,
@@ -163,7 +171,11 @@ function showFormModal({
     onRight?.();
   };
 
-  bindOverlayClose("formModal", onLeft);
+  if (closeOnOverlay) {
+    bindOverlayClose("formModal", onLeft);
+  } else {
+    modal.onclick = null;
+  }
 
   openModal("formModal");
 }
