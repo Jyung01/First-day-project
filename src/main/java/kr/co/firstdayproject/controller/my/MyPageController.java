@@ -50,6 +50,7 @@ public class MyPageController {
         }
 
         Long userId = userDetails.getUserId();
+        model.addAttribute("activeMenu", "home");
         model.addAttribute("dashboardStats", myPageService.getDashboardStats(userId));
         model.addAttribute("recentApplications", myPageService.getRecentApplications(userId));
         myPageService.getRecentResume(userId)
@@ -118,6 +119,7 @@ public class MyPageController {
             User user,
             PersonalProfile profile
     ) {
+        model.addAttribute("activeMenu", "edit");
         model.addAttribute("email", user.getEmail());
         model.addAttribute("profileImageUrl", profile.getProfileImageUrl());
         model.addAttribute("desiredJobs", myPageService.getDesiredJobs(userId));
@@ -204,11 +206,20 @@ public class MyPageController {
     }
 
     @GetMapping("/saved-jobs")
-    public String savedJobs() { return "my/saved-jobs"; }
+    public String savedJobs(Model model) {
+        model.addAttribute("activeMenu", "interestJobs");
+        return "my/saved-jobs";
+    }
 
     @GetMapping("/saved-companies")
-    public String savedCompanies() { return "my/saved-companies"; }
+    public String savedCompanies(Model model) {
+        model.addAttribute("activeMenu", "interestCompanies");
+        return "my/saved-companies";
+    }
 
     @GetMapping("/reviews")
-    public String reviews() { return "my/reviews"; }
+    public String reviews(Model model) {
+        model.addAttribute("activeMenu", "reviews");
+        return "my/reviews";
+    }
 }

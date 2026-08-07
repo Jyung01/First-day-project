@@ -54,16 +54,28 @@ public class CompanyService {
     // 기업정보 상세
     public CompanyDTO getCompanyDetail(Long companyId) {
         CompanyDTO company = companyDao.selectCompanyDetail(companyId);
+        company.setBenefitList(parseBenefits(company.getBenefits()));
+        return company;
+    }
 
-        if (company.getBenefits() != null) {
-            company.setBenefitList(
-                    Arrays.stream(company.getBenefits().split(","))
-                            .map(String::trim)
-                            .toList()
-            );
+    /** companies.benefits에 JSON 배열 문자열(["4대보험","교육비 지원"])로 저장된 복지 태그를 파싱 */
+    private List<String> parseBenefits(String benefitsJson) {
+        if (benefitsJson == null || benefitsJson.isBlank()) {
+            return List.of();
         }
 
-        return company;
+        String content = benefitsJson.trim();
+        if (content.length() < 2 || content.charAt(0) != '[') {
+            return List.of();
+        }
+
+        return Arrays.stream(
+                        content.substring(1, content.length() - 1).split(",")
+                )
+                .map(String::trim)
+                .map(value -> value.replaceAll("^\"|\"$", ""))
+                .filter(value -> !value.isBlank())
+                .toList();
     }
 
     // 기업 상세 : 진행 중인 채용공고

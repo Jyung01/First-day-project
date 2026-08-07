@@ -309,6 +309,17 @@
     color: var(--blue-600);
 }
 
+.profile-withdraw-button {
+    border-color: #ef4444;
+    color: #dc2626;
+}
+
+.profile-withdraw-button:hover {
+    border-color: #ef4444;
+    background-color: #fff0f0;
+    color: #dc2626;
+}
+
 .profile-save-button {
     min-width: 300px;
     border: 1px solid var(--blue-600);

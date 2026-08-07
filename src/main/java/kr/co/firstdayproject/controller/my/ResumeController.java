@@ -7,14 +7,18 @@ import kr.co.firstdayproject.entity.resume.Resume;
 import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.my.ResumeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class ResumeController {
             return "redirect:/auth/login";
         }
 
+        model.addAttribute("activeMenu", "resumes");
         model.addAttribute("resumes", resumeService.findMyList(userDetails.getUserId()));
         return "my/resume/list";
     }
@@ -49,6 +54,7 @@ public class ResumeController {
         Long userId = userDetails.getUserId();
         Resume resume = resumeService.getMine(id, userId);
 
+        model.addAttribute("activeMenu", "resumes");
         model.addAttribute("resume", resume);
         model.addAttribute("careers", resumeService.getCareers(id));
         model.addAttribute("educations", resumeService.getEducations(id));
@@ -78,6 +84,7 @@ public class ResumeController {
                 : List.of();
         User applicant = resumeService.getApplicant(userId);
 
+        model.addAttribute("activeMenu", "resumes");
         model.addAttribute("editMode", editMode);
         model.addAttribute("resumeForm", formRequest);
         model.addAttribute("skillChips", skillChips);
@@ -104,5 +111,19 @@ public class ResumeController {
             return "redirect:/my/resume/detail?id=" + resumeId;
         }
         return "redirect:/my/resume/list";
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        resumeService.delete(id, userDetails.getUserId());
+        return ResponseEntity.noContent().build();
     }
 }

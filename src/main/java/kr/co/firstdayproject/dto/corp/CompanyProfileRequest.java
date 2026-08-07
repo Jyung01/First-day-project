@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import kr.co.firstdayproject.entity.company.Company;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,8 +53,11 @@ public class CompanyProfileRequest {
     @Size(max = 300, message = "기업 한 줄 소개는 300자를 초과할 수 없습니다.")
     private String shortDescription;
 
-    @Size(max = 1000, message = "기업 소개·복지는 1000자를 초과할 수 없습니다.")
-    private String benefits;
+    @Size(max = 2000, message = "기업 소개는 2000자를 초과할 수 없습니다.")
+    private String introduction;
+
+    @Size(max = 10, message = "복리후생은 최대 10개까지 선택할 수 있습니다.")
+    private List<String> benefits = new ArrayList<>();
 
     public static CompanyProfileRequest from(Company company) {
         CompanyProfileRequest request = new CompanyProfileRequest();
@@ -65,8 +71,28 @@ public class CompanyProfileRequest {
         request.setAddress(company.getAddressLine1());
         request.setAddressDetail(company.getAddressLine2());
         request.setShortDescription(company.getShortDescription());
-        request.setBenefits(company.getBenefits());
+        request.setIntroduction(company.getIntroduction());
+        request.setBenefits(parseBenefits(company.getBenefits()));
         return request;
+    }
+
+    private static List<String> parseBenefits(String benefitsJson) {
+        if (benefitsJson == null || benefitsJson.isBlank()) {
+            return new ArrayList<>();
+        }
+
+        String content = benefitsJson.trim();
+        if (content.length() < 2 || content.charAt(0) != '[') {
+            return new ArrayList<>();
+        }
+
+        return Arrays.stream(
+                content.substring(1, content.length() - 1).split(",")
+            )
+            .map(String::trim)
+            .map(value -> value.replaceAll("^\"|\"$", ""))
+            .filter(value -> !value.isBlank())
+            .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
     }
 
     private static String normalizeIndustry(String industry) {

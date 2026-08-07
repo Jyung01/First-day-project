@@ -17,6 +17,8 @@ import kr.co.firstdayproject.entity.resume.ResumeEducation;
 import kr.co.firstdayproject.entity.resume.ResumeProject;
 import kr.co.firstdayproject.entity.resume.ResumeSkill;
 import kr.co.firstdayproject.entity.resume.ResumeSkillId;
+import kr.co.firstdayproject.exception.AccessDeniedException;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.repository.job.SkillRepository;
 import kr.co.firstdayproject.repository.member.UserRepository;
 import kr.co.firstdayproject.repository.resume.ResumeCareerRepository;
@@ -69,12 +71,18 @@ public class ResumeService {
     /** 소유권 검증까지 포함한 단건 조회 (상세/수정 화면에서 공통으로 사용) */
     public Resume getMine(Long resumeId, Long userId) {
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이력서입니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 이력서입니다."));
 
         if (!resume.getUserId().equals(userId) || resume.getDeletedAt() != null) {
-            throw new IllegalArgumentException("접근 권한이 없습니다.");
+            throw new AccessDeniedException("접근 권한이 없습니다.");
         }
         return resume;
+    }
+
+    @Transactional
+    public void delete(Long resumeId, Long userId) {
+        Resume resume = getMine(resumeId, userId);
+        resume.setDeletedAt(LocalDateTime.now());
     }
 
     public List<ResumeCareer> getCareers(Long resumeId) {

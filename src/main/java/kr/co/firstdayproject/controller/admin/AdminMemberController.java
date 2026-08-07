@@ -1,6 +1,7 @@
 package kr.co.firstdayproject.controller.admin;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -9,5 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminMemberController {
 
     @GetMapping({"", "/list"})
-    public String list() { return "admin/member/index"; }
+    public String list(Model model) {
+        model.addAttribute("activeMenu", "member");
+        return "admin/member/index";
+    }
 }

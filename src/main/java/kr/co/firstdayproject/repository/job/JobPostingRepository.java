@@ -23,6 +23,11 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
             String status
     );
 
+    long countByCompanyIdAndStatusIn(
+            Long companyId,
+            Collection<String> statuses
+    );
+
     Optional<JobPosting> findByJobPostingIdAndCompanyId(
         Long jobPostingId,
         Long companyId
@@ -158,7 +163,7 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
                    jobPosting.closedAt = :closedAt,
                    jobPosting.updatedAt = :closedAt
              WHERE jobPosting.companyId = :companyId
-               AND jobPosting.status = '모집중'
+               AND jobPosting.status IN ('모집중', '모집예정')
             """)
     int closeRecruitingPostingsForWithdrawal(
             @Param("companyId") Long companyId,
