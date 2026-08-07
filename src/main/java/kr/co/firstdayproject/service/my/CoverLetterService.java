@@ -6,6 +6,8 @@ import java.util.List;
 import kr.co.firstdayproject.dto.my.CoverLetterDto;
 import kr.co.firstdayproject.entity.coverletter.CoverLetter;
 import kr.co.firstdayproject.entity.coverletter.CoverLetterItem;
+import kr.co.firstdayproject.exception.AccessDeniedException;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,10 +50,10 @@ public class CoverLetterService {
 
     public CoverLetter getMine(Long coverLetterId, Long userId) {
         CoverLetter letter = coverLetterRepository.findById(coverLetterId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 자기소개서입니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 자기소개서입니다."));
 
         if (!letter.getUserId().equals(userId) || letter.getDeletedAt() != null) {
-            throw new IllegalArgumentException("접근 권한이 없습니다.");
+            throw new AccessDeniedException("접근 권한이 없습니다.");
         }
         return letter;
     }

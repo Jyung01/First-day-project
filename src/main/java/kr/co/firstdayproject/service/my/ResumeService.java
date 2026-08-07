@@ -17,6 +17,8 @@ import kr.co.firstdayproject.entity.resume.ResumeEducation;
 import kr.co.firstdayproject.entity.resume.ResumeProject;
 import kr.co.firstdayproject.entity.resume.ResumeSkill;
 import kr.co.firstdayproject.entity.resume.ResumeSkillId;
+import kr.co.firstdayproject.exception.AccessDeniedException;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.repository.job.SkillRepository;
 import kr.co.firstdayproject.repository.member.UserRepository;
 import kr.co.firstdayproject.repository.resume.ResumeCareerRepository;
