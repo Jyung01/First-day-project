@@ -175,12 +175,6 @@
                             기업회원 탈퇴
                         </button>
                     </section>
-
-                    <!-- 승인 반려 안내 테스트 버튼
-                         실제 구현에서는 서버 상태에 따라 자동 실행 -->
-                    <button type="button" class="corp-rejection-test-button" data-corp-rejection-guide hidden>
-                        승인 반려 안내 테스트
-                    </button>
                 </section>
             </div>
         </main>
@@ -196,14 +190,5 @@
 
         <script th:src="@{/js/modal.js}"></script>
         <script th:src="@{/js/corp/account.js}"></script>
-
-        <!-- 실제 구현 시 서버가 승인 반려 상태이면 자동 표시 -->
-        <script th:if="${showRejectionGuide}">
-            document.addEventListener("DOMContentLoaded", function () {
-                if (typeof window.showCorpRejectionGuide === "function") {
-                    window.showCorpRejectionGuide();
-                }
-            });
-        </script>
     </body>
 </html>

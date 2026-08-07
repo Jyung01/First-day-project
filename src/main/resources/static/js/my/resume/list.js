@@ -35,33 +35,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 rightClass: "btn-danger",
 
                 onRight: function () {
-                    /*
-                     * 실제 기능 구현 시 삭제 API로 교체
-                     *
-                     * 예시:
-                     *
-                     * fetch(`/my/resume/${resumeId}`, {
-                     *     method: "DELETE"
-                     * })
-                     *     .then(function (response) {
-                     *         if (!response.ok) {
-                     *             throw new Error(
-                     *                 "이력서 삭제에 실패했습니다."
-                     *             );
-                     *         }
-                     *
-                     *         return response.json();
-                     *     })
-                     *     .then(function () {
-                     *         removeResumeCard(resumeId);
-                     *     })
-                     *     .catch(function (error) {
-                     *         console.error(error);
-                     *     });
-                     */
+                    fetch(`/my/resume/${resumeId}`, {
+                        method: "DELETE",
+                    })
+                        .then(function (response) {
+                            if (!response.ok) {
+                                throw new Error("이력서 삭제에 실패했습니다.");
+                            }
 
-                    // 현재 화면 테스트용
-                    removeResumeCard(resumeId);
+                            removeResumeCard(resumeId);
+                        })
+                        .catch(function (error) {
+                            console.error(error);
+                            alert("이력서 삭제 중 오류가 발생했습니다.");
+                        });
                 },
             });
         });

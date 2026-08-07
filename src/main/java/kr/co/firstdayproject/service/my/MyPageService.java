@@ -21,6 +21,7 @@ import kr.co.firstdayproject.entity.job.UserDesiredJobId;
 import kr.co.firstdayproject.entity.member.PersonalProfile;
 import kr.co.firstdayproject.entity.member.User;
 import kr.co.firstdayproject.entity.resume.Resume;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.repository.application.ApplicationRepository;
 import kr.co.firstdayproject.repository.company.SavedCompanyRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterAiReviewRepository;
@@ -70,7 +71,7 @@ public class MyPageService {
 
     public User getUser(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new MyPageException(null, "회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("회원 정보를 찾을 수 없습니다."));
     }
 
     public PersonalProfile getProfile(Long userId) {
