@@ -12,6 +12,9 @@
         <!-- 기업정보 관리 -->
         <link rel="stylesheet" th:href="@{/css/corp/company-info.css}" />
 
+        <!-- 복지 선택 모달 -->
+        <link rel="stylesheet" th:href="@{/css/modal/corp/benefit-select-modal.css}" />
+
         <!-- 공통 확인 모달 -->
         <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
     </head>
@@ -307,24 +310,80 @@
                         </section>
 
                         <!-- =================================================
-                             기업 소개·복지
+                             기업 소개
                         ================================================== -->
                         <section class="company-info-card">
                             <div class="company-field company-field-full">
-                                <label for="benefits"> 기업 소개·복지 </label>
+                                <label for="introduction"> 기업 소개 </label>
 
                                 <textarea
-                                    id="benefits"
+                                    id="introduction"
                                     class="company-textarea"
-                                    th:field="*{benefits}"
-                                    maxlength="1000"
-                                    placeholder="기업 소개와 복지 정보를 입력해주세요"
+                                    th:field="*{introduction}"
+                                    maxlength="2000"
+                                    placeholder="기업을 소개하는 글을 입력해주세요"
                                 ></textarea>
 
                                 <div class="company-character-count">
-                                    <span data-company-count="benefits"> 0 </span>
-                                    / 1000
+                                    <span data-company-count="introduction"> 0 </span>
+                                    / 2000
                                 </div>
+                            </div>
+                        </section>
+
+                        <!-- =================================================
+                             복지
+                        ================================================== -->
+                        <section class="company-info-card">
+                            <div class="company-field company-field-full">
+                                <div class="company-benefit-label-row">
+                                    <label> 복지 </label>
+
+                                    <span
+                                        class="company-benefit-count"
+                                        data-benefit-selection-count
+                                        th:text="|${#lists.size(companyForm.benefits)}/10|"
+                                    >
+                                        0/10
+                                    </span>
+                                </div>
+
+                                <div class="company-benefit-selection-box">
+                                    <div class="company-benefit-chips" data-benefit-chip-list>
+                                        <button
+                                            type="button"
+                                            class="company-benefit-chip"
+                                            th:each="benefit : *{benefits}"
+                                            th:attr="data-benefit-value=${benefit}"
+                                        >
+                                            <span th:text="${benefit}">4대보험</span>
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                    </div>
+
+                                    <p
+                                        class="company-benefit-empty"
+                                        data-benefit-empty
+                                        th:hidden="${not #lists.isEmpty(companyForm.benefits)}"
+                                    >
+                                        선택한 복지가 없습니다.
+                                    </p>
+
+                                    <div data-benefit-hidden-inputs>
+                                        <input
+                                            type="hidden"
+                                            name="benefits"
+                                            th:each="benefit : *{benefits}"
+                                            th:value="${benefit}"
+                                        />
+                                    </div>
+
+                                    <button type="button" class="company-benefit-open-button" data-benefit-modal-open>
+                                        복지 선택
+                                    </button>
+                                </div>
+
+                                <p class="company-field-message" data-benefit-message aria-live="polite"></p>
                             </div>
                         </section>
 
@@ -349,11 +408,15 @@
         <!-- 저장 완료 모달 -->
         <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
 
+        <!-- 복지 선택 모달 -->
+        <div th:replace="~{modal/corp/benefit-select-modal :: benefitSelectModal}"></div>
+
         <div hidden th:if="${param.saved != null}" data-company-info-saved></div>
 
         <script th:src="@{/js/modal.js}"></script>
         <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
         <script th:src="@{/js/common/postcode.js}"></script>
+        <script th:src="@{/js/modal/benefit-select-modal.js}"></script>
         <script th:src="@{/js/corp/company-info.js}"></script>
     </body>
 </html>

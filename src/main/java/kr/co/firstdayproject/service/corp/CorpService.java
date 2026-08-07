@@ -206,7 +206,8 @@ public class CorpService {
         company.setAddressLine1(request.getAddress().trim());
         company.setAddressLine2(trimToNull(request.getAddressDetail()));
         company.setShortDescription(trimToNull(request.getShortDescription()));
-        company.setBenefits(trimToNull(request.getBenefits()));
+        company.setIntroduction(trimToNull(request.getIntroduction()));
+        company.setBenefits(toBenefitsJson(request.getBenefits()));
         company.setUpdatedAt(LocalDateTime.now());
     }
 
@@ -263,7 +264,8 @@ public class CorpService {
         company.setIndustryName(trimToNull(request.getIndustry()));
         company.setHomepageUrl(trimToNull(request.getHomepage()));
         company.setShortDescription(trimToNull(request.getShortDescription()));
-        company.setBenefits(trimToNull(request.getBenefits()));
+        company.setIntroduction(trimToNull(request.getIntroduction()));
+        company.setBenefits(toBenefitsJson(request.getBenefits()));
         company.setApprovalStatus(PENDING_APPROVAL);
         company.setReapplyRequestedAt(now);
         company.setUpdatedAt(now);
@@ -284,6 +286,47 @@ public class CorpService {
 
     private String trimToNull(String value) {
         return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private String toBenefitsJson(List<String> benefits) {
+        List<String> normalizedBenefits = benefits == null
+                ? List.of()
+                : benefits.stream()
+                        .map(this::trimToNull)
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .toList();
+
+        return normalizedBenefits.stream()
+                .map(this::toJsonString)
+                .collect(java.util.stream.Collectors.joining(",", "[", "]"));
+    }
+
+    private String toJsonString(String value) {
+        StringBuilder escaped = new StringBuilder("\"");
+
+        for (int index = 0; index < value.length(); index++) {
+            char character = value.charAt(index);
+
+            switch (character) {
+                case '"' -> escaped.append("\\\"");
+                case '\\' -> escaped.append("\\\\");
+                case '\b' -> escaped.append("\\b");
+                case '\f' -> escaped.append("\\f");
+                case '\n' -> escaped.append("\\n");
+                case '\r' -> escaped.append("\\r");
+                case '\t' -> escaped.append("\\t");
+                default -> {
+                    if (character < 0x20) {
+                        escaped.append(String.format("\\u%04x", (int) character));
+                    } else {
+                        escaped.append(character);
+                    }
+                }
+            }
+        }
+
+        return escaped.append('"').toString();
     }
 
     private void validateCompanyLogo(MultipartFile companyLogo) {

@@ -323,6 +323,97 @@
 }
 
 /* =========================================================
+   복지 선택
+========================================================= */
+
+.company-benefit-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.company-benefit-label-row > label {
+    color: var(--corp-ink);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.company-benefit-count {
+    color: var(--corp-blue);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.company-benefit-selection-box {
+    display: flex;
+    min-height: 94px;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--corp-border);
+    border-radius: 8px;
+    background-color: var(--corp-soft);
+    box-sizing: border-box;
+}
+
+.company-benefit-chips {
+    display: flex;
+    min-height: 32px;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.company-benefit-chip {
+    display: inline-flex;
+    min-width: 80px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 14px;
+    border: 1px solid var(--corp-blue);
+    border-radius: 999px;
+    background-color: #eef3ff;
+    color: var(--corp-blue);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.company-benefit-chip:hover {
+    background-color: #dde8ff;
+}
+
+.company-benefit-empty {
+    margin: 4px 0;
+    color: var(--corp-muted);
+    font-size: 11px;
+}
+
+.company-benefit-empty[hidden] {
+    display: none;
+}
+
+.company-benefit-open-button {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--corp-blue);
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: var(--corp-blue);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.company-benefit-open-button:hover {
+    background-color: #f3f4ff;
+}
+
+/* =========================================================
    반응형
 ========================================================= */
 

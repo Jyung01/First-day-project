@@ -33,7 +33,8 @@ public enum CompanyRejectionType {
                     new RejectedField("COMPANY_NAME", "기업명"),
                     new RejectedField("INDUSTRY", "업종"),
                     new RejectedField("SHORT_DESCRIPTION", "기업 한 줄 소개"),
-                    new RejectedField("BENEFITS", "기업 소개·복지")
+                    new RejectedField("INTRODUCTION", "기업 소개"),
+                    new RejectedField("BENEFITS", "복지")
             )
     );
 

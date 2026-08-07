@@ -1,0 +1,122 @@
+<div
+    xmlns:th="http://www.thymeleaf.org"
+    class="benefit-modal"
+    data-benefit-modal
+    aria-hidden="true"
+    th:fragment="benefitSelectModal"
+>
+    <!-- 배경 -->
+    <div class="benefit-modal-backdrop" data-benefit-modal-close></div>
+
+    <!-- 모달 본체 -->
+    <section class="benefit-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="benefitModalTitle">
+        <!-- 헤더 -->
+        <div class="benefit-modal-header">
+            <div>
+                <h2 id="benefitModalTitle">복지 선택</h2>
+
+                <p>회사에서 제공하는 복지를 최대 10개까지 선택할 수 있습니다.</p>
+            </div>
+
+            <button type="button" class="benefit-modal-close" data-benefit-modal-close aria-label="복지 선택 모달 닫기">
+                ×
+            </button>
+        </div>
+
+        <div class="benefit-modal-body">
+            <!-- 선택한 복지 -->
+            <section class="benefit-modal-selected-section">
+                <div class="benefit-modal-section-heading">
+                    <strong>선택한 복지</strong>
+
+                    <span>
+                        <strong data-benefit-modal-count>0</strong>
+                        / 10
+                    </span>
+                </div>
+
+                <div class="benefit-modal-selected-list" data-benefit-modal-selected-list>
+                    <p class="benefit-modal-selected-empty">선택한 복지가 없습니다.</p>
+                </div>
+            </section>
+
+            <!-- 기본 항목 -->
+            <section class="benefit-modal-preset-section">
+                <strong class="benefit-modal-section-title">기본 항목</strong>
+
+                <div class="benefit-option-list">
+                    <label class="benefit-option">
+                        <input type="checkbox" data-benefit-option value="4대보험" />
+                        <span>4대보험</span>
+                    </label>
+                    <label class="benefit-option">
+                        <input type="checkbox" data-benefit-option value="퇴직금" />
+                        <span>퇴직금</span>
+                    </label>
+                    <label class="benefit-option">
+                        <input type="checkbox" data-benefit-option value="식대 지원" />
+                        <span>식대 지원</span>
+                    </label>
+                    <label class="benefit-option">
+                        <input type="checkbox" data-benefit-option value="유연근무제" />
+                        <span>유연근무제</span>
+                    </label>
+                    <label class="benefit-option">
+                        <input type="checkbox" data-benefit-option value="재택근무" />
+                        <span>재택근무</span>
+                    </label>
+                    <label class="benefit-option">
+                        <input type="checkbox" data-benefit-option value="교육비 지원" />
+                        <span>교육비 지원</span>
+                    </label>
+                    <label class="benefit-option">
+                        <input type="checkbox" data-benefit-option value="건강검진" />
+                        <span>건강검진</span>
+                    </label>
+                    <label class="benefit-option">
+                        <input type="checkbox" data-benefit-option value="장비 지원" />
+                        <span>장비 지원</span>
+                    </label>
+                    <label class="benefit-option">
+                        <input type="checkbox" data-benefit-option value="경조사 지원" />
+                        <span>경조사 지원</span>
+                    </label>
+                    <label class="benefit-option">
+                        <input type="checkbox" data-benefit-option value="휴가 지원" />
+                        <span>휴가 지원</span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- 직접 추가 -->
+            <section class="benefit-modal-custom-section">
+                <strong class="benefit-modal-section-title">직접 추가</strong>
+
+                <div class="benefit-modal-custom-input-row">
+                    <input
+                        type="text"
+                        class="benefit-modal-custom-input"
+                        data-benefit-custom-input
+                        placeholder="예: 교통비 지원"
+                        maxlength="20"
+                    />
+
+                    <button type="button" class="benefit-modal-custom-add" data-benefit-custom-add>추가</button>
+                </div>
+            </section>
+
+            <!-- 버튼 -->
+            <div class="benefit-modal-footer">
+                <div class="benefit-modal-actions">
+                    <button type="button" class="benefit-modal-cancel" data-benefit-modal-cancel>취소</button>
+
+                    <button type="button" class="benefit-modal-confirm" data-benefit-modal-confirm>
+                        선택 완료 (<span data-benefit-confirm-count>0</span>)
+                    </button>
+                </div>
+            </div>
+
+            <p class="benefit-modal-message" data-benefit-modal-message aria-live="polite"></p>
+        </div>
+    </section>
+</div>
