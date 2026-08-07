@@ -34,6 +34,7 @@ public class CorpService {
     private static final List<String> ACTIVE_APPLICATION_STATUSES = List.of(
             "지원완료", "서류검토중", "서류합격", "면접예정", "면접완료", "최종합격"
     );
+    private static final List<String> ACTIVE_JOB_POSTING_STATUSES = List.of("모집중", "모집예정");
     private static final java.util.regex.Pattern PASSWORD_PATTERN =
             java.util.regex.Pattern.compile(
                     "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[^A-Za-z\\d\\s])\\S{8,64}$"
@@ -113,7 +114,7 @@ public class CorpService {
 
     public CompanyWithdrawalSummary getWithdrawalSummary(Long companyId) {
         long activeJobCount = jobPostingRepository
-                .countByCompanyIdAndStatus(companyId, "모집중");
+                .countByCompanyIdAndStatusIn(companyId, ACTIVE_JOB_POSTING_STATUSES);
         long applicantCount = activeJobCount == 0L
                 ? 0L
                 : applicationRepository
