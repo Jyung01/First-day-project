@@ -109,7 +109,15 @@
 }
 
 .interview-review {
-    display: none;
+    display: block;
+}
+
+.review-action{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:inherit;
 }
 .review-bottom{
 

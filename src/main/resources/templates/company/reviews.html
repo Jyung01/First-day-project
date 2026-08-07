@@ -25,6 +25,7 @@
     />
     <script th:src="@{/js/company/reviews.js}"></script>
     <script th:src="@{/js/company/detail.js}"></script>
+    <script th:src="@{/js/company/review-reactions.js}"></script>
 </head>
 <body>
 <header th:replace="~{common/header :: header}"></header>
@@ -349,12 +350,13 @@
 
                         <div class="review-recommend">
 
-        <span class="recommend-badge">
+        <button type="button" class="recommend-badge help-btn"
+                th:attr="data-review-id=${review.companyReviewId},data-review-type='기업리뷰'">
 
             👍 도움돼요
-            <span th:text="${review.helpCount}">24</span>
+            <span class="help-count" th:text="${review.helpCount}">24</span>
 
-        </span>
+        </button>
 
                         </div>
 
@@ -441,6 +443,10 @@
     </section>
 
 </main>
+
+<script th:if="${errorMessage}" th:inline="javascript">
+    alert([[${errorMessage}]]);
+</script>
 <!-- ============ 푸터 (공통 영역) ============ -->
 <footer th:replace="~{common/footer :: footer}"></footer>
 

@@ -7,7 +7,7 @@
 }
 
 .page-header h2 {
-    font-size: 28px;
+    font-size: 18px;
     font-weight: 700;
     color: #202632;
 }
@@ -50,7 +50,8 @@
     gap: 10px;
 }
 
-.job-filter button {
+.job-filter button,
+.job-filter a {
     width: 96px;
     height: 40px;
 
@@ -65,9 +66,16 @@
     font-weight: 600;
 
     transition: 0.2s;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:inherit;
 }
 
-.job-filter button.active {
+.job-filter button.active,
+.job-filter a.active {
     background: #6c63ff;
     color: white;
     border-color: #6c63ff;
@@ -124,7 +132,7 @@
     justify-content: center;
     align-items: center;
 
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 700;
 
     color: #6c63ff;
@@ -153,7 +161,7 @@
 .job-info h3 {
     margin-top: 6px;
 
-    font-size: 22px;
+    font-size: 18px;
 
     font-weight: 700;
 
@@ -227,7 +235,7 @@
 .favorite-btn i {
     color: #f05454;
 
-    font-size: 22px;
+    font-size: 18px;
 }
 
 /* ===========================================================
@@ -272,7 +280,8 @@
     margin-top: 36px;
 }
 
-.pagination button {
+.pagination button,
+.pagination a {
     width: 36px;
     height: 36px;
 
@@ -283,14 +292,40 @@
     background: white;
 
     cursor: pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:inherit;
 }
 
-.pagination button.active {
+.pagination button.active,
+.pagination a.active {
     background: #6c63ff;
 
     color: white;
 
     border-color: #6c63ff;
+}
+
+.job-tab{
+    text-decoration:none;
+}
+
+.company-logo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:inherit;
+}
+
+.job-view-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:inherit;
 }
 
 .favorite-btn {
@@ -300,11 +335,16 @@
 }
 
 .favorite-btn i {
-    font-size: 22px;
+    font-size: 18px;
     color: #d7d9e0;
     transition: 0.2s;
 }
 
 .favorite-btn.active i {
     color: #6c63ff;
+}
+
+.saved-job-empty{
+    text-align: center;
+    padding: 3rem;
 }

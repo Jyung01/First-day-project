@@ -1,127 +1,63 @@
 <!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>마이페이지 - 관심공고</title>
-    <!-- 메인 헤더 푸터 css -->
-    <link rel="stylesheet" th:href="@{/css/common.css}" />
-    <!-- 마이페이지 공통 css -->
-    <link rel="stylesheet" th:href="@{/css/my/common.css}" />
-    <!-- 마이페이지 관심공고 css   -->
-    <link rel="stylesheet" th:href="@{/css/my/saved-jobs.css}" />
-    <!-- 마이페이지 관심기업 css-->
-    <link rel="stylesheet"  th:href="@{/css/my/saved-companies.css}" />
-    <!-- 모달 css -->
-    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
-    <!-- 모달 js -->
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>마이페이지 - 관심기업</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/my/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/my/saved-jobs.css}"/>
+    <link rel="stylesheet" th:href="@{/css/my/saved-companies.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
     <script th:src="@{/js/modal.js}"></script>
-    <!-- 하트 이모티콘 cdn -->
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
     <script th:src="@{/js/my/saved-companies.js}"></script>
-
 </head>
 <body>
 <header th:replace="~{common/header :: header}"></header>
 <main class="mypage">
-    <div class="wrap">
-        <div class="mypage-layout">
-            <!-- 좌측 사이드바 -->
-            <aside th:replace="~{common/my-aside :: myAside}"></aside>
+    <div class="wrap"><div class="mypage-layout">
+        <aside th:replace="~{common/my-aside :: myAside}"></aside>
+        <section class="mypage-content">
+            <div class="page-header"><h2>관심 기업</h2><p>관심 등록한 기업의 정보를 확인할 수 있습니다.</p></div>
+            <div class="page-filter">
+                <div class="company-count">총 <strong th:text="|${savedCompanyCount}개 기업|">0개 기업</strong></div>
+                <form id="companySortForm" th:action="@{/my/saved-companies}" method="get" class="company-sort-wrap">
+                    <select class="company-sort" name="sort">
+                        <option value="recent" th:selected="${sort == 'recent'}">최근 등록순</option>
+                        <option value="name" th:selected="${sort == 'name'}">기업명순</option>
+                        <option value="jobs" th:selected="${sort == 'jobs'}">진행 공고순</option>
+                    </select>
+                </form>
+            </div>
 
-            <!-- 오른쪽 -->
-            <section class="mypage-content">
-                <div class="page-header">
-                    <h2>관심 기업</h2>
-                    <p>관심 등록한 기업의 정보를 확인할 수 있습니다.</p>
-                </div>
-
-                <div class="page-filter">
-                    <div class="company-count">총 <strong>6개 기업</strong></div>
-
-                    <div class="company-sort-wrap">
-                        <select class="company-sort">
-                            <option>최근 등록순</option>
-                            <option>기업명순</option>
-                            <!-- <option>진행 공고순</option> -->
-                        </select>
-                    </div>
-                </div>
-
-                <div class="saved-company-list">
-                    <!-- 카드 -->
-                    <div class="saved-company-card">
-                        <button class="favorite-btn active">
-                            <i class="fa-solid fa-heart"></i>
-                        </button>
-
-                        <div class="company-header">
-                            <div class="company-logo">N</div>
-
-                            <div class="company-info">
-                                <h3>네이버클라우드</h3>
-
-                                <span>IT · 클라우드</span>
-
-                                <p>진행 공고 12건</p>
-                            </div>
+            <div class="saved-company-list">
+                <div class="saved-company-card" th:each="company : ${savedCompanies}">
+                    <button type="button" class="favorite-btn active" th:data-company-id="${company.companyId}" aria-label="관심 기업 해제"><i class="fa-solid fa-heart"></i></button>
+                    <div class="company-header">
+                        <div class="company-logo" th:if="${company.logoUrl != null and !company.logoUrl.isBlank()}"><img th:src="${company.logoUrl}" th:alt="${company.companyName}"></div>
+                        <div class="company-logo" th:unless="${company.logoUrl != null and !company.logoUrl.isBlank()}" th:text="${#strings.substring(company.companyName, 0, 1)}">기</div>
+                        <div class="company-info">
+                            <h3 th:text="${company.companyName}">기업명</h3>
+                            <span th:text="|${company.industryName ?: '업종 정보 없음'} · ${company.companySize ?: '규모 정보 없음'}|">업종 · 규모</span>
+                            <p th:text="|진행 공고 ${company.jobPostingCount}건|">진행 공고 0건</p>
                         </div>
-
-                        <button class="btn-outline">기업 상세 보기</button>
                     </div>
-
-                    <!-- 반복 -->
-                    <div class="saved-company-card">
-                        <button class="favorite-btn active">
-                            <i class="fa-solid fa-heart"></i>
-                        </button>
-
-                        <div class="company-header">
-                            <div class="company-logo">N</div>
-
-                            <div class="company-info">
-                                <h3>네이버클라우드</h3>
-
-                                <span>IT · 클라우드</span>
-
-                                <p>진행 공고 12건</p>
-                            </div>
-                        </div>
-
-                        <button class="btn-outline">기업 상세 보기</button>
-                    </div>
+                    <a class="btn-outline company-detail-btn" th:href="@{/company/detail(companyId=${company.companyId})}">기업 상세 보기</a>
                 </div>
+                <p th:if="${#lists.isEmpty(savedCompanies)}">등록한 관심 기업이 없습니다.</p>
+            </div>
 
-                <!-- 페이지네이션 -->
-                <div class="pagination">
-                    <button>&lt;</button>
-
-                    <button class="active">1</button>
-
-                    <button>2</button>
-
-                    <button>3</button>
-
-                    <button>4</button>
-
-                    <button>5</button>
-
-                    <button>&gt;</button>
-                </div>
-            </section>
-        </div>
-    </div>
+            <div class="pagination" th:if="${pageHandler.lastPage > 0}">
+                <a th:if="${pageHandler.currentPage > 1}" th:href="@{/my/saved-companies(sort=${sort},page=${pageHandler.currentPage - 1})}">&lt;</a>
+                <a th:each="pageNo : ${#numbers.sequence(pageHandler.startPage, pageHandler.endPage)}" th:classappend="${pageNo == pageHandler.currentPage} ? ' active'" th:text="${pageNo}" th:href="@{/my/saved-companies(sort=${sort},page=${pageNo})}">1</a>
+                <a th:if="${pageHandler.currentPage < pageHandler.lastPage}" th:href="@{/my/saved-companies(sort=${sort},page=${pageHandler.currentPage + 1})}">&gt;</a>
+            </div>
+        </section>
+    </div></div>
 </main>
-
-<!-- 모달 불러오기 -->
 <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
-
-<!-- ============ 푸터 (공통 영역) ============ -->
 <footer th:replace="~{common/footer :: footer}"></footer>
-<!-- 공통 헤더·푸터 불러오기 -->
-<script th:src="@{../js/common.js}"></script>
+<script th:src="@{/js/common.js}"></script>
 </body>
 </html>

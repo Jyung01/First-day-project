@@ -4,6 +4,33 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.firstdayproject.dao.company.CompanyReviewDao">
 
+    <select id="selectReviewEligibility"
+            resultType="kr.co.firstdayproject.dto.company.CompanyReviewsDTO">
+        SELECT
+            c.company_id AS companyId,
+            c.company_name AS companyName,
+            a.application_id AS eligibilityApplicationId,
+            a.applicant_user_id AS authorUserId,
+            jp.job_category_id AS jobCategoryId,
+            jc.category_name AS jobCategoryName,
+            '현직원' AS employmentStatus
+        FROM applications a
+        JOIN job_postings jp ON jp.job_posting_id = a.job_posting_id
+        JOIN companies c ON c.company_id = jp.company_id
+        LEFT JOIN job_categories jc ON jc.job_category_id = jp.job_category_id
+        WHERE a.applicant_user_id = #{userId}
+          AND jp.company_id = #{companyId}
+          AND a.current_status = '입사완료'
+          AND NOT EXISTS (
+              SELECT 1
+              FROM company_reviews cr
+              WHERE cr.author_user_id = a.applicant_user_id
+                AND cr.company_id = jp.company_id
+          )
+        ORDER BY a.updated_at DESC
+        LIMIT 1
+    </select>
+
     <!-- 기업 상세 : 기업리뷰 요약 -->
     <select id="selectCompanyReviewSummary"
             parameterType="long"
@@ -66,7 +93,10 @@
         cr.hidden_reason,
         cr.hidden_by,
 
-        cr.help_count,
+        (SELECT COUNT(*)
+         FROM review_reactions rr
+         WHERE rr.review_type = '기업리뷰'
+           AND rr.review_id = cr.company_review_id) AS helpCount,
 
         cr.created_at,
         cr.updated_at
@@ -81,7 +111,7 @@
 
         <choose>
             <when test="sort == 'helpful'">
-                ORDER BY cr.help_count DESC,
+                ORDER BY helpCount DESC,
                 cr.created_at DESC
             </when>
 
@@ -184,7 +214,10 @@
         ir.hidden_reason,
         ir.hidden_by,
 
-        ir.help_count,
+        (SELECT COUNT(*)
+         FROM review_reactions rr
+         WHERE rr.review_type = '면접후기'
+           AND rr.review_id = ir.interview_review_id) AS helpCount,
 
         ir.created_at,
         ir.updated_at,
@@ -203,7 +236,7 @@
         <choose>
             <!-- 도움순 -->
             <when test="sort == 'helpful'">
-                ORDER BY ir.help_count DESC,
+                ORDER BY helpCount DESC,
                 ir.created_at DESC
             </when>
             <!-- 최신순 -->
@@ -230,6 +263,112 @@
         AND status = '정상'
 
     </select>
+
+    <select id="selectInterviewReviewEligibility"
+            resultType="kr.co.firstdayproject.dto.company.InterviewReviewsDTO">
+        SELECT
+            c.company_id AS companyId,
+            c.company_name AS companyName,
+            a.application_id AS applicationId,
+            a.applicant_user_id AS authorUserId,
+            jp.job_posting_id AS jobPostingId,
+            jp.title,
+            jp.career_type AS careerType,
+            COALESCE(jp.process_text, '면접') AS processText,
+            DATE_FORMAT(a.updated_at, '%Y-%m') AS interviewMonth,
+            CASE
+                WHEN a.current_status = '불합격' THEN '불합격'
+                WHEN a.current_status IN ('최종합격', '입사완료') THEN '합격'
+                ELSE '대기'
+            END AS interviewResult
+        FROM applications a
+        JOIN job_postings jp ON jp.job_posting_id = a.job_posting_id
+        JOIN companies c ON c.company_id = jp.company_id
+        WHERE a.applicant_user_id = #{userId}
+          AND jp.company_id = #{companyId}
+          AND a.current_status IN ('면접완료', '최종합격', '입사완료', '불합격')
+          AND NOT EXISTS (
+              SELECT 1
+              FROM interview_reviews ir
+              WHERE ir.application_id = a.application_id
+          )
+        ORDER BY a.updated_at DESC
+        LIMIT 1
+    </select>
+
+    <insert id="insertInterviewReview"
+            parameterType="kr.co.firstdayproject.dto.company.InterviewReviewsDTO"
+            useGeneratedKeys="true"
+            keyProperty="interviewReviewId">
+        INSERT INTO interview_reviews
+        (
+            company_id,
+            author_user_id,
+            job_posting_id,
+            application_id,
+            interview_month,
+            interview_type,
+            interview_result,
+            difficulty,
+            process_text,
+            content,
+            tips
+        )
+        VALUES
+        (
+            #{companyId},
+            #{authorUserId},
+            #{jobPostingId},
+            #{applicationId},
+            #{interviewMonth},
+            #{interviewType},
+            #{interviewResult},
+            #{difficulty},
+            #{processText},
+            #{content},
+            #{tips}
+        )
+    </insert>
+
+    <select id="selectReviewTargetCount" resultType="int">
+        <choose>
+            <when test="reviewType == '기업리뷰'">
+                SELECT COUNT(*) FROM company_reviews
+                WHERE company_review_id = #{reviewId} AND status = '정상'
+            </when>
+            <otherwise>
+                SELECT COUNT(*) FROM interview_reviews
+                WHERE interview_review_id = #{reviewId} AND status = '정상'
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectReviewReactionCount" resultType="int">
+        SELECT COUNT(*)
+        FROM review_reactions
+        WHERE review_type = #{reviewType}
+          AND review_id = #{reviewId}
+    </select>
+
+    <select id="selectUserReviewReactionCount" resultType="int">
+        SELECT COUNT(*)
+        FROM review_reactions
+        WHERE user_id = #{userId}
+          AND review_type = #{reviewType}
+          AND review_id = #{reviewId}
+    </select>
+
+    <insert id="insertReviewReaction">
+        INSERT INTO review_reactions (user_id, review_type, review_id)
+        VALUES (#{userId}, #{reviewType}, #{reviewId})
+    </insert>
+
+    <delete id="deleteReviewReaction">
+        DELETE FROM review_reactions
+        WHERE user_id = #{userId}
+          AND review_type = #{reviewType}
+          AND review_id = #{reviewId}
+    </delete>
 
     <!-- 기업리뷰 등록 -->
     <insert id="insertCompanyReview"

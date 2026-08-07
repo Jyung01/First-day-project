@@ -18,6 +18,7 @@
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
     <script th:src="@{/js/salary/my-list.js}"></script>
+    <script th:src="@{/js/salary/feedback-modal.js}"></script>
 </head>
 <body>
 <header th:replace="~{common/header :: header}"></header>
@@ -51,63 +52,41 @@
 
         <div class="my-salary-top">
           <span class="salary-count">
-            등록한 연봉정보 <strong>2건</strong>
+            등록한 연봉정보 <strong th:text="|${#lists.size(salaryList)}건|">0건</strong>
           </span>
 
             <a th:href="@{/salary/create}" class="salary-add-btn"> + 새 연봉정보 등록 </a>
         </div>
 
         <div class="salary-list">
-            <article class="salary-card">
+            <article class="salary-card" th:each="salary : ${salaryList}">
                 <div class="salary-company">
-                    <h3>네이버클라우드</h3>
+                    <h3 th:text="${salary.companyName}">기업명</h3>
 
-                    <p>백엔드 개발 · 2026년 · 현재 재직 중</p>
+                    <p th:text="|${salary.categoryName} · ${salary.salaryYear}년 · ${salary.employmentStatus == '현직원' ? '현재 재직 중' : '퇴사'}|">직무 · 연도 · 상태</p>
                 </div>
 
                 <div class="salary-amount">
-                    <strong> 5,200만원 </strong>
+                    <strong th:text="|${#numbers.formatInteger(salary.baseSalary, 1, 'COMMA')}만원|">0만원</strong>
 
                     <span> 세전 연봉 </span>
                 </div>
 
                 <div class="salary-date">
-                    <span> 2026.07.20 수정 </span>
+                    <span th:text="|${#temporals.format(salary.updatedAt, 'yyyy.MM.dd')} 수정|">수정일</span>
                 </div>
 
                 <div class="salary-action">
-                    <a th:href="@{/salary/edit}" class="edit-btn"> 수정 </a>
+                    <a th:href="@{/salary/edit(salaryRecordId=${salary.salaryRecordId})}" class="edit-btn">수정</a>
 
-                    <button type="button" class="delete-btn">삭제</button>
+                    <button type="button" class="delete-btn" th:data-salary-record-id="${salary.salaryRecordId}">삭제</button>
                 </div>
             </article>
-
-            <article class="salary-card">
-                <div class="salary-company">
-                    <h3>토스페이먼츠</h3>
-
-                    <p>플랫폼 엔지니어 · 2025년 · 퇴사</p>
-                </div>
-
-                <div class="salary-amount">
-                    <strong> 4,800만원 </strong>
-
-                    <span> 세전 연봉 </span>
-                </div>
-
-                <div class="salary-date">
-                    <span> 2026.07.12 수정 </span>
-                </div>
-
-                <div class="salary-action">
-                    <a href="#" class="edit-btn"> 수정 </a>
-
-                    <button type="button" class="delete-btn">삭제</button>
-                </div>
-            </article>
+            <p th:if="${#lists.isEmpty(salaryList)}">등록한 연봉정보가 없습니다.</p>
         </div>
     </section>
 </main>
+<div id="salaryFeedback" th:if="${errorMessage != null or successMessage != null}" th:data-message="${successMessage != null ? successMessage : errorMessage}" th:data-type="${successMessage != null ? 'success' : 'error'}"></div>
 <!-- ============ 푸터 (공통 영역) ============ -->
 <footer th:replace="~{common/footer :: footer}"></footer>
 

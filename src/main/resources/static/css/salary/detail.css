@@ -68,6 +68,14 @@ body{
     font-size:30px;
 
     font-weight:700;
+
+    overflow:hidden;
+}
+
+.company-logo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
 .company-info h1{
@@ -217,7 +225,7 @@ body{
 
 .summary-left strong{
 
-    font-size:34px;
+    font-size:28px;
 
     font-weight:700;
     line-height: 1;

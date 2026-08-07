@@ -37,6 +37,7 @@ public class InterviewReviewsDTO {
     // ===== JOIN =====
     private String title;
     private String careerType;
+    private String companyName;
 
     // ===== 요약 =====
     private Integer reviewCount;

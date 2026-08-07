@@ -13,3 +13,46 @@
   color: #ef4444;
   font-weight: 600;
 }
+
+.summary { grid-template-columns: repeat(4, 1fr); }
+.review-tab .tab-btn { padding: 11px 22px; border-radius: 10px; background: #0f172a; color: #cbd5e1; font-size: 14px; text-decoration: none; transition: .25s; }
+.review-tab .tab-btn:hover { background: #334155; }
+.review-tab .tab-btn.active { background: #2563eb; color: #fff; }
+.salary-table td:last-child .open-salary-review-modal { display: inline-block; padding: 7px 16px; border: 0; border-radius: 8px; background: #2563eb; color: #fff; cursor: pointer; }
+.salary-table td:last-child .open-salary-review-modal:hover { background: #1d4ed8; }
+.deleted { color: #94a3b8; font-weight: 600; }
+.salary-empty { padding: 56px 20px !important; text-align: center !important; color: #94a3b8; }
+.salary-review-reason { min-height: 100px; height: 100px; padding: 12px 13px; resize: vertical; }
+
+.review-box .search-area {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: 12px;
+}
+
+.review-box .search-area select,
+.review-box .search-area input[type="text"],
+.review-box .search-area button {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.review-box .search-area input[type="text"] {
+  grid-column: span 3;
+}
+
+.review-box .search-area button {
+  height: 46px;
+}
+
+@media (max-width: 1024px) { .summary { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) {
+  .review-box .search-area { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .review-box .search-area input[type="text"] { grid-column: span 1; }
+}
+@media (max-width: 768px) {
+  .summary { grid-template-columns: 1fr; }
+  .review-box .search-area { grid-template-columns: 1fr; }
+}

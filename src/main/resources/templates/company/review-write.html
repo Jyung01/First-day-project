@@ -44,20 +44,21 @@
 
         <!-- 리뷰 작성 폼 -->
         <form id="companyReviewForm"
-              th:action="@{/company/review/write}"
+              th:action="${formAction != null ? formAction : '/company/review/write'}"
               th:object="${companyReviewsDTO}"
               method="post">
 
             <!-- hidden -->
             <input type="hidden" th:field="*{companyId}">
+            <input type="hidden" th:field="*{companyReviewId}">
             <input type="hidden" th:field="*{authorUserId}">
             <input type="hidden" th:field="*{eligibilityApplicationId}">
             <input type="hidden" th:field="*{jobCategoryId}">
 
-            <input type="hidden" th:field="*{careerGrowthRating}">
-            <input type="hidden" th:field="*{workSatisfactionRating}">
-            <input type="hidden" th:field="*{compensationRating}">
-            <input type="hidden" th:field="*{cultureRating}">
+            <input type="hidden" th:field="*{careerGrowthRating}" value="5">
+            <input type="hidden" th:field="*{workSatisfactionRating}" value="5">
+            <input type="hidden" th:field="*{compensationRating}" value="5">
+            <input type="hidden" th:field="*{cultureRating}" value="5">
 
             <div class="form-row">
                 <div class="form-group">
@@ -202,12 +203,20 @@
             <!-- 버튼 영역 -->
             <div class="form-actions">
                 <button type="button" class="btn-cancel" onclick="history.back();">취소</button>
-                <button type="submit" class="btn-submit">기업리뷰 등록</button>
+                <button type="submit" class="btn-submit" th:text="${isEdit == true ? '기업리뷰 수정' : '기업리뷰 등록'}">기업리뷰 등록</button>
             </div>
 
         </form>
     </div>
 </main>
+
+<script th:if="${errorMessage}" th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", () => showConfirmModal({
+        iconClass: "danger", iconHtml: '<i class="fa-solid fa-exclamation"></i>',
+        title: "처리할 수 없습니다", message: [[${errorMessage}]],
+        leftVisible: false, rightText: "확인", rightClass: "btn-primary"
+    }));
+</script>
 
 <!-- ============ 푸터 (공통 영역) ============ -->
 <footer th:replace="~{common/footer :: footer}"></footer>
