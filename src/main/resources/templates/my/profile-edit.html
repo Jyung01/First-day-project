@@ -60,11 +60,12 @@
                                         th:src="${profileImageUrl}"
                                         alt="프로필 이미지"
                                         data-profile-image
+                                        onerror="this.hidden=true; this.nextElementSibling.hidden=false"
                                     />
 
-                                    <!-- 등록된 이미지가 없을 때 -->
+                                    <!-- 등록된 이미지가 없을 때 / 이미지 로드에 실패했을 때 -->
                                     <span
-                                        th:unless="${profileImageUrl != null}"
+                                        th:hidden="${profileImageUrl != null}"
                                         th:text="${#strings.isEmpty(profileForm.memberName)
                                             ? '김'
                                             : #strings.substring(profileForm.memberName, 0, 1)}"
