@@ -3,6 +3,7 @@ package kr.co.firstdayproject.controller.auth;
 import kr.co.firstdayproject.dto.auth.BusinessNumberAvailabilityResponse;
 import kr.co.firstdayproject.dto.auth.LoginIdAvailabilityResponse;
 import kr.co.firstdayproject.service.auth.CorporateSignupService;
+
 import kr.co.firstdayproject.service.auth.PersonalSignupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
