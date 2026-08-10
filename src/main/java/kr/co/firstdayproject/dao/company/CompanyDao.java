@@ -6,6 +6,7 @@ import kr.co.firstdayproject.dto.company.CompanySearchDTO;
 import kr.co.firstdayproject.dto.job.JobCategoryOption;
 import kr.co.firstdayproject.dto.job.JobDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -38,5 +39,22 @@ public interface CompanyDao {
     // 기업 상세 - 채용공고 : 스킬 조회
     List<String> selectSkillListByJobPostingId(Long jobPostingId);
 
+    // 기업 정보 - 관심기업 조회
+    int countWish(
+            @Param("userId") Long userId,
+            @Param("companyId") Long companyId
+    );
+
+    // 기업 정보 - 관심기업 등록
+    int insertWish(
+            @Param("userId") Long userId,
+            @Param("companyId") Long companyId
+    );
+
+    // 기업 정보 - 관심기업 삭제
+    int deleteWish(
+            @Param("userId") Long userId,
+            @Param("companyId") Long companyId
+    );
 
 }

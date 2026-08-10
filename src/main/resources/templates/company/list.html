@@ -137,8 +137,16 @@
                          th:src="${company.logoUrl}"
                          alt="기업 로고">
 
-                    <button class="wish-btn">
-                        <i class="fa-regular fa-heart"></i>
+                    <button type="button"
+                            class="wish-btn"
+                            th:data-company-id="${company.companyId}"
+                            th:classappend="${company.savedCompanyId != null} ? 'active' : ''">
+
+                        <i th:class="${company.savedCompanyId != null}
+                            ? 'fa-solid fa-heart'
+                            : 'fa-regular fa-heart'">
+
+                        </i>
                     </button>
 
                 </div>
@@ -164,7 +172,7 @@
                     <span th:text="${company.reviewCount}"></span>개
                 </div>
 
-                <div class="card-line"  th:if="${company.averageRating != null}"></div>
+                <div class="card-line" th:if="${company.averageRating != null}"></div>
 
                 <p class="company-review"
                    th:if="${!#strings.isEmpty(company.summary)}"

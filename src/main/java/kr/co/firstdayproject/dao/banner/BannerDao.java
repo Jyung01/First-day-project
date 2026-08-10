@@ -10,6 +10,9 @@ public interface  BannerDao {
     // 인덱스 : 배너 조회
     List<BannerDTO> selectActiveBanners();
 
+    // 관리자: 전체 배너 목록 조회
+    List<BannerDTO> selectAdminBanners();
+
     // 관리자 : 배너 등록
     void insertBanner(BannerDTO dto);
 }

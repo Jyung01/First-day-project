@@ -1,14 +1,18 @@
 package kr.co.firstdayproject.controller.company;
 
+import jakarta.servlet.http.HttpSession;
 import kr.co.firstdayproject.dto.company.CompanySearchDTO;
+import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.company.CompanyService;
 import kr.co.firstdayproject.util.PageHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,7 +24,15 @@ public class CompanyController {
     @GetMapping({"", "/list"})
     public String list(@RequestParam(defaultValue = "1") int page,
                        CompanySearchDTO search,
-                       Model model) {
+                       Model model,
+                       Authentication authentication) {
+        
+        // 로그인 사용자 ID
+        if (authentication != null
+                && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+
+            search.setUserId(userDetails.getUserId());
+        }
 
         // 검색 결과 전체 개수
         int total = companyService.getCompanyCount(search);
@@ -52,6 +64,8 @@ public class CompanyController {
        model.addAttribute("jobCategoryList",
                companyService.getJobCategoryList());
 
+
+
         return "company/list";
     }
 
@@ -76,4 +90,33 @@ public class CompanyController {
                 companyService.getCompanyRecruitList(companyId));
         return "company/jobs";
     }
+
+    // 기업 정보 : 관심기업 등록 및 해제
+    @PostMapping("/wish/{companyId}")
+    @ResponseBody
+    public Map<String, Object> toggleWish(
+            @PathVariable Long companyId,
+            Authentication authentication) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (authentication == null
+                || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
+
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return response;
+        }
+
+        Long userId = userDetails.getUserId();
+
+        boolean wished = companyService.toggleWish(userId, companyId);
+
+        response.put("success", true);
+        response.put("wished", wished);
+
+        return response;
+    }
+
+
 }

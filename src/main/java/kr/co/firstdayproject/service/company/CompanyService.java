@@ -100,5 +100,20 @@ public class CompanyService {
         return list;
     }
 
+    // 기업 정보 : 관심기업 등록 및 해제
+    @Transactional
+    public boolean toggleWish(Long userId, Long companyId) {
+
+        int count = companyDao.countWish(userId, companyId);
+        // 이미 관심기업이면 삭제
+        if (count > 0) {
+            companyDao.deleteWish(userId, companyId);
+            return false;
+        }
+        // 관심기업이 아니면 등록
+
+        companyDao.insertWish(userId, companyId);
+        return true;
+    }
 
 }

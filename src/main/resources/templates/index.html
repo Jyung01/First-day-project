@@ -71,7 +71,7 @@
 
             <!--인기순-->
             <div class="job-grid popular-grid">
-                <div class="job-card" th:each="job : ${popularJobs}">
+                <a th:href="@{/job/detail}" class="job-card" th:each="job : ${popularJobs}">
 
                     <div class="co-row">
                         <img class="co-logo"
@@ -101,12 +101,12 @@
                               th:text="${job.categoryName}"></span>
                     </div>
 
-                </div>
+                </a>
             </div>
 
             <!--최신순-->
             <div class="job-grid latest-grid" style="display:none;">
-                <div class="job-card" th:each="job : ${latestJobs}">
+                <a  th:href="@{/job/detail}" class="job-card" th:each="job : ${latestJobs}">
 
                     <div class="co-row">
                         <img class="co-logo"
@@ -136,7 +136,7 @@
                               th:text="${job.categoryName}"></span>
                     </div>
 
-                </div>
+                </a>
             </div>
         </section>
 
@@ -152,8 +152,10 @@
 
             <div class="company-grid">
 
-                <div class="company-card"
-                     th:each="company : ${popularCompanies}">
+                <a class="company-card"
+                     th:each="company : ${popularCompanies}"
+                   th:href="@{/company/detail(companyId=${company.companyId})}"
+                >
 
                     <img class="company-logo"
                          th:src="${company.logoUrl}"
@@ -180,7 +182,7 @@
                          th:text="${company.summary}">
                     </div>
 
-                </div>
+                </a>
 
             </div>
 
