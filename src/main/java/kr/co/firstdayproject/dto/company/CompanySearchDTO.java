@@ -13,4 +13,6 @@ public class CompanySearchDTO {
 
     private int offset;
     private int pageSize;
+
+    private Long userId;
 }
