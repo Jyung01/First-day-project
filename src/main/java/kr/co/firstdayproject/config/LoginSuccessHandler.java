@@ -56,7 +56,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             return;
         }
 
-        String destination = resolveDestination(authentication);
+        String destination = resolveDestination(request, authentication);
         response.sendRedirect(request.getContextPath() + destination);
     }
 
@@ -77,18 +77,36 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
                 .map(Company::getApprovalStatus);
     }
 
-    String resolveDestination(Authentication authentication) {
+    String resolveDestination(HttpServletRequest request,
+                              Authentication authentication) {
         if (hasRole(authentication, "ROLE_ADMIN")) {
             return "/admin";
         }
+
         if (hasRole(authentication, "ROLE_COMPANY")) {
             return "/corp";
         }
+
+        String returnUrl = request.getParameter("returnUrl");
+
+        if (isSafeReturnUrl(returnUrl)) {
+            return returnUrl;
+        }
+
         return "/";
     }
 
     private boolean hasRole(Authentication authentication, String role) {
         return authentication.getAuthorities().stream()
                 .anyMatch(authority -> role.equals(authority.getAuthority()));
+    }
+
+    private boolean isSafeReturnUrl(String returnUrl) {
+        return returnUrl != null
+                && !returnUrl.isBlank()
+                && returnUrl.startsWith("/")
+                && !returnUrl.startsWith("//")
+                && !returnUrl.contains("\r")
+                && !returnUrl.contains("\n");
     }
 }

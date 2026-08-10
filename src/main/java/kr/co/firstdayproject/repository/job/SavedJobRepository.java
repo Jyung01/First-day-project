@@ -27,4 +27,14 @@ public interface SavedJobRepository extends JpaRepository<SavedJob, SavedJobId> 
             @Param("now") LocalDateTime now,
             @Param("deadline") LocalDateTime deadline
     );
+
+    boolean existsByIdUserIdAndIdJobPostingId(
+            Long userId,
+            Long jobPostingId
+    );
+
+    void deleteByIdUserIdAndIdJobPostingId(
+            Long userId,
+            Long jobPostingId
+    );
 }

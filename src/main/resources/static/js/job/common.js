@@ -1,14 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".bookmark").forEach((button) => {
-    button.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      button.classList.toggle("active");
-      button.textContent = button.classList.contains("active") ? "♥" : "♡";
-      button.setAttribute("aria-pressed", String(button.classList.contains("active")));
-    });
-  });
-
   document.querySelectorAll(".filter-chip").forEach((chip) => {
     chip.addEventListener("click", () => chip.remove());
   });
