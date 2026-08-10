@@ -18,7 +18,11 @@ public class BannerService {
     private final AwsS3Service awsS3Service;
 
     public List<BannerDTO> getActiveBanners() {
-        return bannerDao.selectActiveBanners();
+        return getActiveBanners("main");
+    }
+
+    public List<BannerDTO> getActiveBanners(String placement) {
+        return bannerDao.selectActiveBanners(placement);
     }
 
     public void register(BannerDTO bannerDTO,

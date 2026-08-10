@@ -123,12 +123,37 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
                 LIKE LOWER(CONCAT('%', :keyword, '%'))
       )
       AND (
-            :categoryId IS NULL
-            OR posting.jobCategoryId = :categoryId
+            :categoryFilter = false
+            OR posting.jobCategoryId IN :categoryIds
       )
       AND (
             :parentCategoryId IS NULL
             OR category.parentId = :parentCategoryId
+      )
+      AND (
+            :regionFilter = false
+            OR SUBSTRING(
+                posting.workRegion,
+                1,
+                LOCATE(' ', CONCAT(posting.workRegion, ' ')) - 1
+            ) IN :regions
+      )
+      AND (
+            :careerFilter = false
+            OR posting.careerType IN :careers
+      )
+      AND (
+            :educationFilter = false
+            OR posting.educationLevel IN :educations
+      )
+      AND (
+            :skillFilter = false
+            OR EXISTS (
+                SELECT postingSkill.id.skillId
+                FROM JobPostingSkill postingSkill
+                WHERE postingSkill.id.jobPostingId = posting.jobPostingId
+                  AND postingSkill.id.skillId IN :skillIds
+            )
       )
     GROUP BY
         posting.jobPostingId,
@@ -142,8 +167,6 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
         posting.viewCount,
         posting.publishedAt,
         posting.applyEndAt
-    ORDER BY posting.publishedAt DESC,
-             posting.jobPostingId DESC
     """,
             countQuery = """
     SELECT COUNT(posting)
@@ -159,8 +182,8 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
                 LIKE LOWER(CONCAT('%', :keyword, '%'))
       )
       AND (
-            :categoryId IS NULL
-            OR posting.jobCategoryId = :categoryId
+            :categoryFilter = false
+            OR posting.jobCategoryId IN :categoryIds
       )
       AND (
             :parentCategoryId IS NULL
@@ -171,12 +194,46 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
                   AND child.parentId = :parentCategoryId
             )
       )
+      AND (
+            :regionFilter = false
+            OR SUBSTRING(
+                posting.workRegion,
+                1,
+                LOCATE(' ', CONCAT(posting.workRegion, ' ')) - 1
+            ) IN :regions
+      )
+      AND (
+            :careerFilter = false
+            OR posting.careerType IN :careers
+      )
+      AND (
+            :educationFilter = false
+            OR posting.educationLevel IN :educations
+      )
+      AND (
+            :skillFilter = false
+            OR EXISTS (
+                SELECT postingSkill.id.skillId
+                FROM JobPostingSkill postingSkill
+                WHERE postingSkill.id.jobPostingId = posting.jobPostingId
+                  AND postingSkill.id.skillId IN :skillIds
+            )
+      )
     """
     )
     Page<JobListQueryItem> findRecruitingJobPostings(
             @Param("keyword") String keyword,
             @Param("parentCategoryId") Long parentCategoryId,
-            @Param("categoryId") Long categoryId,
+            @Param("categoryFilter") boolean categoryFilter,
+            @Param("categoryIds") List<Long> categoryIds,
+            @Param("regionFilter") boolean regionFilter,
+            @Param("regions") List<String> regions,
+            @Param("careerFilter") boolean careerFilter,
+            @Param("careers") List<String> careers,
+            @Param("educationFilter") boolean educationFilter,
+            @Param("educations") List<String> educations,
+            @Param("skillFilter") boolean skillFilter,
+            @Param("skillIds") List<Long> skillIds,
             Pageable pageable
     );
 

@@ -54,8 +54,13 @@
                       method="get">
 
                     <input name="keyword"
-                           aria-label="채용공고 검색"
+                           th:value="${keyword}"
+                           aria-label="공고명, 기업명 검색"
                            placeholder="공고명, 기업명 검색">
+
+                    <input type="hidden"
+                           name="sort"
+                           th:value="${sort}">
 
                     <button type="submit">
                         검색
@@ -78,10 +83,15 @@
     <section class="job-content">
         <div class="job-container">
 
-            <div class="job-banner">
-                <strong>JOB_LIST</strong>
-                관리자 등록 채용공고 목록 배너 · 권장 1280 × 120
-            </div>
+            <a class="job-banner"
+               th:if="${jobBanner != null}"
+               th:href="${#strings.isEmpty(jobBanner.linkUrl)
+                   ? null
+                   : jobBanner.linkUrl}"
+               th:aria-label="${jobBanner.altText}">
+                <img th:src="${jobBanner.imageUrl}"
+                     th:alt="${jobBanner.altText}">
+            </a>
 
             <div class="job-section-head">
                 <h2>전체 채용공고</h2>
@@ -95,9 +105,19 @@
             <div class="job-card-grid">
 
                 <a class="job-card"
-                   th:each="job : ${jobs}"
+                   th:each="job, jobStat : ${jobs}"
                    th:href="@{/job/detail(
-                       jobPostingId=${job.jobPostingId}
+                       jobPostingId=${job.jobPostingId},
+                       keyword=${keyword},
+                       parentCategoryId=${parentCategoryId},
+                       categoryId=${categoryIds},
+                       region=${regions},
+                       career=${careers},
+                       education=${educations},
+                       skillId=${skillIds},
+                       sort=${sort},
+                       page=${pageInfo.currentPage * 4
+                           + (jobStat.index - jobStat.index % 3) / 3}
                    )}">
 
                     <!-- 기업 정보 -->
@@ -150,7 +170,7 @@
                         <button class="bookmark"
                                 type="button"
                                 th:data-job-posting-id="${job.jobPostingId}"
-                                th:data-logged-in="${#authorization.expression('isAuthenticated()')}"
+                                th:data-logged-in="${#authorization.expression('hasRole(''PERSONAL'')')}"
                                 th:classappend="${job.bookmarked} ? ' active'"
                                 th:text="${job.bookmarked} ? '♥' : '♡'"
                                 th:attr="aria-pressed=${job.bookmarked}"
@@ -251,7 +271,16 @@
             >
                 <a
                         th:href="${pageInfo.hasPreviousBlock}
-      ? @{/job/list(page=${pageInfo.previousBlockPage})}
+      ? @{/job/search(
+          page=${pageInfo.previousBlockPage},
+          keyword=${keyword},
+          categoryId=${categoryIds},
+          region=${regions},
+          career=${careers},
+          education=${educations},
+          skillId=${skillIds},
+          sort=${sort}
+        )}
       : '#'"
                         th:classappend="${!pageInfo.hasPreviousBlock} ? 'is-disabled'"
                         th:attr="aria-disabled=${!pageInfo.hasPreviousBlock}"
@@ -265,7 +294,16 @@
       pageInfo.startPage,
       pageInfo.endPage
     )}"
-                        th:href="@{/job/list(page=${pageNumber})}"
+                        th:href="@{/job/search(
+                          page=${pageNumber},
+                          keyword=${keyword},
+                          categoryId=${categoryIds},
+                          region=${regions},
+                          career=${careers},
+                          education=${educations},
+                          skillId=${skillIds},
+                          sort=${sort}
+                        )}"
                         th:classappend="${pageNumber == pageInfo.currentPage}
       ? 'active'"
                         th:attr="aria-current=${pageNumber == pageInfo.currentPage}
@@ -277,7 +315,16 @@
 
                 <a
                         th:href="${pageInfo.hasNextBlock}
-      ? @{/job/list(page=${pageInfo.nextBlockPage})}
+      ? @{/job/search(
+          page=${pageInfo.nextBlockPage},
+          keyword=${keyword},
+          categoryId=${categoryIds},
+          region=${regions},
+          career=${careers},
+          education=${educations},
+          skillId=${skillIds},
+          sort=${sort}
+        )}
       : '#'"
                         th:classappend="${!pageInfo.hasNextBlock} ? 'is-disabled'"
                         th:attr="aria-disabled=${!pageInfo.hasNextBlock}"

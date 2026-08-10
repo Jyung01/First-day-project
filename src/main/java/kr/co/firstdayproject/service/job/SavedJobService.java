@@ -1,6 +1,9 @@
 package kr.co.firstdayproject.service.job;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import kr.co.firstdayproject.entity.job.SavedJob;
 import kr.co.firstdayproject.entity.job.SavedJobId;
 import kr.co.firstdayproject.repository.job.SavedJobRepository;
@@ -64,6 +67,28 @@ public class SavedJobService {
         );
 
         return savedJobRepository.existsById(savedJobId);
+    }
+
+    @Transactional(readOnly = true)
+    public Set<Long> getSavedJobPostingIds(
+            Collection<Long> jobPostingIds,
+            Authentication authentication
+    ) {
+        if (!isPersonalMember(authentication)
+                || jobPostingIds == null
+                || jobPostingIds.isEmpty()) {
+            return Set.of();
+        }
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        return new HashSet<>(
+                savedJobRepository.findSavedJobPostingIds(
+                        userDetails.getUserId(),
+                        jobPostingIds
+                )
+        );
     }
 
     private Long getPersonalUserId(

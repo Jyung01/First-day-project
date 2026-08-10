@@ -4,7 +4,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // 로그인 전에 눌렀던 관심공고 자동 등록
     registerPendingBookmark();
 
-    document.querySelectorAll('.bookmark').forEach(button => {
+    bindBookmarkButtons();
+});
+
+document.addEventListener('job:list-updated', bindBookmarkButtons);
+
+function bindBookmarkButtons() {
+    document.querySelectorAll('.bookmark:not([data-bookmark-bound])').forEach(button => {
+        button.dataset.bookmarkBound = 'true';
         button.addEventListener('click', async event => {
             event.preventDefault();
             event.stopPropagation();
@@ -22,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await toggleBookmark(button);
         });
     });
-});
+}
 
 
 function openLoginRequiredModal(bookmarkButton) {

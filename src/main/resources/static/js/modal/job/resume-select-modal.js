@@ -25,7 +25,32 @@ document.addEventListener("DOMContentLoaded", () => {
     openButton?.focus();
   };
 
-  openButton?.addEventListener("click", openModal);
+  openButton?.addEventListener("click", () => {
+    if (openButton.dataset.personalMember === "true") {
+      openModal();
+      return;
+    }
+
+    showConfirmModal({
+      iconClass: "info",
+      iconHtml: "?",
+      title: "로그인이 필요한 기능입니다",
+      message:
+        "입사지원은 개인회원 로그인 후 이용할 수 있습니다.\n" +
+        "로그인 후 다시 이용해주세요.",
+      leftText: "취소",
+      rightText: "로그인",
+      onRight: () => {
+        const returnUrl = new URL(window.location.href);
+        returnUrl.searchParams.set("apply", "true");
+        const loginUrl = document.body.dataset.loginUrl || "/auth/login";
+        window.location.href =
+          `${loginUrl}?returnUrl=${encodeURIComponent(
+            returnUrl.pathname + returnUrl.search,
+          )}`;
+      },
+    });
+  });
   closeButtons?.forEach((button) => button.addEventListener("click", closeModal));
   cancelButton?.addEventListener("click", () => {
     showConfirmModal({
@@ -58,7 +83,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "Escape" && modal?.classList.contains("is-open")) closeModal();
   });
 
-  if (new URLSearchParams(window.location.search).get("apply") === "true") {
+  if (
+    openButton?.dataset.personalMember === "true"
+    && new URLSearchParams(window.location.search).get("apply") === "true"
+  ) {
     openModal();
   }
 });

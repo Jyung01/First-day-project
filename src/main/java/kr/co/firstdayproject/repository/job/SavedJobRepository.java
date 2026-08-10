@@ -1,6 +1,8 @@
 package kr.co.firstdayproject.repository.job;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import kr.co.firstdayproject.entity.job.SavedJob;
 import kr.co.firstdayproject.entity.job.SavedJobId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,5 +38,16 @@ public interface SavedJobRepository extends JpaRepository<SavedJob, SavedJobId> 
     void deleteByIdUserIdAndIdJobPostingId(
             Long userId,
             Long jobPostingId
+    );
+
+    @Query("""
+            select savedJob.id.jobPostingId
+              from SavedJob savedJob
+             where savedJob.id.userId = :userId
+               and savedJob.id.jobPostingId in :jobPostingIds
+            """)
+    List<Long> findSavedJobPostingIds(
+            @Param("userId") Long userId,
+            @Param("jobPostingIds") Collection<Long> jobPostingIds
     );
 }

@@ -115,7 +115,7 @@
   <!-- =====================================================
        지역
   ====================================================== -->
-  <div class="multi-filter"
+  <div class="multi-filter region-filter"
        data-filter-group
        data-filter-label="지역">
 
@@ -143,7 +143,7 @@
         <label>
           <input type="checkbox"
                  name="region"
-                 value="seoul"
+                 value="서울"
                  data-label="서울">
           서울
         </label>
@@ -151,7 +151,7 @@
         <label>
           <input type="checkbox"
                  name="region"
-                 value="gyeonggi"
+                 value="경기"
                  data-label="경기">
           경기
         </label>
@@ -159,7 +159,7 @@
         <label>
           <input type="checkbox"
                  name="region"
-                 value="incheon"
+                 value="인천"
                  data-label="인천">
           인천
         </label>
@@ -167,9 +167,113 @@
         <label>
           <input type="checkbox"
                  name="region"
-                 value="busan"
+                 value="부산"
                  data-label="부산">
           부산
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="대구"
+                 data-label="대구">
+          대구
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="광주"
+                 data-label="광주">
+          광주
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="대전"
+                 data-label="대전">
+          대전
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="울산"
+                 data-label="울산">
+          울산
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="세종"
+                 data-label="세종">
+          세종
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="강원"
+                 data-label="강원">
+          강원
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="충북"
+                 data-label="충북">
+          충북
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="충남"
+                 data-label="충남">
+          충남
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="전북"
+                 data-label="전북">
+          전북
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="전남"
+                 data-label="전남">
+          전남
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="경북"
+                 data-label="경북">
+          경북
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="경남"
+                 data-label="경남">
+          경남
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="region"
+                 value="제주"
+                 data-label="제주">
+          제주
         </label>
 
       </div>
@@ -215,7 +319,15 @@
         <label>
           <input type="checkbox"
                  name="career"
-                 value="new"
+                 value="경력무관"
+                 data-label="경력무관">
+          경력무관
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="career"
+                 value="신입"
                  data-label="신입">
           신입
         </label>
@@ -223,25 +335,9 @@
         <label>
           <input type="checkbox"
                  name="career"
-                 value="junior"
-                 data-label="1~3년">
-          1~3년
-        </label>
-
-        <label>
-          <input type="checkbox"
-                 name="career"
-                 value="middle"
-                 data-label="4~7년">
-          4~7년
-        </label>
-
-        <label>
-          <input type="checkbox"
-                 name="career"
-                 value="senior"
-                 data-label="8년 이상">
-          8년 이상
+                 value="경력"
+                 data-label="경력">
+          경력
         </label>
 
       </div>
@@ -287,7 +383,7 @@
         <label>
           <input type="checkbox"
                  name="education"
-                 value="none"
+                 value="학력무관"
                  data-label="학력무관">
           학력무관
         </label>
@@ -295,25 +391,41 @@
         <label>
           <input type="checkbox"
                  name="education"
-                 value="college"
-                 data-label="전문대졸">
-          전문대졸
+                 value="고졸이상"
+                 data-label="고졸이상">
+          고졸이상
         </label>
 
         <label>
           <input type="checkbox"
                  name="education"
-                 value="university"
-                 data-label="대졸">
-          대졸
+                 value="전문대졸이상"
+                 data-label="전문대졸이상">
+          전문대졸이상
         </label>
 
         <label>
           <input type="checkbox"
                  name="education"
-                 value="master"
-                 data-label="석사 이상">
-          석사 이상
+                 value="대졸이상"
+                 data-label="대졸이상">
+          대졸이상
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="education"
+                 value="석사이상"
+                 data-label="석사이상">
+          석사이상
+        </label>
+
+        <label>
+          <input type="checkbox"
+                 name="education"
+                 value="박사"
+                 data-label="박사">
+          박사
         </label>
 
       </div>
@@ -370,8 +482,40 @@
                   th:each="group : ${skillGroups}"
                   th:data-parent-id="${group.skillId}"
                   th:text="${group.skillName}">
-            개발 언어
+            기술 분류
           </button>
+
+          <th:block th:remove="all">
+          <button type="button"
+                  class="category-parent-item"
+                  data-parent-id="language">
+            언어
+          </button>
+
+          <button type="button"
+                  class="category-parent-item"
+                  data-parent-id="framework">
+            프레임워크
+          </button>
+
+          <button type="button"
+                  class="category-parent-item"
+                  data-parent-id="database">
+            데이터베이스
+          </button>
+
+          <button type="button"
+                  class="category-parent-item"
+                  data-parent-id="cloud-devops">
+            클라우드·DevOps
+          </button>
+
+          <button type="button"
+                  class="category-parent-item"
+                  data-parent-id="etc">
+            기타
+          </button>
+          </th:block>
 
         </div>
 
@@ -383,12 +527,34 @@
                th:each="group : ${skillGroups}"
                th:data-category-group="${group.skillId}"
                hidden>
+            <div class="category-child-head">
+              <strong th:text="${group.skillName}">기술 분류</strong>
+              <button type="button"
+                      class="category-group-all"
+                      data-group-select-all>
+                전체 선택
+              </button>
+            </div>
+            <div class="category-child-options">
+              <label class="category-child-item"
+                     th:each="skill : ${group.children}">
+                <input type="checkbox"
+                       name="skillId"
+                       th:value="${skill.skillId}"
+                       th:data-label="${skill.skillName}">
+                <span th:text="${skill.skillName}">기술</span>
+              </label>
+            </div>
+          </div>
+
+          <th:block th:remove="all">
+          <div class="category-child-group"
+               data-category-group="language"
+               hidden>
 
             <div class="category-child-head">
 
-              <strong th:text="${group.skillName}">
-                개발 언어
-              </strong>
+              <strong>언어</strong>
 
               <button type="button"
                       class="category-group-all"
@@ -400,23 +566,213 @@
 
             <div class="category-child-options">
 
-              <label class="category-child-item"
-                     th:each="skill : ${group.children}">
-
+              <label class="category-child-item">
                 <input type="checkbox"
                        name="skillId"
-                       th:value="${skill.skillId}"
-                       th:data-label="${skill.skillName}">
+                       value="1"
+                       data-label="Java">
+                <span>Java</span>
+              </label>
 
-                <span th:text="${skill.skillName}">
-                  Java
-                </span>
+              <label class="category-child-item">
+                <input type="checkbox"
+                       name="skillId"
+                       value="2"
+                       data-label="Python">
+                <span>Python</span>
+              </label>
 
+              <label class="category-child-item">
+                <input type="checkbox"
+                       name="skillId"
+                       value="3"
+                       data-label="JavaScript">
+                <span>JavaScript</span>
+              </label>
+
+              <label class="category-child-item">
+                <input type="checkbox"
+                       name="skillId"
+                       value="4"
+                       data-label="TypeScript">
+                <span>TypeScript</span>
+              </label>
+
+              <label class="category-child-item">
+                <input type="checkbox"
+                       name="skillId"
+                       value="5"
+                       data-label="Kotlin">
+                <span>Kotlin</span>
+              </label>
+
+              <label class="category-child-item">
+                <input type="checkbox"
+                       name="skillId"
+                       value="6"
+                       data-label="SQL">
+                <span>SQL</span>
               </label>
 
             </div>
 
           </div>
+
+          <div class="category-child-group"
+               data-category-group="framework"
+               hidden>
+            <div class="category-child-head">
+              <strong>프레임워크</strong>
+              <button type="button"
+                      class="category-group-all"
+                      data-group-select-all>
+                전체 선택
+              </button>
+            </div>
+            <div class="category-child-options">
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="11"
+                       data-label="Spring Boot">
+                <span>Spring Boot</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="12"
+                       data-label="Spring Security">
+                <span>Spring Security</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="13"
+                       data-label="React">
+                <span>React</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="14"
+                       data-label="Vue.js">
+                <span>Vue.js</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="15"
+                       data-label="Thymeleaf">
+                <span>Thymeleaf</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="16"
+                       data-label="Spring AI">
+                <span>Spring AI</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="category-child-group"
+               data-category-group="database"
+               hidden>
+            <div class="category-child-head">
+              <strong>데이터베이스</strong>
+              <button type="button"
+                      class="category-group-all"
+                      data-group-select-all>
+                전체 선택
+              </button>
+            </div>
+            <div class="category-child-options">
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="21"
+                       data-label="MySQL">
+                <span>MySQL</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="22"
+                       data-label="PostgreSQL">
+                <span>PostgreSQL</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="23"
+                       data-label="Redis">
+                <span>Redis</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="24"
+                       data-label="JPA">
+                <span>JPA</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="25"
+                       data-label="MyBatis">
+                <span>MyBatis</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="category-child-group"
+               data-category-group="cloud-devops"
+               hidden>
+            <div class="category-child-head">
+              <strong>클라우드·DevOps</strong>
+              <button type="button"
+                      class="category-group-all"
+                      data-group-select-all>
+                전체 선택
+              </button>
+            </div>
+            <div class="category-child-options">
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="31"
+                       data-label="AWS">
+                <span>AWS</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="32"
+                       data-label="Docker">
+                <span>Docker</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="33"
+                       data-label="GitHub Actions">
+                <span>GitHub Actions</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="34"
+                       data-label="Kubernetes">
+                <span>Kubernetes</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="35"
+                       data-label="Linux">
+                <span>Linux</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="category-child-group"
+               data-category-group="etc"
+               hidden>
+            <div class="category-child-head">
+              <strong>기타</strong>
+              <button type="button"
+                      class="category-group-all"
+                      data-group-select-all>
+                전체 선택
+              </button>
+            </div>
+            <div class="category-child-options">
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="41"
+                       data-label="Figma">
+                <span>Figma</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="42"
+                       data-label="REST API">
+                <span>REST API</span>
+              </label>
+              <label class="category-child-item">
+                <input type="checkbox" name="skillId" value="43"
+                       data-label="JUnit">
+                <span>JUnit</span>
+              </label>
+            </div>
+          </div>
+          </th:block>
 
         </div>
 
@@ -437,16 +793,21 @@
   ====================================================== -->
   <div class="job-sort">
 
-    <button class="active"
-            type="button">
+    <button type="button"
+            data-job-sort="latest"
+            th:classappend="${sort == 'latest'} ? 'active'">
       최신순
     </button>
 
-    <button type="button">
+    <button type="button"
+            data-job-sort="deadline"
+            th:classappend="${sort == 'deadline'} ? 'active'">
       마감순
     </button>
 
-    <button type="button">
+    <button type="button"
+            data-job-sort="views"
+            th:classappend="${sort == 'views'} ? 'active'">
       조회순
     </button>
 
