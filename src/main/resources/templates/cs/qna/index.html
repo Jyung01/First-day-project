@@ -1,95 +1,369 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>1:1 문의 | 첫출근 고객센터</title>
-<link rel="stylesheet" th:href="@{/css/cs/user-common.css}" />
-<link rel="stylesheet" th:href="@{/css/common.css}" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1:1 문의 관리 | 첫출근 관리자</title>
+  <style>
+    :root{
+      --bg:#0f1420; --panel:#161d2c; --panel-2:#1c2436; --border:#2a3348;
+      --text:#e8ecf5; --text-dim:#9aa5bd; --accent:#5b7cfa; --accent-2:#3f5be0;
+      --red:#ef5b6c; --green:#3ecf8e; --amber:#f5a524;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;}
+    .admin-shell{display:flex;min-height:100vh;}
+    .admin-content{flex:1;padding:32px 36px;max-width:1200px;}
+    h1{font-size:22px;margin:0 0 4px;}
+    .page-desc{color:var(--text-dim);font-size:13.5px;margin:0 0 22px;}
+
+    .summary-cards{display:flex;gap:16px;margin-bottom:22px;}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;flex:1;}
+    .card .label{color:var(--text-dim);font-size:13px;margin-bottom:6px;}
+    .card .value{font-size:24px;font-weight:700;}
+    .card.pending .value{color:var(--red);}
+
+    .filter-bar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
+    .filter-bar select, .filter-bar input[type="text"]{
+      background:var(--panel-2);border:1px solid var(--border);color:var(--text);
+      border-radius:8px;padding:9px 12px;font-size:13.5px;
+    }
+    .filter-bar input[type="text"]{flex:1;min-width:200px;}
+    .btn{border:none;border-radius:8px;padding:9px 16px;font-size:13.5px;cursor:pointer;font-weight:600;}
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-primary:hover{background:var(--accent-2);}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+    .btn-outline:hover{border-color:var(--accent);}
+    .btn-danger{background:transparent;border:1px solid var(--red);color:var(--red);}
+    .btn-danger:hover{background:var(--red);color:#fff;}
+    .btn-sm{padding:6px 12px;font-size:12.5px;}
+
+    .total-count{color:var(--text-dim);font-size:13px;margin:0 0 10px;}
+
+    table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    thead th{background:var(--panel-2);color:var(--text-dim);font-size:12.5px;text-align:left;padding:12px 14px;border-bottom:1px solid var(--border);}
+    tbody td{padding:13px 14px;font-size:13.5px;border-bottom:1px solid var(--border);}
+    tbody tr:last-child td{border-bottom:none;}
+    tbody tr:hover{background:rgba(255,255,255,0.02);}
+    .title-cell{max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+    .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;}
+    .badge-pending{background:rgba(239,91,108,0.15);color:var(--red);}
+    .badge-done{background:rgba(62,207,142,0.15);color:var(--green);}
+
+    .pagination{display:flex;justify-content:center;gap:6px;margin-top:20px;}
+    .pagination a{display:inline-block;min-width:32px;text-align:center;padding:6px 8px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:13px;}
+    .pagination a.current{background:var(--accent);color:#fff;}
+    .pagination a:hover:not(.current){background:var(--panel-2);}
+
+    .empty-row td{text-align:center;color:var(--text-dim);padding:40px 0;}
+
+    /* modal */
+    .modal-overlay{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);
+      align-items:center;justify-content:center;z-index:100;
+    }
+    .modal-overlay.open{display:flex;}
+    .modal{
+      background:var(--panel);border:1px solid var(--border);border-radius:14px;
+      width:600px;max-width:92vw;max-height:86vh;overflow-y:auto;padding:26px 28px;
+    }
+    .modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+    .modal-head h2{font-size:17px;margin:6px 0 8px;}
+    .modal-meta{color:var(--text-dim);font-size:12.5px;display:flex;gap:8px;}
+    .modal-close{background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;line-height:1;}
+    .modal-close:hover{color:var(--text);}
+    .modal-body p{font-size:14px;line-height:1.6;white-space:pre-wrap;color:var(--text);}
+    .attach-list{margin:10px 0 18px;display:flex;flex-direction:column;gap:6px;}
+    .attach-chip{font-size:12.5px;color:var(--text-dim);background:var(--panel-2);border:1px solid var(--border);
+      padding:6px 10px;border-radius:6px;display:flex;justify-content:space-between;}
+
+    .answer-section{border-top:1px solid var(--border);padding-top:16px;margin-top:6px;}
+    .answer-section .section-title{font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:10px;}
+    .answer-view{background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.6;white-space:pre-wrap;}
+    .answer-view-meta{color:var(--text-dim);font-size:12px;margin-top:8px;}
+    .answer-actions{display:flex;gap:8px;margin-top:12px;justify-content:flex-end;}
+    textarea.answer-input{
+      width:100%;min-height:130px;background:var(--panel-2);border:1px solid var(--border);
+      color:var(--text);border-radius:10px;padding:12px 14px;font-size:13.5px;resize:vertical;font-family:inherit;
+    }
+    .form-error{color:var(--red);font-size:12.5px;margin-top:8px;display:none;}
+  </style>
 </head>
 <body>
-<header th:replace="~{common/header :: header}"></header>
-<div class="cs-page">
-<section class="hero">
-  <div class="wrap">
-    <p class="eyebrow">FIRST DAY HELP CENTER</p>
-    <h1>고객센터</h1>
-    <p>필요한 도움을 빠르고 편하게 확인하세요.</p>
-  </div>
-</section>
 
-<main class="content-shell">
-  <div class="wrap">
+<div class="admin-shell">
+  <!-- 좌측 관리자 메뉴는 기존 admin 공통 레이아웃/사이드바가 있다면 th:replace로 교체하세요. -->
+  <div class="admin-content">
 
-    <nav class="tabs">
-      <a class="tab" th:href="@{/cs/notice}">공지사항</a>
-      <a class="tab" th:href="@{/cs/faq}">자주 묻는 질문</a>
-      <a class="tab active" th:href="@{/cs/qna}">1:1 문의</a>
-    </nav>
+    <h1>고객센터 관리 · 1:1 문의</h1>
+    <p class="page-desc">회원 문의를 확인하고 답변을 등록·수정·삭제할 수 있습니다.</p>
 
-    <div class="panel-head">
-      <div>
-        <h2>1:1 문의</h2>
-        <p class="desc">내가 등록한 문의와 답변 상태를 확인할 수 있습니다.</p>
+    <div class="summary-cards">
+      <div class="card pending">
+        <div class="label">미답변 문의</div>
+        <div class="value" th:text="${pendingCount} + '건'">7건</div>
       </div>
-      <a th:href="@{/cs/qna/write}" class="btn btn-primary">+ 문의하기</a>
+      <div class="card">
+        <div class="label">전체 문의</div>
+        <div class="value" th:text="${totalCount} + '건'">116건</div>
+      </div>
     </div>
 
-    <div class="tabs" style="margin-bottom:18px;">
-      <button class="tab active" style="cursor:default;">전체</button>
-      <button class="tab" style="cursor:default;">답변대기</button>
-      <button class="tab" style="cursor:default;">답변완료</button>
-    </div>
+    <form class="filter-bar" method="get" th:action="@{/admin/cs/qna}">
+      <select name="categoryId" onchange="this.form.submit()">
+        <option value="">문의 유형 전체</option>
+        <option th:each="c : ${categories}"
+                th:value="${c.inquiryCategoryId}"
+                th:text="${c.categoryName}"
+                th:selected="${categoryId != null and categoryId == c.inquiryCategoryId}"></option>
+      </select>
+      <select name="status" onchange="this.form.submit()">
+        <option value="">답변 상태 전체</option>
+        <option value="PENDING" th:selected="${status == 'PENDING'}">미답변</option>
+        <option value="ANSWERED" th:selected="${status == 'ANSWERED'}">답변완료</option>
+      </select>
+      <input type="text" name="keyword" placeholder="제목·내용 검색" th:value="${keyword}" />
+      <button type="submit" class="btn btn-primary">검색</button>
+    </form>
 
-    <p style="font-size:13.5px;color:var(--gray-500);margin:0 0 12px;">전체 27건</p>
+    <p class="total-count">총 <span th:text="${totalCount}">0</span>건</p>
 
-    <table class="list-table">
+    <table>
       <thead>
-        <tr>
-          <th class="col-cat">구분</th>
-          <th>제목</th>
-          <th class="col-status">상태</th>
-          <th class="col-date">등록일</th>
-        </tr>
+      <tr>
+        <th style="width:70px;">번호</th>
+        <th style="width:110px;">문의 유형</th>
+        <th>제목</th>
+        <th style="width:130px;">작성자</th>
+        <th style="width:100px;">작성일</th>
+        <th style="width:90px;">상태</th>
+        <th style="width:80px;">관리</th>
+      </tr>
       </thead>
       <tbody>
-        <tr th:onclick="|location.href='@{/cs/qna/detail}'|">
-          <td class="col-cat">지원·이력서</td>
-          <td class="title-cell"><a th:href="@{/cs/qna/detail}">지원 취소가 되지 않습니다.</a></td>
-          <td class="col-status"><span class="badge badge-pending">답변대기</span></td>
-          <td class="col-date">2026.07.20</td>
-        </tr>
-        <tr th:onclick="|location.href='@{/cs/qna/detail}'|">
-          <td class="col-cat">회원·계정</td>
-          <td class="title-cell"><a th:href="@{/cs/qna/detail}">회원정보 수정 관련 문의</a></td>
-          <td class="col-status"><span class="badge badge-done">답변완료</span></td>
-          <td class="col-date">2026.07.16</td>
-        </tr>
-        <tr th:onclick="|location.href='@{/cs/qna/detail}'|">
-          <td class="col-cat">신고·기타</td>
-          <td class="title-cell"><a th:href="@{/cs/qna/detail}">리뷰 작성 권한 문의</a></td>
-          <td class="col-status"><span class="badge badge-done">답변완료</span></td>
-          <td class="col-date">2026.07.10</td>
-        </tr>
+      <tr th:if="${#lists.isEmpty(inquiries)}" class="empty-row">
+        <td colspan="7">등록된 문의가 없습니다.</td>
+      </tr>
+      <tr th:each="inq : ${inquiries}">
+        <td th:text="${inq.inquiryId}">1</td>
+        <td th:text="${inq.categoryName}">회원·계정</td>
+        <td class="title-cell" th:text="${inq.title}">제목</td>
+        <td th:text="${inq.writerLabel}">회원 #1</td>
+        <td th:text="${inq.createdAt}">2026.07.20</td>
+        <td>
+          <span class="badge badge-pending" th:if="${inq.status == 'PENDING'}" th:text="${inq.statusLabel}">미답변</span>
+          <span class="badge badge-done" th:if="${inq.status == 'ANSWERED'}" th:text="${inq.statusLabel}">답변완료</span>
+        </td>
+        <td>
+          <button type="button" class="btn btn-outline btn-sm"
+                  th:attr="onclick=|openQnaModal(${inq.inquiryId})|"
+                  th:text="${inq.status == 'ANSWERED'} ? '상세' : '답변'"></button>
+        </td>
+      </tr>
       </tbody>
     </table>
 
-    <div class="pagination">
-      <a href="#">‹</a>
-      <a href="#" class="current">1</a>
-      <a href="#">2</a>
-      <a href="#">3</a>
-      <a href="#">4</a>
-      <a href="#">5</a>
-      <a href="#">›</a>
+    <div class="pagination" th:if="${totalPages > 1}">
+      <a th:each="p : ${#numbers.sequence(0, totalPages - 1)}"
+         th:href="@{/admin/cs/qna(page=${p}, categoryId=${categoryId}, status=${status}, keyword=${keyword})}"
+         th:text="${p + 1}"
+         th:classappend="${p == currentPage} ? 'current' : ''"></a>
     </div>
 
-    <p style="text-align:center;font-size:12.5px;color:var(--gray-400);margin-top:20px;">
-      ※ 개인회원·기업회원 모두 이용 가능하며, 로그인한 본인의 문의만 확인할 수 있습니다.
-    </p>
-
   </div>
-</main>
 </div>
-<footer th:replace="~{common/footer :: footer}"></footer>
-<script th:src="@{/js/common.js}"></script>
-</body></html>
+
+<!-- 답변/상세 모달 -->
+<div class="modal-overlay" id="qnaModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <span id="qnaStatusBadge" class="badge badge-pending">미답변</span>
+        <h2 id="qnaTitle">제목</h2>
+        <div class="modal-meta">
+          <span id="qnaCategory"></span>
+          <span>·</span>
+          <span id="qnaWriter"></span>
+          <span>·</span>
+          <span id="qnaCreatedAt"></span>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeQnaModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <p id="qnaContent"></p>
+      <div id="qnaAttachments" class="attach-list"></div>
+    </div>
+
+    <div class="answer-section">
+      <p class="section-title">관리자 답변</p>
+
+      <!-- 답변완료: 조회 모드 -->
+      <div id="answerViewBlock" style="display:none;">
+        <div class="answer-view" id="answerViewText"></div>
+        <div class="answer-view-meta" id="answerViewMeta"></div>
+        <div class="answer-actions">
+          <button type="button" class="btn btn-danger btn-sm" onclick="deleteAnswer()">삭제</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="enterEditMode()">수정</button>
+        </div>
+      </div>
+
+      <!-- 미답변 또는 수정 모드: 입력 폼 -->
+      <div id="answerFormBlock" style="display:none;">
+        <textarea id="answerInput" class="answer-input" maxlength="2000" placeholder="답변 내용을 입력해주세요."></textarea>
+        <p class="form-error" id="answerError"></p>
+        <div class="answer-actions">
+          <button type="button" class="btn btn-outline btn-sm" id="answerCancelBtn" onclick="cancelAnswerForm()">취소</button>
+          <button type="button" class="btn btn-primary btn-sm" id="answerSubmitBtn" onclick="submitAnswer()">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  const API_BASE = /*[[@{/admin/cs/qna}]]*/ '/admin/cs/qna';
+
+  let currentInquiryId = null;
+  let currentHasAnswer = false;
+
+  function formatSize(bytes) {
+    if (bytes == null) return '';
+    if (bytes < 1024) return bytes + 'B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + 'KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
+  }
+
+  async function openQnaModal(inquiryId) {
+    currentInquiryId = inquiryId;
+    const res = await fetch(`${API_BASE}/${inquiryId}`);
+    if (!res.ok) {
+      alert('문의 정보를 불러오지 못했습니다.');
+      return;
+    }
+    const data = await res.json();
+
+    document.getElementById('qnaTitle').textContent = data.title;
+    document.getElementById('qnaCategory').textContent = data.categoryName;
+    document.getElementById('qnaWriter').textContent = data.writerLabel;
+    document.getElementById('qnaCreatedAt').textContent = data.createdAt;
+    document.getElementById('qnaContent').textContent = data.content;
+
+    const badge = document.getElementById('qnaStatusBadge');
+    badge.textContent = data.statusLabel;
+    badge.className = 'badge ' + (data.status === 'ANSWERED' ? 'badge-done' : 'badge-pending');
+
+    const attachWrap = document.getElementById('qnaAttachments');
+    attachWrap.innerHTML = '';
+    (data.attachments || []).forEach(a => {
+      const chip = document.createElement('div');
+      chip.className = 'attach-chip';
+      chip.innerHTML = `<span>${a.originalName}</span><span>${formatSize(a.fileSize)}</span>`;
+      attachWrap.appendChild(chip);
+    });
+
+    currentHasAnswer = data.status === 'ANSWERED' && !!data.answerContent;
+
+    if (currentHasAnswer) {
+      document.getElementById('answerViewText').textContent = data.answerContent;
+      document.getElementById('answerViewMeta').textContent = data.answeredAt ? `답변일시 ${data.answeredAt}` : '';
+      showViewMode();
+    } else {
+      document.getElementById('answerInput').value = '';
+      showFormMode(false);
+    }
+
+    clearError();
+    document.getElementById('qnaModalOverlay').classList.add('open');
+  }
+
+  function closeQnaModal() {
+    document.getElementById('qnaModalOverlay').classList.remove('open');
+    currentInquiryId = null;
+  }
+
+  function showViewMode() {
+    document.getElementById('answerViewBlock').style.display = 'block';
+    document.getElementById('answerFormBlock').style.display = 'none';
+  }
+
+  function showFormMode(isEdit) {
+    document.getElementById('answerViewBlock').style.display = 'none';
+    document.getElementById('answerFormBlock').style.display = 'block';
+    document.getElementById('answerCancelBtn').style.display = isEdit || currentHasAnswer ? 'inline-block' : 'none';
+    document.getElementById('answerSubmitBtn').textContent = isEdit ? '수정 저장' : '답변 등록';
+    document.getElementById('answerSubmitBtn').dataset.mode = isEdit ? 'edit' : 'create';
+  }
+
+  function enterEditMode() {
+    document.getElementById('answerInput').value = document.getElementById('answerViewText').textContent;
+    clearError();
+    showFormMode(true);
+  }
+
+  function cancelAnswerForm() {
+    if (currentHasAnswer) {
+      showViewMode();
+    } else {
+      closeQnaModal();
+    }
+  }
+
+  function clearError() {
+    const err = document.getElementById('answerError');
+    err.style.display = 'none';
+    err.textContent = '';
+  }
+
+  function showError(msg) {
+    const err = document.getElementById('answerError');
+    err.textContent = msg;
+    err.style.display = 'block';
+  }
+
+  async function submitAnswer() {
+    const content = document.getElementById('answerInput').value.trim();
+    if (!content) {
+      showError('답변 내용을 입력해주세요.');
+      return;
+    }
+    const mode = document.getElementById('answerSubmitBtn').dataset.mode;
+    const method = mode === 'edit' ? 'PUT' : 'POST';
+
+    const res = await fetch(`${API_BASE}/${currentInquiryId}/answer`, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answerContent: content })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      showError(err.message || '저장 중 오류가 발생했습니다.');
+      return;
+    }
+
+    closeQnaModal();
+    location.reload();
+  }
+
+  async function deleteAnswer() {
+    if (!confirm('등록된 답변을 삭제하시겠습니까? 삭제 시 문의는 다시 미답변 상태가 됩니다.')) return;
+
+    const res = await fetch(`${API_BASE}/${currentInquiryId}/answer`, { method: 'DELETE' });
+    if (!res.ok) {
+      alert('답변 삭제 중 오류가 발생했습니다.');
+      return;
+    }
+    closeQnaModal();
+    location.reload();
+  }
+
+  document.getElementById('qnaModalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'qnaModalOverlay') closeQnaModal();
+  });
+</script>
+
+</body>
+</html>

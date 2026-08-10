@@ -1,6 +1,7 @@
 package kr.co.firstdayproject.entity.policy;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,28 +31,37 @@ public class Policy {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "policy_id", nullable = false)
     private Long policyId;
-    @Column(name = "policy_code", nullable = false, length = 50)
+
+    @Column(name = "policy_code", nullable = false, unique = true, length = 50)
     private String policyCode;
+
     @Column(name = "title", nullable = false, length = 200)
     private String title;
-    /** 전체/개인/기업 */
-    @Column(name = "audience", nullable = false, length = 10)
-    private String audience;
-    /** 필수/선택/공개 */
-    @Column(name = "consent_type", nullable = false, length = 10)
-    private String consentType;
+
+    @Column(name = "audience", length = 10)
+    private String audience; // 개인 / 기업 / 전체
+
+    @Column(name = "consent_type", length = 10)
+    private String consentType; // 필수 / 선택 / 공개
+
     @Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
     private String content;
+
     @Column(name = "effective_from")
-    private LocalDateTime effectiveFrom;
+    private LocalDate effectiveFrom;
+
     @Column(name = "display_order", nullable = false)
     private Integer displayOrder;
+
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
+
     @Column(name = "updated_by")
     private Long updatedBy;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 }
