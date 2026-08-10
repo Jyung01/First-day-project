@@ -1,7 +1,9 @@
 package kr.co.firstdayproject.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +16,7 @@ import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.entity.member.User;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.security.CustomUserDetails;
+import kr.co.firstdayproject.service.auth.LoginAuditService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,12 +26,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 class LoginSuccessHandlerTest {
 
     private CompanyRepository companyRepository;
+    private LoginAuditService loginAuditService;
     private LoginSuccessHandler handler;
 
     @BeforeEach
     void setUp() {
         companyRepository = mock(CompanyRepository.class);
-        handler = new LoginSuccessHandler(companyRepository);
+        loginAuditService = mock(LoginAuditService.class);
+        handler = new LoginSuccessHandler(companyRepository, loginAuditService);
     }
 
     @Test
@@ -65,6 +70,7 @@ class LoginSuccessHandlerTest {
         handler.onAuthenticationSuccess(request, response, authentication);
 
         verify(session).invalidate();
+        verify(loginAuditService, never()).recordSuccessfulLogin(100L);
         verify(response).sendRedirect("/auth/login?companyApproval=pending");
     }
 
@@ -98,9 +104,40 @@ class LoginSuccessHandlerTest {
 
         handler.onAuthenticationSuccess(request, response, authentication);
 
+        verify(loginAuditService).recordSuccessfulLogin(100L);
         verify(response).sendRedirect(
                 "/corp/company-info-rejected?showRejectionModal=true"
         );
+    }
+
+    @Test
+    void recordsLastLoginBeforeRedirectingPersonalUser() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        Authentication authentication = userAuthentication("PERSONAL");
+
+        when(request.getContextPath()).thenReturn("");
+
+        handler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(loginAuditService).recordSuccessfulLogin(100L);
+        verify(response).sendRedirect("/");
+    }
+
+    @Test
+    void continuesLoginWhenLastLoginUpdateFails() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        Authentication authentication = userAuthentication("PERSONAL");
+
+        when(request.getContextPath()).thenReturn("");
+        doThrow(new IllegalStateException("database error"))
+                .when(loginAuditService)
+                .recordSuccessfulLogin(100L);
+
+        handler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(response).sendRedirect("/");
     }
 
     private Authentication authentication(String role) {
@@ -125,6 +162,22 @@ class LoginSuccessHandlerTest {
                 "COMPANY",
                 true
         );
+        return new UsernamePasswordAuthenticationToken(
+                principal,
+                principal.getPassword(),
+                principal.getAuthorities()
+        );
+    }
+
+    private Authentication userAuthentication(String role) {
+        User user = User.builder()
+                .userId(100L)
+                .loginId("personal01")
+                .passwordHash("encoded-password")
+                .name("personal user")
+                .userType("PERSONAL")
+                .build();
+        CustomUserDetails principal = new CustomUserDetails(user, role, true);
         return new UsernamePasswordAuthenticationToken(
                 principal,
                 principal.getPassword(),

@@ -9,7 +9,9 @@ import java.util.Optional;
 import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.security.CustomUserDetails;
+import kr.co.firstdayproject.service.auth.LoginAuditService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private static final String PENDING_APPROVAL = "승인대기";
@@ -27,6 +30,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             "/corp/company-info-rejected?showRejectionModal=true";
 
     private final CompanyRepository companyRepository;
+    private final LoginAuditService loginAuditService;
 
     @Override
     public void onAuthenticationSuccess(
@@ -48,6 +52,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             );
             return;
         }
+
+        recordLastLogin(authentication);
 
         if (companyApprovalStatus.filter(REJECTED_APPROVAL::equals).isPresent()) {
             response.sendRedirect(
@@ -90,5 +96,21 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private boolean hasRole(Authentication authentication, String role) {
         return authentication.getAuthorities().stream()
                 .anyMatch(authority -> role.equals(authority.getAuthority()));
+    }
+
+    private void recordLastLogin(Authentication authentication) {
+        if (!(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
+            return;
+        }
+
+        try {
+            loginAuditService.recordSuccessfulLogin(userDetails.getUserId());
+        } catch (RuntimeException exception) {
+            log.warn(
+                    "Failed to update last login time. userId={}",
+                    userDetails.getUserId(),
+                    exception
+            );
+        }
     }
 }
