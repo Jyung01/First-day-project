@@ -15,9 +15,13 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import java.io.IOException;
 import java.time.Duration;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AwsS3Service {
 
     private static final Duration PRESIGNED_URL_TTL = Duration.ofMinutes(10);
@@ -127,6 +131,71 @@ public class AwsS3Service {
         }
 
         delete(awsProperties.s3().publicBucket(), url.substring(prefix.length()));
+    }
+
+    /**
+     * 비공개 파일 교체에 따른 삭제를 현재 DB 트랜잭션의 결과에 맞춰 처리합니다.
+     * 커밋되면 이전 파일을, 롤백되면 새로 업로드한 파일을 삭제합니다.
+     */
+    public void synchronizePrivateReplacement(
+            String previousObjectKey,
+            String uploadedObjectKey
+    ) {
+        synchronizeReplacement(
+                () -> deletePrivate(previousObjectKey),
+                () -> deletePrivate(uploadedObjectKey),
+                "비공개 파일"
+        );
+    }
+
+    /**
+     * 공개 파일 교체에 따른 삭제를 현재 DB 트랜잭션의 결과에 맞춰 처리합니다.
+     * 커밋되면 이전 파일을, 롤백되면 새로 업로드한 파일을 삭제합니다.
+     */
+    public void synchronizePublicReplacement(
+            String previousUrl,
+            String uploadedUrl
+    ) {
+        synchronizeReplacement(
+                () -> deletePublicByUrl(previousUrl),
+                () -> deletePublicByUrl(uploadedUrl),
+                "공개 파일"
+        );
+    }
+
+    private void synchronizeReplacement(
+            Runnable deletePrevious,
+            Runnable deleteUploaded,
+            String fileType
+    ) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            safelyDelete(deletePrevious, fileType + " 기존 파일");
+            return;
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        safelyDelete(deletePrevious, fileType + " 기존 파일");
+                    }
+
+                    @Override
+                    public void afterCompletion(int status) {
+                        if (status == STATUS_ROLLED_BACK) {
+                            safelyDelete(deleteUploaded, fileType + " 신규 파일");
+                        }
+                    }
+                }
+        );
+    }
+
+    private void safelyDelete(Runnable deletion, String targetDescription) {
+        try {
+            deletion.run();
+        } catch (RuntimeException exception) {
+            log.warn("S3 {} 삭제에 실패했습니다. 추후 정리가 필요합니다.", targetDescription, exception);
+        }
     }
 
     private void delete(String bucket, String objectKey) {

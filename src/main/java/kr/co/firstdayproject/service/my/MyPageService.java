@@ -338,17 +338,23 @@ public class MyPageService {
         if (profileImage != null && !profileImage.isEmpty()) {
             validateProfileImage(profileImage);
             String previousImageKey = profile.getProfileImageUrl();
+            String uploadedImageKey;
             try {
-                profile.setProfileImageUrl(
-                        awsS3Service.uploadPrivate(profileImage, "personal_profile")
+                uploadedImageKey = awsS3Service.uploadPrivate(
+                        profileImage,
+                        "personal_profile"
                 );
+                profile.setProfileImageUrl(uploadedImageKey);
             } catch (IOException | RuntimeException exception) {
                 throw new MyPageException(
                         "profileImage",
                         "프로필 이미지를 업로드하지 못했습니다. 다시 시도해주세요."
                 );
             }
-            awsS3Service.deletePrivate(previousImageKey);
+            awsS3Service.synchronizePrivateReplacement(
+                    previousImageKey,
+                    uploadedImageKey
+            );
         }
         profile.setUpdatedAt(now);
         personalProfileRepository.save(profile);
