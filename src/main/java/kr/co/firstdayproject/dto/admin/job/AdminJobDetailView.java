@@ -9,6 +9,8 @@ public record AdminJobDetailView(
     String industryName,
     String companyAddress,
     String contactName,
+    String contactDepartment,
+    String contactPositionTitle,
     String contactEmail,
     String contactPhone,
     String title,

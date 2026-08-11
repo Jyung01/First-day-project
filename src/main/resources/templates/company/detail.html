@@ -74,9 +74,10 @@
         <div class="profile-right">
 
             <button class="wish-btn"
-                    th:data-company-id="${company.companyId}">
+                    th:data-company-id="${company.companyId}"
+                    th:classappend="${isWished} ? ' active'">
 
-                <i class="fa-regular fa-heart"></i>
+                <i th:class="${isWished} ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
 
                 관심기업
 
@@ -205,7 +206,7 @@
                         <span>홈페이지</span>
 
                         <strong>
-                            <a th:href="${company.homepageUrl}" th:text="${company.homepageUrl}" target="_blank">기업 홈페이지
+                            <a href="#" th:text="${company.homepageUrl}">기업 홈페이지
                                 이동</a>
                         </strong>
 
@@ -315,9 +316,12 @@
 
                 </p>
 
-                <button class="review-btn">
+                <button class="review-btn"
+                        type="button"
+                        th:data-logged-in="${loggedIn}"
+                        th:data-review-url="@{/company/reviews(companyId=${company.companyId})}">
 
-                    로그인하고 후기 보기
+                    <span th:text="${loggedIn} ? '후기 보기' : '로그인하고 후기 보기'">로그인하고 후기 보기</span>
 
                 </button>
 

@@ -45,3 +45,9 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
             """)
     List<Policy> findActiveSignupPoliciesAsOf(@Param("audience") String audience, @Param("today") LocalDate today);
 }
+              AND p.consentType IN ('필수', '선택')
+              AND (p.effectiveFrom IS NULL OR p.effectiveFrom <= :today)
+            ORDER BY p.displayOrder ASC
+            """)
+    List<Policy> findActiveSignupPolicies(@Param("audience") String audience, @Param("today") LocalDate today);
+}

@@ -19,11 +19,86 @@
 .notice-box, .agree-box { margin-top: 28px; background: var(--job-surface); border-radius: 11px; padding: 18px; color: var(--job-muted); font-size: 13px; line-height: 1.6; }
 .notice-box strong { display: block; color: var(--job-primary); margin-bottom: 6px; }
 .application-actions { display: grid; grid-template-columns: 190px 1fr; gap: 16px; margin-top: 28px; }
-.posting-summary { display: flex; align-items: center; gap: 15px; background: var(--job-surface); border-radius: 11px; padding: 18px; }
-.posting-summary .job-deadline { margin-left: auto; }
+.posting-summary {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 11px;
+  background: var(--job-surface);
+}
+
+.posting-summary .company-logo,
+.posting-summary .company-mark {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 11px;
+}
+
+.posting-summary .company-logo {
+  display: block;
+  background: var(--job-primary-soft);
+  object-fit: cover;
+  object-position: center;
+}
+
+.posting-summary .company-mark {
+  display: grid;
+  place-items: center;
+}
+
+.posting-summary > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.posting-summary .company-name,
+.posting-summary strong {
+  display: block;
+}
+
+.posting-summary .company-name {
+  margin-bottom: 6px;
+  color: var(--job-muted);
+  font-size: 13px;
+}
+
+.posting-summary strong {
+  overflow: hidden;
+  color: var(--job-ink);
+  font-size: 15px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.posting-summary .job-deadline {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--job-danger);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
 .document-row { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--job-line); border-radius: 10px; padding: 18px; }
 .document-row small { display: block; color: var(--job-muted); margin-top: 6px; }
-.document-link { color: var(--job-primary); font-weight: 700; }
+.document-link {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 7px;
+  background: var(--job-primary-soft);
+  color: var(--job-primary);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  transition: background .2s ease;
+}
+
+.document-link:hover {
+  background: #e2e9ff;
+}
 .agree-box label { display: flex; gap: 10px; color: var(--job-ink); }
 .agree-box input { accent-color: var(--job-primary); }
 .complete-wrap { width: min(700px, calc(100% - 40px)); margin: 0 auto; padding: 80px 0 120px; }
@@ -36,6 +111,7 @@
 .complete-info dl { display: grid; grid-template-columns: 90px 1fr; gap: 10px; font-size: 14px; }
 .complete-info dt { color: var(--job-muted); }
 .complete-info dd { margin: 0; }
+.application-status { color: var(--job-primary); }
 .application-heading h1 { margin: 0; font-size: 30px; letter-spacing: -.04em; }
 .application-heading p { margin: 8px 0 0; color: var(--job-muted); }
 @media (max-width: 900px) {
@@ -45,4 +121,14 @@
 @media (max-width: 620px) {
   .application-actions { grid-template-columns: 1fr; }
   .application-card, .complete-card { padding: 24px; }
+
+  .posting-summary {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .posting-summary .job-deadline {
+    width: 100%;
+    margin-left: 56px;
+  }
 }

@@ -19,6 +19,7 @@ import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.entity.member.User;
 import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.corp.CorpService;
+import kr.co.firstdayproject.service.corp.CorpDashboardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.Model;
@@ -28,13 +29,15 @@ import org.springframework.validation.BeanPropertyBindingResult;
 class CorpControllerTest {
 
     private CorpService corpService;
+    private CorpDashboardService corpDashboardService;
     private CorpController controller;
     private Model model;
 
     @BeforeEach
     void setUp() {
         corpService = mock(CorpService.class);
-        controller = new CorpController(corpService);
+        corpDashboardService = mock(CorpDashboardService.class);
+        controller = new CorpController(corpService, corpDashboardService);
         model = mock(Model.class);
     }
 

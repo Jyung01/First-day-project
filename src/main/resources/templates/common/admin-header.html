@@ -14,6 +14,8 @@
 
     <nav class="top-menu">
         <a th:href="@{/}" class="top-menu__button">서비스 홈</a>
-        <button type="button" class="top-menu__button">로그아웃</button>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="top-menu__button">로그아웃</button>
+        </form>
     </nav>
 </header>

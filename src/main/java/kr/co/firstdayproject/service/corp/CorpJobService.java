@@ -11,7 +11,9 @@ import kr.co.firstdayproject.entity.job.JobPostingSkill;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
 import kr.co.firstdayproject.repository.job.JobPostingSkillRepository;
+import kr.co.firstdayproject.service.ai.JobPostingEmbeddingSyncEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +25,16 @@ public class CorpJobService {
     private static final String DRAFT = "DRAFT";
     private static final String PUBLISH = "PUBLISH";
     private static final String REVIEW = "REVIEW";
+    private static final Set<String> EMBEDDABLE_STATUSES = Set.of(
+        "모집예정",
+        "모집중"
+    );
 
     private final CompanyRepository companyRepository;
     private final JobPostingRepository jobPostingRepository;
     private final JobPostingSkillRepository jobPostingSkillRepository;
     private final CorpJobRequestValidator requestValidator;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long createJobPosting(
@@ -111,6 +118,12 @@ public class CorpJobService {
             .toList();
 
         jobPostingSkillRepository.saveAll(postingSkills);
+
+        eventPublisher.publishEvent(new JobPostingEmbeddingSyncEvent(
+            savedJobPosting.getJobPostingId(),
+            EMBEDDABLE_STATUSES.contains(publishingStatus)
+        ));
+
         return savedJobPosting.getJobPostingId();
     }
 
@@ -244,6 +257,11 @@ public class CorpJobService {
                 ))
                 .toList()
         );
+
+        eventPublisher.publishEvent(new JobPostingEmbeddingSyncEvent(
+            jobPostingId,
+            EMBEDDABLE_STATUSES.contains(nextStatus)
+        ));
     }
 
     private String resolveNextStatus(

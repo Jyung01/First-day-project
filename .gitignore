@@ -1,5 +1,6 @@
 HELP.md
 .gradle
+.gradle-user-home/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -35,6 +36,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Claude local settings ###
+.claude/settings.local.json
 
 ### OS ###
 .DS_Store

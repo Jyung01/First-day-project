@@ -113,15 +113,20 @@
 }
 
 .management-tab {
+    display: inline-flex;
     min-width: 88px;
     height: 42px;
+    align-items: center;
+    justify-content: center;
     padding: 0 20px;
+    border: 0;
     border-radius: 10px;
     background-color: #0f172a;
     color: #cbd5e1;
     font-family: inherit;
     font-size: 14px;
     font-weight: 600;
+    text-decoration: none;
     cursor: pointer;
 }
 
@@ -144,6 +149,14 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 30px;
+}
+
+.management-search--member {
+    grid-template-columns: minmax(280px, 1fr) 100px auto;
+}
+
+.management-search--company {
+    grid-template-columns: minmax(280px, 1fr) 100px auto;
 }
 
 .management-select,
@@ -243,6 +256,83 @@
     width: 82px;
 }
 
+/* 회원 목록은 이메일과 날짜가 맞닿지 않도록 열 너비를 명시한다. */
+.management-table--member {
+    min-width: 0;
+}
+
+.management-table--member th,
+.management-table--member td {
+    padding-right: 8px;
+    padding-left: 8px;
+}
+
+.management-table--member th:nth-child(1),
+.management-table--member td:nth-child(1) {
+    width: 8%;
+}
+
+.management-table--member th:nth-child(2),
+.management-table--member td:nth-child(2) {
+    width: 13%;
+}
+
+.management-table--member th:nth-child(3),
+.management-table--member td:nth-child(3) {
+    width: 9%;
+}
+
+.management-table--member th:nth-child(4),
+.management-table--member td:nth-child(4) {
+    width: 25%;
+}
+
+.management-table--member td:nth-child(4) {
+    overflow: hidden;
+    padding-right: 16px;
+    font-size: 11px;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.management-table--member th:nth-child(5),
+.management-table--member td:nth-child(5) {
+    width: 11%;
+    padding-left: 12px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.management-table--member th:nth-child(6),
+.management-table--member td:nth-child(6) {
+    width: 10%;
+}
+
+.management-table--member th:nth-child(7),
+.management-table--member td:nth-child(7) {
+    width: 16%;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.management-table--member th:nth-child(8),
+.management-table--member td:nth-child(8) {
+    width: 8%;
+}
+
+.management-table--company th:nth-child(2),
+.management-table--company td:nth-child(2) {
+    width: 17%;
+}
+
+.management-table--company td:nth-child(2),
+.management-table--company td:nth-child(3) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /* 상태 */
 
 .status-text {
@@ -264,6 +354,10 @@
     color: #ef4444;
 }
 
+.status-text.is-withdrawn {
+    color: #94a3b8;
+}
+
 /* 상세 링크 */
 
 .management-detail-link {
@@ -273,12 +367,14 @@
     align-items: center;
     justify-content: center;
     padding: 0 12px;
+    border: 0;
     border-radius: 8px;
     background-color: #2563eb;
     color: #ffffff;
     font-size: 12px;
     font-weight: 700;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .management-detail-link:hover {
@@ -349,6 +445,14 @@
 
     .management-search {
         grid-template-columns: 160px minmax(180px, 1fr) 90px;
+    }
+
+    .management-search--member {
+        grid-template-columns: minmax(220px, 1fr) 90px;
+    }
+
+    .management-search--company {
+        grid-template-columns: minmax(220px, 1fr) 90px;
     }
 
     .management-total {

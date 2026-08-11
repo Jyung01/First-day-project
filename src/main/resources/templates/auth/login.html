@@ -48,6 +48,11 @@
 
                     <!-- 로그인 폼 -->
                     <form class="auth-form login-form" th:action="@{/login}" method="post">
+                        <!-- 로그인 후 돌아갈 주소 -->
+                        <input type="hidden"
+                               name="returnUrl"
+                               th:value="${param.returnUrl}" />
+
                         <!-- 아이디 -->
                         <div class="auth-field">
                             <label for="username" class="auth-label"> 아이디 </label>
