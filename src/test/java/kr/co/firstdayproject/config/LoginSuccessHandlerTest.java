@@ -38,17 +38,41 @@ class LoginSuccessHandlerTest {
 
     @Test
     void routesPersonalUserToMain() {
-        assertThat(handler.resolveDestination(authentication("ROLE_PERSONAL"))).isEqualTo("/");
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        when(request.getParameter("returnUrl"))
+                .thenReturn(null);
+
+        assertThat(
+                handler.resolveDestination(
+                        request,
+                        authentication("ROLE_PERSONAL")
+                )
+        ).isEqualTo("/");
     }
 
     @Test
     void routesCompanyUserToCompanyDashboard() {
-        assertThat(handler.resolveDestination(authentication("ROLE_COMPANY"))).isEqualTo("/corp");
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        assertThat(
+                handler.resolveDestination(
+                        request,
+                        authentication("ROLE_COMPANY")
+                )
+        ).isEqualTo("/corp");
     }
 
     @Test
     void routesAdminUserToAdminDashboard() {
-        assertThat(handler.resolveDestination(authentication("ROLE_ADMIN"))).isEqualTo("/admin");
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        assertThat(
+                handler.resolveDestination(
+                        request,
+                        authentication("ROLE_ADMIN")
+                )
+        ).isEqualTo("/admin");
     }
 
     @Test

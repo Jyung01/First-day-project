@@ -20,6 +20,10 @@
     </header>
 
     <form th:action="@{/job/application/confirm}" method="get">
+      <input type="hidden"
+             name="jobPostingId"
+             th:if="${job != null}"
+             th:value="${job.jobPostingId}">
       <fieldset class="resume-modal-section">
         <legend>이력서</legend>
         <label class="resume-modal-option">

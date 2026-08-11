@@ -1,10 +1,77 @@
-.job-banner { border: 1px dashed #cbd5e6; border-radius: 12px; padding: 20px; color: var(--job-muted); margin-bottom: 24px; }
-.job-banner strong { display: block; color: var(--job-primary); font-size: 13px; margin-bottom: 7px; }
+.job-banner {
+  display: block;
+  width: 100%;
+  aspect-ratio: 6 / 1;
+  margin-bottom: 24px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.job-banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .job-section-head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 16px; }
 .job-section-head h2 { font-size: 22px; margin: 0; }
 .job-section-head span { color: var(--job-muted); font-size: 13px; }
 .job-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 .job-card-grid .job-tag:nth-child(n + 4) { display: none; }
+/* 실제 회사 로고 */
+.company-logo {
+  display: block;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 11px;
+  object-fit: cover;
+  object-position: center;
+  background: var(--job-primary-soft);
+}
+
+.job-card-actions {
+  position: absolute;
+  top: 18px;
+  right: 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.job-badges {
+  display: flex;
+  gap: 6px;
+}
+
+.job-badges .job-badge {
+  position: static;
+}
+
+.bookmark {
+  position: static;
+
+  border: 0;
+  background: transparent;
+
+  color: #9aabc1;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* 배지가 2개일 때 회사명이 겹치지 않도록 여백 확보 */
+.job-card-head {
+  padding-right: 120px;
+}
+
+.pagination a.is-disabled {
+  color: #cbd5e1;
+  background: #f8fafc;
+  cursor: default;
+  pointer-events: none;
+}
+
 @media (max-width: 900px) {
   .job-card-grid { grid-template-columns: repeat(2, 1fr); }
 }
