@@ -115,18 +115,26 @@ function closeLoginRequiredModal() {
 
 
 function renderBookmark(button, bookmarked) {
-    button.classList.toggle(
-        'active',
-        bookmarked
-    );
+    const jobPostingId = button.dataset.jobPostingId;
 
-    button.textContent =
-        bookmarked ? '♥' : '♡';
+    if (!jobPostingId) {
+        renderBookmarkButton(button, bookmarked);
+        return;
+    }
 
-    button.setAttribute(
-        'aria-pressed',
-        String(bookmarked)
-    );
+    document.querySelectorAll('.bookmark[data-job-posting-id]')
+        .forEach(bookmarkButton => {
+            if (bookmarkButton.dataset.jobPostingId === jobPostingId) {
+                renderBookmarkButton(bookmarkButton, bookmarked);
+            }
+        });
+}
+
+
+function renderBookmarkButton(button, bookmarked) {
+    button.classList.toggle('active', bookmarked);
+    button.textContent = bookmarked ? '♥' : '♡';
+    button.setAttribute('aria-pressed', String(bookmarked));
 }
 
 

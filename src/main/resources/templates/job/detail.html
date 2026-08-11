@@ -9,6 +9,7 @@
   <link rel="stylesheet" th:href="@{/css/job/list.css}">
   <link rel="stylesheet" th:href="@{/css/job/detail.css}">
   <link rel="stylesheet" th:href="@{/css/modal/common.css}">
+  <link rel="stylesheet" th:href="@{/css/modal/common/report-modal.css}">
   <link rel="stylesheet" th:href="@{/css/modal/job/resume-select-modal.css}">
 </head>
 <body class="job-header-active"
@@ -193,7 +194,12 @@
               <p class="detail-category" th:text="${job.category}">직무</p>
               <h1 th:text="${job.title}">채용공고 제목</h1>
             </div>
-            <button class="report-button" type="button">신고</button>
+            <button class="report-button report-btn"
+                    type="button"
+                    th:data-logged-in="${personalMember}"
+                    data-report-type="jobPosting"
+                    th:data-target-id="${job.jobPostingId}"
+                    th:data-target-name="|채용공고 · ${job.title}|">신고</button>
           </div>
 
           <div class="detail-summary">
@@ -253,11 +259,13 @@
 <footer th:replace="~{common/footer :: footer}"></footer>
 <div th:replace="~{modal/job/resume-select-modal :: resumeSelectModal}"></div>
 <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<div th:replace="~{modal/common/report-modal :: reportModal}"></div>
 <script th:src="@{/js/job/detail.js}"></script>
 <script th:src="@{/js/job/common.js}"></script>
 <script th:src="@{/js/job/filter.js}"></script>
 <script th:src="@{/js/job/bookmark.js}"></script>
 <script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/modal/common/report-modal.js}"></script>
 <script th:src="@{/js/modal/job/resume-select-modal.js}"></script>
 </body>
 </html>

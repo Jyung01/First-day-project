@@ -18,7 +18,6 @@
         <input
                 type="text"
                 id="reportTarget"
-                value="채용공고 · 백엔드 개발자 채용"
                 readonly
         />
       </div>
@@ -26,7 +25,7 @@
       <div class="form-group">
         <label for="reportReason">신고 사유</label>
 
-        <select id="reportReason">
+        <select id="reportReason" required>
           <option value="">신고 사유를 선택하세요.</option>
           <option>허위 정보·사기 의심</option>
           <option>개인정보 노출</option>
@@ -43,8 +42,12 @@
                 id="reportContent"
                 rows="6"
                 maxlength="500"
+                required
                 placeholder="신고 내용을 구체적으로 입력해주세요. (최대 500자)"
         ></textarea>
+        <p class="report-counter" aria-live="polite">
+          <span id="reportContentCount">0</span>/500
+        </p>
       </div>
 
       <p class="report-guide">
