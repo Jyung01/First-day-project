@@ -46,7 +46,7 @@
 }
 
 .admin-modal__dialog--company {
-    max-width: 720px;
+    max-width: 880px;
 }
 
 /* =========================================================
@@ -151,6 +151,14 @@
     box-sizing: border-box;
 }
 
+.admin-modal__value--link {
+    overflow-wrap: anywhere;
+}
+
+.admin-modal__grid--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 /* =========================================================
    회원 상태
 ========================================================= */
@@ -207,11 +215,127 @@
 ========================================================= */
 
 .admin-company-name {
-    margin: 0 0 14px;
+    margin: 0;
 
     color: #f8fafc;
     font-size: 15px;
     font-weight: 800;
+}
+
+.admin-company-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.admin-company-title-row .admin-modal__meta {
+    margin: 7px 0 0;
+}
+
+.admin-company-status {
+    display: inline-flex;
+    min-width: 78px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0 11px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.admin-company-status.is-pending {
+    background-color: rgba(34, 197, 94, 0.13);
+    color: #4ade80;
+}
+
+.admin-company-status.is-approved {
+    background-color: rgba(59, 130, 246, 0.14);
+    color: #60a5fa;
+}
+
+.admin-company-status.is-rejected,
+.admin-company-status.is-suspended {
+    background-color: rgba(239, 68, 68, 0.13);
+    color: #f87171;
+}
+
+.admin-company-status.is-withdrawn {
+    background-color: rgba(148, 163, 184, 0.14);
+    color: #94a3b8;
+}
+
+.admin-company-section {
+    margin-top: 27px;
+    padding-top: 24px;
+    border-top: 1px solid #273449;
+}
+
+.admin-company-section .admin-modal__field--full {
+    margin-top: 0;
+}
+
+.admin-company-section h4,
+.admin-company-review-result h4 {
+    margin: 0 0 16px;
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.admin-company-description-list {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+}
+
+.admin-company-description-list > div {
+    padding: 14px 16px;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background-color: #1e293b;
+}
+
+.admin-company-description-list dt {
+    margin-bottom: 7px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.admin-company-description-list dd {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: 12px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+.admin-company-review-result {
+    margin-top: 27px;
+    padding: 18px;
+    border: 1px solid #7f1d1d;
+    border-radius: 9px;
+    background-color: rgba(127, 29, 29, 0.16);
+}
+
+.admin-company-review-result p {
+    margin: 0 0 9px;
+    color: #fca5a5;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.admin-company-review-result > div {
+    color: #fecaca;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.admin-modal__guide--review {
+    margin-top: 27px;
 }
 
 .admin-company-summary {
@@ -503,6 +627,10 @@
     }
 
     .admin-modal__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-modal__grid--three {
         grid-template-columns: 1fr;
     }
 
