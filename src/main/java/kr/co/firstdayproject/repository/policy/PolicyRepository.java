@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,8 +31,9 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
             SELECT p FROM Policy p
             WHERE p.isActive = true
               AND (p.audience = :audience OR p.audience = '전체')
-              AND (p.effectiveFrom IS NULL OR p.effectiveFrom <= :now)
+              AND p.consentType IN ('필수', '선택')
+              AND (p.effectiveFrom IS NULL OR p.effectiveFrom <= :today)
             ORDER BY p.displayOrder ASC
             """)
-    List<Policy> findActiveSignupPolicies(@Param("audience") String audience, @Param("now") LocalDateTime now);
+    List<Policy> findActiveSignupPolicies(@Param("audience") String audience, @Param("today") LocalDate today);
 }
