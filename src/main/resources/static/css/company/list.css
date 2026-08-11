@@ -21,7 +21,8 @@
 }
 
 .search-top{
-    width:1280px;
+    width:calc(100% - 48px);
+    max-width:1232px;
     margin:0 auto;
 }
 
@@ -149,44 +150,26 @@
 =========================== */
 
 .company-banner{
-
-    width:1280px;
+    width:calc(100% - 48px);
+    max-width:1232px;
     margin:0 auto 42px;
 
 }
 
-.banner-box{
-
-    height:120px;
-
-    border:1px dashed #d9dfea;
-
-    background:white;
-
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-
-    padding-left:28px;
-
+.company-banner-link {
+    display:block;
+    width:100%;
+    aspect-ratio: 6 / 1;
+    /*height:120px;*/
+    overflow:hidden;
+    border-radius:12px;
 }
 
-.banner-box span{
-
-    font-size:13px;
-    font-weight:700;
-
-    color:#5d67f4;
-
-    margin-bottom:6px;
-
-}
-
-.banner-box p{
-
-    color:#8a8a8a;
-    font-size:14px;
-
+.company-banner-link img {
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
 
@@ -195,8 +178,8 @@
 =========================== */
 
 .company-list-section{
-
-    width:1280px;
+    width:calc(100% - 48px);
+    max-width:1232px;
     margin:0 auto;
 
 }
@@ -527,7 +510,7 @@
     .company-banner,
     .company-list-section{
 
-        width:95%;
+        width:calc(100% - 48px);
 
     }
 

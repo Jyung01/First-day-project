@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.firstdayproject.dao.report.ReportDao">
+    <select id="selectTargetCount" resultType="int">
+        <choose>
+            <when test="targetType == '기업'">SELECT COUNT(*) FROM companies WHERE company_id=#{targetId}</when>
+            <when test="targetType == '채용공고'">SELECT COUNT(*) FROM job_postings WHERE job_posting_id=#{targetId} AND status != '삭제'</when>
+            <when test="targetType == '기업리뷰'">SELECT COUNT(*) FROM company_reviews WHERE company_review_id=#{targetId} AND status != '삭제'</when>
+            <when test="targetType == '면접후기'">SELECT COUNT(*) FROM interview_reviews WHERE interview_review_id=#{targetId} AND status != '삭제'</when>
+            <otherwise>SELECT 0</otherwise>
+        </choose>
+    </select>
+    <select id="selectDuplicateCount" resultType="int">
+        SELECT COUNT(*) FROM reports WHERE reporter_user_id=#{userId} AND target_type=#{targetType} AND target_id=#{targetId}
+    </select>
+    <insert id="insertReport">
+        INSERT INTO reports (reporter_user_id, target_type, target_id, reason_code, detail, status)
+        VALUES (#{userId}, #{targetType}, #{targetId}, #{reasonCode}, NULLIF(#{detail}, ''), '미처리')
+    </insert>
+</mapper>

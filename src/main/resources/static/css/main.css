@@ -22,6 +22,11 @@
     width: 100%;
 }
 
+/* Swiper CDN 또는 초기화가 실패해도 첫 배너는 기본 상태로 표시한다. */
+.bannerSwiper:not(.swiper-initialized) .swiper-slide:not(:first-child) {
+    display: none;
+}
+
 .hero-banner-image {
     display: block;
     width: 100%;

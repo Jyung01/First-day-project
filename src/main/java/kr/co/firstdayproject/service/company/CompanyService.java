@@ -116,4 +116,8 @@ public class CompanyService {
         return true;
     }
 
+    public boolean isWished(Long userId, Long companyId) {
+        return userId != null && companyDao.countWish(userId, companyId) > 0;
+    }
+
 }

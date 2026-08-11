@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -8,203 +8,106 @@
     <link rel="stylesheet" th:href="@{/css/admin/review/common.css}"/>
     <link rel="stylesheet" th:href="@{/css/admin/report/common.css}"/>
     <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}"/>
-
-    <script>
-        const reportData = {
-            all: [
-                {
-                    no: "RP-091",
-                    type: "채용공고",
-                    target: "고액 알바 모집",
-                    reason: "허위·사기 의심",
-                    writer: "김**",
-                    date: "07.22",
-                    state: "미처리",
-                },
-                {
-                    no: "RP-090",
-                    type: "기업리뷰",
-                    target: "오픈스튜디오 리뷰",
-                    reason: "욕설·비방",
-                    writer: "이**",
-                    date: "07.22",
-                    state: "미처리",
-                },
-                {
-                    no: "RP-089",
-                    type: "기업",
-                    target: "오픈스튜디오",
-                    reason: "허위 기업정보",
-                    writer: "박**",
-                    date: "07.21",
-                    state: "미처리",
-                },
-                {
-                    no: "RP-088",
-                    type: "면접후기",
-                    target: "넥스트랩 리뷰",
-                    reason: "개인정보 노출",
-                    writer: "최**",
-                    date: "07.21",
-                    state: "처리완료",
-                },
-                {
-                    no: "RP-087",
-                    type: "기업",
-                    target: "샘플컴퍼니",
-                    reason: "허위 기업정보",
-                    writer: "정**",
-                    date: "07.20",
-                    state: "처리완료",
-                },
-                {
-                    no: "RP-086",
-                    type: "채용공고",
-                    target: "프로덕트 모집",
-                    reason: "중복 공고",
-                    writer: "강**",
-                    date: "07.20",
-                    state: "기각",
-                },
-            ],
-
-            waiting: [],
-            complete: [],
-            reject: [],
-        };
-    </script>
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <script th:src="@{/js/modal.js}"></script>
     <script th:src="@{/js/admin/report.js}"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
 </head>
 <body>
 <div class="wrapper">
-    <!-- ================= Header ================= -->
-
     <header th:replace="~{common/admin-header :: adminHeader}"></header>
-
-    <!-- ================= Main ================= -->
-
     <div class="container">
-        <!-- Sidebar -->
-
         <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
-
-        <!-- ================= Content ================= -->
-
         <main class="content">
-            <!-- 제목 -->
-
-            <section class="page-title">
-                <h2>신고 관리</h2>
-
-                <p>기업·채용공고·기업리뷰·면접후기 신고를 확인하고 처리합니다.</p>
+            <section class="page-title"><h2>신고 관리</h2>
+                <p>기업·채용공고·후기 신고를 검토하고 처리합니다.</p></section>
+            <section class="summary report-summary">
+                <div class="summary-card"><span>전체 신고</span>
+                    <h3 th:text="|${summary.totalCount ?: 0}건|">0건</h3></div>
+                <div class="summary-card"><span>미처리</span>
+                    <h3 th:text="|${summary.pendingCount ?: 0}건|">0건</h3></div>
+                <div class="summary-card"><span>처리완료</span>
+                    <h3 th:text="|${summary.completedCount ?: 0}건|">0건</h3></div>
+                <div class="summary-card"><span>기각</span>
+                    <h3 th:text="|${summary.rejectedCount ?: 0}건|">0건</h3></div>
             </section>
-
-            <!-- 통계 카드 -->
-
-            <section class="summary">
-                <div class="summary-card">
-                    <span>미처리 신고</span>
-                    <h3>9건</h3>
-                </div>
-
-                <div class="summary-card">
-                    <span>오늘 접수</span>
-                    <h3>5건</h3>
-                </div>
-
-                <div class="summary-card">
-                    <span>이번 달 처리</span>
-                    <h3>64건</h3>
-                </div>
-            </section>
-
-            <!-- 후기 영역 -->
-
             <section class="review-box">
-                <!-- 탭 -->
-
-                <div class="review-tab">
-                    <button class="tab-btn active" data-tab="all">전체</button>
-
-                    <button class="tab-btn" data-tab="waiting">미처리</button>
-
-                    <button class="tab-btn" data-tab="complete">처리완료</button>
-
-                    <button class="tab-btn" data-tab="reject">기각</button>
-                </div>
-
-                <!-- 검색 -->
-
-                <form class="search-area" action="#" method="get">
+                <nav class="review-tab" aria-label="신고 상태">
+                    <a class="tab-btn" th:classappend="${tab == 'all'} ? ' active'"
+                       th:href="@{/admin/report(tab=all,targetType=${targetType},reasonCode=${reasonCode},keyword=${keyword})}">전체</a>
+                    <a class="tab-btn" th:classappend="${tab == 'waiting'} ? ' active'"
+                       th:href="@{/admin/report(tab=waiting,targetType=${targetType},reasonCode=${reasonCode},keyword=${keyword})}">미처리</a>
+                    <a class="tab-btn" th:classappend="${tab == 'complete'} ? ' active'"
+                       th:href="@{/admin/report(tab=complete,targetType=${targetType},reasonCode=${reasonCode},keyword=${keyword})}">처리완료</a>
+                    <a class="tab-btn" th:classappend="${tab == 'reject'} ? ' active'"
+                       th:href="@{/admin/report(tab=reject,targetType=${targetType},reasonCode=${reasonCode},keyword=${keyword})}">기각</a>
+                </nav>
+                <form class="search-area" method="get" th:action="@{/admin/report}">
+                    <input type="hidden" name="tab" th:value="${tab}"/>
                     <select name="targetType">
                         <option value="">신고 대상 전체</option>
-                        <option value="company">기업</option>
-                        <option value="companyReview">기업리뷰</option>
-                        <option value="interviewReview">면접후기</option>
-                        <option value="jobPosting">채용공고</option>
+                        <option value="기업" th:selected="${targetType == '기업'}">기업</option>
+                        <option value="채용공고" th:selected="${targetType == '채용공고'}">채용공고</option>
+                        <option value="기업리뷰" th:selected="${targetType == '기업리뷰'}">기업리뷰</option>
+                        <option value="면접후기" th:selected="${targetType == '면접후기'}">면접후기</option>
                     </select>
-
-                    <select name="reasonType">
+                    <select name="reasonCode">
                         <option value="">신고 사유 전체</option>
-                        <option value="abuse">욕설·비방</option>
-                        <option value="false">허위정보</option>
-                        <option value="privacy">개인정보 노출</option>
-                        <option value="spam">스팸</option>
-                        <option value="duplicate">중복 신고</option>
+                        <option value="허위 정보·사기 의심" th:selected="${reasonCode == '허위 정보·사기 의심'}">허위 정보·사기 의심</option>
+                        <option value="개인정보 노출" th:selected="${reasonCode == '개인정보 노출'}">개인정보 노출</option>
+                        <option value="욕설·비방·차별 표현" th:selected="${reasonCode == '욕설·비방·차별 표현'}">욕설·비방·차별 표현</option>
+                        <option value="광고·스팸·중복 콘텐츠" th:selected="${reasonCode == '광고·스팸·중복 콘텐츠'}">광고·스팸·중복 콘텐츠</option>
+                        <option value="기타 운영정책 위반" th:selected="${reasonCode == '기타 운영정책 위반'}">기타 운영정책 위반</option>
                     </select>
-
-                    <input type="text" name="keyword" placeholder="대상명 · 신고자 검색"/>
-
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="대상명·신고자·내용 검색"/>
                     <button type="submit">검색</button>
                 </form>
-                <!-- 신고 테이블 -->
-
                 <div class="table-wrap">
                     <table class="report-table">
                         <thead>
                         <tr>
                             <th>번호</th>
                             <th>유형</th>
-                            <th>신고대상</th>
-                            <th>신고사유</th>
+                            <th>신고 대상</th>
+                            <th>신고 사유</th>
                             <th>신고자</th>
                             <th>접수일</th>
                             <th>상태</th>
                             <th>관리</th>
                         </tr>
                         </thead>
-
-                        <tbody id="reportBody"></tbody>
+                        <tbody>
+                        <tr th:each="report : ${reports}">
+                            <td th:text="|RP-${report.reportId}|">RP-1</td>
+                            <td th:text="${report.targetType}">기업</td>
+                            <td th:text="${report.targetName}">대상</td>
+                            <td th:text="${report.reasonCode}">사유</td>
+                            <td th:text="${report.reporterName}">홍**</td>
+                            <td th:text="${#temporals.format(report.createdAt, 'yyyy.MM.dd')}">2026.01.01</td>
+                            <td th:text="${report.status}">미처리</td>
+                            <td><a href="#" class="open-report-process-modal"
+                                   th:data-report-id="${report.reportId}">처리</a></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(reports)}">
+                            <td colspan="8">조회 결과가 없습니다.</td>
+                        </tr>
+                        </tbody>
                     </table>
                 </div>
-
-                <!-- 페이지네이션 -->
-
-                <div class="pagination">
-                    <a href="#">&lt;</a>
-
-                    <a href="#" class="active">1</a>
-
-                    <a href="#">2</a>
-
-                    <a href="#">3</a>
-
-                    <a href="#">4</a>
-
-                    <a href="#">5</a>
-
-                    <a href="#">&gt;</a>
-                </div>
+                <nav class="pagination" th:if="${pageHandler.total > 0}"><a th:if="${pageHandler.currentPage > 1}"
+                                                                            th:href="@{/admin/report(page=${pageHandler.currentPage - 1},tab=${tab},targetType=${targetType},reasonCode=${reasonCode},keyword=${keyword})}">&lt;</a><a
+                        th:each="p : ${#numbers.sequence(pageHandler.startPage, pageHandler.endPage)}" th:text="${p}"
+                        th:classappend="${p == pageHandler.currentPage} ? ' active'"
+                        th:href="@{/admin/report(page=${p},tab=${tab},targetType=${targetType},reasonCode=${reasonCode},keyword=${keyword})}">1</a><a
+                        th:if="${pageHandler.currentPage < pageHandler.lastPage}"
+                        th:href="@{/admin/report(page=${pageHandler.currentPage + 1},tab=${tab},targetType=${targetType},reasonCode=${reasonCode},keyword=${keyword})}">&gt;</a>
+                </nav>
             </section>
         </main>
     </div>
-
-    <!-- ================= Footer ================= -->
     <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
-
-    <!-- 신고 처리 모달 -->
     <div th:replace="~{modal/admin/report-process :: reportProcessModal}"></div>
+    <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
 </div>
 </body>
 </html>

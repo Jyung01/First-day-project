@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.firstdayproject.dao.admin.AdminReportDao">
+    <sql id="reportColumns">
+        SELECT r.report_id AS reportId, r.target_type AS targetType, r.target_id AS targetId,
+               CASE r.target_type WHEN '기업' THEN c.company_name WHEN '채용공고' THEN jp.title
+                    WHEN '기업리뷰' THEN cr.summary WHEN '면접후기' THEN COALESCE(irjp.title, '면접후기') END AS targetName,
+               r.reason_code AS reasonCode, r.detail, CONCAT(LEFT(u.name, 1), '**') AS reporterName,
+               r.status, r.resolution_action AS resolutionAction, r.resolution_note AS resolutionNote,
+               r.created_at AS createdAt, r.handled_at AS handledAt
+        FROM reports r
+        JOIN users u ON u.user_id = r.reporter_user_id
+        LEFT JOIN companies c ON r.target_type = '기업' AND c.company_id = r.target_id
+        LEFT JOIN job_postings jp ON r.target_type = '채용공고' AND jp.job_posting_id = r.target_id
+        LEFT JOIN company_reviews cr ON r.target_type = '기업리뷰' AND cr.company_review_id = r.target_id
+        LEFT JOIN interview_reviews ir ON r.target_type = '면접후기' AND ir.interview_review_id = r.target_id
+        LEFT JOIN job_postings irjp ON irjp.job_posting_id = ir.job_posting_id
+    </sql>
+    <sql id="commonFilters">
+        1 = 1
+        <if test="targetType != null and targetType != ''">AND targetType = #{targetType}</if>
+        <if test="reasonCode != null and reasonCode != ''">AND reasonCode = #{reasonCode}</if>
+        <if test="keyword != null and keyword != ''">
+            AND (targetName LIKE CONCAT('%', #{keyword}, '%') OR reporterName LIKE CONCAT('%', #{keyword}, '%') OR detail LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </sql>
+    <sql id="filters">
+        <include refid="commonFilters"/>
+        <choose>
+            <when test="tab == 'waiting'">AND status = '미처리'</when>
+            <when test="tab == 'complete'">AND status = '처리완료'</when>
+            <when test="tab == 'reject'">AND status = '기각'</when>
+        </choose>
+    </sql>
+    <select id="selectReportList" resultType="kr.co.firstdayproject.dto.admin.AdminReportDTO">
+        SELECT reports.* FROM (<include refid="reportColumns"/>) reports
+        WHERE <include refid="filters"/> ORDER BY createdAt DESC, reportId DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+    <select id="selectReportCount" resultType="int">
+        SELECT COUNT(*) FROM (<include refid="reportColumns"/>) reports WHERE <include refid="filters"/>
+    </select>
+    <select id="selectReportSummary" resultType="map">
+        SELECT
+            COUNT(*) AS totalCount,
+            COALESCE(SUM(status = '미처리'), 0) AS pendingCount,
+            COALESCE(SUM(status = '처리완료'), 0) AS completedCount,
+            COALESCE(SUM(status = '기각'), 0) AS rejectedCount
+        FROM (<include refid="reportColumns"/>) reports
+        WHERE <include refid="commonFilters"/>
+    </select>
+    <select id="selectReportDetail" resultType="kr.co.firstdayproject.dto.admin.AdminReportDTO">
+        SELECT reports.* FROM (<include refid="reportColumns"/>) reports WHERE reportId = #{reportId}
+    </select>
+    <update id="rejectReport">
+        UPDATE reports SET status='기각', resolution_action='없음', resolution_note=#{memo}, handled_by=#{adminId}, handled_at=CURRENT_TIMESTAMP(6)
+        WHERE report_id=#{reportId} AND status='미처리'
+    </update>
+    <update id="resolveReportsForTarget">
+        UPDATE reports SET status='처리완료', resolution_action='숨김', resolution_note=#{memo}, handled_by=#{adminId}, handled_at=CURRENT_TIMESTAMP(6)
+        WHERE target_type=#{targetType} AND target_id=#{targetId} AND status='미처리'
+    </update>
+    <update id="hideCompany">UPDATE companies SET company_status='이용정지' WHERE company_id=#{targetId} AND company_status='정상'</update>
+    <update id="hideJobPosting">
+        UPDATE job_postings SET status='숨김', hidden_reason=#{memo}, hidden_by=#{adminId}, hidden_at=CURRENT_TIMESTAMP(6)
+        WHERE job_posting_id=#{targetId} AND status != '삭제'
+    </update>
+    <update id="hideCompanyReview">
+        UPDATE company_reviews SET status='숨김', hidden_reason=#{memo}, hidden_by=#{adminId}, admin_memo=#{memo}
+        WHERE company_review_id=#{targetId} AND status != '삭제'
+    </update>
+    <update id="hideInterviewReview">
+        UPDATE interview_reviews SET status='숨김', hidden_reason=#{memo}, hidden_by=#{adminId}, admin_memo=#{memo}
+        WHERE interview_review_id=#{targetId} AND status != '삭제'
+    </update>
+</mapper>

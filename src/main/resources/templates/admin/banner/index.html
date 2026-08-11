@@ -53,10 +53,10 @@
                         </div>
 
                         <div class="banner-status">
-                            <span class="status" th:classappend="${banner.isActive} ? ' on' : ' off'" th:text="${banner.isActive} ? '노출 중' : '숨김'">노출 중</span>
+                            <span class="status" th:classappend="${banner.displayStatus == '노출 중'} ? ' on' : ' off'" th:text="${banner.displayStatus}">노출 중</span>
                             <div class="banner-action">
                                 <a href="#" class="edit-banner-btn" th:attr="data-banner-id=${banner.bannerId}">수정</a>
-                                <a href="#" class="hide-banner-btn" th:attr="data-banner-id=${banner.bannerId}" th:text="${banner.isActive} ? '숨김' : '노출'">숨김</a>
+                                <a href="#" class="hide-banner-btn" th:attr="data-banner-id=${banner.bannerId},data-active=${banner.isActive}" th:text="${banner.isActive} ? '숨김' : '노출'">숨김</a>
                             </div>
                         </div>
                     </article>
