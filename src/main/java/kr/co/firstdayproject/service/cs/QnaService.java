@@ -53,6 +53,81 @@ public class QnaService {
         return inquiryRepository.count(statusIn(PENDING_STATUSES));
     }
 
+    /** 사용자 - 내 1:1 문의 목록 조회 (회원 본인 문의만) */
+    public Page<InquiryListItemDto> getMyInquiryList(Long userId, String status, Pageable pageable) {
+        Map<Long, String> categoryNameMap = getActiveCategories().stream()
+                .collect(Collectors.toMap(InquiryCategory::getInquiryCategoryId, InquiryCategory::getCategoryName));
+
+        Specification<Inquiry> spec = Specification.where(userIdEquals(userId))
+                .and(statusFilter(status));
+
+        Page<Inquiry> inquiries = inquiryRepository.findAll(spec, pageable);
+
+        return inquiries.map(inquiry -> toListItem(inquiry, categoryNameMap));
+    }
+
+    /** 사용자 - 문의 상세가 본인 것인지 검증 후 조회 */
+    public InquiryDetailDto getMyInquiryDetail(Long inquiryId, Long userId) {
+        Inquiry inquiry = getInquiryOrThrow(inquiryId);
+        if (!inquiry.getUserId().equals(userId)) {
+            throw new IllegalStateException("본인 문의만 조회할 수 있습니다.");
+        }
+        return getInquiryDetail(inquiryId);
+    }
+
+    /** 사용자 - 문의 등록 (개인/기업회원 공통) */
+    @Transactional
+    public Long createInquiry(Long userId, Long categoryId, String title, String content) {
+        validateCreateInquiry(categoryId, title, content);
+
+        Inquiry inquiry = Inquiry.builder()
+                .userId(userId)
+                .inquiryCategoryId(categoryId)
+                .title(title.trim())
+                .content(content.trim())
+                .status(STATUS_RECEIVED)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        inquiryRepository.save(inquiry);
+        return inquiry.getInquiryId();
+    }
+
+    private void validateCreateInquiry(Long categoryId, String title, String content) {
+        if (categoryId == null) {
+            throw new IllegalArgumentException("문의 유형을 선택해주세요.");
+        }
+        if (!StringUtils.hasText(title)) {
+            throw new IllegalArgumentException("제목을 입력해주세요.");
+        }
+        if (title.trim().length() > 100) {
+            throw new IllegalArgumentException("제목은 100자 이내로 입력해주세요.");
+        }
+        if (!StringUtils.hasText(content)) {
+            throw new IllegalArgumentException("문의 내용을 입력해주세요.");
+        }
+        if (content.trim().length() > 1000) {
+            throw new IllegalArgumentException("문의 내용은 1000자 이내로 입력해주세요.");
+        }
+    }
+
+    /** 사용자 - 문의 삭제 (본인 문의 + 답변대기 상태만 가능) */
+    @Transactional
+    public void deleteMyInquiry(Long inquiryId, Long userId) {
+        Inquiry inquiry = getInquiryOrThrow(inquiryId);
+
+        if (!inquiry.getUserId().equals(userId)) {
+            throw new IllegalStateException("본인 문의만 삭제할 수 있습니다.");
+        }
+        if (STATUS_ANSWERED.equals(inquiry.getStatus())) {
+            throw new IllegalStateException("답변완료된 문의는 삭제할 수 없습니다.");
+        }
+
+        // TODO: InquiryAttachmentRepository에 첨부파일 일괄 삭제 메서드(deleteByInquiryId 등)가 있다면 여기서 함께 호출
+        inquiryRepository.delete(inquiry);
+    }
+
     /** 관리자 - 1:1 문의 목록 검색/페이징 */
     public Page<InquiryListItemDto> getInquiryList(Long categoryId, String status, String keyword, Pageable pageable) {
         Map<Long, String> categoryNameMap = getActiveCategories().stream()
@@ -167,6 +242,10 @@ public class QnaService {
 
     private String toStatusLabel(String status) {
         return STATUS_ANSWERED.equals(status) ? "답변완료" : "미답변";
+    }
+
+    private Specification<Inquiry> userIdEquals(Long userId) {
+        return (root, query, cb) -> cb.equal(root.get("userId"), userId);
     }
 
     private Specification<Inquiry> categoryEquals(Long categoryId) {

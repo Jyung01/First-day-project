@@ -23,7 +23,9 @@ button {
     font-family: inherit;
 }
 
-input {
+input,
+textarea,
+select {
     border: none;
     outline: none;
     font-family: inherit;

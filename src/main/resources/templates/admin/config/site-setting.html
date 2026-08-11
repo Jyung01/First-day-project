@@ -14,47 +14,130 @@
         <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
         <main class="admin-section">
             <div class="page-header"><h1>사이트 설정</h1><p>서비스 기본정보, 브랜드 이미지와 공통 푸터 정보를 관리합니다.</p></div>
+
+            <div th:if="${configMessage}" class="config-alert config-alert-success" th:text="${configMessage}"></div>
+            <div th:if="${configError}" class="config-alert config-alert-error" th:text="${configError}"></div>
             <div class="two-col">
                 <div>
                     <section class="panel">
                         <div class="panel-head"><h2>서비스 기본정보</h2></div>
-                        <div class="form-grid">
-                            <div class="field"><label for="serviceName">서비스명</label><input id="serviceName" type="text" value="첫출근" /></div>
-                            <div class="field"><label for="supportEmail">고객센터 이메일</label><input id="supportEmail" type="email" value="help@firstwork.co.kr" /></div>
-                            <div class="field"><label for="supportPhone">대표 전화번호</label><input id="supportPhone" type="tel" value="02-1234-5678" /></div>
-                            <div class="field"><label for="serviceHours">운영시간</label><input id="serviceHours" type="text" value="평일 09:00 ~ 18:00" /></div>
-                            <div class="field full"><label for="serviceDescription">서비스 소개 문구</label><textarea id="serviceDescription">설레는 첫 출근을 함께 준비합니다.</textarea></div>
-                        </div>
-                        <div class="form-actions"><button type="button" class="btn btn-primary">기본정보 저장</button></div>
+                        <form id="basicInfoForm" th:action="@{/admin/config/site-setting/basic}" method="post">
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="serviceName">서비스명</label>
+                                    <input id="serviceName" name="serviceName" type="text" th:value="${siteSetting.serviceName}" />
+                                </div>
+                                <div class="field">
+                                    <label for="supportEmail">고객센터 이메일</label>
+                                    <input id="supportEmail" name="supportEmail" type="email" th:value="${siteSetting.supportEmail}" />
+                                </div>
+                                <div class="field">
+                                    <label for="supportPhone">대표 전화번호</label>
+                                    <input id="supportPhone" name="supportPhone" type="tel" th:value="${siteSetting.supportPhone}" />
+                                </div>
+                                <div class="field">
+                                    <label for="serviceHours">운영시간</label>
+                                    <input id="serviceHours" name="serviceHours" type="text" th:value="${siteSetting.serviceHours}" />
+                                </div>
+                                <div class="field full">
+                                    <label for="serviceDescription">서비스 소개 문구</label>
+                                    <textarea id="serviceDescription" name="serviceDescription" th:text="${siteSetting.serviceDescription}"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions"><button type="submit" class="btn btn-primary">기본정보 저장</button></div>
+                        </form>
                     </section>
                     <section class="panel">
                         <div class="panel-head"><h2>공통 푸터 설정</h2></div>
-                        <div class="form-grid">
-                            <div class="field"><label for="companyName">회사명</label><input id="companyName" type="text" value="첫출근" /></div>
-                            <div class="field"><label for="businessNumber">사업자등록번호</label><input id="businessNumber" type="text" value="120-08-12345" /></div>
-                            <div class="field full"><label for="companyAddress">주소</label><input id="companyAddress" type="text" value="서울특별시 강남구 테헤란로 123" /></div>
-                            <div class="field full"><label for="copyrightText">저작권 문구</label><input id="copyrightText" type="text" value="© 2026 첫출근. All rights reserved." /></div>
-                        </div>
-                        <div class="form-actions"><button type="button" class="btn btn-primary">푸터 설정 저장</button></div>
+                        <form id="footerInfoForm" th:action="@{/admin/config/site-setting/footer}" method="post">
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="companyName">회사명</label>
+                                    <input id="companyName" name="companyName" type="text" th:value="${siteSetting.companyName}" />
+                                </div>
+                                <div class="field">
+                                    <label for="businessNumber">사업자등록번호</label>
+                                    <input id="businessNumber" name="businessNumber" type="text" th:value="${siteSetting.businessNumber}" />
+                                </div>
+                                <div class="field full">
+                                    <label for="companyAddress">주소</label>
+                                    <input id="companyAddress" name="companyAddress" type="text" th:value="${siteSetting.companyAddress}" />
+                                </div>
+                                <div class="field full">
+                                    <label for="copyrightText">저작권 문구</label>
+                                    <input id="copyrightText" name="copyrightText" type="text" th:value="${siteSetting.copyrightText}" />
+                                </div>
+                            </div>
+                            <div class="form-actions"><button type="submit" class="btn btn-primary">푸터 설정 저장</button></div>
+                        </form>
                     </section>
                 </div>
                 <section class="panel">
                     <div class="panel-head"><h2>브랜드 이미지 관리 · 테마별 적용</h2></div>
+
                     <span class="upload-label">헤더 로고 이미지</span>
                     <div class="upload-hint">투명 배경 PNG 권장 · 권장 190 × 40px</div>
-                    <div class="upload-box"><div class="preview"><span class="mark">첫</span> 첫출근</div><button type="button" class="btn">파일 선택</button></div>
+                    <div class="upload-box">
+                        <div class="preview">
+                            <img th:if="${siteSetting.headerLogoUrl}" th:src="@{${siteSetting.headerLogoUrl}}" alt="헤더 로고" style="max-height:32px;" />
+                            <span th:unless="${siteSetting.headerLogoUrl}"><span class="mark">첫</span> 첫출근</span>
+                        </div>
+                        <button type="button" class="btn" onclick="document.getElementById('headerLogoInput').click()">파일 선택</button>
+                        <input type="file" id="headerLogoInput" accept="image/png,image/jpeg,image/svg+xml" hidden
+                               onchange="uploadSiteImage(this, 'HEADER_LOGO')" />
+                    </div>
+
                     <span class="upload-label">푸터 이미지 로고</span>
                     <div class="upload-hint">기업·발행 브랜드에 사용 · 권장 148 × 36px</div>
-                    <div class="upload-box"><div class="preview">첫출근</div><button type="button" class="btn">파일 선택</button></div>
+                    <div class="upload-box">
+                        <div class="preview">
+                            <img th:if="${siteSetting.footerLogoUrl}" th:src="@{${siteSetting.footerLogoUrl}}" alt="푸터 로고" style="max-height:28px;" />
+                            <span th:unless="${siteSetting.footerLogoUrl}">첫출근</span>
+                        </div>
+                        <button type="button" class="btn" onclick="document.getElementById('footerLogoInput').click()">파일 선택</button>
+                        <input type="file" id="footerLogoInput" accept="image/png,image/jpeg,image/svg+xml" hidden
+                               onchange="uploadSiteImage(this, 'FOOTER_LOGO')" />
+                    </div>
+
                     <span class="upload-label">파비콘</span>
                     <div class="upload-hint">브라우저 탭 표시용 아이콘 · 32 × 32px</div>
-                    <div class="upload-box"><div class="preview"><span class="mark">첫</span> 첫출근 | 채용 정보서비스</div><button type="button" class="btn">파일 선택</button></div>
+                    <div class="upload-box">
+                        <div class="preview">
+                            <img th:if="${siteSetting.faviconUrl}" th:src="@{${siteSetting.faviconUrl}}" alt="파비콘" style="max-height:24px;" />
+                            <span th:unless="${siteSetting.faviconUrl}"><span class="mark">첫</span> 첫출근 | 채용 정보서비스</span>
+                        </div>
+                        <button type="button" class="btn" onclick="document.getElementById('faviconInput').click()">파일 선택</button>
+                        <input type="file" id="faviconInput" accept="image/png,image/x-icon" hidden
+                               onchange="uploadSiteImage(this, 'FAVICON')" />
+                    </div>
+
                     <div class="upload-hint">투명 PNG·SVG 권장 · 라이트/다크 테마 이미지는 각각 저장</div>
                 </section>
             </div>
+
+            <!-- 이미지 업로드용 숨김 폼 -->
+            <form id="imageUploadForm" th:action="@{/admin/config/site-setting/image}" method="post" enctype="multipart/form-data" hidden>
+                <input type="hidden" name="imageType" id="imageTypeInput" />
+                <input type="file" name="imageFile" id="imageFileInput" />
+            </form>
         </main>
     </div>
     <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
 </div>
+
+<script>
+    function uploadSiteImage(inputElement, imageType) {
+        const file = inputElement.files[0];
+        if (!file) return;
+
+        document.getElementById("imageTypeInput").value = imageType;
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        document.getElementById("imageFileInput").files = dataTransfer.files;
+
+        document.getElementById("imageUploadForm").submit();
+    }
+</script>
 </body>
 </html>

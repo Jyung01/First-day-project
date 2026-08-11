@@ -113,15 +113,16 @@ ul { margin: 0; padding: 0; list-style: none; }
     margin: 0 auto;
     padding: 56px 32px 96px;
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr;
     gap: 32px;
-    align-items: start;
 }
 
 .policy-main {
     order: 1;
 }
 
+/* .policy-side, .summary-card는 더 이상 화면에서 쓰지 않지만,
+   HTML에 남아있는 페이지가 있을 경우를 대비해 스타일은 남겨둡니다. */
 .policy-side {
     order: 2;
     position: sticky;
@@ -375,5 +376,3 @@ ul { margin: 0; padding: 0; list-style: none; }
     .policy-detail { padding: 26px 22px; }
     .footer-top { grid-template-columns: 1fr; }
 }
-
-
