@@ -1,60 +1,51 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>개인정보 처리방침 개정 안내 | 첫출근 고객센터</title>
-<link rel="stylesheet" th:href="@{/css/cs/user-common.css}" />
-<link rel="stylesheet" th:href="@{/css/common.css}" />
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title th:text="${notice.title} + ' | 첫출근 고객센터'">개인정보 처리방침 개정 안내 | 첫출근 고객센터</title>
+  <link rel="stylesheet" th:href="@{/css/cs/user-common.css}" />
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
 </head>
 <body>
 <header th:replace="~{common/header :: header}"></header>
 <div class="cs-page">
-<section class="hero">
-  <div class="wrap">
-    <p class="eyebrow">FIRST DAY HELP CENTER</p>
-    <h1>고객센터</h1>
-    <p>필요한 도움을 빠르고 편하게 확인하세요.</p>
-  </div>
-</section>
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">FIRST DAY HELP CENTER</p>
+      <h1>고객센터</h1>
+      <p>필요한 도움을 빠르고 편하게 확인하세요.</p>
+    </div>
+  </section>
 
-<main class="content-shell">
-  <div class="wrap">
+  <main class="content-shell">
+    <div class="wrap">
 
-    <nav class="tabs">
-      <a class="tab active" th:href="@{/cs/notice}">공지사항</a>
-      <a class="tab" th:href="@{/cs/faq}">자주 묻는 질문</a>
-      <a class="tab" th:href="@{/cs/qna}">1:1 문의</a>
-    </nav>
+      <nav class="tabs">
+        <a class="tab active" th:href="@{/cs/notice}">공지사항</a>
+        <a class="tab" th:href="@{/cs/faq}">자주 묻는 질문</a>
+        <a class="tab" th:href="@{/cs/qna}">1:1 문의</a>
+      </nav>
 
-    <p class="breadcrumb"><a th:href="@{/cs/notice}">공지사항</a> ›</p>
+      <p class="breadcrumb"><a th:href="@{/cs/notice}">공지사항</a> ›</p>
 
-    <div class="detail-card">
-      <div class="detail-header">
-        <span class="badge badge-pin">고정</span>
-        <h1>개인정보 처리방침 개정 안내</h1>
-        <div class="detail-meta">
-          <span>서비스</span>
-          <span>·</span>
-          <span>2026.07.18</span>
+      <div class="detail-card">
+        <div class="detail-header">
+          <span th:if="${notice.isPinned}" class="badge badge-pin">고정</span>
+          <h1 th:text="${notice.title}">개인정보 처리방침 개정 안내</h1>
+          <div class="detail-meta">
+            <span th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">2026.07.18</span>
+          </div>
+        </div>
+        <div class="detail-body" style="white-space: pre-wrap;" th:text="${notice.content}">
+          <p>안녕하세요, 첫출근입니다.</p>
+        </div>
+        <div class="detail-footer">
+          <a th:href="@{/cs/notice}" class="btn btn-primary">목록으로</a>
         </div>
       </div>
-      <div class="detail-body">
-        <p>안녕하세요, 첫출근입니다.</p>
-        <p>개인정보 처리방침 일부 내용이 개정되어 안내드립니다.<br />
-        변경된 내용은 개인정보의 수집 목적과 보관 기간을 더욱 명확하게 안내하기 위한 사항입니다.</p>
-        <ul>
-          <li>시행일: 2026년 8월 1일</li>
-          <li>주요 변경사항: 개인정보 보관 기간 및 파기 절차 문구 보완</li>
-        </ul>
-        <p>앞으로도 안전하게 서비스를 이용하실 수 있도록 최선을 다하겠습니다.</p>
-      </div>
-      <div class="detail-footer">
-        <a th:href="@{/cs/notice}" class="btn btn-primary">목록으로</a>
-      </div>
-    </div>
 
-  </div>
-</main>
+    </div>
+  </main>
 </div>
 <footer th:replace="~{common/footer :: footer}"></footer>
 <script th:src="@{/js/common.js}"></script>

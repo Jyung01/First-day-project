@@ -4,4 +4,285 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.firstdayproject.dao.salary.SalaryDao">
 
+    <sql id="salaryFilters">
+        sr.status = '정상'
+        AND c.approval_status = '승인'
+        AND c.company_status = '정상'
+        <if test="keyword != null and keyword != ''">
+            AND c.company_name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="companySize != null and companySize != ''">
+            AND c.company_size = #{companySize}
+        </if>
+        <if test="industry != null and industry != ''">
+            AND c.industry_name = #{industry}
+        </if>
+        <choose>
+            <when test="career == 'newcomer'">AND sr.career_years &lt;= 1</when>
+            <when test="career == 'junior'">AND sr.career_years BETWEEN 1 AND 3</when>
+            <when test="career == 'middle'">AND sr.career_years BETWEEN 4 AND 7</when>
+            <when test="career == 'senior'">AND sr.career_years &gt;= 8</when>
+        </choose>
+    </sql>
+
+    <select id="selectSalaryList"
+            resultType="kr.co.firstdayproject.dto.salary.SalaryRecordsDTO">
+        SELECT
+            c.company_id AS companyId,
+            c.company_name AS companyName,
+            c.industry_name AS industryName,
+            c.company_size AS companySize,
+            c.address_line1 AS addressLine1,
+            c.logo_url AS logoUrl,
+            ROUND(AVG(sr.base_salary)) AS averageSalary,
+            ROUND(AVG(CASE WHEN sr.career_years &lt;= 1 THEN sr.base_salary END)) AS newcomerAverageSalary,
+            COUNT(*) AS recordCount,
+            MAX(sr.updated_at) AS latestUpdatedAt
+        FROM salary_records sr
+        JOIN companies c ON c.company_id = sr.company_id
+        WHERE <include refid="salaryFilters"/>
+        GROUP BY c.company_id, c.company_name, c.industry_name, c.company_size,
+                 c.address_line1, c.logo_url
+        <choose>
+            <when test="sort == 'latest'">ORDER BY latestUpdatedAt DESC</when>
+            <when test="sort == 'count'">ORDER BY recordCount DESC, averageSalary DESC</when>
+            <otherwise>ORDER BY averageSalary DESC, recordCount DESC</otherwise>
+        </choose>
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectSalaryCompanyCount" resultType="int">
+        SELECT COUNT(*)
+        FROM (
+            SELECT sr.company_id
+            FROM salary_records sr
+            JOIN companies c ON c.company_id = sr.company_id
+            WHERE <include refid="salaryFilters"/>
+            GROUP BY sr.company_id
+        ) salary_companies
+    </select>
+
+    <select id="selectSalarySummary"
+            resultType="kr.co.firstdayproject.dto.salary.SalaryRecordsDTO">
+        SELECT
+            COALESCE(ROUND(AVG(sr.base_salary)), 0) AS overallAverageSalary,
+            COALESCE(ROUND(AVG(CASE WHEN sr.career_years &lt;= 1 THEN sr.base_salary END)), 0)
+                AS overallNewcomerAverageSalary,
+            COUNT(*) AS totalRecordCount
+        FROM salary_records sr
+        JOIN companies c ON c.company_id = sr.company_id
+        WHERE sr.status = '정상'
+          AND c.approval_status = '승인'
+          AND c.company_status = '정상'
+    </select>
+
+    <select id="selectSalaryIndustryList" resultType="string">
+        SELECT DISTINCT c.industry_name
+        FROM companies c
+        JOIN salary_records sr ON sr.company_id = c.company_id AND sr.status = '정상'
+        WHERE c.industry_name IS NOT NULL AND c.industry_name != ''
+          AND c.approval_status = '승인' AND c.company_status = '정상'
+        ORDER BY c.industry_name
+    </select>
+
+    <select id="selectSalaryCompanySizeList" resultType="string">
+        SELECT DISTINCT c.company_size
+        FROM companies c
+        JOIN salary_records sr ON sr.company_id = c.company_id AND sr.status = '정상'
+        WHERE c.company_size IS NOT NULL AND c.company_size != ''
+          AND c.approval_status = '승인' AND c.company_status = '정상'
+        ORDER BY c.company_size
+    </select>
+
+    <select id="selectSalaryCompanyDetail"
+            resultType="kr.co.firstdayproject.dto.salary.SalaryRecordsDTO">
+        SELECT
+            c.company_id AS companyId,
+            c.company_name AS companyName,
+            c.industry_name AS industryName,
+            c.company_size AS companySize,
+            c.address_line1 AS addressLine1,
+            c.logo_url AS logoUrl,
+            ROUND(AVG(sr.base_salary)) AS averageSalary,
+            ROUND(AVG(CASE WHEN sr.career_years &lt;= 1 THEN sr.base_salary END))
+                AS newcomerAverageSalary,
+            ROUND(AVG(CASE WHEN sr.career_years BETWEEN 4 AND 5 THEN sr.base_salary END))
+                AS middleCareerAverageSalary,
+            COUNT(*) AS recordCount,
+            MAX(sr.updated_at) AS latestUpdatedAt
+        FROM companies c
+        JOIN salary_records sr ON sr.company_id = c.company_id
+        WHERE c.company_id = #{companyId}
+          AND c.approval_status = '승인'
+          AND c.company_status = '정상'
+          AND sr.status = '정상'
+        GROUP BY c.company_id, c.company_name, c.industry_name, c.company_size,
+                 c.address_line1, c.logo_url
+    </select>
+
+    <select id="selectSalaryCareerStats"
+            resultType="kr.co.firstdayproject.dto.salary.SalaryCareerStatDTO">
+        SELECT
+            CASE
+                WHEN career_years &lt;= 1 THEN '신입 · 1년 이하'
+                WHEN career_years BETWEEN 2 AND 3 THEN '2~3년'
+                WHEN career_years BETWEEN 4 AND 5 THEN '4~5년'
+                WHEN career_years BETWEEN 6 AND 7 THEN '6~7년'
+                ELSE '8년 이상'
+            END AS careerLabel,
+            ROUND(AVG(base_salary)) AS averageSalary,
+            COUNT(*) AS recordCount
+        FROM salary_records
+        WHERE company_id = #{companyId}
+          AND status = '정상'
+        GROUP BY
+            CASE
+                WHEN career_years &lt;= 1 THEN 1
+                WHEN career_years BETWEEN 2 AND 3 THEN 2
+                WHEN career_years BETWEEN 4 AND 5 THEN 3
+                WHEN career_years BETWEEN 6 AND 7 THEN 4
+                ELSE 5
+            END,
+            CASE
+                WHEN career_years &lt;= 1 THEN '신입 · 1년 이하'
+                WHEN career_years BETWEEN 2 AND 3 THEN '2~3년'
+                WHEN career_years BETWEEN 4 AND 5 THEN '4~5년'
+                WHEN career_years BETWEEN 6 AND 7 THEN '6~7년'
+                ELSE '8년 이상'
+            END
+        ORDER BY MIN(career_years)
+    </select>
+
+    <select id="selectSalaryJobStats"
+            resultType="kr.co.firstdayproject.dto.salary.SalaryJobStatDTO">
+        SELECT
+            jc.job_category_id AS jobCategoryId,
+            jc.category_name AS categoryName,
+            ROUND(AVG(sr.base_salary)) AS averageSalary,
+            ROUND(AVG(CASE WHEN sr.career_years &lt;= 1 THEN sr.base_salary END))
+                AS newcomerAverageSalary,
+            COUNT(*) AS recordCount
+        FROM salary_records sr
+        JOIN job_categories jc ON jc.job_category_id = sr.job_category_id
+        WHERE sr.company_id = #{companyId}
+          AND sr.status = '정상'
+          AND jc.is_active = TRUE
+        GROUP BY jc.job_category_id, jc.category_name
+        ORDER BY averageSalary DESC
+    </select>
+
+    <select id="selectSalaryCompanyOptions"
+            resultType="kr.co.firstdayproject.dto.salary.SalaryRecordsDTO">
+        SELECT company_id AS companyId, company_name AS companyName
+        FROM companies
+        WHERE approval_status = '승인'
+          AND company_status = '정상'
+        ORDER BY company_name
+    </select>
+
+    <select id="selectSalaryJobCategoryOptions"
+            resultType="kr.co.firstdayproject.dto.salary.SalaryJobStatDTO">
+        SELECT job_category_id AS jobCategoryId, category_name AS categoryName
+        FROM job_categories
+        WHERE is_active = TRUE
+          AND depth = 2
+        ORDER BY display_order, category_name
+    </select>
+
+    <select id="selectSalaryCompanyExists" resultType="int">
+        SELECT COUNT(*) FROM companies
+        WHERE company_id = #{companyId}
+          AND approval_status = '승인'
+          AND company_status = '정상'
+    </select>
+
+    <select id="selectSalaryJobCategoryExists" resultType="int">
+        SELECT COUNT(*) FROM job_categories
+        WHERE job_category_id = #{jobCategoryId}
+          AND is_active = TRUE
+    </select>
+
+    <select id="selectSalaryRecordDuplicateCount" resultType="int">
+        SELECT COUNT(*) FROM salary_records
+        WHERE author_user_id = #{userId}
+          AND company_id = #{companyId}
+          AND salary_year = #{salaryYear}
+    </select>
+
+    <insert id="insertSalaryRecord"
+            parameterType="kr.co.firstdayproject.dto.salary.SalaryRecordsDTO"
+            useGeneratedKeys="true" keyProperty="salaryRecordId">
+        INSERT INTO salary_records
+        (
+            company_id, author_user_id, job_category_id,
+            employment_status, employment_type, career_years,
+            salary_year, base_salary, bonus_amount
+        )
+        VALUES
+        (
+            #{companyId}, #{authorUserId}, #{jobCategoryId},
+            #{employmentStatus}, #{employmentType}, #{careerYears},
+            #{salaryYear}, #{baseSalary}, #{bonusAmount}
+        )
+    </insert>
+
+    <select id="selectSalaryRecordForEdit"
+            resultType="kr.co.firstdayproject.dto.salary.SalaryRecordsDTO">
+        SELECT salary_record_id, company_id, author_user_id, job_category_id,
+               employment_status, employment_type, career_years, salary_year,
+               base_salary, bonus_amount
+        FROM salary_records
+        WHERE salary_record_id = #{salaryRecordId}
+          AND author_user_id = #{userId}
+          AND status != '삭제'
+    </select>
+
+    <select id="selectSalaryRecordDuplicateExceptSelf" resultType="int">
+        SELECT COUNT(*) FROM salary_records
+        WHERE author_user_id = #{userId}
+          AND company_id = #{companyId}
+          AND salary_year = #{salaryYear}
+          AND salary_record_id != #{salaryRecordId}
+    </select>
+
+    <update id="updateSalaryRecord">
+        UPDATE salary_records
+        SET company_id = #{companyId},
+            job_category_id = #{jobCategoryId},
+            employment_status = #{employmentStatus},
+            employment_type = #{employmentType},
+            career_years = #{careerYears},
+            salary_year = #{salaryYear},
+            base_salary = #{baseSalary},
+            bonus_amount = #{bonusAmount},
+            updated_at = CURRENT_TIMESTAMP(6)
+        WHERE salary_record_id = #{salaryRecordId}
+          AND author_user_id = #{authorUserId}
+          AND status != '삭제'
+    </update>
+
+    <select id="selectMySalaryList"
+            resultType="kr.co.firstdayproject.dto.salary.SalaryRecordsDTO">
+        SELECT sr.salary_record_id, sr.company_id, sr.job_category_id,
+               sr.employment_status, sr.employment_type, sr.career_years,
+               sr.salary_year, sr.base_salary, sr.bonus_amount, sr.updated_at,
+               c.company_name AS companyName,
+               jc.category_name AS categoryName
+        FROM salary_records sr
+        JOIN companies c ON c.company_id = sr.company_id
+        JOIN job_categories jc ON jc.job_category_id = sr.job_category_id
+        WHERE sr.author_user_id = #{userId}
+          AND sr.status != '삭제'
+        ORDER BY sr.salary_year DESC, sr.updated_at DESC
+    </select>
+
+    <update id="deleteSalaryRecord">
+        UPDATE salary_records
+        SET status = '삭제',
+            updated_at = CURRENT_TIMESTAMP(6)
+        WHERE salary_record_id = #{salaryRecordId}
+          AND author_user_id = #{userId}
+          AND status != '삭제'
+    </update>
+
 </mapper>

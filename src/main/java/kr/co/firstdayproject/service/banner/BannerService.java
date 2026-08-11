@@ -25,6 +25,10 @@ public class BannerService {
         return bannerDao.selectActiveBanners(placement);
     }
 
+    public List<BannerDTO> getAdminBanners() {
+        return bannerDao.selectAdminBanners();
+    }
+
     public void register(BannerDTO bannerDTO,
                          MultipartFile bannerFile,
                          Long userId) throws IOException {

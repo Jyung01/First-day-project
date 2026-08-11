@@ -14,6 +14,7 @@ import kr.co.firstdayproject.service.job.JobService;
 import kr.co.firstdayproject.service.my.MyAccountException;
 import kr.co.firstdayproject.service.my.MyPageException;
 import kr.co.firstdayproject.service.my.MyPageService;
+import kr.co.firstdayproject.util.PageHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import kr.co.firstdayproject.dto.company.CompanyReviewsDTO;
+import kr.co.firstdayproject.dto.company.InterviewReviewsDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -50,6 +54,7 @@ public class MyPageController {
         }
 
         Long userId = userDetails.getUserId();
+        model.addAttribute("activeMenu", "home");
         model.addAttribute("dashboardStats", myPageService.getDashboardStats(userId));
         model.addAttribute("recentApplications", myPageService.getRecentApplications(userId));
         myPageService.getRecentResume(userId)
@@ -69,7 +74,7 @@ public class MyPageController {
         }
 
         User user = myPageService.getUser(userDetails.getUserId());
-        PersonalProfile profile = myPageService.getProfile(userDetails.getUserId());
+        PersonalProfile profile = resolveProfile(model, userDetails.getUserId());
 
         model.addAttribute("profileForm", ProfileEditRequest.from(user, profile));
         addProfileEditModel(model, userDetails.getUserId(), user, profile);
@@ -107,9 +112,20 @@ public class MyPageController {
         }
 
         User user = myPageService.getUser(userDetails.getUserId());
-        PersonalProfile profile = myPageService.getProfile(userDetails.getUserId());
+        PersonalProfile profile = resolveProfile(model, userDetails.getUserId());
         addProfileEditModel(model, userDetails.getUserId(), user, profile);
         return "my/profile-edit";
+    }
+
+    /**
+     * {@link MySidebarAdvice}가 이미 같은 요청에서 조회해둔 PersonalProfile이 있으면 재사용하고,
+     * 없으면(예: 사이드바 대상이 아닌 경우) 새로 조회합니다.
+     */
+    private PersonalProfile resolveProfile(Model model, Long userId) {
+        if (model.getAttribute("personalProfile") instanceof PersonalProfile cachedProfile) {
+            return cachedProfile;
+        }
+        return myPageService.getProfile(userId);
     }
 
     private void addProfileEditModel(
@@ -118,13 +134,25 @@ public class MyPageController {
             User user,
             PersonalProfile profile
     ) {
+        model.addAttribute("activeMenu", "edit");
         model.addAttribute("email", user.getEmail());
-        model.addAttribute("profileImageUrl", profile.getProfileImageUrl());
+        model.addAttribute("profileImageUrl", resolveProfileImageUrl(model, profile));
         model.addAttribute("desiredJobs", myPageService.getDesiredJobs(userId));
         model.addAttribute(
                 "jobCategoryGroups",
                 jobService.getActiveJobCategoryGroups()
         );
+    }
+
+    /**
+     * {@link MySidebarAdvice}가 이미 같은 요청에서 발급해둔 presigned URL이 있으면 재사용해서,
+     * S3Presigner 서명 계산과 DB 조회가 요청당 두 번씩 일어나지 않도록 합니다.
+     */
+    private String resolveProfileImageUrl(Model model, PersonalProfile profile) {
+        if (model.containsAttribute("personalProfile")) {
+            return (String) model.getAttribute("mySidebarProfileImageUrl");
+        }
+        return myPageService.getProfileImageDisplayUrl(profile);
     }
 
     @PostMapping("/password-change")
@@ -204,11 +232,174 @@ public class MyPageController {
     }
 
     @GetMapping("/saved-jobs")
-    public String savedJobs() { return "my/saved-jobs"; }
+    public String savedJobs(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "all") String filter,
+            @RequestParam(defaultValue = "1") int page,
+            Model model
+    ) {
+        if (userDetails == null) return "redirect:/auth/login";
+        if (!java.util.Set.of("all", "open", "deadline").contains(filter)) filter = "all";
+        int pageSize = 4;
+        int total = myPageService.getSavedJobCount(userDetails.getUserId(), filter);
+        PageHandler pageHandler = new PageHandler(Math.max(page, 1), total, pageSize);
+        model.addAttribute("savedJobs", myPageService.getSavedJobList(
+                userDetails.getUserId(), filter, pageHandler.getOffset(), pageSize));
+        model.addAttribute("savedJobCount", total);
+        model.addAttribute("filter", filter);
+        model.addAttribute("pageHandler", pageHandler);
+        return "my/saved-jobs";
+    }
+
+    @PostMapping("/saved-jobs/remove")
+    @ResponseBody
+    public ResponseEntity<MyAccountActionResponse> removeSavedJob(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam Long jobPostingId
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(MyAccountActionResponse.failure("로그인이 필요합니다."));
+        }
+        try {
+            myPageService.removeSavedJob(userDetails.getUserId(), jobPostingId);
+            return ResponseEntity.ok(MyAccountActionResponse.success("관심 공고에서 해제되었습니다."));
+        } catch (MyPageException e) {
+            return ResponseEntity.badRequest().body(MyAccountActionResponse.failure(e.getMessage()));
+        }
+    }
 
     @GetMapping("/saved-companies")
-    public String savedCompanies() { return "my/saved-companies"; }
+    public String savedCompanies(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "recent") String sort,
+            @RequestParam(defaultValue = "1") int page,
+            Model model
+    ) {
+        if (userDetails == null) return "redirect:/auth/login";
+        if (!java.util.Set.of("recent", "name", "jobs").contains(sort)) sort = "recent";
+        int pageSize = 6;
+        int total = myPageService.getSavedCompanyCount(userDetails.getUserId());
+        PageHandler pageHandler = new PageHandler(Math.max(page, 1), total, pageSize);
+        model.addAttribute("savedCompanies", myPageService.getSavedCompanyList(
+                userDetails.getUserId(), sort, pageHandler.getOffset(), pageSize));
+        model.addAttribute("savedCompanyCount", total);
+        model.addAttribute("sort", sort);
+        model.addAttribute("pageHandler", pageHandler);
+        return "my/saved-companies";
+    }
+
+    @PostMapping("/saved-companies/remove")
+    @ResponseBody
+    public ResponseEntity<MyAccountActionResponse> removeSavedCompany(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam Long companyId
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(MyAccountActionResponse.failure("로그인이 필요합니다."));
+        }
+        try {
+            myPageService.removeSavedCompany(userDetails.getUserId(), companyId);
+            return ResponseEntity.ok(MyAccountActionResponse.success("관심 기업에서 해제되었습니다."));
+        } catch (MyPageException e) {
+            return ResponseEntity.badRequest().body(MyAccountActionResponse.failure(e.getMessage()));
+        }
+    }
 
     @GetMapping("/reviews")
-    public String reviews() { return "my/reviews"; }
+    public String reviews(@AuthenticationPrincipal CustomUserDetails userDetails,
+                          @RequestParam(defaultValue = "company") String type,
+                          Model model) {
+        if (userDetails == null) return "redirect:/auth/login";
+        if (!java.util.Set.of("company", "interview").contains(type)) type = "company";
+        Long userId = userDetails.getUserId();
+        model.addAttribute("companyReviews", myPageService.getMyCompanyReviews(userId));
+        model.addAttribute("interviewReviews", myPageService.getMyInterviewReviews(userId));
+        model.addAttribute("companyReviewCount", myPageService.getMyCompanyReviewCount(userId));
+        model.addAttribute("interviewReviewCount", myPageService.getMyInterviewReviewCount(userId));
+        model.addAttribute("type", type);
+        return "my/reviews";
+    }
+
+    @GetMapping("/reviews/company/edit")
+    public String editCompanyReview(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                    @RequestParam Long reviewId, Model model,
+                                    RedirectAttributes redirectAttributes) {
+        if (userDetails == null) return "redirect:/auth/login";
+        try {
+            CompanyReviewsDTO dto = myPageService.getMyCompanyReview(userDetails.getUserId(), reviewId);
+            model.addAttribute("companyReviewsDTO", dto);
+            model.addAttribute("companyName", dto.getCompanyName());
+            model.addAttribute("jobCategoryName", dto.getJobCategoryName());
+            model.addAttribute("formAction", "/my/reviews/company/edit");
+            model.addAttribute("isEdit", true);
+            return "company/review-write";
+        } catch (MyPageException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/my/reviews?type=company";
+        }
+    }
+
+    @PostMapping("/reviews/company/edit")
+    public String editCompanyReview(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                    @ModelAttribute CompanyReviewsDTO dto,
+                                    RedirectAttributes redirectAttributes) {
+        if (userDetails == null) return "redirect:/auth/login";
+        try {
+            myPageService.updateMyCompanyReview(userDetails.getUserId(), dto);
+            redirectAttributes.addFlashAttribute("successMessage", "기업리뷰가 수정되었습니다.");
+            return "redirect:/my/reviews?type=company";
+        } catch (MyPageException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/my/reviews/company/edit?reviewId=" + dto.getCompanyReviewId();
+        }
+    }
+
+    @GetMapping("/reviews/interview/edit")
+    public String editInterviewReview(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                      @RequestParam Long reviewId, Model model,
+                                      RedirectAttributes redirectAttributes) {
+        if (userDetails == null) return "redirect:/auth/login";
+        try {
+            InterviewReviewsDTO dto = myPageService.getMyInterviewReview(userDetails.getUserId(), reviewId);
+            model.addAttribute("interviewReviewsDTO", dto);
+            model.addAttribute("formAction", "/my/reviews/interview/edit");
+            model.addAttribute("isEdit", true);
+            return "company/interview-review-write";
+        } catch (MyPageException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/my/reviews?type=interview";
+        }
+    }
+
+    @PostMapping("/reviews/interview/edit")
+    public String editInterviewReview(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                      @ModelAttribute InterviewReviewsDTO dto,
+                                      RedirectAttributes redirectAttributes) {
+        if (userDetails == null) return "redirect:/auth/login";
+        try {
+            myPageService.updateMyInterviewReview(userDetails.getUserId(), dto);
+            redirectAttributes.addFlashAttribute("successMessage", "면접후기가 수정되었습니다.");
+            return "redirect:/my/reviews?type=interview";
+        } catch (MyPageException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/my/reviews/interview/edit?reviewId=" + dto.getInterviewReviewId();
+        }
+    }
+
+    @PostMapping("/reviews/delete")
+    @ResponseBody
+    public ResponseEntity<MyAccountActionResponse> deleteMyReview(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam String type, @RequestParam Long reviewId) {
+        if (userDetails == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(MyAccountActionResponse.failure("로그인이 필요합니다."));
+        try {
+            myPageService.deleteMyReview(userDetails.getUserId(), type, reviewId);
+            return ResponseEntity.ok(MyAccountActionResponse.success("후기가 삭제되었습니다."));
+        } catch (MyPageException e) {
+            return ResponseEntity.badRequest().body(MyAccountActionResponse.failure(e.getMessage()));
+        }
+    }
 }

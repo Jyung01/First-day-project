@@ -65,7 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
             // if (!result.hasPermission) -> 작성 권한 없음 모달
 
             // 4. TODO : 권한 있으면 작성 페이지 이동
-            location.href = "/company/review/write";
+            const companyId = new URLSearchParams(location.search).get("companyId");
+            const writePath = location.pathname.includes("interview")
+                ? "/company/interview-review/write"
+                : "/company/review/write";
+            location.href = `${writePath}?companyId=${companyId}`;
         });
     })
 
@@ -76,7 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         btn.addEventListener("click", (e) => {
 
-            e.preventDefault();
+            if (btn.closest("form")) {
+                return;
+            }
 
             // TODO : 유효성 검사
             // TODO : fetch 저장

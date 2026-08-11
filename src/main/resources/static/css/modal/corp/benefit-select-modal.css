@@ -1,0 +1,355 @@
+/* =========================================================
+   기업 복지 선택 모달
+========================================================= */
+
+.benefit-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1400;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+}
+
+.benefit-modal.is-open {
+    display: flex;
+}
+
+.benefit-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.54);
+}
+
+.benefit-modal-dialog {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 640px;
+    max-height: calc(100vh - 44px);
+    overflow: hidden;
+    border: 1px solid #dce2ec;
+    border-radius: 14px;
+    background-color: #ffffff;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+}
+
+/* 헤더 */
+
+.benefit-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 26px 19px;
+    border-bottom: 1px solid #e5e9f0;
+}
+
+.benefit-modal-header h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.benefit-modal-header p {
+    margin: 6px 0 0;
+    color: #7d889c;
+    font-size: 12px;
+}
+
+.benefit-modal-close {
+    display: flex;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background-color: transparent;
+    color: #677286;
+    font-size: 27px;
+    cursor: pointer;
+}
+
+.benefit-modal-close:hover {
+    background-color: #f2f4f7;
+}
+
+.benefit-modal-body {
+    max-height: calc(100vh - 125px);
+    overflow-y: auto;
+    padding: 19px 26px 24px;
+}
+
+/* 선택한 복지 */
+
+.benefit-modal-selected-section {
+    margin-bottom: 18px;
+}
+
+.benefit-modal-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.benefit-modal-section-heading > strong {
+    color: #273044;
+    font-size: 12px;
+}
+
+.benefit-modal-section-heading > span {
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.benefit-modal-selected-list {
+    display: flex;
+    min-height: 60px;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid #d7deea;
+    border-radius: 8px;
+    background-color: #f9faff;
+    box-sizing: border-box;
+}
+
+.benefit-modal-selected-empty {
+    margin: auto 0;
+    color: #9aa4b5;
+    font-size: 12px;
+}
+
+.benefit-modal-selected-chip {
+    display: inline-flex;
+    height: 29px;
+    align-items: center;
+    gap: 7px;
+    padding: 0 10px;
+    border: 1px solid #1d4ed8;
+    border-radius: 999px;
+    background-color: #eef3ff;
+    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.benefit-modal-selected-chip button {
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    color: #4b6fd6;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* 기본 항목 */
+
+.benefit-modal-section-title {
+    display: block;
+    margin-bottom: 10px;
+    color: #30394c;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.benefit-modal-preset-section {
+    margin-bottom: 18px;
+}
+
+.benefit-option-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.benefit-option {
+    display: flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    border: 1px solid #d7deea;
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: #4b566b;
+    font-size: 11px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.benefit-option:hover {
+    border-color: #aec2ff;
+    background-color: #f8faff;
+}
+
+.benefit-option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.benefit-option:has(input:checked) {
+    border-color: #1d4ed8;
+    background-color: #eef3ff;
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+.benefit-option:has(input:checked) span::before {
+    content: "✓ ";
+}
+
+/* 직접 추가 */
+
+.benefit-modal-custom-section {
+    margin-bottom: 4px;
+}
+
+.benefit-modal-custom-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.benefit-modal-custom-input {
+    flex: 1;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #d7deea;
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: #172033;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.benefit-modal-custom-input:focus {
+    border-color: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+}
+
+.benefit-modal-custom-add {
+    flex-shrink: 0;
+    min-width: 64px;
+    height: 40px;
+    border: 1px solid #1d4ed8;
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: #1d4ed8;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.benefit-modal-custom-add:hover {
+    background-color: #eef3ff;
+}
+
+/* 하단 */
+
+.benefit-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 17px;
+}
+
+.benefit-modal-actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 10px;
+}
+
+.benefit-modal-cancel,
+.benefit-modal-confirm {
+    min-width: 124px;
+    height: 42px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.benefit-modal-cancel {
+    border: 1px solid #cfd6e2;
+    background-color: #ffffff;
+    color: #465064;
+}
+
+.benefit-modal-confirm {
+    border: 1px solid #1d4ed8;
+    background-color: #1d4ed8;
+    color: #ffffff;
+}
+
+.benefit-modal-confirm:hover {
+    background-color: #1a43b8;
+}
+
+.benefit-modal-message {
+    display: none;
+    margin: 10px 0 0;
+    color: #ef4444;
+    font-size: 11px;
+}
+
+.benefit-modal-message.is-visible {
+    display: block;
+}
+
+/* 반응형 */
+
+@media (max-width: 760px) {
+    .benefit-modal {
+        padding: 12px;
+    }
+
+    .benefit-modal-dialog {
+        max-height: calc(100vh - 24px);
+    }
+
+    .benefit-modal-header {
+        padding: 20px 18px 17px;
+    }
+
+    .benefit-modal-body {
+        padding: 17px 18px 20px;
+    }
+
+    .benefit-option-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 430px) {
+    .benefit-option-list {
+        grid-template-columns: 1fr;
+    }
+
+    .benefit-modal-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .benefit-modal-confirm {
+        order: 1;
+    }
+
+    .benefit-modal-cancel {
+        order: 2;
+    }
+}

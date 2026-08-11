@@ -319,30 +319,31 @@
     border: none;
     border-radius: 50%;
 
-    background: #f5f6fa;
+    /*background: #f5f6fa;*/
+    background: none;
 
     cursor: pointer;
     transition: .2s;
 }
 
 .wish-btn i{
-    font-size: 17px;
+    font-size: 18px;
     color: #999;
     transition: .2s;
 }
 
-.wish-btn:hover{
-    background: #EEF0FF;
-}
+/*.wish-btn:hover{*/
+/*    background: #EEF0FF;*/
+/*}*/
 
 .wish-btn:hover i{
     color: #6F78D8;
 }
 
 /* 관심기업 등록 상태 */
-.wish-btn.active{
-    background: #EEF0FF;
-}
+/*.wish-btn.active{*/
+/*    background: #EEF0FF;*/
+/*}*/
 
 .wish-btn.active i{
     color: #6F78D8;

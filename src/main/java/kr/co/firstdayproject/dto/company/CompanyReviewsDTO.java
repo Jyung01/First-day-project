@@ -42,4 +42,9 @@ public class CompanyReviewsDTO {
     private Integer rating3Count;
     private Integer rating2Count;
     private Integer rating1Count;
+
+    // 리뷰 도움순
+    private Integer helpCount;
+    private String jobCategoryName;
+    private String companyName;
 }

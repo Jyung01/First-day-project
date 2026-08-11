@@ -4,6 +4,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const stars = rating.querySelectorAll("i");
         const text = rating.nextElementSibling;
+        const target = rating.dataset.target;
+        const input = document.querySelector(`input[name="${target}"]`);
+
+        if (input && !input.value) {
+            input.value = "5";
+        }
 
         stars.forEach((star, index) => {
 
@@ -14,6 +20,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 text.textContent = `${index + 1}점`;
+                if (input) {
+                    input.value = String(index + 1);
+                }
 
                 // 별점 평균 구하기
                 const scores = [...document.querySelectorAll(".rating-val")]

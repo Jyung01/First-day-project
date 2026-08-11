@@ -1,118 +1,59 @@
 <!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>마이페이지 - 리뷰확인</title>
-    <!-- 메인 헤더 푸터 css -->
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>마이페이지 - 작성한 후기</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
-    <!-- 마이페이지 공통 css -->
     <link rel="stylesheet" th:href="@{/css/my/common.css}"/>
-    <!-- 마이페이지 관심공고 css   -->
     <link rel="stylesheet" th:href="@{/css/my/saved-jobs.css}"/>
-    <!-- 마이페이지 리뷰/면접후기 css-->
     <link rel="stylesheet" th:href="@{/css/my/reviews.css}"/>
-    <!-- 모달 css -->
     <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
-    <!-- 모달 js -->
     <script th:src="@{/js/modal.js}"></script>
     <script th:src="@{/js/my/reviews.js}"></script>
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
 </head>
-<body>
+<body th:data-active-review-type="${type}">
 <header th:replace="~{common/header :: header}"></header>
-<main class="mypage">
-    <div class="wrap">
-        <div class="mypage-layout">
-            <!-- 좌측 사이드바 -->
-            <aside th:replace="~{common/my-aside :: myAside}"></aside>
-
-            <!-- 오른쪽 -->
-            <section class="mypage-content">
-                <div class="page-header">
-                    <h2>작성한 후기</h2>
-                    <p>작성한 기업 리뷰와 면접 후기를 확인할 수 있습니다.</p>
-                </div>
-
-                <div class="review-tabs">
-                    <button class="review-tab active" data-type="company">
-                        기업 리뷰 1
-                    </button>
-
-                    <button class="review-tab" data-type="interview">
-                        면접 후기 1
-                    </button>
-                </div>
-
-                <div class="review-list">
-                    <!-- 기업 리뷰 -->
-                    <div class="review-card company-review">
-                        <div class="review-top">
-                            <div class="review-info">
-                                <span class="review-type company"> 기업리뷰 </span>
-
-                                <h3>네이버클라우드</h3>
-                            </div>
-
-                            <span class="review-date"> 2026.07.12 </span>
-                        </div>
-
-                        <p class="review-job">직군 · 백엔드 개발</p>
-
-                        <p class="review-content">
-                            성장 기회가 많고 기술적인 도전을 할 수 있어요.
-                        </p>
-
-                        <div class="review-bottom">
-                            <button class="btn-outline">수정</button>
-
-                            <button class="btn-outline btn-delete">
-                                <!--                                th:data-review-id="${review.reviewNo}">-->
-                                삭제
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 면접 후기 -->
-                    <div class="review-card interview-review">
-                        <div class="review-top">
-                            <div class="review-info">
-                                <span class="review-type interview"> 면접후기 </span>
-
-                                <h3>우아한형제들</h3>
-                            </div>
-
-                            <span class="review-date"> 2026.05.14 </span>
-                        </div>
-
-                        <p class="review-job">백엔드 개발자 · 면접 완료</p>
-
-                        <p class="review-content">
-                            기술 질문과 프로젝트 경험 중심으로 진행됐습니다.
-                        </p>
-
-                        <div class="review-bottom">
-                            <button class="btn-outline">수정</button>
-
-                            <button class="btn-outline btn-delete">삭제</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+<main class="mypage"><div class="wrap"><div class="mypage-layout">
+    <aside th:replace="~{common/my-aside :: myAside}"></aside>
+    <section class="mypage-content">
+        <div class="page-header"><h2>작성한 후기</h2><p>작성한 기업 리뷰와 면접 후기를 확인할 수 있습니다.</p></div>
+        <div class="review-tabs">
+            <button type="button" class="review-tab" th:classappend="${type == 'company'} ? ' active'" data-type="company" th:text="|기업 리뷰 ${companyReviewCount}|">기업 리뷰</button>
+            <button type="button" class="review-tab" th:classappend="${type == 'interview'} ? ' active'" data-type="interview" th:text="|면접 후기 ${interviewReviewCount}|">면접 후기</button>
         </div>
-    </div>
-</main>
 
-<!-- ============ 푸터 (공통 영역) ============ -->
+        <div class="review-list company-review-list" th:style="${type == 'company' ? '' : 'display:none'}">
+            <div class="review-card company-review" th:each="review : ${companyReviews}">
+                <div class="review-top"><div class="review-info"><span class="review-type company">기업리뷰</span><h3 th:text="${review.companyName}">기업명</h3></div><span class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy.MM.dd')}">날짜</span></div>
+                <p class="review-job" th:text="|${review.employmentStatus} · ${review.jobCategoryName ?: '직무 정보 없음'} · 평점 ${review.overallRating}|">직무</p>
+                <p class="review-content" th:text="${review.summary}">내용</p>
+                <div class="review-bottom">
+                    <a class="btn-outline review-action" th:href="@{/my/reviews/company/edit(reviewId=${review.companyReviewId})}">수정</a>
+                    <button type="button" class="btn-outline btn-delete" data-review-type="company" th:data-review-id="${review.companyReviewId}">삭제</button>
+                </div>
+            </div>
+            <p th:if="${#lists.isEmpty(companyReviews)}" style="text-align: center; padding: 3rem;" >작성한 기업리뷰가 없습니다.</p>
+        </div>
+
+        <div class="review-list interview-review-list" th:style="${type == 'interview' ? '' : 'display:none'}">
+            <div class="review-card interview-review" th:each="review : ${interviewReviews}">
+                <div class="review-top"><div class="review-info"><span class="review-type interview">면접후기</span><h3 th:text="${review.companyName}">기업명</h3></div><span class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy.MM.dd')}">날짜</span></div>
+                <p class="review-job" th:text="|${review.title} · ${review.interviewResult} · ${review.difficulty}|">공고</p>
+                <p class="review-content" th:text="${review.content}">내용</p>
+                <div class="review-bottom">
+                    <a class="btn-outline review-action" th:href="@{/my/reviews/interview/edit(reviewId=${review.interviewReviewId})}">수정</a>
+                    <button type="button" class="btn-outline btn-delete" data-review-type="interview" th:data-review-id="${review.interviewReviewId}">삭제</button>
+                </div>
+            </div>
+            <p th:if="${#lists.isEmpty(interviewReviews)}" style="padding: 3rem; text-align: center;">작성한 면접후기가 없습니다.</p>
+        </div>
+    </section>
+</div></div></main>
+
+<div id="reviewFeedback" th:if="${errorMessage != null or successMessage != null}" th:data-message="${successMessage != null ? successMessage : errorMessage}" th:data-success="${successMessage != null}"></div>
 <footer th:replace="~{common/footer :: footer}"></footer>
-
-<!-- 모달 불러오기 -->
 <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
-
-<!-- 공통 헤더·푸터 불러오기 -->
-<script th:src="@{../js/common.js}"></script>
+<script th:src="@{/js/common.js}"></script>
 </body>
 </html>

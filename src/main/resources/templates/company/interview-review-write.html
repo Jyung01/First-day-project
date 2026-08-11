@@ -45,31 +45,44 @@
         </div>
 
         <!-- 면접후기 작성 폼 -->
-        <form id="interviewReviewForm">
+        <form id="interviewReviewForm"
+              th:action="${formAction != null ? formAction : '/company/interview-review/write'}"
+              th:object="${interviewReviewsDTO}"
+              method="post">
+
+            <input type="hidden" th:field="*{companyId}">
+            <input type="hidden" th:field="*{interviewReviewId}">
+            <input type="hidden" th:field="*{jobPostingId}">
+            <input type="hidden" th:field="*{applicationId}">
 
             <div class="form-row">
                 <div class="form-group">
                     <label>기업</label>
-                    <input type="text" name="companyName" value="네이버클라우드" readonly class="readonly-input">
+                    <input type="text" th:field="*{companyName}" readonly class="readonly-input">
                 </div>
                 <div class="form-group">
                     <label>지원 공고</label>
-                    <input type="text" name="recruitTitle" value="Java/Spring 백엔드 개발자" readonly class="readonly-input">
+                    <input type="text" th:field="*{title}" readonly class="readonly-input">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>면접 시기</label>
-                    <input type="text" name="interviewDate" value="2026.06" readonly class="readonly-input">
+                    <input type="text" th:field="*{interviewMonth}" readonly class="readonly-input">
                 </div>
                 <div class="form-group">
                     <label>면접 방식</label>
-                    <input type="text" name="interviewType" value="대면 면접" readonly class="readonly-input">
+                    <select th:field="*{interviewType}">
+                        <option value="대면면접">대면면접</option>
+                        <option value="화상면접">화상면접</option>
+                        <option value="전화면접">전화면접</option>
+                        <option value="기타">기타</option>
+                    </select>
                 </div>
                 <div class="form-group full-width">
                     <label>면접 결과</label>
-                    <input type="text" name="interviewResult" value="합격" readonly class="readonly-input">
+                    <input type="text" th:field="*{interviewResult}" readonly class="readonly-input">
                 </div>
             </div>
 
@@ -80,14 +93,14 @@
                     <button type="button" class="diff-btn">쉬움</button>
                     <button type="button" class="diff-btn active">보통</button>
                     <button type="button" class="diff-btn">어려움</button>
-                    <input type="hidden" name="difficulty" id="selectedDifficulty" value="보통">
+                    <input type="hidden" th:field="*{difficulty}" id="selectedDifficulty">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group full-width">
                     <label>면접 단계</label>
-                    <input type="text" name="interviewStep" value="서류 → 실무면접 → 임원면접" readonly class="readonly-input">
+                    <input type="text" th:field="*{processText}" readonly class="readonly-input">
                 </div>
             </div>
 
@@ -95,14 +108,14 @@
             <div class="form-row">
                 <div class="form-group full-width">
                     <label>면접 내용</label>
-                    <textarea name="interviewContent" placeholder="진행 방식과 질문 유형, 분위기 등 실제 면접 경험을 작성해주세요." rows="4"></textarea>
+                    <textarea th:field="*{content}" placeholder="진행 방식과 질문 유형, 분위기 등 실제 면접 경험을 작성해주세요." rows="4"></textarea>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group full-width">
                     <label>준비 팁</label>
-                    <textarea name="preparationTip" placeholder="다른 지원자에게 도움이 될 월 준비 방법을 작성해주세요." rows="4"></textarea>
+                    <textarea th:field="*{tips}" placeholder="다른 지원자에게 도움이 될 준비 방법을 작성해주세요." rows="4"></textarea>
                 </div>
             </div>
 
@@ -117,12 +130,20 @@
             <!-- 버튼 영역 -->
             <div class="form-actions">
                 <button type="button" class="btn-cancel" onclick="history.back();">취소</button>
-                <button type="submit" class="btn-submit">면접후기 등록</button>
+                <button type="submit" class="btn-submit" th:text="${isEdit == true ? '면접후기 수정' : '면접후기 등록'}">면접후기 등록</button>
             </div>
 
         </form>
     </div>
 </main>
+
+<script th:if="${errorMessage}" th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", () => showConfirmModal({
+        iconClass: "danger", iconHtml: '<i class="fa-solid fa-exclamation"></i>',
+        title: "처리할 수 없습니다", message: [[${errorMessage}]],
+        leftVisible: false, rightText: "확인", rightClass: "btn-primary"
+    }));
+</script>
 
 
 <!-- ============ 푸터 (공통 영역) ============ -->

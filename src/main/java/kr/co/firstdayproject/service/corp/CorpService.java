@@ -34,6 +34,7 @@ public class CorpService {
     private static final List<String> ACTIVE_APPLICATION_STATUSES = List.of(
             "지원완료", "서류검토중", "서류합격", "면접예정", "면접완료", "최종합격"
     );
+    private static final List<String> ACTIVE_JOB_POSTING_STATUSES = List.of("모집중", "모집예정");
     private static final java.util.regex.Pattern PASSWORD_PATTERN =
             java.util.regex.Pattern.compile(
                     "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[^A-Za-z\\d\\s])\\S{8,64}$"
@@ -113,7 +114,7 @@ public class CorpService {
 
     public CompanyWithdrawalSummary getWithdrawalSummary(Long companyId) {
         long activeJobCount = jobPostingRepository
-                .countByCompanyIdAndStatus(companyId, "모집중");
+                .countByCompanyIdAndStatusIn(companyId, ACTIVE_JOB_POSTING_STATUSES);
         long applicantCount = activeJobCount == 0L
                 ? 0L
                 : applicationRepository
@@ -183,10 +184,11 @@ public class CorpService {
 
         if (companyLogo != null && !companyLogo.isEmpty()) {
             validateCompanyLogo(companyLogo);
+            String previousLogoUrl = company.getLogoUrl();
+            String uploadedLogoUrl;
             try {
-                company.setLogoUrl(
-                        awsS3Service.upload(companyLogo, "companies_logo")
-                );
+                uploadedLogoUrl = awsS3Service.upload(companyLogo, "companies_logo");
+                company.setLogoUrl(uploadedLogoUrl);
             } catch (IOException | RuntimeException exception) {
                 throw new CompanyProfileUpdateException(
                         "companyLogo",
@@ -194,6 +196,10 @@ public class CorpService {
                         exception
                 );
             }
+            awsS3Service.synchronizePublicReplacement(
+                    previousLogoUrl,
+                    uploadedLogoUrl
+            );
         }
 
         company.setCompanyName(request.getCompanyName().trim());
@@ -206,7 +212,8 @@ public class CorpService {
         company.setAddressLine1(request.getAddress().trim());
         company.setAddressLine2(trimToNull(request.getAddressDetail()));
         company.setShortDescription(trimToNull(request.getShortDescription()));
-        company.setBenefits(trimToNull(request.getBenefits()));
+        company.setIntroduction(trimToNull(request.getIntroduction()));
+        company.setBenefits(toBenefitsJson(request.getBenefits()));
         company.setUpdatedAt(LocalDateTime.now());
     }
 
@@ -236,11 +243,12 @@ public class CorpService {
         }
 
         if (companyLogo != null && !companyLogo.isEmpty()) {
+            String previousLogoUrl = company.getLogoUrl();
+            String uploadedLogoUrl;
             try {
                 validateCompanyLogo(companyLogo);
-                company.setLogoUrl(
-                        awsS3Service.upload(companyLogo, "companies_logo")
-                );
+                uploadedLogoUrl = awsS3Service.upload(companyLogo, "companies_logo");
+                company.setLogoUrl(uploadedLogoUrl);
             } catch (CompanyProfileUpdateException exception) {
                 throw new CompanyReapplyException(
                         "companyLogo",
@@ -252,6 +260,10 @@ public class CorpService {
                         "기업 로고를 업로드하지 못했습니다. 다시 시도해주세요."
                 );
             }
+            awsS3Service.synchronizePublicReplacement(
+                    previousLogoUrl,
+                    uploadedLogoUrl
+            );
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -263,7 +275,8 @@ public class CorpService {
         company.setIndustryName(trimToNull(request.getIndustry()));
         company.setHomepageUrl(trimToNull(request.getHomepage()));
         company.setShortDescription(trimToNull(request.getShortDescription()));
-        company.setBenefits(trimToNull(request.getBenefits()));
+        company.setIntroduction(trimToNull(request.getIntroduction()));
+        company.setBenefits(toBenefitsJson(request.getBenefits()));
         company.setApprovalStatus(PENDING_APPROVAL);
         company.setReapplyRequestedAt(now);
         company.setUpdatedAt(now);
@@ -284,6 +297,47 @@ public class CorpService {
 
     private String trimToNull(String value) {
         return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private String toBenefitsJson(List<String> benefits) {
+        List<String> normalizedBenefits = benefits == null
+                ? List.of()
+                : benefits.stream()
+                        .map(this::trimToNull)
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .toList();
+
+        return normalizedBenefits.stream()
+                .map(this::toJsonString)
+                .collect(java.util.stream.Collectors.joining(",", "[", "]"));
+    }
+
+    private String toJsonString(String value) {
+        StringBuilder escaped = new StringBuilder("\"");
+
+        for (int index = 0; index < value.length(); index++) {
+            char character = value.charAt(index);
+
+            switch (character) {
+                case '"' -> escaped.append("\\\"");
+                case '\\' -> escaped.append("\\\\");
+                case '\b' -> escaped.append("\\b");
+                case '\f' -> escaped.append("\\f");
+                case '\n' -> escaped.append("\\n");
+                case '\r' -> escaped.append("\\r");
+                case '\t' -> escaped.append("\\t");
+                default -> {
+                    if (character < 0x20) {
+                        escaped.append(String.format("\\u%04x", (int) character));
+                    } else {
+                        escaped.append(character);
+                    }
+                }
+            }
+        }
+
+        return escaped.append('"').toString();
     }
 
     private void validateCompanyLogo(MultipartFile companyLogo) {

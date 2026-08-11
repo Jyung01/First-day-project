@@ -4,4 +4,164 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.firstdayproject.dao.my.MyPageDao">
 
+    <sql id="savedJobFilter">
+        <choose>
+            <when test="filter == 'open'">
+                AND jp.status = '모집중'
+                AND (jp.apply_end_at IS NULL OR jp.apply_end_at &gt;= CURRENT_DATE)
+            </when>
+            <when test="filter == 'deadline'">
+                AND jp.status = '모집중'
+                AND DATE(jp.apply_end_at) BETWEEN CURRENT_DATE AND DATE_ADD(CURRENT_DATE, INTERVAL 7 DAY)
+            </when>
+        </choose>
+    </sql>
+
+    <select id="selectSavedJobList" resultType="kr.co.firstdayproject.dto.job.JobDTO">
+        SELECT
+            jp.job_posting_id,
+            jp.company_id,
+            jp.title,
+            jp.employment_type,
+            jp.career_type,
+            jp.work_region,
+            jp.work_address,
+            jp.status,
+            jp.apply_end_at,
+            DATEDIFF(jp.apply_end_at, CURRENT_DATE) AS dday,
+            c.company_name,
+            c.logo_url
+        FROM saved_jobs sj
+        JOIN job_postings jp ON jp.job_posting_id = sj.job_posting_id
+        JOIN companies c ON c.company_id = jp.company_id
+        WHERE sj.user_id = #{userId}
+          AND jp.status NOT IN ('임시저장', '숨김', '삭제')
+          AND c.company_status = '정상'
+        <include refid="savedJobFilter"/>
+        ORDER BY sj.created_at DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectSavedJobCount" resultType="int">
+        SELECT COUNT(*)
+        FROM saved_jobs sj
+        JOIN job_postings jp ON jp.job_posting_id = sj.job_posting_id
+        JOIN companies c ON c.company_id = jp.company_id
+        WHERE sj.user_id = #{userId}
+          AND jp.status NOT IN ('임시저장', '숨김', '삭제')
+          AND c.company_status = '정상'
+        <include refid="savedJobFilter"/>
+    </select>
+
+    <delete id="deleteSavedJob">
+        DELETE FROM saved_jobs
+        WHERE user_id = #{userId}
+          AND job_posting_id = #{jobPostingId}
+    </delete>
+
+    <select id="selectSavedCompanyList" resultType="kr.co.firstdayproject.dto.company.CompanyDTO">
+        SELECT
+            c.company_id,
+            c.company_name,
+            c.industry_name,
+            c.company_size,
+            c.logo_url,
+            (SELECT COUNT(*) FROM job_postings jp
+             WHERE jp.company_id = c.company_id
+               AND jp.status = '모집중'
+               AND (jp.apply_end_at IS NULL OR jp.apply_end_at &gt;= CURRENT_DATE)) AS jobPostingCount
+        FROM saved_companies sc
+        JOIN companies c ON c.company_id = sc.company_id
+        WHERE sc.user_id = #{userId}
+          AND c.company_status = '정상'
+          AND c.approval_status = '승인'
+        <choose>
+            <when test="sort == 'name'">ORDER BY c.company_name ASC</when>
+            <when test="sort == 'jobs'">ORDER BY jobPostingCount DESC, sc.created_at DESC</when>
+            <otherwise>ORDER BY sc.created_at DESC</otherwise>
+        </choose>
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectSavedCompanyCount" resultType="int">
+        SELECT COUNT(*)
+        FROM saved_companies sc
+        JOIN companies c ON c.company_id = sc.company_id
+        WHERE sc.user_id = #{userId}
+          AND c.company_status = '정상'
+          AND c.approval_status = '승인'
+    </select>
+
+    <delete id="deleteSavedCompany">
+        DELETE FROM saved_companies
+        WHERE user_id = #{userId}
+          AND company_id = #{companyId}
+    </delete>
+
+    <select id="selectMyCompanyReviews" resultType="kr.co.firstdayproject.dto.company.CompanyReviewsDTO">
+        SELECT cr.*, c.company_name AS companyName, jc.category_name AS jobCategoryName
+        FROM company_reviews cr
+        JOIN companies c ON c.company_id = cr.company_id
+        LEFT JOIN job_categories jc ON jc.job_category_id = cr.job_category_id
+        WHERE cr.author_user_id = #{userId} AND cr.status != '삭제'
+        ORDER BY cr.created_at DESC
+    </select>
+
+    <select id="selectMyInterviewReviews" resultType="kr.co.firstdayproject.dto.company.InterviewReviewsDTO">
+        SELECT ir.*, c.company_name AS companyName, jp.title
+        FROM interview_reviews ir
+        JOIN companies c ON c.company_id = ir.company_id
+        JOIN job_postings jp ON jp.job_posting_id = ir.job_posting_id
+        WHERE ir.author_user_id = #{userId} AND ir.status != '삭제'
+        ORDER BY ir.created_at DESC
+    </select>
+
+    <select id="selectMyCompanyReviewCount" resultType="int">
+        SELECT COUNT(*) FROM company_reviews WHERE author_user_id = #{userId} AND status != '삭제'
+    </select>
+    <select id="selectMyInterviewReviewCount" resultType="int">
+        SELECT COUNT(*) FROM interview_reviews WHERE author_user_id = #{userId} AND status != '삭제'
+    </select>
+
+    <select id="selectMyCompanyReview" resultType="kr.co.firstdayproject.dto.company.CompanyReviewsDTO">
+        SELECT cr.*, c.company_name AS companyName, jc.category_name AS jobCategoryName
+        FROM company_reviews cr
+        JOIN companies c ON c.company_id = cr.company_id
+        LEFT JOIN job_categories jc ON jc.job_category_id = cr.job_category_id
+        WHERE cr.company_review_id = #{reviewId} AND cr.author_user_id = #{userId} AND cr.status != '삭제'
+    </select>
+
+    <select id="selectMyInterviewReview" resultType="kr.co.firstdayproject.dto.company.InterviewReviewsDTO">
+        SELECT ir.*, c.company_name AS companyName, jp.title
+        FROM interview_reviews ir
+        JOIN companies c ON c.company_id = ir.company_id
+        JOIN job_postings jp ON jp.job_posting_id = ir.job_posting_id
+        WHERE ir.interview_review_id = #{reviewId} AND ir.author_user_id = #{userId} AND ir.status != '삭제'
+    </select>
+
+    <update id="updateMyCompanyReview">
+        UPDATE company_reviews
+        SET career_growth_rating=#{careerGrowthRating}, work_satisfaction_rating=#{workSatisfactionRating},
+            compensation_rating=#{compensationRating}, culture_rating=#{cultureRating},
+            overall_rating=#{overallRating}, pros=#{pros}, cons=#{cons}, summary=#{summary},
+            updated_at=CURRENT_TIMESTAMP(6)
+        WHERE company_review_id=#{companyReviewId} AND author_user_id=#{authorUserId} AND status != '삭제'
+    </update>
+
+    <update id="updateMyInterviewReview">
+        UPDATE interview_reviews
+        SET interview_type=#{interviewType}, difficulty=#{difficulty}, content=#{content}, tips=#{tips},
+            updated_at=CURRENT_TIMESTAMP(6)
+        WHERE interview_review_id=#{interviewReviewId} AND author_user_id=#{authorUserId} AND status != '삭제'
+    </update>
+
+    <update id="deleteMyCompanyReview">
+        UPDATE company_reviews SET status='삭제', updated_at=CURRENT_TIMESTAMP(6)
+        WHERE company_review_id=#{reviewId} AND author_user_id=#{userId} AND status != '삭제'
+    </update>
+    <update id="deleteMyInterviewReview">
+        UPDATE interview_reviews SET status='삭제', updated_at=CURRENT_TIMESTAMP(6)
+        WHERE interview_review_id=#{reviewId} AND author_user_id=#{userId} AND status != '삭제'
+    </update>
+
 </mapper>

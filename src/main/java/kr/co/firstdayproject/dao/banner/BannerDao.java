@@ -13,6 +13,9 @@ public interface  BannerDao {
             @Param("placement") String placement
     );
 
+    // 관리자: 전체 배너 목록 조회
+    List<BannerDTO> selectAdminBanners();
+
     // 관리자 : 배너 등록
     void insertBanner(BannerDTO dto);
 }

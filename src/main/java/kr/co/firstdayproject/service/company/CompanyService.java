@@ -54,16 +54,28 @@ public class CompanyService {
     // 기업정보 상세
     public CompanyDTO getCompanyDetail(Long companyId) {
         CompanyDTO company = companyDao.selectCompanyDetail(companyId);
+        company.setBenefitList(parseBenefits(company.getBenefits()));
+        return company;
+    }
 
-        if (company.getBenefits() != null) {
-            company.setBenefitList(
-                    Arrays.stream(company.getBenefits().split(","))
-                            .map(String::trim)
-                            .toList()
-            );
+    /** companies.benefits에 JSON 배열 문자열(["4대보험","교육비 지원"])로 저장된 복지 태그를 파싱 */
+    private List<String> parseBenefits(String benefitsJson) {
+        if (benefitsJson == null || benefitsJson.isBlank()) {
+            return List.of();
         }
 
-        return company;
+        String content = benefitsJson.trim();
+        if (content.length() < 2 || content.charAt(0) != '[') {
+            return List.of();
+        }
+
+        return Arrays.stream(
+                        content.substring(1, content.length() - 1).split(",")
+                )
+                .map(String::trim)
+                .map(value -> value.replaceAll("^\"|\"$", ""))
+                .filter(value -> !value.isBlank())
+                .toList();
     }
 
     // 기업 상세 : 진행 중인 채용공고
@@ -88,5 +100,20 @@ public class CompanyService {
         return list;
     }
 
+    // 기업 정보 : 관심기업 등록 및 해제
+    @Transactional
+    public boolean toggleWish(Long userId, Long companyId) {
+
+        int count = companyDao.countWish(userId, companyId);
+        // 이미 관심기업이면 삭제
+        if (count > 0) {
+            companyDao.deleteWish(userId, companyId);
+            return false;
+        }
+        // 관심기업이 아니면 등록
+
+        companyDao.insertWish(userId, companyId);
+        return true;
+    }
 
 }

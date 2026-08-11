@@ -195,7 +195,7 @@ class CorpServiceTest {
 
     @Test
     void countsWithdrawalSummaryWithoutLoadingJsonEntities() {
-        when(jobPostingRepository.countByCompanyIdAndStatus(10L, "모집중"))
+        when(jobPostingRepository.countByCompanyIdAndStatusIn(10L, List.of("모집중", "모집예정")))
                 .thenReturn(2L);
         when(applicationRepository.countActiveApplicantsOfRecruitingCompany(
                 org.mockito.ArgumentMatchers.eq(10L),
@@ -284,7 +284,7 @@ class CorpServiceTest {
         request.setAddress("서울특별시 강남구 테헤란로 123");
         request.setAddressDetail("4층");
         request.setShortDescription("기업 한 줄 소개");
-        request.setBenefits("복지 정보");
+        request.setBenefits(List.of("복지 정보"));
         when(companyRepository.findById(10L)).thenReturn(Optional.of(company));
 
         corpService.updateCompanyProfile(10L, request, null);
@@ -305,6 +305,7 @@ class CorpServiceTest {
         Company company = Company.builder()
                 .companyId(10L)
                 .approvalStatus("반려")
+                .logoUrl("https://cdn.test/companies_logo/previous.png")
                 .build();
         CompanyReapplyRequest request = validReapplyRequest();
         MockMultipartFile logo = new MockMultipartFile(
@@ -327,6 +328,10 @@ class CorpServiceTest {
                 .isEqualTo("https://cdn.test/companies_logo/logo.png");
         assertThat(company.getApprovalStatus()).isEqualTo("승인대기");
         verify(awsS3Service).upload(logo, "companies_logo");
+        verify(awsS3Service).synchronizePublicReplacement(
+                "https://cdn.test/companies_logo/previous.png",
+                "https://cdn.test/companies_logo/logo.png"
+        );
     }
 
     private CompanyReapplyRequest validReapplyRequest() {
@@ -339,7 +344,7 @@ class CorpServiceTest {
         request.setIndustry("IT·인터넷");
         request.setHomepage("https://example.com");
         request.setShortDescription("기업 한 줄 소개");
-        request.setBenefits("복지 정보");
+        request.setBenefits(List.of("복지 정보"));
         return request;
     }
 }

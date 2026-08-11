@@ -44,20 +44,18 @@
                     <article class="resume-document">
                         <!-- 기본정보 -->
                         <header class="resume-document-header">
-                            <h2 class="resume-member-name">김첫출</h2>
+                            <h2 class="resume-member-name" th:text="${resume.applicantName}">김첫출</h2>
 
                             <p class="resume-member-position">
-                                <span>백엔드 개발자</span>
+                                <span th:text="${resume.title}">백엔드 개발자</span>
                                 <span aria-hidden="true">·</span>
-                                <span>경력</span>
+                                <span th:text="${resume.careerType}">경력</span>
                             </p>
 
                             <div class="resume-member-contact">
-                                <span>user@firstwork.co.kr</span>
+                                <span th:text="${resume.email}">user@firstwork.co.kr</span>
                                 <span class="resume-contact-divider">·</span>
-                                <span>010-1234-5678</span>
-                                <span class="resume-contact-divider">·</span>
-                                <span>서울특별시 강남구</span>
+                                <span th:text="${resume.phone}">010-1234-5678</span>
                             </div>
                         </header>
 
@@ -76,62 +74,51 @@
                             <h3 class="resume-section-title">경력</h3>
 
                             <div class="resume-entry-list">
-                                <!-- 서버 연결용 -->
-                                <!--
                                 <article
                                     class="resume-entry"
-                                    th:each="career : ${resume.careers}"
+                                    th:each="career : ${careers}"
                                 >
                                     <strong
                                         class="resume-entry-title"
-                                        th:text="${career.companyName
-                                            + ' · '
-                                            + career.position}"
+                                        th:text="${career.positionTitle != null and !career.positionTitle.isBlank()
+                                            ? career.companyName + ' · ' + career.positionTitle
+                                            : career.companyName}"
                                     >
                                         첫출근테크 · 백엔드 개발 인턴
                                     </strong>
 
                                     <p class="resume-entry-meta">
-                                        <span
-                                            th:text="${career.startDate}"
-                                        >
+                                        <span th:text="${#temporals.format(career.startDate, 'yyyy.MM')}">
                                             2025.03
                                         </span>
 
                                         <span aria-hidden="true">–</span>
 
                                         <span
-                                            th:text="${career.endDate}"
+                                            th:text="${career.isCurrent
+                                                ? '재직중'
+                                                : (career.endDate != null ? #temporals.format(career.endDate, 'yyyy.MM') : '-')}"
                                         >
                                             2026.02
                                         </span>
 
                                         <span
+                                            th:if="${career.description != null and !career.description.isBlank()}"
                                             class="resume-entry-divider"
                                             aria-hidden="true"
                                         >
                                             |
                                         </span>
 
-                                        <span
-                                            th:text="${career.description}"
-                                        >
+                                        <span th:text="${career.description}">
                                             Spring Boot 기반 채용 서비스 API 개발
                                         </span>
                                     </p>
                                 </article>
-                                -->
 
-                                <!-- 화면 확인용 -->
-                                <article class="resume-entry">
-                                    <strong class="resume-entry-title"> 첫출근테크 · 백엔드 개발 인턴 </strong>
-
-                                    <p class="resume-entry-meta">
-                                        2025.03 – 2026.02
-                                        <span class="resume-entry-divider" aria-hidden="true"> | </span>
-                                        Spring Boot 기반 채용 서비스 API 개발
-                                    </p>
-                                </article>
+                                <p class="resume-section-description" th:if="${#lists.isEmpty(careers)}">
+                                    등록된 경력이 없습니다.
+                                </p>
                             </div>
                         </section>
 
@@ -140,26 +127,24 @@
                             <h3 class="resume-section-title">학력</h3>
 
                             <div class="resume-entry-list">
-                                <!-- 서버 연결용 -->
-                                <!--
                                 <article
                                     class="resume-entry"
-                                    th:each="education : ${resume.educations}"
+                                    th:each="education : ${educations}"
                                 >
                                     <strong
                                         class="resume-entry-title"
                                         th:text="${education.schoolName
-                                            + ' '
-                                            + education.major
-                                            + ' '
-                                            + education.graduationStatusName}"
+                                            + (education.major != null and !education.major.isBlank() ? ' ' + education.major : '')
+                                            + (education.graduationStatus != null and !education.graduationStatus.isBlank() ? ' ' + education.graduationStatus : '')}"
                                     >
                                         한국대학교 컴퓨터공학과 졸업
                                     </strong>
 
                                     <p class="resume-entry-meta">
                                         <span
-                                            th:text="${education.admissionDate}"
+                                            th:text="${education.admissionDate != null
+                                                ? #temporals.format(education.admissionDate, 'yyyy.MM')
+                                                : '-'}"
                                         >
                                             2020.03
                                         </span>
@@ -167,13 +152,15 @@
                                         <span aria-hidden="true">–</span>
 
                                         <span
-                                            th:text="${education.graduationDate}"
+                                            th:text="${education.graduationDate != null
+                                                ? #temporals.format(education.graduationDate, 'yyyy.MM')
+                                                : '-'}"
                                         >
                                             2026.02
                                         </span>
 
                                         <span
-                                            th:if="${education.grade != null}"
+                                            th:if="${education.gpaScore != null and education.gpaScale != null}"
                                             class="resume-entry-divider"
                                             aria-hidden="true"
                                         >
@@ -181,21 +168,17 @@
                                         </span>
 
                                         <span
-                                            th:if="${education.grade != null}"
-                                            th:text="${education.grade}"
+                                            th:if="${education.gpaScore != null and education.gpaScale != null}"
+                                            th:text="${education.gpaScore + ' / ' + education.gpaScale}"
                                         >
                                             3.8 / 4.5
                                         </span>
                                     </p>
                                 </article>
-                                -->
 
-                                <!-- 화면 확인용 -->
-                                <article class="resume-entry">
-                                    <strong class="resume-entry-title"> 한국대학교 컴퓨터공학과 졸업 </strong>
-
-                                    <p class="resume-entry-meta">2020.03 – 2026.02</p>
-                                </article>
+                                <p class="resume-section-description" th:if="${#lists.isEmpty(educations)}">
+                                    등록된 학력이 없습니다.
+                                </p>
                             </div>
                         </section>
 
@@ -204,24 +187,17 @@
                             <h3 class="resume-section-title">기술</h3>
 
                             <div class="resume-skill-list">
-                                <!-- 서버 연결용 -->
-                                <!--
                                 <span
                                     class="resume-skill"
-                                    th:each="skill : ${resume.skills}"
-                                    th:text="${skill.name}"
+                                    th:each="skill : ${skills}"
+                                    th:text="${skill}"
                                 >
                                     Java
                                 </span>
-                                -->
 
-                                <!-- 화면 확인용 -->
-                                <span class="resume-skill">Java</span>
-                                <span class="resume-skill">Spring Boot</span>
-                                <span class="resume-skill">MyBatis</span>
-                                <span class="resume-skill">MySQL</span>
-                                <span class="resume-skill">AWS</span>
-                                <span class="resume-skill">Docker</span>
+                                <p class="resume-section-description" th:if="${#lists.isEmpty(skills)}">
+                                    등록된 기술이 없습니다.
+                                </p>
                             </div>
                         </section>
 
@@ -230,11 +206,9 @@
                             <h3 class="resume-section-title">프로젝트</h3>
 
                             <div class="resume-entry-list">
-                                <!-- 서버 연결용 -->
-                                <!--
                                 <article
                                     class="resume-entry"
-                                    th:each="project : ${resume.projects}"
+                                    th:each="project : ${projects}"
                                 >
                                     <strong
                                         class="resume-entry-title"
@@ -245,7 +219,8 @@
 
                                     <p
                                         class="resume-entry-meta"
-                                        th:text="${project.role}"
+                                        th:if="${project.roleText != null and !project.roleText.isBlank()}"
+                                        th:text="${project.roleText}"
                                     >
                                         채용공고 · 기업리뷰 · 이력서 ·
                                         AI 자기소개서 첨삭 기능 설계 및 구현
@@ -253,22 +228,17 @@
 
                                     <p
                                         class="resume-entry-description"
+                                        th:if="${project.description != null and !project.description.isBlank()}"
                                         th:text="${project.description}"
                                     >
                                         채용공고와 지원 문서 관리 기능을
                                         구현했습니다.
                                     </p>
                                 </article>
-                                -->
 
-                                <!-- 화면 확인용 -->
-                                <article class="resume-entry">
-                                    <strong class="resume-entry-title"> 첫출근 채용 플랫폼 </strong>
-
-                                    <p class="resume-entry-meta">
-                                        채용공고 · 기업리뷰 · 이력서 · AI 자기소개서 첨삭 기능 설계 및 구현
-                                    </p>
-                                </article>
+                                <p class="resume-section-description" th:if="${#lists.isEmpty(projects)}">
+                                    등록된 프로젝트가 없습니다.
+                                </p>
                             </div>
                         </section>
                     </article>

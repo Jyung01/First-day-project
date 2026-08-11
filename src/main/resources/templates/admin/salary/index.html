@@ -1,219 +1,107 @@
 <!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>연봉 관리</title>
-        <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
-        <link rel="stylesheet" th:href="@{/css/admin/review/common.css}" />
-        <link rel="stylesheet" th:href="@{/css/admin/salary/common.css}" />
-        <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}"/>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>연봉정보 관리</title>
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin/review/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin/salary/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/admin/salary.js}"></script>
+</head>
+<body>
+<div class="wrapper">
+    <header th:replace="~{common/admin-header :: adminHeader}"></header>
+    <div class="container">
+        <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
+        <main class="content">
+            <section class="page-title">
+                <h2>연봉정보 관리</h2>
+                <p>회원이 등록한 기업·직무·경력별 연봉정보를 조회하고 공개 상태를 관리합니다.</p>
+            </section>
 
-        <script>
-            const salaryData = {
-                all: [
-                    {
-                        no: "S-428",
-                        company: "토스",
-                        job: "백엔드 개발자",
-                        career: "3~5년",
-                        salary: "6,800만원",
-                        year: "2026",
-                        sample: "182명",
-                        state: "정상",
-                    },
+            <section class="summary">
+                <div class="summary-card"><span>전체 데이터</span><h3 th:text="|${summary.totalCount ?: 0}건|">0건</h3></div>
+                <div class="summary-card"><span>정상</span><h3 th:text="|${summary.normalCount ?: 0}건|">0건</h3></div>
+                <div class="summary-card"><span>숨김</span><h3 th:text="|${summary.hiddenCount ?: 0}건|">0건</h3></div>
+                <div class="summary-card"><span>삭제</span><h3 th:text="|${summary.deletedCount ?: 0}건|">0건</h3></div>
+            </section>
 
-                    {
-                        no: "S-427",
-                        company: "카카오",
-                        job: "프론트엔드",
-                        career: "5년 이상",
-                        salary: "7,500만원",
-                        year: "2026",
-                        sample: "121명",
-                        state: "정상",
-                    },
+            <section class="review-box">
+                <nav class="review-tab" aria-label="연봉정보 상태">
+                    <a class="tab-btn" th:classappend="${status == 'all'} ? ' active'" th:href="@{/admin/salary(status='all',companyId=${companyId},jobCategoryId=${jobCategoryId},career=${career},keyword=${keyword},sort=${sort})}">전체</a>
+                    <a class="tab-btn" th:classappend="${status == '정상'} ? ' active'" th:href="@{/admin/salary(status='정상',companyId=${companyId},jobCategoryId=${jobCategoryId},career=${career},keyword=${keyword},sort=${sort})}">정상</a>
+                    <a class="tab-btn" th:classappend="${status == '숨김'} ? ' active'" th:href="@{/admin/salary(status='숨김',companyId=${companyId},jobCategoryId=${jobCategoryId},career=${career},keyword=${keyword},sort=${sort})}">숨김</a>
+                    <a class="tab-btn" th:classappend="${status == '삭제'} ? ' active'" th:href="@{/admin/salary(status='삭제',companyId=${companyId},jobCategoryId=${jobCategoryId},career=${career},keyword=${keyword},sort=${sort})}">삭제</a>
+                </nav>
 
-                    {
-                        no: "S-426",
-                        company: "네이버",
-                        job: "AI 엔지니어",
-                        career: "신입",
-                        salary: "5,400만원",
-                        year: "2026",
-                        sample: "73명",
-                        state: "검토 필요",
-                    },
+                <form class="search-area" method="get" th:action="@{/admin/salary}">
+                    <input type="hidden" name="status" th:value="${status}"/>
+                    <select name="companyId">
+                        <option value="">기업 전체</option>
+                        <option th:each="company : ${companies}" th:value="${company.companyId}"
+                                th:text="${company.companyName}" th:selected="${company.companyId == companyId}">기업</option>
+                    </select>
+                    <select name="jobCategoryId">
+                        <option value="">직무 전체</option>
+                        <option th:each="job : ${jobs}" th:value="${job.jobCategoryId}"
+                                th:text="${job.categoryName}" th:selected="${job.jobCategoryId == jobCategoryId}">직무</option>
+                    </select>
+                    <select name="career">
+                        <option value="" th:selected="${career == ''}">경력 전체</option>
+                        <option value="newcomer" th:selected="${career == 'newcomer'}">신입·1년 이하</option>
+                        <option value="junior" th:selected="${career == 'junior'}">2~3년</option>
+                        <option value="middle" th:selected="${career == 'middle'}">4~7년</option>
+                        <option value="senior" th:selected="${career == 'senior'}">8년 이상</option>
+                    </select>
+                    <select name="sort" aria-label="정렬">
+                        <option value="latest" th:selected="${sort == 'latest'}">최신 등록순</option>
+                        <option value="oldest" th:selected="${sort == 'oldest'}">오래된 등록순</option>
+                        <option value="salaryHigh" th:selected="${sort == 'salaryHigh'}">연봉 높은순</option>
+                        <option value="salaryLow" th:selected="${sort == 'salaryLow'}">연봉 낮은순</option>
+                        <option value="company" th:selected="${sort == 'company'}">기업명순</option>
+                    </select>
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="기업명 또는 직무 검색"/>
+                    <button type="submit">검색</button>
+                </form>
 
-                    {
-                        no: "S-425",
-                        company: "당근",
-                        job: "백엔드",
-                        career: "1~3년",
-                        salary: "5,900만원",
-                        year: "2026",
-                        sample: "84명",
-                        state: "정상",
-                    },
+                <div class="table-wrap">
+                    <table class="salary-table">
+                        <thead><tr><th>번호</th><th>기업명</th><th>직무</th><th>경력</th><th>연봉</th><th>기준연도</th><th>표본</th><th>상태</th><th>관리</th></tr></thead>
+                        <tbody id="salaryBody">
+                        <tr th:each="item : ${salaryList}">
+                            <td th:text="|S-${item.salaryRecordId}|">S-1</td>
+                            <td th:text="${item.companyName}">기업</td>
+                            <td th:text="${item.categoryName}">직무</td>
+                            <td th:text="${item.careerYears == 0 ? '신입' : item.careerYears + '년'}">경력</td>
+                            <td th:text="|${#numbers.formatInteger(item.baseSalary, 1, 'COMMA')}만원|">0만원</td>
+                            <td th:text="${item.salaryYear}">2026</td>
+                            <td th:text="|${item.sampleCount}건|">1건</td>
+                            <td th:class="${item.status == '정상' ? 'normal' : (item.status == '숨김' ? 'hidden' : 'deleted')}" th:text="${item.status}">정상</td>
+                            <td><button type="button" class="open-salary-review-modal" th:data-salary-id="${item.salaryRecordId}">검토</button></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(salaryList)}"><td colspan="9" class="salary-empty">검색 결과가 없습니다.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                    {
-                        no: "S-424",
-                        company: "라인",
-                        job: "데이터 엔지니어",
-                        career: "3~5년",
-                        salary: "6,600만원",
-                        year: "2026",
-                        sample: "68명",
-                        state: "숨김",
-                    },
-                ],
-
-                normal: [],
-                review: [],
-                hidden: [],
-            };
-
-        </script>
-
-        <script th:src="@{/js/admin/salary.js}"></script>
-
-    </head>
-    <body>
-        <div class="wrapper">
-            <!-- ================= Header ================= -->
-
-            <header th:replace="~{common/admin-header :: adminHeader}"></header>
-
-            <!-- ================= Main ================= -->
-
-            <div class="container">
-                <!-- Sidebar -->
-
-                <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
-
-                <!-- ================= Content ================= -->
-
-                <main class="content">
-                    <!-- 제목 -->
-
-                    <section class="page-title">
-                        <h2>연봉정보 관리</h2>
-
-                        <p>기업·직무·경력별 연봉 카드 데이터를 조회하고 관리합니다.</p>
-                    </section>
-
-                    <!-- 통계 카드 -->
-
-                    <section class="summary">
-                        <div class="summary-card">
-                            <span>전체 데이터</span>
-                            <h3>428건</h3>
-                        </div>
-
-                        <div class="summary-card">
-                            <span>검토 필요</span>
-                            <h3>12건</h3>
-                        </div>
-
-                        <div class="summary-card">
-                            <span>숨김</span>
-                            <h3>5건</h3>
-                        </div>
-                    </section>
-
-                    <!-- 후기 영역 -->
-
-                    <section class="review-box">
-                        <!-- 탭 -->
-
-                        <div class="review-tab">
-                            <button class="tab-btn active" data-tab="all">전체</button>
-
-                            <button class="tab-btn" data-tab="normal">정상</button>
-
-                            <button class="tab-btn" data-tab="review">검토 필요</button>
-
-                            <button class="tab-btn" data-tab="hidden">숨김</button>
-                        </div>
-
-                        <!-- 검색 -->
-
-                        <form class="search-area">
-                            <select name="company">
-                                <option value="">기업 전체</option>
-                                <option>대기업</option>
-                                <option>중견기업</option>
-                                <option>스타트업</option>
-                            </select>
-
-                            <select name="job">
-                                <option value="">직무 전체</option>
-                                <option>백엔드</option>
-                                <option>프론트엔드</option>
-                                <option>AI</option>
-                            </select>
-
-                            <select name="career">
-                                <option value="">경력 전체</option>
-                                <option>신입</option>
-                                <option>1~3년</option>
-                                <option>3~5년</option>
-                                <option>5년 이상</option>
-                            </select>
-
-                            <input type="text" name="keyword" placeholder="기업명 검색" />
-
-                            <button type="submit">검색</button>
-                        </form>
-
-                        <!-- 연봉 테이블 -->
-
-                        <div class="table-wrap">
-                            <table class="salary-table">
-                                <thead>
-                                    <tr>
-                                        <th>번호</th>
-                                        <th>기업명</th>
-                                        <th>직무</th>
-                                        <th>경력</th>
-                                        <th>평균연봉</th>
-                                        <th>기준연도</th>
-                                        <th>표본</th>
-                                        <th>상태</th>
-                                        <th>관리</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody id="salaryBody"></tbody>
-                            </table>
-                        </div>
-
-                        <!-- 페이지네이션 -->
-
-                        <div class="pagination">
-                            <a href="#">&lt;</a>
-
-                            <a href="#" class="active">1</a>
-
-                            <a href="#">2</a>
-
-                            <a href="#">3</a>
-
-                            <a href="#">4</a>
-
-                            <a href="#">5</a>
-
-                            <a href="#">&gt;</a>
-                        </div>
-                    </section>
-                </main>
-            </div>
-
-            <!-- ================= Footer ================= -->
-            <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
-
-            <!-- 연봉 제보 검토 모달 -->
-            <div th:replace="~{modal/admin/salary-review :: salaryReportReviewModal}"></div>
-        </div>
-    </body>
+                <nav class="pagination" th:if="${pageHandler.total > 0}" aria-label="페이지">
+                    <a th:if="${pageHandler.currentPage > 1}" th:href="@{/admin/salary(page=${pageHandler.currentPage - 1},status=${status},companyId=${companyId},jobCategoryId=${jobCategoryId},career=${career},keyword=${keyword},sort=${sort})}">&lt;</a>
+                    <a th:each="p : ${#numbers.sequence(pageHandler.startPage, pageHandler.endPage)}"
+                       th:classappend="${p == pageHandler.currentPage} ? ' active'" th:text="${p}"
+                       th:href="@{/admin/salary(page=${p},status=${status},companyId=${companyId},jobCategoryId=${jobCategoryId},career=${career},keyword=${keyword},sort=${sort})}">1</a>
+                    <a th:if="${pageHandler.currentPage < pageHandler.lastPage}" th:href="@{/admin/salary(page=${pageHandler.currentPage + 1},status=${status},companyId=${companyId},jobCategoryId=${jobCategoryId},career=${career},keyword=${keyword},sort=${sort})}">&gt;</a>
+                </nav>
+            </section>
+        </main>
+    </div>
+    <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
+    <div th:replace="~{modal/admin/salary-review :: salaryReportReviewModal}"></div>
+    <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+</div>
+</body>
 </html>

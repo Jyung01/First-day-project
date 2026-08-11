@@ -43,38 +43,66 @@
         </div>
 
         <!-- 리뷰 작성 폼 -->
-        <form id="companyReviewForm">
+        <form id="companyReviewForm"
+              th:action="${formAction != null ? formAction : '/company/review/write'}"
+              th:object="${companyReviewsDTO}"
+              method="post">
+
+            <!-- hidden -->
+            <input type="hidden" th:field="*{companyId}">
+            <input type="hidden" th:field="*{companyReviewId}">
+            <input type="hidden" th:field="*{authorUserId}">
+            <input type="hidden" th:field="*{eligibilityApplicationId}">
+            <input type="hidden" th:field="*{jobCategoryId}">
+
+            <input type="hidden" th:field="*{careerGrowthRating}" value="5">
+            <input type="hidden" th:field="*{workSatisfactionRating}" value="5">
+            <input type="hidden" th:field="*{compensationRating}" value="5">
+            <input type="hidden" th:field="*{cultureRating}" value="5">
 
             <div class="form-row">
                 <div class="form-group">
                     <label>기업</label>
-                    <input type="text" name="companyName" value="네이버클라우드" readonly class="readonly-input">
+                    <input type="text"
+                           th:value="${companyName}"
+                           readonly
+                           class="readonly-input">
                 </div>
                 <div class="form-group">
                     <label>재직 상태</label>
-                    <input type="text" name="employmentStatus" value="현직원" readonly class="readonly-input">
+                    <input type="text"
+                           th:field="*{employmentStatus}"
+                           readonly
+                           class="readonly-input">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>직무</label>
-                    <input type="text" name="jobCategory" placeholder="직무를 입력하세요">
+                    <input type="text"
+                           th:value="${jobCategoryName}"
+                           readonly
+                           class="readonly-input">
                 </div>
                 <div class="form-group">
                     <label>재직 기간</label>
-                    <input type="text" name="employmentPeriod" placeholder="예: 3년">
+                    <input type="text"
+                           name="employmentPeriod"
+                           placeholder="예: 3년">
                 </div>
             </div>
 
             <!-- 항목별 평점 -->
             <div class="form-group full-width">
                 <label>항목별 평점</label>
+
                 <div class="rating-grid-box">
+
                     <div class="rating-item">
                         <span>커리어 성장</span>
 
-                        <div class="star-rating">
+                        <div class="star-rating" data-target="careerGrowthRating">
                             <i class="fa-solid fa-star active" data-score="1"></i>
                             <i class="fa-solid fa-star active" data-score="2"></i>
                             <i class="fa-solid fa-star active" data-score="3"></i>
@@ -84,10 +112,11 @@
 
                         <strong class="rating-val">5점</strong>
                     </div>
+
                     <div class="rating-item">
-                        <span>업무 단축</span>
+                        <span>업무 만족</span>
 
-                        <div class="star-rating">
+                        <div class="star-rating" data-target="workSatisfactionRating">
                             <i class="fa-solid fa-star active" data-score="1"></i>
                             <i class="fa-solid fa-star active" data-score="2"></i>
                             <i class="fa-solid fa-star active" data-score="3"></i>
@@ -97,10 +126,11 @@
 
                         <strong class="rating-val">5점</strong>
                     </div>
+
                     <div class="rating-item">
                         <span>급여·복지</span>
 
-                        <div class="star-rating">
+                        <div class="star-rating" data-target="compensationRating">
                             <i class="fa-solid fa-star active" data-score="1"></i>
                             <i class="fa-solid fa-star active" data-score="2"></i>
                             <i class="fa-solid fa-star active" data-score="3"></i>
@@ -114,7 +144,7 @@
                     <div class="rating-item">
                         <span>조직문화</span>
 
-                        <div class="star-rating">
+                        <div class="star-rating" data-target="cultureRating">
                             <i class="fa-solid fa-star active" data-score="1"></i>
                             <i class="fa-solid fa-star active" data-score="2"></i>
                             <i class="fa-solid fa-star active" data-score="3"></i>
@@ -125,10 +155,11 @@
                         <strong class="rating-val">5점</strong>
                     </div>
 
-
                 </div>
+
                 <p class="rating-helper">
-                    종합 평점은 항목 평균으로 자동 계산: <span id="avgScore">4.5</span>점
+                    종합 평점은 항목 평균으로 자동 계산:
+                    <span id="avgScore">4.5</span>점
                 </p>
             </div>
 
@@ -136,14 +167,18 @@
             <div class="form-row">
                 <div class="form-group full-width">
                     <label>장점</label>
-                    <textarea name="pros" placeholder="기업에서 좋았던 점을 구체적으로 작성해주세요." rows="4"></textarea>
+                    <textarea th:field="*{pros}"
+                              placeholder="기업에서 좋았던 점을 구체적으로 작성해주세요."
+                              rows="4"></textarea>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group full-width">
                     <label>아쉬운 점</label>
-                    <textarea name="cons" placeholder="개선되었으면 하는 점을 작성해주세요." rows="4"></textarea>
+                    <textarea th:field="*{cons}"
+                              placeholder="개선되었으면 하는 점을 작성해주세요."
+                              rows="4"></textarea>
                 </div>
             </div>
 
@@ -151,7 +186,9 @@
             <div class="form-row">
                 <div class="form-group full-width">
                     <label>한 줄 요약</label>
-                    <input type="text" name="summary" placeholder="후기를 한 문장으로 요약해주세요.">
+                    <input type="text"
+                           th:field="*{summary}"
+                           placeholder="후기를 한 문장으로 요약해주세요.">
                 </div>
             </div>
 
@@ -166,12 +203,20 @@
             <!-- 버튼 영역 -->
             <div class="form-actions">
                 <button type="button" class="btn-cancel" onclick="history.back();">취소</button>
-                <button type="submit" class="btn-submit">기업리뷰 등록</button>
+                <button type="submit" class="btn-submit" th:text="${isEdit == true ? '기업리뷰 수정' : '기업리뷰 등록'}">기업리뷰 등록</button>
             </div>
 
         </form>
     </div>
 </main>
+
+<script th:if="${errorMessage}" th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", () => showConfirmModal({
+        iconClass: "danger", iconHtml: '<i class="fa-solid fa-exclamation"></i>',
+        title: "처리할 수 없습니다", message: [[${errorMessage}]],
+        leftVisible: false, rightText: "확인", rightClass: "btn-primary"
+    }));
+</script>
 
 <!-- ============ 푸터 (공통 영역) ============ -->
 <footer th:replace="~{common/footer :: footer}"></footer>

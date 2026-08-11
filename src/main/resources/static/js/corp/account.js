@@ -5,8 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const withdrawButton = document.querySelector("[data-corp-withdraw]");
 
-    const rejectionGuideButton = document.querySelector("[data-corp-rejection-guide]");
-
     initializeManagerForm(managerForm);
     initializePasswordModal(passwordOpenButton);
     initializeWithdrawModal(withdrawButton);
@@ -23,9 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    rejectionGuideButton?.addEventListener("click", showCorpRejectionGuide);
-
-    window.showCorpRejectionGuide = showCorpRejectionGuide;
 });
 
 /* =========================================================
@@ -170,6 +165,7 @@ function initializePasswordModal(openButton) {
             bodyHtml,
             leftText: "취소",
             rightText: "비밀번호 변경",
+            closeOnOverlay: false,
 
             onRight: function () {
                 submitPasswordChange();
@@ -241,10 +237,10 @@ async function submitPasswordChange() {
         return;
     }
 
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d\s])\S{8,64}$/;
 
     if (!passwordPattern.test(newValue)) {
-        showError("영문·숫자·특수문자를 포함해 8자 이상 입력해주세요.", newPassword);
+        showError("공백 없이 영문·숫자·특수문자를 포함해 8~64자로 입력해주세요.", newPassword);
         return;
     }
 
@@ -374,6 +370,7 @@ function showFinalWithdrawModal() {
         rightText: "기업회원 탈퇴",
         leftClass: "btn-outline",
         rightClass: "btn-danger",
+        closeOnOverlay: false,
         onRight: function () {
             submitCompanyWithdrawal();
         },
@@ -431,42 +428,4 @@ async function readJsonResponse(response) {
                 : "서버 응답을 확인할 수 없습니다.",
         };
     }
-}
-
-/* =========================================================
-   기업 승인 반려 안내
-========================================================= */
-
-function showCorpRejectionGuide() {
-    showConfirmModal({
-        iconClass: "danger",
-        iconHtml: "!",
-        title: "기업 승인 반려 안내",
-        message: "기업 가입 승인이 반려되었습니다.",
-
-        extraHtml: `
-            <div class="corp-modal-summary">
-                <strong>
-                    반려 사유: 형식 오류
-                </strong>
-
-                <p>
-                    기업정보를 수정한 뒤 재심사를 요청해주세요.
-                </p>
-            </div>
-
-            <div class="corp-modal-guide">
-                수정 화면에서 반려 항목이 강조됩니다.
-            </div>
-        `,
-
-        leftText: "닫기",
-        rightText: "기업정보 수정",
-        leftClass: "btn-outline",
-        rightClass: "btn-danger",
-
-        onRight: function () {
-            window.location.href = "/corp/company-info-rejected";
-        },
-    });
 }

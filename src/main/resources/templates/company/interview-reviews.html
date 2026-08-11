@@ -21,6 +21,7 @@
     <script th:src="@{/js/modal/company/review-write.js}"></script>
 
     <script th:src="@{/js/company/detail.js}"></script>
+    <script th:src="@{/js/company/review-reactions.js}"></script>
     <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -184,16 +185,15 @@
 
                 <div class="summary-score">
 
-                    <strong>보통</strong>
+                    <strong th:text="${summary.difficulty}">보통</strong>
 
                 </div>
 
                 <p class="review-count">
 
-                    면접 후기 146개
+                    면접 후기 <span th:text="${summary.reviewCount}">0</span>개
 
                 </p>
-
 
                 <!-- 면접 결과 -->
                 <div class="rating-distribution">
@@ -203,71 +203,65 @@
                         <span>합격</span>
 
                         <div class="rating-bar">
-                            <div class="rating-fill" style="width:58%;"></div>
+                            <div class="rating-fill"
+                                 th:style="'width:' + ${summary.passPercent} + '%'"></div>
                         </div>
 
-                        <em>58%</em>
+                        <em th:text="${summary.passPercent + '%'}">0%</em>
 
                     </div>
-
 
                     <div class="rating-row">
 
                         <span>불합격</span>
 
                         <div class="rating-bar">
-                            <div class="rating-fill gray" style="width:31%;"></div>
+                            <div class="rating-fill gray"
+                                 th:style="'width:' + ${summary.failPercent} + '%'"></div>
                         </div>
 
-                        <em>31%</em>
+                        <em th:text="${summary.failPercent + '%'}">0%</em>
 
                     </div>
-
 
                     <div class="rating-row">
 
                         <span>대기중</span>
 
                         <div class="rating-bar">
-                            <div class="rating-fill gray" style="width:11%;"></div>
+                            <div class="rating-fill gray"
+                                 th:style="'width:' + ${summary.waitingPercent} + '%'"></div>
                         </div>
 
-                        <em>11%</em>
+                        <em th:text="${summary.waitingPercent + '%'}">0%</em>
 
                     </div>
 
                 </div>
 
-
                 <!-- 면접 단계 -->
                 <div class="evaluation-box">
 
-                    <h4>
-                        면접 단계
-                    </h4>
-
+                    <h4>면접 단계</h4>
 
                     <ul>
 
                         <li>
-
-                            <span>서류 → 실무면접 → 임원면접</span>
-
+                <span th:text="${summary.processText}">
+                    서류 → 실무면접 → 임원면접
+                </span>
                         </li>
 
-
                         <li>
-
                             <span>평균 소요기간 14일</span>
-
                         </li>
 
                     </ul>
 
                 </div>
 
-
             </aside>
+
 
 
             <!-- 오른쪽 -->
@@ -277,20 +271,31 @@
                 <div class="review-header">
 
                     <h3>
-                        면접후기 146개
+
+                        면접후기
+                        <span th:text="${summary.reviewCount}">0</span>개
+
                     </h3>
+
 
 
                     <div class="review-actions">
 
 
-                        <button class="sort-btn active">
+                        <button class="sort-btn"
+                                th:classappend="${sort == 'latest'} ? ' active'"
+                                th:onclick="|location.href='@{/company/interview-reviews(companyId=${company.companyId},page=1,sort=latest)}'|">
+
                             최신순
+
                         </button>
 
+                        <button class="sort-btn"
+                                th:classappend="${sort == 'helpful'} ? ' active'"
+                                th:onclick="|location.href='@{/company/interview-reviews(companyId=${company.companyId},page=1,sort=helpful)}'|">
 
-                        <button class="sort-btn">
                             도움순
+
                         </button>
 
 
@@ -305,274 +310,132 @@
                 </div>
 
 
-                <div class="review-grid">
+                <div class="review-grid"
+                     th:if="${!#lists.isEmpty(reviewList)}">
 
-
-                    <!-- 카드 1 -->
-                    <article class="review-card">
-
+                    <article class="review-card"
+                             th:each="review : ${reviewList}">
 
                         <div class="review-card-header">
+
                             <div>
-                                <h4>백엔드 개발자 면접</h4>
+
+                                <h4 th:text="${review.title}">
+                                    백엔드 개발자 면접
+                                </h4>
+
                                 <p class="review-meta">
-                                    2026.06 · 신입 · 합격 <!-- '합격' 텍스트 추가 -->
+
+                                    <span th:text="${review.interviewMonth}">2026.06</span>
+                                    ·
+                                    <span th:text="${review.careerType}">신입</span>
+                                    ·
+                                    <span th:text="${review.interviewResult}">합격</span>
+
                                 </p>
+
                             </div>
+
                             <div class="header-right">
-                                <span class="difficulty">난이도 보통</span> <!-- '난이도 보통' 추가 -->
+
+                    <span class="difficulty">
+                        난이도
+                        <span th:text="${review.difficulty}">보통</span>
+                    </span>
+
                                 <button
                                         class="report-btn"
                                         data-report-type="interviewReview"
-                                        data-target-id="205"
-                                        data-target-name="면접후기">
-                                    신고
-                                </button>
-                            </div>
-                        </div>
+                                        th:attr="data-target-id=${review.interviewReviewId},
+                                     data-target-name='면접후기'">
 
+                                    신고
+
+                                </button>
+
+                            </div>
+
+                        </div>
 
                         <div class="review-recommend">
 
-                        <span class="recommend-badge">
-                            👍 도움돼요 31
-                        </span>
+                <button type="button" class="recommend-badge help-btn"
+                        th:attr="data-review-id=${review.interviewReviewId},data-review-type='면접후기'">
+
+                    👍 도움돼요
+                    <span class="help-count" th:text="${review.helpCount}">0</span>
+
+                </button>
 
                         </div>
 
-
                         <div class="review-content-box">
-
 
                             <p>
 
                                 <strong class="pros">
+
                                     면접 내용
+
                                 </strong>
 
-                                기술 질문과 프로젝트 경험 중심으로 진행되었습니다.
+                                <span th:text="${review.content}">
+                        기술 질문과 프로젝트 경험 중심으로 진행되었습니다.
+                    </span>
 
                             </p>
-
 
                             <p>
-                                <strong class="cons">준비 팁</strong>
-                                CS 지식과 협업 경험을 정리하면 도움이 됩니다.
+
+                                <strong class="cons">
+
+                                    준비 팁
+
+                                </strong>
+
+                                <span th:text="${review.tips}">
+                        CS 지식과 협업 경험을 정리하면 도움이 됩니다.
+                    </span>
+
                             </p>
 
-
                         </div>
-
 
                     </article>
 
+                </div>
 
-                    <!-- 카드 2 -->
-                    <article class="review-card">
+                <!-- 리뷰 없을 때 -->
+                <div class="empty-box"
+                     th:if="${#lists.isEmpty(reviewList)}">
 
-
-                        <div class="review-card-header">
-                            <div>
-                                <h4>백엔드 개발자 면접</h4>
-                                <p class="review-meta">
-                                    2026.06 · 신입 · 합격 <!-- '합격' 텍스트 추가 -->
-                                </p>
-                            </div>
-                            <div class="header-right">
-                                <span class="difficulty">난이도 보통</span> <!-- '난이도 보통' 추가 -->
-                                <button
-                                        class="report-btn"
-                                        data-report-type="interviewReview"
-                                        data-target-id="205"
-                                        data-target-name="면접후기">
-                                    신고
-                                </button>
-                            </div>
-                        </div>
-
-
-                        <div class="review-recommend">
-
-                        <span class="recommend-badge">
-                            👍 도움돼요 31
-                        </span>
-
-                        </div>
-
-
-                        <div class="review-content-box">
-
-
-                            <p>
-
-                                <strong class="pros">
-                                    면접 내용
-                                </strong>
-
-                                기술 질문과 프로젝트 경험 중심으로 진행되었습니다.
-
-                            </p>
-
-
-                            <p>
-                                <strong class="cons">준비 팁</strong>
-                                CS 지식과 협업 경험을 정리하면 도움이 됩니다.
-                            </p>
-
-
-                        </div>
-
-
-                    </article>
-
-
-                    <!-- 카드 3 -->
-                    <article class="review-card">
-
-
-                        <div class="review-card-header">
-                            <div>
-                                <h4>백엔드 개발자 면접</h4>
-                                <p class="review-meta">
-                                    2026.06 · 신입 · 합격 <!-- '합격' 텍스트 추가 -->
-                                </p>
-                            </div>
-                            <div class="header-right">
-                                <span class="difficulty">난이도 보통</span> <!-- '난이도 보통' 추가 -->
-                                <button
-                                        class="report-btn"
-                                        data-report-type="interviewReview"
-                                        data-target-id="205"
-                                        data-target-name="면접후기">
-                                    신고
-                                </button>
-                            </div>
-                        </div>
-
-
-                        <div class="review-recommend">
-
-                        <span class="recommend-badge">
-                            👍 도움돼요 31
-                        </span>
-
-                        </div>
-
-
-                        <div class="review-content-box">
-
-
-                            <p>
-
-                                <strong class="pros">
-                                    면접 내용
-                                </strong>
-
-                                기술 질문과 프로젝트 경험 중심으로 진행되었습니다.
-
-                            </p>
-
-
-                            <p>
-                                <strong class="cons">준비 팁</strong>
-                                CS 지식과 협업 경험을 정리하면 도움이 됩니다.
-                            </p>
-
-
-                        </div>
-
-
-                    </article>
-
-
-                    <!-- 카드 4 -->
-                    <article class="review-card">
-
-
-                        <div class="review-card-header">
-                            <div>
-                                <h4>백엔드 개발자 면접</h4>
-                                <p class="review-meta">
-                                    2026.06 · 신입 · 합격 <!-- '합격' 텍스트 추가 -->
-                                </p>
-                            </div>
-                            <div class="header-right">
-                                <span class="difficulty">난이도 보통</span> <!-- '난이도 보통' 추가 -->
-                                <button
-                                        class="report-btn"
-                                        data-report-type="interviewReview"
-                                        data-target-id="205"
-                                        data-target-name="면접후기">
-                                    신고
-                                </button>
-                            </div>
-                        </div>
-
-
-                        <div class="review-recommend">
-
-                        <span class="recommend-badge">
-                            👍 도움돼요 31
-                        </span>
-
-                        </div>
-
-
-                        <div class="review-content-box">
-
-
-                            <p>
-
-                                <strong class="pros">
-                                    면접 내용
-                                </strong>
-
-                                기술 질문과 프로젝트 경험 중심으로 진행되었습니다.
-
-                            </p>
-
-
-                            <p>
-                                <strong class="cons">준비 팁</strong>
-                                CS 지식과 협업 경험을 정리하면 도움이 됩니다.
-                            </p>
-
-
-                        </div>
-
-
-                    </article>
-
+                    등록된 면접후기가 없습니다.
 
                 </div>
 
 
                 <!-- 페이지네이션 -->
-                <div class="pagination">
+                <div class="pagination"
+                     th:if="${pageHandler.lastPage >= 1}">
 
-                    <button>&lt;</button>
-
-                    <button class="active">
-                        1
+                    <button
+                            th:if="${pageHandler.currentPage > 1}"
+                            th:onclick="|location.href='@{/company/interview-reviews(companyId=${company.companyId},page=${pageHandler.currentPage-1},sort=${sort})}'|">
+                        &lt;
                     </button>
 
-                    <button>
-                        2
+                    <button
+                            th:each="num : ${#numbers.sequence(pageHandler.startPage,pageHandler.endPage)}"
+                            th:text="${num}"
+                            th:classappend="${num == pageHandler.currentPage} ? ' active'"
+                            th:onclick="|location.href='@{/company/interview-reviews(companyId=${company.companyId},page=${num},sort=${sort})}'|">
                     </button>
 
-                    <button>
-                        3
+                    <button
+                            th:if="${pageHandler.currentPage < pageHandler.lastPage}"
+                            th:onclick="|location.href='@{/company/interview-reviews(companyId=${company.companyId},page=${pageHandler.currentPage+1},sort=${sort})}'|">
+                        &gt;
                     </button>
-
-                    <button>
-                        4
-                    </button>
-
-                    <button>
-                        5
-                    </button>
-
-                    <button>&gt;</button>
 
                 </div>
 
@@ -586,6 +449,10 @@
     </section>
 
 </main>
+
+<script th:if="${errorMessage}" th:inline="javascript">
+    alert([[${errorMessage}]]);
+</script>
 <!-- ============ 푸터 (공통 영역) ============ -->
 <footer th:replace="~{common/footer :: footer}"></footer>
 

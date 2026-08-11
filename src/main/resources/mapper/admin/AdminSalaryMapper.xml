@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.firstdayproject.dao.admin.AdminSalaryDao">
+    <sql id="adminSalaryFilters">
+        1 = 1
+        <if test="status != null and status != '' and status != 'all'">
+            AND sr.status = #{status}
+        </if>
+        <if test="companyId != null">
+            AND sr.company_id = #{companyId}
+        </if>
+        <if test="jobCategoryId != null">
+            AND sr.job_category_id = #{jobCategoryId}
+        </if>
+        <choose>
+            <when test="career == 'newcomer'">AND sr.career_years &lt;= 1</when>
+            <when test="career == 'junior'">AND sr.career_years BETWEEN 2 AND 3</when>
+            <when test="career == 'middle'">AND sr.career_years BETWEEN 4 AND 7</when>
+            <when test="career == 'senior'">AND sr.career_years &gt;= 8</when>
+        </choose>
+        <if test="keyword != null and keyword != ''">
+            AND (c.company_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR jc.category_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </sql>
+
+    <select id="selectAdminSalaryList" resultType="kr.co.firstdayproject.dto.salary.SalaryRecordsDTO">
+        SELECT sr.*, c.company_name AS companyName, jc.category_name AS categoryName,
+               (SELECT COUNT(*) FROM salary_records sample
+                WHERE sample.company_id = sr.company_id
+                  AND sample.job_category_id = sr.job_category_id
+                  AND sample.career_years = sr.career_years
+                  AND sample.salary_year = sr.salary_year
+                  AND sample.status = '정상') AS sampleCount
+        FROM salary_records sr
+        JOIN companies c ON c.company_id = sr.company_id
+        JOIN job_categories jc ON jc.job_category_id = sr.job_category_id
+        WHERE <include refid="adminSalaryFilters"/>
+        <choose>
+            <when test="sort == 'oldest'">ORDER BY sr.created_at ASC</when>
+            <when test="sort == 'salaryHigh'">ORDER BY sr.base_salary DESC, sr.created_at DESC</when>
+            <when test="sort == 'salaryLow'">ORDER BY sr.base_salary ASC, sr.created_at DESC</when>
+            <when test="sort == 'company'">ORDER BY c.company_name ASC, sr.created_at DESC</when>
+            <otherwise>ORDER BY sr.created_at DESC</otherwise>
+        </choose>
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectAdminSalaryCount" resultType="int">
+        SELECT COUNT(*) FROM salary_records sr
+        JOIN companies c ON c.company_id = sr.company_id
+        JOIN job_categories jc ON jc.job_category_id = sr.job_category_id
+        WHERE <include refid="adminSalaryFilters"/>
+    </select>
+
+    <select id="selectAdminSalarySummary" resultType="map">
+        SELECT COUNT(*) AS totalCount,
+               COALESCE(SUM(status = '정상'), 0) AS normalCount,
+               COALESCE(SUM(status = '숨김'), 0) AS hiddenCount,
+               COALESCE(SUM(status = '삭제'), 0) AS deletedCount
+        FROM salary_records
+    </select>
+
+    <select id="selectAdminSalaryDetail" resultType="kr.co.firstdayproject.dto.salary.SalaryRecordsDTO">
+        SELECT sr.*, c.company_name AS companyName, jc.category_name AS categoryName
+        FROM salary_records sr
+        JOIN companies c ON c.company_id = sr.company_id
+        JOIN job_categories jc ON jc.job_category_id = sr.job_category_id
+        WHERE sr.salary_record_id = #{salaryRecordId}
+    </select>
+
+    <select id="selectCompanyOptions" resultType="kr.co.firstdayproject.dto.salary.SalaryRecordsDTO">
+        SELECT DISTINCT c.company_id AS companyId, c.company_name AS companyName
+        FROM salary_records sr JOIN companies c ON c.company_id = sr.company_id
+        ORDER BY c.company_name
+    </select>
+
+    <select id="selectJobOptions" resultType="kr.co.firstdayproject.dto.salary.SalaryJobStatDTO">
+        SELECT DISTINCT jc.job_category_id AS jobCategoryId, jc.category_name AS categoryName
+        FROM salary_records sr JOIN job_categories jc ON jc.job_category_id = sr.job_category_id
+        ORDER BY jc.category_name
+    </select>
+
+    <update id="updateSalaryStatus">
+        UPDATE salary_records
+        SET status = #{status},
+            hidden_reason = CASE WHEN #{status} = '숨김' THEN #{hiddenReason} ELSE NULL END,
+            hidden_by = CASE WHEN #{status} = '숨김' THEN #{adminId} ELSE NULL END,
+            updated_at = CURRENT_TIMESTAMP(6)
+        WHERE salary_record_id = #{salaryRecordId}
+    </update>
+</mapper>
