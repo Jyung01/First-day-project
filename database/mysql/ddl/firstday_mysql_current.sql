@@ -524,8 +524,12 @@ CREATE TABLE applications (
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
                          ON UPDATE CURRENT_TIMESTAMP(6),
+  active_application_guard TINYINT
+                         GENERATED ALWAYS AS (
+                           CASE WHEN current_status = '지원취소' THEN NULL ELSE 1 END
+                         ) STORED,
   PRIMARY KEY (application_id),
-  UNIQUE KEY uk_applications_user_posting (applicant_user_id, job_posting_id),
+  UNIQUE KEY uk_applications_active (applicant_user_id, job_posting_id, active_application_guard),
   KEY idx_applications_user_status (applicant_user_id, current_status, applied_at),
   KEY idx_applications_posting_status (job_posting_id, current_status, applied_at),
   KEY idx_applications_cover_letter (cover_letter_id),
@@ -545,7 +549,7 @@ CREATE TABLE applications (
   CONSTRAINT fk_applications_cover_letter
     FOREIGN KEY (cover_letter_id) REFERENCES cover_letters(cover_letter_id)
     ON DELETE SET NULL
-) ENGINE=InnoDB COMMENT='공고당 1회 지원과 제출 당시 이력서·자기소개서 JSON; 취소 후에도 같은 공고 재지원 불가';
+) ENGINE=InnoDB COMMENT='공고당 1회 지원과 제출 당시 이력서·자기소개서 JSON; 지원취소 후에는 같은 공고 재지원 가능';
 
 CREATE TABLE application_status_history (
   application_status_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -607,6 +611,7 @@ CREATE TABLE company_reviews (
   status                VARCHAR(10) NOT NULL DEFAULT '정상',
   hidden_reason         VARCHAR(1000) NULL,
   hidden_by             BIGINT UNSIGNED NULL,
+  admin_memo            VARCHAR(2000) NULL COMMENT '관리자 후기 처리 메모',
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
                          ON UPDATE CURRENT_TIMESTAMP(6),
@@ -658,6 +663,7 @@ CREATE TABLE interview_reviews (
   status                VARCHAR(10) NOT NULL DEFAULT '정상',
   hidden_reason         VARCHAR(1000) NULL,
   hidden_by             BIGINT UNSIGNED NULL,
+  admin_memo            VARCHAR(2000) NULL COMMENT '관리자 후기 처리 메모',
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
                          ON UPDATE CURRENT_TIMESTAMP(6),
