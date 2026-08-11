@@ -28,4 +28,22 @@ public class MemberSessionService {
 
         return expiredSessionCount;
     }
+
+    public int expireAllCompanySessions(Long companyId) {
+        int expiredSessionCount = 0;
+
+        for (Object principal : sessionRegistry.getAllPrincipals()) {
+            if (!(principal instanceof CustomUserDetails userDetails)
+                    || !companyId.equals(userDetails.getCompanyId())) {
+                continue;
+            }
+
+            for (var session : sessionRegistry.getAllSessions(principal, false)) {
+                session.expireNow();
+                expiredSessionCount += 1;
+            }
+        }
+
+        return expiredSessionCount;
+    }
 }

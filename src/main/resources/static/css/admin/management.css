@@ -155,6 +155,10 @@
     grid-template-columns: minmax(280px, 1fr) 100px auto;
 }
 
+.management-search--company {
+    grid-template-columns: minmax(280px, 1fr) 100px auto;
+}
+
 .management-select,
 .management-search-input {
     width: 100%;
@@ -317,6 +321,18 @@
     width: 8%;
 }
 
+.management-table--company th:nth-child(2),
+.management-table--company td:nth-child(2) {
+    width: 17%;
+}
+
+.management-table--company td:nth-child(2),
+.management-table--company td:nth-child(3) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /* 상태 */
 
 .status-text {
@@ -351,12 +367,14 @@
     align-items: center;
     justify-content: center;
     padding: 0 12px;
+    border: 0;
     border-radius: 8px;
     background-color: #2563eb;
     color: #ffffff;
     font-size: 12px;
     font-weight: 700;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .management-detail-link:hover {
@@ -430,6 +448,10 @@
     }
 
     .management-search--member {
+        grid-template-columns: minmax(220px, 1fr) 90px;
+    }
+
+    .management-search--company {
         grid-template-columns: minmax(220px, 1fr) 90px;
     }
 

@@ -514,6 +514,8 @@ CREATE TABLE applications (
   applicant_user_id     BIGINT UNSIGNED NOT NULL,
   resume_id             BIGINT UNSIGNED NULL COMMENT '지원에 사용한 이력서 원본; 원본 삭제 후에는 NULL',
   resume_snapshot_json  JSON NOT NULL COMMENT '지원 완료 시점의 이력서·지원자 연락처 전체 스냅샷',
+  cover_letter_id       BIGINT UNSIGNED NULL COMMENT '지원에 사용한 자기소개서 원본; 원본 삭제 후에는 NULL',
+  cover_letter_snapshot_json JSON NULL COMMENT '지원 완료 시점의 자기소개서 문항·답변 스냅샷; 자소서 미첨부 시 NULL',
   current_status        VARCHAR(20) NOT NULL DEFAULT '지원완료',
   applied_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   cancelled_at          DATETIME(6) NULL COMMENT '지원완료 단계에서 지원자가 취소한 시각',
@@ -526,6 +528,7 @@ CREATE TABLE applications (
   UNIQUE KEY uk_applications_user_posting (applicant_user_id, job_posting_id),
   KEY idx_applications_user_status (applicant_user_id, current_status, applied_at),
   KEY idx_applications_posting_status (job_posting_id, current_status, applied_at),
+  KEY idx_applications_cover_letter (cover_letter_id),
   CONSTRAINT chk_applications_status
     CHECK (current_status IN
       ('지원완료','서류검토중','서류합격','면접예정','면접완료',
@@ -538,8 +541,11 @@ CREATE TABLE applications (
     FOREIGN KEY (applicant_user_id) REFERENCES users(user_id),
   CONSTRAINT fk_applications_resume
     FOREIGN KEY (resume_id) REFERENCES resumes(resume_id)
+    ON DELETE SET NULL,
+  CONSTRAINT fk_applications_cover_letter
+    FOREIGN KEY (cover_letter_id) REFERENCES cover_letters(cover_letter_id)
     ON DELETE SET NULL
-) ENGINE=InnoDB COMMENT='공고당 1회 지원과 제출 당시 이력서 JSON; 취소 후에도 같은 공고 재지원 불가';
+) ENGINE=InnoDB COMMENT='공고당 1회 지원과 제출 당시 이력서·자기소개서 JSON; 취소 후에도 같은 공고 재지원 불가';
 
 CREATE TABLE application_status_history (
   application_status_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
