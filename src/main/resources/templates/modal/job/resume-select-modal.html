@@ -3,6 +3,7 @@
 <body>
 <div class="resume-modal-overlay"
      data-resume-modal
+     th:data-application-error="${applicationError}"
      aria-hidden="true"
      th:fragment="resumeSelectModal">
   <section class="resume-modal"
@@ -25,37 +26,74 @@
              th:if="${job != null}"
              th:value="${job.jobPostingId}">
       <fieldset class="resume-modal-section">
-        <legend>이력서</legend>
-        <label class="resume-modal-option">
-          <input type="radio" name="resumeId" value="1" checked>
+        <legend>
+          이력서
+          <span class="resume-modal-required">필수</span>
+        </legend>
+        <label class="resume-modal-option"
+               th:each="resume, resumeStat : ${applicationResumes}">
+          <input type="radio"
+                 name="resumeId"
+                 th:value="${resume.id()}"
+                 th:checked="${resumeStat.first}"
+                 required>
           <span class="resume-modal-radio" aria-hidden="true"></span>
           <span class="resume-modal-copy">
-            <strong>백엔드 개발자 이력서</strong>
-            <small>2026.07.18 수정</small>
+            <strong th:text="${resume.title()}">이력서 제목</strong>
+            <small th:text="|${#temporals.format(resume.updatedAt(), 'yyyy.MM.dd')} 수정|">
+              수정일
+            </small>
+          </span>
+          <span class="selected-label"
+                th:text="${resumeStat.first} ? '선택됨' : '선택'">선택</span>
+        </label>
+
+        <div class="resume-modal-empty"
+             th:if="${#lists.isEmpty(applicationResumes)}">
+          <p>등록된 이력서가 없습니다.</p>
+          <a th:href="@{/my/resume/form}">이력서 작성하기</a>
+        </div>
+      </fieldset>
+
+      <fieldset class="resume-modal-section">
+        <legend>
+          자기소개서
+          <span class="resume-modal-optional">선택</span>
+        </legend>
+        <label class="resume-modal-option">
+          <input type="radio"
+                 name="coverLetterId"
+                 value=""
+                 checked>
+          <span class="resume-modal-radio" aria-hidden="true"></span>
+          <span class="resume-modal-copy">
+            <strong>자기소개서 없이 지원</strong>
+            <small>이력서만 제출합니다.</small>
           </span>
           <span class="selected-label">선택됨</span>
         </label>
-        <label class="resume-modal-option">
-          <input type="radio" name="resumeId" value="2">
+
+        <label class="resume-modal-option"
+               th:each="coverLetter, coverLetterStat : ${applicationCoverLetters}">
+          <input type="radio"
+                 name="coverLetterId"
+                 th:value="${coverLetter.id()}">
           <span class="resume-modal-radio" aria-hidden="true"></span>
           <span class="resume-modal-copy">
-            <strong>신입 개발자 이력서</strong>
-            <small>2026.07.10 수정</small>
+            <strong th:text="${coverLetter.title()}">자기소개서 제목</strong>
+            <small th:text="|${#temporals.format(coverLetter.updatedAt(), 'yyyy.MM.dd')} 수정|">
+              수정일
+            </small>
           </span>
           <span class="selected-label">선택</span>
         </label>
-      </fieldset>
 
-      <section class="resume-modal-section">
-        <h3>자기소개서</h3>
-        <div class="resume-modal-document">
-          <div>
-            <strong>성장 경험과 지원 동기</strong>
-            <small>2026.07.19 수정</small>
-          </div>
-          <a th:href="@{/my/cover-letter/list}">변경</a>
+        <div class="resume-modal-empty"
+             th:if="${#lists.isEmpty(applicationCoverLetters)}">
+          <p>등록된 자기소개서가 없어 이력서만 제출할 수 있어요.</p>
+          <a th:href="@{/my/cover-letter/form}">자기소개서 작성하기</a>
         </div>
-      </section>
+      </fieldset>
 
       <div class="resume-modal-notice">
         <strong>제출 전 확인해주세요</strong>
@@ -70,7 +108,9 @@
         >
           취소
         </button>
-        <button class="job-primary-button" type="submit">선택 완료</button>
+        <button class="job-primary-button"
+                type="submit"
+                th:disabled="${#lists.isEmpty(applicationResumes)}">선택 완료</button>
       </div>
     </form>
   </section>

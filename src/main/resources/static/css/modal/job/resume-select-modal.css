@@ -133,6 +133,56 @@ body.resume-modal-open {
   font-size: 12px;
 }
 
+.resume-modal-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 76px;
+  padding: 16px 18px;
+  border: 1px dashed var(--job-line);
+  border-radius: 12px;
+  background: var(--job-surface);
+}
+
+.resume-modal-empty p {
+  margin: 0;
+  color: var(--job-muted);
+  font-size: 13px;
+}
+
+.resume-modal-empty a {
+  color: var(--job-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.resume-modal-required,
+.resume-modal-optional {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.resume-modal-required {
+  background: #eaf1ff;
+  color: var(--job-primary);
+}
+
+.resume-modal-optional {
+  background: var(--job-surface);
+  color: var(--job-muted);
+}
+
+.resume-modal-actions .job-primary-button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
 .resume-modal-document {
   display: flex;
   align-items: center;

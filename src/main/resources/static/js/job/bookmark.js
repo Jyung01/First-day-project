@@ -25,8 +25,7 @@ function bindBookmarkButtons() {
                 return;
             }
 
-            // 로그인 상태면 실제 관심공고 등록/해제
-            await toggleBookmark(button);
+            openBookmarkConfirmModal(button);
         });
     });
 }
@@ -115,18 +114,48 @@ function closeLoginRequiredModal() {
 
 
 function renderBookmark(button, bookmarked) {
-    button.classList.toggle(
-        'active',
-        bookmarked
-    );
+    const jobPostingId = button.dataset.jobPostingId;
 
-    button.textContent =
-        bookmarked ? '♥' : '♡';
+    if (!jobPostingId) {
+        renderBookmarkButton(button, bookmarked);
+        return;
+    }
 
-    button.setAttribute(
-        'aria-pressed',
-        String(bookmarked)
-    );
+    document.querySelectorAll('.bookmark[data-job-posting-id]')
+        .forEach(bookmarkButton => {
+            if (bookmarkButton.dataset.jobPostingId === jobPostingId) {
+                renderBookmarkButton(bookmarkButton, bookmarked);
+            }
+        });
+}
+
+
+function openBookmarkConfirmModal(button) {
+    const bookmarked = button.classList.contains('active');
+    const jobTitle = button.dataset.jobTitle || '선택한 채용공고';
+
+    showConfirmModal({
+        iconClass: 'info',
+        iconHtml: '!',
+        title: bookmarked
+            ? '관심 목록에서 해제할까요?'
+            : '관심공고로 등록할까요?',
+        message: bookmarked
+            ? `「${jobTitle}」\n관심 목록에서 해제합니다. 해제 후 해당 화면의 목록을 갱신합니다.`
+            : `「${jobTitle}」\n관심 목록에 등록합니다. 마이페이지에서 다시 확인할 수 있습니다.`,
+        leftText: '취소',
+        rightText: bookmarked ? '관심 해제' : '관심 등록',
+        leftClass: 'btn-outline',
+        rightClass: 'btn-primary',
+        onRight: () => toggleBookmark(button)
+    });
+}
+
+
+function renderBookmarkButton(button, bookmarked) {
+    button.classList.toggle('active', bookmarked);
+    button.textContent = bookmarked ? '♥' : '♡';
+    button.setAttribute('aria-pressed', String(bookmarked));
 }
 
 
@@ -170,7 +199,7 @@ async function registerPendingBookmark() {
         return;
     }
 
-    await toggleBookmark(button);
+    openBookmarkConfirmModal(button);
 }
 
 

@@ -1,8 +1,10 @@
 package kr.co.firstdayproject.controller.job;
 
 import kr.co.firstdayproject.dto.common.PageInfo;
+import kr.co.firstdayproject.dto.job.JobApplicationDocuments;
 import kr.co.firstdayproject.dto.job.JobListItem;
 import kr.co.firstdayproject.service.banner.BannerService;
+import kr.co.firstdayproject.service.job.JobApplicationService;
 import kr.co.firstdayproject.service.job.JobService;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -21,6 +23,7 @@ public class JobController {
 
     private final JobService jobService;
     private final BannerService bannerService;
+    private final JobApplicationService jobApplicationService;
 
     /**
      * 전체 모집 중 채용공고 목록.
@@ -261,13 +264,30 @@ public class JobController {
                         authentication
                 )
         );
+        boolean personalMember = authentication != null
+                && authentication.getAuthorities().stream()
+                .anyMatch(authority ->
+                        "ROLE_PERSONAL".equals(authority.getAuthority())
+                );
+        model.addAttribute("personalMember", personalMember);
         model.addAttribute(
-                "personalMember",
-                authentication != null
-                        && authentication.getAuthorities().stream()
-                        .anyMatch(authority ->
-                                "ROLE_PERSONAL".equals(authority.getAuthority())
-                        )
+                "alreadyApplied",
+                personalMember && jobApplicationService.hasApplied(
+                        jobPostingId,
+                        authentication
+                )
+        );
+
+        JobApplicationDocuments applicationDocuments = personalMember
+                ? jobApplicationService.getMyDocuments(authentication)
+                : JobApplicationDocuments.empty();
+        model.addAttribute(
+                "applicationResumes",
+                applicationDocuments.resumes()
+        );
+        model.addAttribute(
+                "applicationCoverLetters",
+                applicationDocuments.coverLetters()
         );
         model.addAttribute(
                 "categoryGroups",

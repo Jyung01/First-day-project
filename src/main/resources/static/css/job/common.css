@@ -112,6 +112,20 @@
   color: var(--job-primary);
 }
 
+.multi-filter-chevron {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .2s ease;
+}
+
+.multi-filter-toggle[aria-expanded="true"] .multi-filter-chevron {
+  transform: translateY(2px) rotate(225deg);
+}
+
 .multi-filter-panel {
   position: absolute;
   z-index: 20;

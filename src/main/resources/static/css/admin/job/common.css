@@ -438,6 +438,14 @@
   line-height: 1.6;
 }
 
+.job-contact-label {
+  display: inline-block;
+  min-width: 62px;
+  margin-right: 8px;
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
 .job-hide-reason {
   padding: 15px;
   border: 1px solid #475569;
