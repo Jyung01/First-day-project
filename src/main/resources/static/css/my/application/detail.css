@@ -21,11 +21,18 @@
     width: 64px;
     height: 64px;
     flex: 0 0 64px;
+    overflow: hidden;
     border-radius: 16px;
     background: #d8f1ff;
     color: var(--navy-900);
     font-size: 20px;
     font-weight: 800;
+}
+
+.application-company-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .application-summary-copy {
@@ -84,9 +91,10 @@
 
 .application-progress {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(var(--history-count, 1), minmax(120px, 1fr));
     margin-top: 26px;
     padding: 0 4px;
+    overflow-x: auto;
 }
 
 .application-progress li {
@@ -147,12 +155,21 @@
 }
 
 .application-progress li.is-complete > span {
-    border-color: var(--application-primary);
-    background: var(--application-primary);
+    border-color: #aeb8c7;
+    background: #aeb8c7;
     color: #fff;
 }
 
 .application-progress li:has(+ li.is-complete)::after {
+    background: #aeb8c7;
+}
+
+.application-progress li.is-current {
+    color: var(--application-primary);
+}
+
+.application-progress li.is-current > span {
+    border-color: var(--application-primary);
     background: var(--application-primary);
 }
 
@@ -209,11 +226,15 @@
     font-size: 11px;
 }
 
-.application-document > a {
+.application-document > a,
+.application-document > button {
+    border: 0;
+    background: transparent;
     color: var(--application-primary);
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
+    cursor: pointer;
 }
 
 .application-cancel-button {
@@ -291,7 +312,8 @@
         grid-template-columns: 42px 1fr;
     }
 
-    .application-document > a {
+    .application-document > a,
+    .application-document > button {
         grid-column: 2;
     }
 }

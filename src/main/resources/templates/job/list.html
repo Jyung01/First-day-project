@@ -170,6 +170,7 @@
                         <button class="bookmark"
                                 type="button"
                                 th:data-job-posting-id="${job.jobPostingId}"
+                                th:data-job-title="${job.title}"
                                 th:data-logged-in="${#authorization.expression('hasRole(''PERSONAL'')')}"
                                 th:classappend="${job.bookmarked} ? ' active'"
                                 th:text="${job.bookmarked} ? '♥' : '♡'"
@@ -359,6 +360,10 @@
 
 <script th:src="@{/js/job/bookmark.js}"
         src="/js/job/bookmark.js">
+</script>
+
+<script th:src="@{/js/modal.js}"
+        src="/js/modal.js">
 </script>
 
 </body>

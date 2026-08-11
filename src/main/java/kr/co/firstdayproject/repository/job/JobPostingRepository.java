@@ -31,6 +31,32 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
             Collection<String> statuses
     );
 
+    @Query("""
+            select count(posting)
+              from JobPosting posting
+             where posting.companyId = :companyId
+               and posting.status = '모집중'
+               and posting.applyEndAt >= :now
+               and posting.applyEndAt < :deadline
+            """)
+    long countCompanyJobsClosingSoon(
+            @Param("companyId") Long companyId,
+            @Param("now") LocalDateTime now,
+            @Param("deadline") LocalDateTime deadline
+    );
+
+    @Query("""
+            select coalesce(sum(posting.viewCount), 0)
+              from JobPosting posting
+             where posting.companyId = :companyId
+            """)
+    long sumViewCountByCompanyId(@Param("companyId") Long companyId);
+
+    List<JobPosting> findByCompanyIdOrderByUpdatedAtDescJobPostingIdDesc(
+            Long companyId,
+            Pageable pageable
+    );
+
     Optional<JobPosting> findByJobPostingIdAndCompanyId(
         Long jobPostingId,
         Long companyId

@@ -1,0 +1,207 @@
+<div class="modal-overlay document-viewer-overlay"
+     id="applicationDocumentModal"
+     th:fragment="applicationDocumentModal(view)"
+     th:with="applicant=${view}"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="applicationDocumentTitle">
+  <div class="modal document-viewer-modal">
+    <div class="document-viewer-head">
+      <div>
+        <small>지원 당시 제출본</small>
+        <h2 id="applicationDocumentTitle">제출 문서</h2>
+      </div>
+      <button type="button"
+              class="document-viewer-close"
+              data-document-close
+              aria-label="닫기">×</button>
+    </div>
+
+    <div class="document-viewer-body" data-document-panel="resume">
+      <article class="resume-document submitted-resume-document">
+        <header class="resume-document-header">
+          <h2 class="resume-member-name"
+              th:text="${applicant.applicantName}">김첫출</h2>
+          <p class="resume-member-position">
+            <span th:text="${applicant.resume['title'] ?: '제출 이력서'}">
+              백엔드 개발자
+            </span>
+            <span aria-hidden="true">·</span>
+            <span th:text="${applicant.resume['careerType'] ?: '경력 정보 없음'}">
+              경력
+            </span>
+          </p>
+          <div class="resume-member-contact">
+            <span th:text="${applicant.email}">user@firstwork.co.kr</span>
+            <span class="resume-contact-divider">·</span>
+            <span th:text="${applicant.phone ?: '-'}">010-1234-5678</span>
+          </div>
+        </header>
+
+        <section class="resume-document-section">
+          <h3 class="resume-section-title">소개</h3>
+          <p class="resume-section-description"
+             th:text="${applicant.resume['summary'] ?: '작성된 소개가 없습니다.'}">
+            이력서 소개
+          </p>
+        </section>
+
+        <section class="resume-document-section">
+          <h3 class="resume-section-title">경력</h3>
+          <div class="resume-entry-list">
+            <article class="resume-entry"
+                     th:each="career : ${applicant.resume['careers']}">
+              <strong class="resume-entry-title"
+                      th:text="${career['positionTitle'] != null
+                          and !#strings.isEmpty(career['positionTitle'])
+                          ? career['companyName'] + ' · ' + career['positionTitle']
+                          : career['companyName']}">
+                첫출근테크 · 백엔드 개발자
+              </strong>
+              <p class="resume-entry-meta">
+                <span th:text="${career['startDate'] != null
+                    ? #strings.replace(
+                        #strings.substring(career['startDate'], 0, 7),
+                        '-',
+                        '.'
+                      )
+                    : '-'}">2025.03</span>
+                <span aria-hidden="true">–</span>
+                <span th:text="${career['isCurrent'] == true
+                    ? '재직중'
+                    : (career['endDate'] != null
+                        ? #strings.replace(
+                            #strings.substring(career['endDate'], 0, 7),
+                            '-',
+                            '.'
+                          )
+                        : '-')}">2026.02</span>
+                <span class="resume-entry-divider"
+                      th:if="${career['description'] != null
+                          and !#strings.isEmpty(career['description'])}"
+                      aria-hidden="true">|</span>
+                <span th:if="${career['description'] != null}"
+                      th:text="${career['description']}">담당 업무</span>
+              </p>
+            </article>
+            <p class="resume-section-description"
+               th:if="${applicant.resume['careers'] == null
+                    or #lists.isEmpty(applicant.resume['careers'])}">
+              등록된 경력이 없습니다.
+            </p>
+          </div>
+        </section>
+
+        <section class="resume-document-section">
+          <h3 class="resume-section-title">학력</h3>
+          <div class="resume-entry-list">
+            <article class="resume-entry"
+                     th:each="education : ${applicant.resume['educations']}">
+              <strong class="resume-entry-title"
+                      th:text="${education['schoolName']
+                          + (education['major'] != null
+                              and !#strings.isEmpty(education['major'])
+                              ? ' ' + education['major'] : '')
+                          + (education['graduationStatus'] != null
+                              and !#strings.isEmpty(education['graduationStatus'])
+                              ? ' ' + education['graduationStatus'] : '')}">
+                한국대학교 컴퓨터공학과 졸업
+              </strong>
+              <p class="resume-entry-meta">
+                <span th:text="${education['admissionDate'] != null
+                    ? #strings.replace(
+                        #strings.substring(education['admissionDate'], 0, 7),
+                        '-',
+                        '.'
+                      )
+                    : '-'}">2020.03</span>
+                <span aria-hidden="true">–</span>
+                <span th:text="${education['graduationDate'] != null
+                    ? #strings.replace(
+                        #strings.substring(education['graduationDate'], 0, 7),
+                        '-',
+                        '.'
+                      )
+                    : '-'}">2026.02</span>
+                <span class="resume-entry-divider"
+                      th:if="${education['gpaScore'] != null
+                          and education['gpaScale'] != null}"
+                      aria-hidden="true">|</span>
+                <span th:if="${education['gpaScore'] != null
+                              and education['gpaScale'] != null}"
+                      th:text="${education['gpaScore']
+                          + ' / ' + education['gpaScale']}">
+                  3.8 / 4.5
+                </span>
+              </p>
+            </article>
+            <p class="resume-section-description"
+               th:if="${applicant.resume['educations'] == null
+                    or #lists.isEmpty(applicant.resume['educations'])}">
+              등록된 학력이 없습니다.
+            </p>
+          </div>
+        </section>
+
+        <section class="resume-document-section">
+          <h3 class="resume-section-title">기술</h3>
+          <div class="resume-skill-list">
+            <span class="resume-skill"
+                  th:each="skill : ${applicant.resume['skills']}"
+                  th:text="${skill}">Java</span>
+            <p class="resume-section-description"
+               th:if="${applicant.resume['skills'] == null
+                    or #lists.isEmpty(applicant.resume['skills'])}">
+              등록된 기술이 없습니다.
+            </p>
+          </div>
+        </section>
+
+        <section class="resume-document-section">
+          <h3 class="resume-section-title">프로젝트</h3>
+          <div class="resume-entry-list">
+            <article class="resume-entry"
+                     th:each="project : ${applicant.resume['projects']}">
+              <strong class="resume-entry-title"
+                      th:text="${project['projectName']}">프로젝트명</strong>
+              <p class="resume-entry-meta"
+                 th:if="${project['roleText'] != null
+                      and !#strings.isEmpty(project['roleText'])}"
+                 th:text="${project['roleText']}">프로젝트 역할</p>
+              <p class="resume-entry-description"
+                 th:if="${project['description'] != null
+                      and !#strings.isEmpty(project['description'])}"
+                 th:text="${project['description']}">프로젝트 설명</p>
+            </article>
+            <p class="resume-section-description"
+               th:if="${applicant.resume['projects'] == null
+                    or #lists.isEmpty(applicant.resume['projects'])}">
+              등록된 프로젝트가 없습니다.
+            </p>
+          </div>
+        </section>
+      </article>
+    </div>
+
+    <div class="document-viewer-body"
+         data-document-panel="cover-letter"
+         hidden>
+      <section class="document-viewer-section">
+        <h3 th:text="${applicant.coverLetter['title'] ?: '제출 자기소개서'}">
+          제출 자기소개서
+        </h3>
+        <div class="cover-letter-entry"
+             th:each="item, itemStat : ${applicant.coverLetter['items']}">
+          <strong th:text="${itemStat.count + '. ' + item['question']}">
+            1. 자기소개
+          </strong>
+          <p th:text="${item['answer']}">답변 내용</p>
+        </div>
+        <p class="document-empty"
+           th:if="${!applicant.hasCoverLetter()}">
+          제출한 자기소개서가 없습니다.
+        </p>
+      </section>
+    </div>
+  </div>
+</div>
