@@ -24,7 +24,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
                     select c
                     from Company c
                     where (
-                        :status = 'ALL'
+                        (:status = 'ALL' and c.companyStatus <> '탈퇴')
                         or (:status = 'PENDING'
                             and c.companyStatus = '정상'
                             and c.approvalStatus = '승인대기')
@@ -57,7 +57,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
                     select count(c)
                     from Company c
                     where (
-                        :status = 'ALL'
+                        (:status = 'ALL' and c.companyStatus <> '탈퇴')
                         or (:status = 'PENDING'
                             and c.companyStatus = '정상'
                             and c.approvalStatus = '승인대기')
