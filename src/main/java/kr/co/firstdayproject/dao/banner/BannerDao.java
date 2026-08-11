@@ -16,6 +16,12 @@ public interface  BannerDao {
     // 관리자: 전체 배너 목록 조회
     List<BannerDTO> selectAdminBanners();
 
+    BannerDTO selectBannerById(@Param("bannerId") Long bannerId);
+
     // 관리자 : 배너 등록
-    void insertBanner(BannerDTO dto);
+    int insertBanner(BannerDTO dto);
+
+    int updateBanner(BannerDTO dto);
+
+    int updateBannerActive(@Param("bannerId") Long bannerId, @Param("isActive") boolean isActive);
 }

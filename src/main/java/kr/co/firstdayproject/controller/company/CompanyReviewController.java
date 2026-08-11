@@ -43,6 +43,7 @@ public class CompanyReviewController {
     public String reviews(@RequestParam Long companyId,
                           @RequestParam(defaultValue = "1") int page,
                           @RequestParam(defaultValue = "latest") String sort,
+                          @AuthenticationPrincipal CustomUserDetails userDetails,
                           Model model) {
 
         int pageSize = 4;
@@ -72,6 +73,7 @@ public class CompanyReviewController {
         model.addAttribute("pageHandler", pageHandler);
 
         model.addAttribute("sort", sort);
+        model.addAttribute("isWished", userDetails != null && companyService.isWished(userDetails.getUserId(), companyId));
 
         return "company/reviews";
     }
@@ -123,6 +125,7 @@ public class CompanyReviewController {
     public String interviewReviews(@RequestParam Long companyId,
                                    @RequestParam(defaultValue = "1") int page,
                                    @RequestParam(defaultValue = "latest") String sort,
+                                   @AuthenticationPrincipal CustomUserDetails userDetails,
                                    Model model) {
         model.addAttribute("company",
                 companyService.getCompanyDetail(companyId));
@@ -149,6 +152,7 @@ public class CompanyReviewController {
 
         model.addAttribute("pageHandler", pageHandler);
         model.addAttribute("sort", sort);
+        model.addAttribute("isWished", userDetails != null && companyService.isWished(userDetails.getUserId(), companyId));
 
 
 

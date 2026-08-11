@@ -22,7 +22,7 @@ public class MainController {
     public String index(Model model) {
         // 등록된 배너 조회
         model.addAttribute("banners",
-                bannerService.getActiveBanners());
+                bannerService.getActiveBanners("main"));
         // 채용공고 최신순
         model.addAttribute("latestJobs",
                 jobService.getLatestJobPostingList());

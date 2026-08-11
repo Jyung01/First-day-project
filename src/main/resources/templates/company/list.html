@@ -102,13 +102,12 @@
 
 
     <!-- 광고 -->
-    <section class="company-banner">
-
-        <div class="banner-box">
-            <span>COMPANY_LIST</span>
-            <p>관리자 등록 기업 배너 (광고 1280 × 120)</p>
-        </div>
-
+    <section class="company-banner" th:if="${companyBanner != null}">
+        <a class="company-banner-link"
+           th:href="${#strings.isEmpty(companyBanner.linkUrl) ? null : companyBanner.linkUrl}"
+           th:aria-label="${companyBanner.altText}">
+            <img th:src="${companyBanner.imageUrl}" th:alt="${companyBanner.altText}"/>
+        </a>
     </section>
 
 

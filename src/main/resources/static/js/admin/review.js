@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 : `${data.interviewType} · ${data.interviewResult} · 난이도 ${data.difficulty} · 누적 신고 ${data.reportCount}건`;
             status.value=data.status==='숨김'?'숨김':'정상';
             document.getElementById("detailHiddenReason").value=data.hiddenReason || '';
-            document.getElementById("reviewMemo").value=''; toggleHiddenReason();
+            document.getElementById("reviewMemo").value=data.adminMemo || ''; toggleHiddenReason();
             modal.classList.add("is-open"); modal.setAttribute("aria-hidden","false");
         } catch (error) { showAdminReviewMessage(false,error.message); }
     }));
