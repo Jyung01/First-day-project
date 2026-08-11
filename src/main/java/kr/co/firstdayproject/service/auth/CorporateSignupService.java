@@ -216,7 +216,10 @@ public class CorporateSignupService {
             throw new CorporateSignupException("terms", "약관 동의 정보가 없습니다.");
         }
 
-        List<Policy> policies = policyRepository.findActiveSignupPolicies("기업", now);
+        List<Policy> policies = policyRepository.findActiveSignupPolicies(
+                "기업",
+                now.toLocalDate()
+        );
         Set<Long> displayedPolicyIds = policies.stream()
                 .map(Policy::getPolicyId)
                 .collect(Collectors.toSet());
