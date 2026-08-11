@@ -28,7 +28,7 @@
         </nav>
         <form class="search-area" method="get" th:action="@{/admin/review}">
             <input type="hidden" name="tab" th:value="${tab}"/>
-            <select name="sort"><option value="latest" th:selected="${sort=='latest'}">최신순</option><option value="oldest" th:selected="${sort=='oldest'}">오래된순</option><option value="reports" th:selected="${sort=='reports'}">신고 많은순</option></select>
+            <select name="sort" onchange="this.form.submit()"><option value="latest" th:selected="${sort=='latest'}">최신순</option><option value="oldest" th:selected="${sort=='oldest'}">오래된순</option><option value="reports" th:selected="${sort=='reports'}">신고 많은순</option></select>
             <input type="text" name="keyword" th:value="${keyword}" placeholder="기업명 · 후기내용 검색"/><button type="submit">검색</button>
         </form>
         <div class="table-wrap"><table class="review-table"><thead><tr>

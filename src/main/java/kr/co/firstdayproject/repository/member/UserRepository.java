@@ -3,6 +3,7 @@ package kr.co.firstdayproject.repository.member;
 import kr.co.firstdayproject.entity.member.User;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findFirstByCompanyIdAndUserTypeOrderByUserIdAsc(
         Long companyId,
         String userType
+    );
+
+    List<User> findByCompanyIdInAndUserTypeOrderByUserIdAsc(
+            Collection<Long> companyIds,
+            String userType
+    );
+
+    List<User> findByCompanyIdAndUserTypeOrderByUserIdAsc(
+            Long companyId,
+            String userType
     );
 
     @Query("""

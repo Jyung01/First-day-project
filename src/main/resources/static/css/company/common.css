@@ -8,7 +8,8 @@ body {
 }
 
 .company-detail-main{
-    width:1280px;
+    width:calc(100% - 48px);
+    max-width:1232px;
     margin:40px auto 80px;
 }
 
@@ -250,8 +251,7 @@ body {
 @media (max-width:1300px){
 
     .company-detail-main{
-
-        width:95%;
+        width:calc(100% - 48px);
 
     }
 

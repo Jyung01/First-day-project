@@ -33,6 +33,27 @@ class MemberSessionServiceTest {
         verify(secondSession).expireNow();
     }
 
+    @Test
+    void expiresEverySessionBelongingToCompany() {
+        SessionRegistry sessionRegistry = mock(SessionRegistry.class);
+        SessionInformation session = mock(SessionInformation.class);
+        CustomUserDetails companyPrincipal = companyPrincipal(20L, 12L);
+        CustomUserDetails otherCompanyPrincipal = companyPrincipal(21L, 13L);
+
+        when(sessionRegistry.getAllPrincipals()).thenReturn(List.of(
+                companyPrincipal,
+                otherCompanyPrincipal
+        ));
+        when(sessionRegistry.getAllSessions(companyPrincipal, false))
+                .thenReturn(List.of(session));
+        MemberSessionService service = new MemberSessionService(sessionRegistry);
+
+        int expiredCount = service.expireAllCompanySessions(12L);
+
+        assertThat(expiredCount).isEqualTo(1);
+        verify(session).expireNow();
+    }
+
     private CustomUserDetails principal(Long userId, String loginId) {
         User user = User.builder()
                 .userId(userId)
@@ -42,5 +63,17 @@ class MemberSessionServiceTest {
                 .userType("개인")
                 .build();
         return new CustomUserDetails(user, "PERSONAL", true);
+    }
+
+    private CustomUserDetails companyPrincipal(Long userId, Long companyId) {
+        User user = User.builder()
+                .userId(userId)
+                .companyId(companyId)
+                .loginId("company" + userId)
+                .passwordHash("encoded-password")
+                .name("기업회원")
+                .userType("기업")
+                .build();
+        return new CustomUserDetails(user, "COMPANY", true);
     }
 }

@@ -1,209 +1,118 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("reportModal");
+  if (!modal) return;
 
-    const reportModal = document.getElementById("reportModal");
+  const form = document.getElementById("reportForm");
+  const targetInput = document.getElementById("reportTarget");
+  const detailInput = document.getElementById("reportContent");
+  const detailCount = document.getElementById("reportContentCount");
 
-    if (!reportModal) return;
+  const updateCount = () => {
+    if (detailCount) detailCount.textContent = String(detailInput.value.length);
+  };
+  const close = () => {
+    modal.classList.remove("show");
+    form.reset();
+    updateCount();
+  };
+  const moveToLogin = () => {
+    const returnUrl = location.pathname + location.search;
+    location.href = `/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`;
+  };
+  const showLoginModal = () => {
+    showReportResult(
+      false,
+      "신고하려면 개인회원 로그인이 필요합니다.",
+      moveToLogin,
+      "로그인이 필요한 기능입니다",
+      "로그인",
+    );
+  };
 
-    const reportForm = document.getElementById("reportForm");
-    const closeBtn = reportModal.querySelector(".modal-close");
-    const cancelBtn = reportModal.querySelector(".btn-cancel");
-    const reportTarget = document.getElementById("reportTarget");
-    const reportReason = document.getElementById("reportReason");
-    const reportContent = document.getElementById("reportContent");
-    const reportContentCount = document.getElementById("reportContentCount");
-    const submitBtn = reportModal.querySelector(".report-submit-btn");
+  document.querySelectorAll(".report-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.dataset.loggedIn === "false") {
+        showLoginModal();
+        return;
+      }
 
-    // ==========================
-    // 신고 모달 열기
-    // ==========================
-    document.querySelectorAll(".report-btn").forEach((btn) => {
-
-        btn.addEventListener("click", () => {
-
-            if (btn.dataset.loggedIn === "false") {
-                showReportLoginModal();
-                return;
-            }
-
-            // 신고 대상 정보 저장
-            reportModal.dataset.reportType = btn.dataset.reportType;
-            reportModal.dataset.targetId = btn.dataset.targetId;
-
-            reportForm.reset();
-            reportTarget.value = btn.dataset.targetName || "";
-            updateContentCount();
-
-            reportModal.classList.add("show");
-
-        });
-
+      modal.dataset.reportType = button.dataset.reportType;
+      modal.dataset.targetId = button.dataset.targetId;
+      targetInput.value = button.dataset.targetName || "신고 대상";
+      updateCount();
+      modal.classList.add("show");
     });
+  });
 
-    // ==========================
-    // 모달 닫기
-    // ==========================
-    function closeReportModal() {
-        reportModal.classList.remove("show");
+  modal.querySelector(".modal-close").addEventListener("click", close);
+  modal.querySelector(".btn-cancel").addEventListener("click", close);
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) close();
+  });
+  detailInput.addEventListener("input", updateCount);
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+
+    const submit = form.querySelector(".report-submit-btn");
+    submit.disabled = true;
+
+    try {
+      const body = new URLSearchParams(new FormData(form));
+      body.set("reportType", modal.dataset.reportType);
+      body.set("targetId", modal.dataset.targetId);
+
+      const response = await fetch("/reports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body,
+      });
+      const result = await response.json();
+
+      if (response.status === 401) {
+        close();
+        showLoginModal();
+        return;
+      }
+      if (!response.ok) {
+        throw new Error(result.message || "신고 접수에 실패했습니다.");
+      }
+
+      close();
+      showReportResult(true, result.message || "신고가 접수되었습니다.");
+    } catch (error) {
+      showReportResult(
+        false,
+        error.message || "신고 접수에 실패했습니다.",
+      );
+    } finally {
+      submit.disabled = false;
     }
-
-    closeBtn.addEventListener("click", closeReportModal);
-
-    cancelBtn.addEventListener("click", closeReportModal);
-
-    reportModal.addEventListener("click", (e) => {
-
-        if (e.target === reportModal) {
-            closeReportModal();
-        }
-
-    });
-
-    reportContent.addEventListener("input", updateContentCount);
-
-    function updateContentCount() {
-        reportContentCount.textContent = String(reportContent.value.length);
-    }
-
-    function showReportLoginModal() {
-        if (typeof showConfirmModal !== "function") {
-            return;
-        }
-
-        showConfirmModal({
-            iconClass: "info",
-            iconHtml: "?",
-            title: "로그인이 필요한 기능입니다",
-            message: "신고하려면 개인회원 로그인이 필요합니다.",
-            leftText: "취소",
-            rightText: "로그인",
-            onRight: () => {
-                const loginUrl = document.body.dataset.loginUrl || "/auth/login";
-                const returnUrl = window.location.pathname + window.location.search;
-
-                window.location.href =
-                    `${loginUrl}?returnUrl=${encodeURIComponent(returnUrl)}`;
-            }
-        });
-    }
-
-    // ==========================
-    // 신고 접수
-    // ==========================
-    reportForm.addEventListener("submit", async (e) => {
-
-        e.preventDefault();
-
-        const reportType = reportModal.dataset.reportType;
-        const targetId = reportModal.dataset.targetId;
-
-        switch (reportType) {
-
-            case "company":
-
-                // TODO
-                // 기업 신고 fetch
-                // POST /reports/company
-
-                break;
-
-            case "companyReview":
-
-                // TODO
-                // 기업리뷰 신고 fetch
-                // POST /reports/company-review
-
-                break;
-
-            case "interviewReview":
-
-                // TODO
-                // 면접후기 신고 fetch
-                // POST /reports/interview-review
-
-                break;
-
-            case "jobPosting":
-                await submitJobPostingReport(targetId);
-                return;
-
-            default:
-                return;
-
-        }
-
-        closeReportModal();
-
-        // TODO
-        // 신고 완료 모달 호출
-
-    });
-
-    async function submitJobPostingReport(targetId) {
-        submitBtn.disabled = true;
-
-        try {
-            const response = await fetch(
-                `/api/reports/job-postings/${targetId}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        reasonCode: reportReason.value,
-                        detail: reportContent.value.trim()
-                    })
-                }
-            );
-
-            const result = await readResponse(response);
-
-            if (!response.ok) {
-                showReportNotice(
-                    "신고를 접수할 수 없습니다",
-                    result.message || "잠시 후 다시 시도해주세요."
-                );
-                return;
-            }
-
-            closeReportModal();
-            showReportNotice(
-                "신고 접수 완료",
-                result.message || "신고가 접수되었습니다."
-            );
-        } catch (error) {
-            console.error("채용공고 신고 요청 오류:", error);
-            showReportNotice(
-                "신고를 접수할 수 없습니다",
-                "네트워크 상태를 확인한 뒤 다시 시도해주세요."
-            );
-        } finally {
-            submitBtn.disabled = false;
-        }
-    }
-
-    async function readResponse(response) {
-        try {
-            return await response.json();
-        } catch (error) {
-            return {};
-        }
-    }
-
-    function showReportNotice(title, message) {
-        if (typeof showConfirmModal !== "function") {
-            window.alert(message);
-            return;
-        }
-
-        showConfirmModal({
-            iconClass: "info",
-            iconHtml: '<i class="fa-solid fa-circle-info"></i>',
-            title,
-            message,
-            leftVisible: false,
-            rightText: "확인"
-        });
-    }
-
+  });
 });
+
+function showReportResult(
+  success,
+  message,
+  onConfirm = null,
+  title = null,
+  confirmText = "확인",
+) {
+  showConfirmModal({
+    iconClass: success ? "success" : "danger",
+    iconHtml: success
+      ? '<i class="fa-solid fa-check"></i>'
+      : '<i class="fa-solid fa-exclamation"></i>',
+    title: title || (success
+      ? "신고가 접수되었습니다"
+      : "신고를 접수할 수 없습니다"),
+    message,
+    leftVisible: false,
+    rightText: confirmText,
+    rightClass: "btn-primary",
+    onRight: onConfirm,
+  });
+}

@@ -2,8 +2,11 @@ package kr.co.firstdayproject.controller.company;
 
 import jakarta.servlet.http.HttpSession;
 import kr.co.firstdayproject.dto.company.CompanySearchDTO;
+import kr.co.firstdayproject.dto.job.JobDTO;
 import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.company.CompanyService;
+import kr.co.firstdayproject.service.banner.BannerService;
+import kr.co.firstdayproject.service.job.SavedJobService;
 import kr.co.firstdayproject.util.PageHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -12,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -20,6 +24,8 @@ import java.util.Map;
 public class CompanyController {
 
     private final CompanyService companyService;
+    private final BannerService bannerService;
+    private final SavedJobService savedJobService;
 
     @GetMapping({"", "/list"})
     public String list(@RequestParam(defaultValue = "1") int page,
@@ -64,6 +70,12 @@ public class CompanyController {
        model.addAttribute("jobCategoryList",
                companyService.getJobCategoryList());
 
+        model.addAttribute("companyBanner",
+                bannerService.getActiveBanners("companies")
+                        .stream()
+                        .findFirst()
+                        .orElse(null));
+
 
 
         return "company/list";
@@ -71,7 +83,8 @@ public class CompanyController {
 
     @GetMapping("/detail")
     public String detail(@RequestParam Long companyId,
-                         Model model) {
+                         Model model,
+                         Authentication authentication) {
 
         model.addAttribute("company",
                 companyService.getCompanyDetail(companyId));
@@ -79,16 +92,39 @@ public class CompanyController {
         model.addAttribute("jobPostingList",
                 companyService.getCompanyJobPostingList(companyId));
 
+        model.addAttribute("isWished", isWished(authentication, companyId));
+        model.addAttribute("loggedIn",
+                authentication != null
+                        && authentication.isAuthenticated()
+                        && authentication.getPrincipal() instanceof CustomUserDetails);
+
         return "company/detail";
     }
 
     @GetMapping("/jobs")
-    public String jobs(@RequestParam Long companyId, Model model) {
+    public String jobs(@RequestParam Long companyId, Model model, Authentication authentication) {
+        List<JobDTO> recruitList = companyService.getCompanyRecruitList(companyId);
+
         model.addAttribute("company",
                 companyService.getCompanyDetail(companyId));
-        model.addAttribute("recruitList",
-                companyService.getCompanyRecruitList(companyId));
+        model.addAttribute("recruitList", recruitList);
+        model.addAttribute("savedJobPostingIds",
+                savedJobService.getSavedJobPostingIds(
+                        recruitList.stream().map(JobDTO::getJobPostingId).toList(),
+                        authentication));
+        model.addAttribute("personalMember",
+                authentication != null
+                        && authentication.getAuthorities().stream()
+                        .anyMatch(authority -> "ROLE_PERSONAL".equals(authority.getAuthority())));
+        model.addAttribute("isWished", isWished(authentication, companyId));
         return "company/jobs";
+    }
+
+    private boolean isWished(Authentication authentication, Long companyId) {
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+            return companyService.isWished(userDetails.getUserId(), companyId);
+        }
+        return false;
     }
 
     // 기업 정보 : 관심기업 등록 및 해제

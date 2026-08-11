@@ -23,7 +23,15 @@
         FROM banners
         WHERE is_active = 1
           AND placement = #{placement}
+          AND (starts_at IS NULL OR DATE(starts_at) &lt;= CURDATE())
+          AND (ends_at IS NULL OR DATE(ends_at) &gt;= CURDATE())
         ORDER BY display_order ASC, banner_id ASC
+    </select>
+
+    <select id="selectBannerById" resultType="kr.co.firstdayproject.dto.banner.BannerDTO">
+        SELECT banner_id, banner_name, placement, image_url, link_url, alt_text,
+               display_order, starts_at, ends_at, is_active, created_by, created_at, updated_at
+        FROM banners WHERE banner_id = #{bannerId}
     </select>
 
     <!-- 관리자: 노출 여부와 기간에 관계없이 전체 배너 조회 -->
@@ -73,5 +81,18 @@
                 #{createdBy})
 
     </insert>
+
+    <update id="updateBanner" parameterType="kr.co.firstdayproject.dto.banner.BannerDTO">
+        UPDATE banners
+        SET banner_name=#{bannerName}, placement=#{placement}, image_url=#{imageUrl},
+            link_url=#{linkUrl}, alt_text=#{altText}, display_order=#{displayOrder},
+            starts_at=#{startsAt}, ends_at=#{endsAt}, updated_at=CURRENT_TIMESTAMP(6)
+        WHERE banner_id=#{bannerId}
+    </update>
+
+    <update id="updateBannerActive">
+        UPDATE banners SET is_active=#{isActive}, updated_at=CURRENT_TIMESTAMP(6)
+        WHERE banner_id=#{bannerId}
+    </update>
 
 </mapper>
