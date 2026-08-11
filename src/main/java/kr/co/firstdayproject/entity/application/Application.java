@@ -43,6 +43,13 @@ public class Application {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "resume_snapshot_json", nullable = false, columnDefinition = "json")
     private String resumeSnapshotJson;
+    /** 지원에 사용한 자기소개서 원본; 원본 삭제 후에는 NULL */
+    @Column(name = "cover_letter_id")
+    private Long coverLetterId;
+    /** 지원 완료 시점의 자기소개서 제목·문항·답변 스냅샷 */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "cover_letter_snapshot_json", columnDefinition = "json")
+    private String coverLetterSnapshotJson;
     @Column(name = "current_status", nullable = false, length = 20)
     private String currentStatus;
     @Column(name = "applied_at", nullable = false)

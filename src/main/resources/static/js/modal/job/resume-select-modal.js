@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const openButton = document.querySelector("[data-resume-modal-open]");
   const closeButtons = modal?.querySelectorAll("[data-resume-modal-close]");
   const cancelButton = modal?.querySelector("[data-resume-modal-cancel]");
+  const applicationError = modal?.dataset.applicationError;
 
   const openModal = () => {
     if (!modal) return;
@@ -26,6 +27,11 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   openButton?.addEventListener("click", () => {
+    if (openButton.dataset.alreadyApplied === "true") {
+      showAlreadyAppliedModal();
+      return;
+    }
+
     if (openButton.dataset.personalMember === "true") {
       openModal();
       return;
@@ -70,23 +76,58 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.target === modal) closeModal();
   });
 
-  modal?.querySelectorAll('input[name="resumeId"]').forEach((radio) => {
-    radio.addEventListener("change", () => {
-      modal.querySelectorAll(".selected-label").forEach((label) => label.textContent = "선택");
-      radio.closest(".resume-modal-option")
-        ?.querySelector(".selected-label")
-        .replaceChildren("선택됨");
+  ["resumeId", "coverLetterId"].forEach((fieldName) => {
+    modal?.querySelectorAll(`input[name="${fieldName}"]`).forEach((radio) => {
+      radio.addEventListener("change", () => {
+        const section = radio.closest(".resume-modal-section");
+
+        section?.querySelectorAll(".selected-label")
+          .forEach((label) => label.textContent = "선택");
+        radio.closest(".resume-modal-option")
+          ?.querySelector(".selected-label")
+          .replaceChildren("선택됨");
+      });
     });
   });
+
+  const showAlreadyAppliedModal = () => {
+    showConfirmModal({
+      iconClass: "danger",
+      iconHtml: "!",
+      title: "이미 지원한 공고입니다",
+      message:
+        "동일한 채용공고에는 한 번만 지원할 수 있습니다.\n" +
+        "마이페이지에서 기존 지원 내역을 확인해주세요.",
+      leftText: "닫기",
+      rightText: "지원 내역 확인",
+      rightClass: "btn-danger",
+      onRight: () => {
+        window.location.href = "/my/applications";
+      },
+    });
+  };
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && modal?.classList.contains("is-open")) closeModal();
   });
 
-  if (
+  if (applicationError) {
+    showConfirmModal({
+      iconClass: "danger",
+      iconHtml: "!",
+      title: "지원할 수 없습니다",
+      message: applicationError,
+      leftVisible: false,
+      rightText: "확인",
+    });
+  } else if (
     openButton?.dataset.personalMember === "true"
     && new URLSearchParams(window.location.search).get("apply") === "true"
   ) {
-    openModal();
+    if (openButton.dataset.alreadyApplied === "true") {
+      showAlreadyAppliedModal();
+    } else {
+      openModal();
+    }
   }
 });

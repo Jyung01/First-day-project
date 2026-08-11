@@ -4,6 +4,7 @@ import kr.co.firstdayproject.dto.my.ApplicationSummaryProjection;
 import kr.co.firstdayproject.entity.application.Application;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,6 +15,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
+
+    boolean existsByApplicantUserIdAndJobPostingIdAndCurrentStatusNot(
+            Long applicantUserId,
+            Long jobPostingId,
+            String excludedStatus
+    );
+
+    Optional<Application> findByApplicationIdAndApplicantUserId(
+            Long applicationId,
+            Long applicantUserId
+    );
 
     long countByJobPostingIdAndCurrentStatusNot(
         Long jobPostingId,
