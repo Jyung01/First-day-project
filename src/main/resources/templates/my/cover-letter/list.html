@@ -43,11 +43,9 @@
                         </div>
                         <p class="cl-card__meta" th:text="|문항 ${letter.questionCount}개 · ${#numbers.formatInteger(letter.charCount, 1, 'COMMA')}자|">문항 1개 · 2,842자</p>
                         <div class="cl-card__actions">
-                            <a th:if="${letter.aiReviewed}"
-                               th:href="@{/my/cover-letter/ai-result(id=${letter.id})}"
-                               class="btn btn-primary btn-sm">AI 결과</a>
-                            <a th:unless="${letter.aiReviewed}"
-                               class="btn btn-disabled btn-sm" aria-disabled="true">AI 결과</a>
+                            <a th:href="@{/my/cover-letter/ai-result(id=${letter.id})}"
+                               th:text="${letter.aiReviewed ? 'AI 첨삭 결과확인' : 'AI 첨삭하기'}"
+                               class="btn btn-primary btn-sm">AI 첨삭하기</a>
 
                             <a th:href="@{/my/cover-letter/detail(id=${letter.id})}" class="btn btn-outline btn-sm">보기</a>
                             <a th:href="@{/my/cover-letter/form(id=${letter.id})}" class="btn btn-outline btn-sm">수정</a>
