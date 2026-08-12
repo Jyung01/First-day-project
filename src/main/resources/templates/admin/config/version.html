@@ -6,6 +6,10 @@
     <title>사이트 버전 관리 | 첫출근 관리자</title>
     <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
     <link rel="stylesheet" th:href="@{/css/admin/section-common.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin/config/version.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/config/version-modal.css}" />
 </head>
 <body>
 <div class="wrapper">
@@ -13,26 +17,126 @@
     <div class="container">
         <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
         <main class="admin-section">
-            <div class="page-header"><h1>사이트 버전 관리</h1><p>서비스 버전과 변경내역을 등록하고 조회합니다.</p></div>
+            <div class="page-header">
+                <h1>사이트 버전 관리</h1>
+                <p>서비스 버전과 변경내역을 등록하고 조회합니다.</p>
+            </div>
+
+            <div
+                    th:if="${versionMessage}"
+                    class="version-alert version-alert--success"
+                    th:text="${versionMessage}"
+            ></div>
+            <div
+                    th:if="${versionError}"
+                    class="version-alert version-alert--error"
+                    th:text="${versionError}"
+            ></div>
+
             <section class="panel">
-                <div class="panel-head"><h2>버전 이력</h2></div>
-                <p class="section-description">등록된 사이트 버전을 목록에서 확인하고 필요시 항목을 수정할 수 있습니다.</p>
-                <div class="panel-head"><h2>버전 목록</h2></div>
-                <p class="section-description">변경내역은 [확인], 편집은 [수정]을 사용합니다.</p>
-                <div class="version-list">
-                    <div class="version-item head"><span>번호</span><span>버전</span><span>작성자</span><span>등록일시</span><span>변경내역</span><span>관리</span></div>
-                    <div class="version-item"><span>1</span><span>0.4.4-SNAPSHOT · 정식</span><span>admin01</span><span>2026.07.22 17:12</span><a href="#">[확인]</a><a href="#">[수정]</a></div>
-                    <div class="version-item"><span>2</span><span>0.3.0-SNAPSHOT</span><span>admin01</span><span>2026.07.15 17:12</span><a href="#">[확인]</a><a href="#">[수정]</a></div>
-                    <div class="version-item"><span>3</span><span>0.2.0-SNAPSHOT</span><span>admin01</span><span>2026.07.08 17:12</span><a href="#">[확인]</a><a href="#">[수정]</a></div>
-                    <div class="version-item"><span>4</span><span>0.1.0-SNAPSHOT</span><span>admin01</span><span>2026.07.01 17:12</span><a href="#">[확인]</a><a href="#">[수정]</a></div>
+                <div class="panel-head">
+                    <div>
+                        <h2>버전 이력</h2>
+                        <p class="version-description">
+                            등록된 사이트 버전을 목록에서 확인하고 필요한 항목만 수정합니다.
+                        </p>
+                    </div>
+                    <button
+                            type="button"
+                            class="btn btn-primary"
+                            data-version-action="create"
+                    >등록</button>
                 </div>
-                <nav class="pagination" aria-label="버전 이력 페이지"><a class="active" href="#">1</a><a href="#">2</a><a href="#">3</a></nav>
-                <div class="form-actions"><button type="button" class="btn btn-primary">등록</button></div>
-                <p class="section-note">※ 작성자와 등록일시는 로그인 관리자 정보로 자동 저장되며, 버전 이력은 삭제되지 않습니다.</p>
+
+                <div class="table-wrap">
+                    <table class="data-table version-table">
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>버전</th>
+                            <th>작성자</th>
+                            <th>등록일시</th>
+                            <th>변경내역</th>
+                            <th>관리</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="version, stat : ${versionPage.content}">
+                            <td th:text="${versionPage.totalElements - (versionPage.number * versionPage.size) - stat.index}">1</td>
+                            <td>
+                                <strong th:text="${version.versionName}">0.1.0-SNAPSHOT</strong>
+                            </td>
+                            <td th:text="${version.creatorName}">admin01</td>
+                            <td th:text="${#temporals.format(version.createdAt, 'yyyy.MM.dd HH:mm')}">2026.08.12 10:00</td>
+                            <td>
+                                <button
+                                        type="button"
+                                        class="version-action"
+                                        data-version-action="view"
+                                        th:attr="data-version-id=${version.siteVersionId},data-version-name=${version.versionName},data-version-notes=${version.changeNotes}"
+                                >확인</button>
+                            </td>
+                            <td>
+                                <button
+                                        type="button"
+                                        class="version-action"
+                                        data-version-action="edit"
+                                        th:attr="data-version-id=${version.siteVersionId},data-version-name=${version.versionName},data-version-notes=${version.changeNotes}"
+                                >수정</button>
+                            </td>
+                        </tr>
+                        <tr th:if="${versionPage.empty}">
+                            <td colspan="6" class="version-empty">
+                                등록된 사이트 버전이 없습니다.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav
+                        th:if="${versionPage.totalPages > 1}"
+                        class="pagination"
+                        aria-label="버전 이력 페이지"
+                >
+                    <a
+                            th:if="${versionPage.hasPrevious()}"
+                            th:href="@{/admin/config/version(page=${versionPage.number - 1})}"
+                            aria-label="이전 페이지"
+                    >‹</a>
+                    <a
+                            th:each="pageNumber : ${#numbers.sequence(0, versionPage.totalPages - 1)}"
+                            th:href="@{/admin/config/version(page=${pageNumber})}"
+                            th:text="${pageNumber + 1}"
+                            th:classappend="${pageNumber == versionPage.number} ? 'active'"
+                    >1</a>
+                    <a
+                            th:if="${versionPage.hasNext()}"
+                            th:href="@{/admin/config/version(page=${versionPage.number + 1})}"
+                            aria-label="다음 페이지"
+                    >›</a>
+                </nav>
+
+                <p class="section-note">
+                    작성자는 등록 시 로그인한 관리자 정보로 자동 저장되며, 버전 이력은 삭제하지 않습니다.
+                </p>
             </section>
         </main>
     </div>
     <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
 </div>
+
+<form id="versionCreateForm" th:action="@{/admin/config/version}" method="post" hidden>
+    <input type="hidden" name="versionName" data-version-name-field />
+    <input type="hidden" name="changeNotes" data-version-notes-field />
+</form>
+<form id="versionEditForm" th:action="@{/admin/config/version/0}" method="post" hidden>
+    <input type="hidden" name="versionName" data-version-name-field />
+    <input type="hidden" name="changeNotes" data-version-notes-field />
+</form>
+
+<div th:replace="~{modal/common/form-modal :: formModal}"></div>
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/modal/admin/config/version-modal.js}"></script>
 </body>
 </html>
