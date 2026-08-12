@@ -312,6 +312,52 @@
   font-size: 12px;
 }
 
+.job-skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 25px;
+  margin: 9px 0 11px;
+}
+
+.job-skill-tag,
+.job-skill-more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  padding: 4px 10px;
+  border: 1px solid #dfe1ff;
+  border-radius: 7px;
+  background: #f3f3ff;
+  color: var(--job-primary);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.job-skill-more {
+  border-color: var(--job-line);
+  background: #fff;
+  color: var(--job-muted);
+}
+
+.job-skill-tags.is-empty {
+  align-items: center;
+}
+
+.job-skill-empty {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  padding: 4px 10px;
+  border: 1px dashed #d7deea;
+  border-radius: 7px;
+  background: #fafbfc;
+  color: #99a5b5;
+  font-size: 11px;
+  line-height: 1;
+}
+
 .job-card-foot {
   display: flex;
   justify-content: space-between;

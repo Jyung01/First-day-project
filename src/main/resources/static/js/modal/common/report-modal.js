@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const targetInput = document.getElementById("reportTarget");
   const detailInput = document.getElementById("reportContent");
   const detailCount = document.getElementById("reportContentCount");
+  const pendingReportKey = "pendingReportAction";
 
   const updateCount = () => {
     if (detailCount) detailCount.textContent = String(detailInput.value.length);
@@ -15,34 +16,83 @@ document.addEventListener("DOMContentLoaded", () => {
     form.reset();
     updateCount();
   };
-  const moveToLogin = () => {
+  const openReportModal = (button) => {
+    modal.dataset.reportType = button.dataset.reportType;
+    modal.dataset.targetId = button.dataset.targetId;
+    targetInput.value = button.dataset.targetName || "신고 대상";
+    updateCount();
+    modal.classList.add("show");
+  };
+  const moveToLogin = (reportAction) => {
+    sessionStorage.setItem(
+      pendingReportKey,
+      JSON.stringify(reportAction),
+    );
     const returnUrl = location.pathname + location.search;
     location.href = `/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`;
   };
-  const showLoginModal = () => {
-    showReportResult(
-      false,
-      "신고하려면 개인회원 로그인이 필요합니다.",
-      moveToLogin,
-      "로그인이 필요한 기능입니다",
-      "로그인",
-    );
+  const showLoginModal = (button = null) => {
+    const reportAction = button
+      ? {
+          reportType: button.dataset.reportType,
+          targetId: button.dataset.targetId,
+          targetName: button.dataset.targetName || "신고 대상",
+        }
+      : {
+          reportType: modal.dataset.reportType,
+          targetId: modal.dataset.targetId,
+          targetName: targetInput.value || "신고 대상",
+        };
+
+    showConfirmModal({
+      iconClass: "info",
+      iconHtml: "?",
+      title: "로그인이 필요한 기능입니다",
+      message:
+        "신고하려면 개인회원 로그인이 필요합니다.\n" +
+        "로그인 후 다시 이용해주세요.",
+      leftText: "취소",
+      rightText: "로그인",
+      leftClass: "btn-outline",
+      rightClass: "btn-primary",
+      onRight: () => moveToLogin(reportAction),
+    });
   };
 
   document.querySelectorAll(".report-btn").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.loggedIn === "false") {
-        showLoginModal();
+        showLoginModal(button);
         return;
       }
 
-      modal.dataset.reportType = button.dataset.reportType;
-      modal.dataset.targetId = button.dataset.targetId;
-      targetInput.value = button.dataset.targetName || "신고 대상";
-      updateCount();
-      modal.classList.add("show");
+      openReportModal(button);
     });
   });
+
+  const resumePendingReport = () => {
+    const pendingValue = sessionStorage.getItem(pendingReportKey);
+    if (!pendingValue) return;
+
+    let pendingAction;
+    try {
+      pendingAction = JSON.parse(pendingValue);
+    } catch (error) {
+      sessionStorage.removeItem(pendingReportKey);
+      return;
+    }
+
+    const button = Array.from(document.querySelectorAll(".report-btn"))
+      .find((item) => item.dataset.reportType === pendingAction.reportType
+        && item.dataset.targetId === String(pendingAction.targetId));
+
+    if (!button || button.dataset.loggedIn === "false") return;
+
+    sessionStorage.removeItem(pendingReportKey);
+    openReportModal(button);
+  };
+
+  resumePendingReport();
 
   modal.querySelector(".modal-close").addEventListener("click", close);
   modal.querySelector(".btn-cancel").addEventListener("click", close);
