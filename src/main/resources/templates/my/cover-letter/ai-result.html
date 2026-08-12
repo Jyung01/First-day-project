@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"><head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>첫출근 — AI 첨삭 결과</title>
+    <title>첫출근 — AI 첨삭</title>
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <link rel="stylesheet" th:href="@{/css/my/common.css}" />
     <link rel="stylesheet" th:href="@{/css/my/cover-letter/ai-result.css}" />
@@ -11,51 +11,201 @@
     <div class="wrap mypage-layout">
         <aside th:replace="~{common/my-aside :: myAside}"></aside>
 
-        <section class="mypage-content">
-            <div class="cl-page-header">
-                <h1 class="cl-page-header__title">AI 첨삭 결과</h1>
-                <p class="cl-page-header__desc">원문과 AI 개선안을 비교하고 원하는 내용을 선택해 반영하세요.</p>
-            </div>
+        <!--
+          정적 프로토타입 단계: hasAiReview를 URL 파라미터로 미리보기 전환합니다.
+          ?mode=result 를 붙이면 결과 상태를, 없으면 선택 상태를 보여줍니다.
+          실제 연동 시에는 컨트롤러가 이 자기소개서의 첨삭 이력 존재 여부(예:
+          coverLetterAiReviewRepository.existsByCoverLetterId(id))를 모델에 담아
+          hasAiReview로 넘기면 되고, 그러면 이 파라미터 분기는 지워도 됩니다.
+        -->
+        <section class="mypage-content" th:with="hasAiReview=${param.mode != null and param.mode[0] == 'result'}">
 
-            <div class="cl-review-tabs">
-                <div class="cl-review-tabs__left" id="cl-tab-buttons">
-                    <button type="button"
-                            th:each="item, iter : ${coverLetterItems}"
-                            th:text="|문항 ${iter.index + 1}|"
-                            th:classappend="${iter.index == 0} ? ' is-active' : ''"
-                            th:attr="data-index=${iter.index}"
-                            class="cl-tab">문항 1</button>
+            <!-- ===================== 상태 A: 공고 선택 (이력 없음 / 재요청) ===================== -->
+            <div th:if="${!hasAiReview}">
+                <div class="cl-page-header">
+                    <h1 class="cl-page-header__title">AI 첨삭 요청</h1>
+                    <p class="cl-page-header__desc">첨삭받을 채용공고를 선택해 주세요.</p>
+                </div>
+
+                <div class="cl-target-summary">
+                    <span class="cl-target-summary__label">자기소개서</span>
+                    <span class="cl-target-summary__value"
+                          th:text="|${coverLetter.title} · 문항 ${#lists.size(coverLetterItems)}개|">자기소개서 제목 · 문항 2개</span>
+                </div>
+
+                <!--
+                  정적 프로토타입: savedJobs는 관심 등록한 모집중 공고가 있다고 가정하고
+                  2건을 직접 써놓았습니다. 실제 연동 시:
+                  - myPageService.getSavedJobList(userId, "open", 0, N) 결과가 비어있지 않을 때만
+                    이 섹션 자체를 노출 (th:if="${not #lists.isEmpty(savedJobs)}")
+                  - th:each="posting : ${savedJobs}"로 교체
+                -->
+                <div class="cl-job-picker" th:if="${true}">
+                    <h2 class="cl-job-picker__section-title">관심 등록한 공고</h2>
+                    <ul class="cl-job-picker__list" id="cl-saved-job-list">
+                        <li class="cl-job-picker__item is-selected">
+                            <label>
+                                <input type="radio" name="jobPosting" checked />
+                                <span class="cl-job-picker__text">
+                                    <span class="cl-job-picker__title">백엔드 신입 개발자 채용</span>
+                                    <span class="cl-job-picker__meta">첫출근 · 모집중</span>
+                                </span>
+                            </label>
+                        </li>
+                        <li class="cl-job-picker__item">
+                            <label>
+                                <input type="radio" name="jobPosting" />
+                                <span class="cl-job-picker__text">
+                                    <span class="cl-job-picker__title">AWS 클라우드 엔지니어</span>
+                                    <span class="cl-job-picker__meta">클라우드컴퍼니 · 모집중</span>
+                                </span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+
+                <!--
+                  정적 프로토타입: 검색 결과는 항상 노출되는 영역입니다(관심공고 유무와 무관).
+                  실제 연동 시 초기 목록은 findLatestRecruitingJobPostings, 검색어 입력 시엔
+                  findRecruitingJobPostings(keyword, ...)로 교체하면 됩니다.
+                -->
+                <div class="cl-job-picker">
+                    <h2 class="cl-job-picker__section-title">공고 검색</h2>
+                    <div class="cl-job-picker__search">
+                        <input type="text" class="cl-input" placeholder="공고명 또는 기업명으로 검색" />
+                    </div>
+                    <ul class="cl-job-picker__list" id="cl-search-job-list">
+                        <li class="cl-job-picker__item">
+                            <label>
+                                <input type="radio" name="jobPosting" />
+                                <span class="cl-job-picker__text">
+                                    <span class="cl-job-picker__title">React 프론트엔드 개발자</span>
+                                    <span class="cl-job-picker__meta">OO테크 · 모집중</span>
+                                </span>
+                            </label>
+                        </li>
+                        <li class="cl-job-picker__item">
+                            <label>
+                                <input type="radio" name="jobPosting" />
+                                <span class="cl-job-picker__text">
+                                    <span class="cl-job-picker__title">핀테크 플랫폼 서버 개발자</span>
+                                    <span class="cl-job-picker__meta">핀테크컴퍼니 · 모집중</span>
+                                </span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="cl-page-actions">
+                    <a th:href="@{/my/cover-letter/list}" class="btn btn-outline">취소</a>
+                    <button type="button" id="btn-request-review" class="btn btn-primary cl-submit"
+                            th:attr="data-cover-letter-id=${coverLetter.coverLetterId}">첨삭 요청하기</button>
                 </div>
             </div>
 
-            <div th:each="item, iter : ${coverLetterItems}"
-                 th:attr="data-panel-index=${iter.index}"
-                 th:classappend="${iter.index == 0} ? '' : ' cl-panel--hidden'"
-                 class="cl-review-panel">
+            <!--
+              정적 프로토타입: isGenerating은 "방금 요청해서 생성 중"인지, "이미 완료된
+              이력을 보러 온 것"인지를 URL의 generating=true 파라미터로 구분합니다.
+              실제 연동 시에는 방금 만든 review가 아직 처리 중인지 여부(예: 큐/상태 컬럼)로
+              판단하면 됩니다.
+            -->
+            <!-- ===================== 상태 B: 첨삭 결과 (이력 있음) ===================== -->
+            <div th:if="${hasAiReview}"
+                 th:with="isGenerating=${param.generating != null and param.generating[0] == 'true'}"
+                 th:attr="data-generating=${isGenerating}"
+                 id="cl-review-result">
+                <div class="cl-page-header">
+                    <h1 class="cl-page-header__title">AI 첨삭 결과</h1>
+                    <p class="cl-page-header__desc"
+                       th:text="${isGenerating}
+                            ? '문항별로 AI 첨삭을 생성하고 있습니다. 완료된 문항부터 바로 확인할 수 있어요.'
+                            : '원문과 AI 개선안을 비교하고 원하는 내용을 선택해 반영하세요.'">원문과 AI 개선안을 비교하고 원하는 내용을 선택해 반영하세요.</p>
+                </div>
 
-                <div class="cl-review-meta">
-                    <div class="cl-review-meta__left">
-                        <span class="status-badge status-badge--pending">첨삭 준비 중</span>
-                        <span th:text="|${coverLetter.title} · 문항 ${iter.index + 1}|">자기소개서 · 문항 1</span>
+                <!--
+                  정적 프로토타입: 대상 공고/요청일과 이전 이력 목록은 지금 예시로 써있습니다.
+                  실제 연동 시 latestReview(가장 최근 CoverLetterAiReview)와
+                  reviewHistory(같은 자기소개서의 과거 이력 목록)를 모델에 담아 채우면 됩니다.
+                -->
+                <div class="cl-review-meta-bar">
+                    <div class="cl-review-meta-bar__target">
+                        <span class="status-badge"
+                              th:classappend="${isGenerating} ? 'status-badge--pending' : 'status-badge--ai-done'"
+                              th:text="${isGenerating} ? '첨삭 진행 중' : 'AI 첨삭 완료'"
+                              id="cl-review-status-badge">AI 첨삭 완료</span>
+                        <span>백엔드 신입 개발자 채용 (첫출근) · 8/14 요청</span>
+                    </div>
+                    <select class="cl-history-select" aria-label="이전 첨삭 이력" th:unless="${isGenerating}">
+                        <option>8/14 · 백엔드 신입 개발자 채용</option>
+                        <option>8/13 · React 프론트엔드 개발자</option>
+                        <option>8/12 · 백엔드 신입 개발자 채용</option>
+                    </select>
+                </div>
+
+                <div class="cl-review-tabs">
+                    <div class="cl-review-tabs__left" id="cl-tab-buttons">
+                        <button type="button"
+                                th:each="item, iter : ${coverLetterItems}"
+                                th:text="|문항 ${iter.index + 1}|"
+                                th:classappend="${iter.index == 0} ? ' is-active' : ''"
+                                th:attr="data-index=${iter.index}"
+                                class="cl-tab">문항 1</button>
                     </div>
                 </div>
 
-                <div class="cl-compare">
-                    <!-- 원문 -->
-                    <div class="cl-compare__col">
-                        <h2 class="cl-compare__title">원문</h2>
-                        <p class="cl-original__text" th:text="${item.answer}">원문 내용</p>
-                        <p class="cl-original__count" th:text="|원문 ${item.answer != null ? #strings.length(item.answer) : 0}자|">원문 0자</p>
-                    </div>
+                <div th:each="item, iter : ${coverLetterItems}"
+                     th:attr="data-panel-index=${iter.index}"
+                     th:classappend="${iter.index == 0} ? '' : ' cl-panel--hidden'"
+                     class="cl-review-panel">
 
-                    <!-- AI 첨삭 제안 (준비 중) -->
-                    <div class="cl-compare__col">
-                        <h2 class="cl-compare__title">AI 첨삭 제안</h2>
-                        <div class="cl-ai-pending">
-                            <p class="cl-ai-pending__title">AI 첨삭 기능은 준비 중입니다.</p>
-                            <p class="cl-ai-pending__desc">첨삭 기능이 연결되면 이 화면에서 원문과 AI 개선안을 비교하고, 원하는 내용을 선택해 반영할 수 있습니다.</p>
+                    <div class="cl-compare">
+                        <!-- 원문 -->
+                        <div class="cl-compare__col">
+                            <h2 class="cl-compare__title">원문</h2>
+                            <p class="cl-original__text" th:text="${item.answer}">원문 내용</p>
+                            <p class="cl-original__count" th:text="|원문 ${item.answer != null ? #strings.length(item.answer) : 0}자|">원문 0자</p>
+                        </div>
+
+                        <!--
+                          AI 첨삭 제안: 문항별로 로딩/완료 두 상태를 갖습니다.
+                          isGenerating이 true면 처음엔 .cl-suggestion__loading만 보이고,
+                          JS가 문항마다 시차를 두고 .cl-suggestion__content로 바꿔치기합니다
+                          (아래 "문항별 순차 생성 시뮬레이션" 스크립트 참고).
+                          실제 연동 시에는 문항별 첨삭 API 응답이 오는 대로 이 전환을 수행하고,
+                          내용은 latestReview의 문항별 summary/points/revisedAnswer로 채우면 됩니다.
+                        -->
+                        <div class="cl-compare__col">
+                            <h2 class="cl-compare__title">AI 첨삭 제안</h2>
+
+                            <div class="cl-suggestion__loading">
+                                <span class="cl-suggestion__spinner"></span>
+                                <p class="cl-suggestion__loading-text">이 문항을 첨삭하는 중입니다...</p>
+                            </div>
+
+                            <div class="cl-suggestion__content">
+                                <div class="cl-suggestion__summary-box">
+                                    <p class="cl-suggestion__summary-title">한 줄 요약</p>
+                                    <p class="cl-suggestion__summary-text">구체적인 성과 수치를 추가하고, 선택한 공고의 핵심 요구사항(REST API 설계)에 맞춰 표현을 다듬었습니다.</p>
+                                </div>
+                                <ul class="cl-suggestion__points">
+                                    <li class="cl-suggestion__point"><span class="cl-suggestion__point-label">개선 1.</span>담당 업무를 공고의 "REST API 설계" 요건과 더 명확히 연결했습니다.</li>
+                                    <li class="cl-suggestion__point"><span class="cl-suggestion__point-label">개선 2.</span>"다양한 프로젝트 경험"처럼 추상적인 표현을 구체적인 사례와 수치로 바꿨습니다.</li>
+                                </ul>
+                                <div class="cl-suggestion__example">
+                                    <p class="cl-suggestion__example-title">수정 제안</p>
+                                    <p class="cl-suggestion__example-text">(첨삭된 답변 예시가 여기에 표시됩니다)</p>
+                                </div>
+                                <div class="cl-suggestion__actions">
+                                    <button type="button" class="btn btn-outline">원문 유지</button>
+                                    <button type="button" class="btn btn-primary">이 내용으로 적용</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="cl-page-actions">
+                    <a href="#" id="btn-reselect-job" class="btn btn-outline">다른 공고로 다시 첨삭받기</a>
                 </div>
             </div>
 
@@ -70,6 +220,7 @@
 <script th:src="@{/js/common.js}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // 문항 탭 전환 (결과 상태)
         const tabButtons = document.querySelectorAll('#cl-tab-buttons .cl-tab');
         const panels = document.querySelectorAll('.cl-review-panel');
 
@@ -85,6 +236,77 @@
                 });
             });
         });
+
+        // 공고 선택 (선택 상태) — 관심공고 목록 + 검색 목록 전체에서 라디오 하나만 선택되게 함
+        const jobItems = document.querySelectorAll('.cl-job-picker__item');
+        jobItems.forEach(item => {
+            item.querySelector('input[type="radio"]').addEventListener('change', () => {
+                jobItems.forEach(i => i.classList.remove('is-selected'));
+                item.classList.add('is-selected');
+            });
+        });
+
+        // 첨삭 요청하기 (선택 상태) — 결과 화면으로 바로 이동하고, 그 화면이 생성 중 상태를 보여줌
+        //
+        // TODO: 실제 연동 시 반드시 POST/Redirect/GET 패턴으로 교체할 것.
+        //   - 지금처럼 location.href로 GET 이동만 시키면, 이 결과 화면을 새로고침/뒤로가기/
+        //     북마크로 다시 열 때마다 매번 첨삭이 재생성됨(OpenAI 호출 중복 = 비용 중복 발생).
+        //   - 올바른 흐름: 버튼 클릭 시 POST /my/cover-letter/{id}/ai-reviews 로
+        //     jobPostingId를 같이 전송 → 서버가 CoverLetterAiReview를 "처리 중" 상태로
+        //     즉시 하나 생성 → 그 review의 결과 화면(GET)으로 리다이렉트.
+        //   - 이후 이 결과 화면은 순수 조회(GET)만 하고, 몇 번을 새로고침해도 이미 만들어진
+        //     그 review의 현재 상태(처리 중 / 완료)만 보여주고 절대 재생성하지 않아야 함.
+        //   - "생성을 시작하는 행위(POST, 1회)"와 "상태를 보는 행위(GET, 반복 안전)"를
+        //     명확히 분리하는 것이 핵심.
+        const requestBtn = document.getElementById('btn-request-review');
+        if (requestBtn) {
+            requestBtn.addEventListener('click', () => {
+                const coverLetterId = requestBtn.dataset.coverLetterId;
+                location.href = `/my/cover-letter/ai-result?id=${coverLetterId}&mode=result&generating=true`;
+            });
+        }
+
+        // 다른 공고로 다시 첨삭받기 (결과 상태) — 선택 상태로 되돌아감
+        const reselectBtn = document.getElementById('btn-reselect-job');
+        if (reselectBtn) {
+            reselectBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const coverLetterId = new URLSearchParams(location.search).get('id');
+                location.href = `/my/cover-letter/ai-result?id=${coverLetterId}`;
+            });
+        }
+
+        // 문항별 순차 생성 시뮬레이션 (정적 프로토타입)
+        // 실제 연동 시에는 문항별 API 응답이 도착하는 대로 같은 방식으로 loading → content 전환하면 됩니다.
+        const reviewResult = document.getElementById('cl-review-result');
+        if (reviewResult && reviewResult.dataset.generating === 'true') {
+            const reviewPanels = document.querySelectorAll('.cl-review-panel');
+
+            reviewPanels.forEach(panel => {
+                panel.querySelector('.cl-suggestion__content').classList.add('cl-suggestion__content--hidden');
+                panel.querySelector('.cl-suggestion__loading').classList.add('is-active');
+            });
+
+            reviewPanels.forEach((panel, index) => {
+                const loading = panel.querySelector('.cl-suggestion__loading');
+                const content = panel.querySelector('.cl-suggestion__content');
+
+                window.setTimeout(() => {
+                    loading.classList.remove('is-active');
+                    content.classList.remove('cl-suggestion__content--hidden');
+
+                    const stillGenerating = document.querySelectorAll(
+                        '.cl-suggestion__loading.is-active'
+                    ).length > 0;
+                    if (!stillGenerating) {
+                        const badge = document.getElementById('cl-review-status-badge');
+                        badge.textContent = 'AI 첨삭 완료';
+                        badge.classList.remove('status-badge--pending');
+                        badge.classList.add('status-badge--ai-done');
+                    }
+                }, (index + 1) * 1400);
+            });
+        }
     });
 </script>
 </body></html>
