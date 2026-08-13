@@ -16,6 +16,8 @@ public interface JobPostingSkillRepository extends JpaRepository<JobPostingSkill
 
     List<JobPostingSkill> findAllByIdJobPostingId(Long jobPostingId);
 
+    List<JobPostingSkill> findAllByIdJobPostingIdIn(List<Long> jobPostingIds);
+
     @Query("""
             select new kr.co.firstdayproject.dto.job.JobListSkillItem(
                     postingSkill.id.jobPostingId,
