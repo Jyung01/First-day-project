@@ -493,15 +493,19 @@ CREATE TABLE cover_letter_items (
 CREATE TABLE cover_letter_ai_reviews (
   cover_letter_ai_review_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   cover_letter_id       BIGINT UNSIGNED NOT NULL,
+  job_posting_id        BIGINT UNSIGNED NOT NULL COMMENT '첨삭 대상으로 선택한 채용공고',
   original_content      JSON NOT NULL COMMENT '첨삭 요청 당시 문항·답변 전체 스냅샷',
   revised_content       JSON NOT NULL COMMENT 'AI가 제안한 문항별 수정 답변 전체',
   feedback              LONGTEXT NULL COMMENT '전체 첨삭 요약과 개선 이유',
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (cover_letter_ai_review_id),
   KEY idx_cover_letter_ai_reviews (cover_letter_id, created_at),
+  KEY idx_cover_letter_ai_reviews_job_posting (job_posting_id),
   CONSTRAINT fk_cover_letter_ai_reviews_cover
     FOREIGN KEY (cover_letter_id) REFERENCES cover_letters(cover_letter_id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_cover_letter_ai_reviews_job_posting
+    FOREIGN KEY (job_posting_id) REFERENCES job_postings(job_posting_id)
 ) ENGINE=InnoDB COMMENT='자기소개서 AI 첨삭 1회 결과; 원문·수정본·피드백을 한 행에 보존';
 
 -- =========================================================

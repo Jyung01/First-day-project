@@ -16,6 +16,7 @@
 | V8 | `V8__replace_applications_unique_key_with_active_guard.sql` | `applications` 유일성 제약을 `active_application_guard` 생성 컬럼 기반으로 변경, 지원취소 후 재지원 허용 |
 | V9 | `V9__add_admin_memo_to_company_reviews.sql` | `company_reviews.admin_memo` 추가 |
 | V10 | `V10__add_admin_memo_to_interview_reviews.sql` | `interview_reviews.admin_memo` 추가 |
+| V11 | `V11__add_job_posting_to_cover_letter_ai_reviews.sql` | `cover_letter_ai_reviews.job_posting_id` 추가 |
 
 ## 적용 규칙
 
@@ -72,3 +73,10 @@
 
 - `interview_reviews.admin_memo`(VARCHAR(2000) NULL)에 관리자가 후기를 숨김/삭제 등으로 처리할 때 남기는 메모를 저장한다. `hidden_by` 다음 위치에 추가한다.
 - 기존 V9 DB에는 `V10__add_admin_memo_to_interview_reviews.sql`을 한 번 실행한다.
+
+## V11 반영 내용
+
+- `cover_letter_ai_reviews.job_posting_id`(BIGINT UNSIGNED NOT NULL)에 첨삭 대상으로 선택한 채용공고를 저장한다. `cover_letter_id` 다음 위치에 추가하며 `job_postings.job_posting_id`를 FK로 참조한다.
+- 인덱스 `idx_cover_letter_ai_reviews_job_posting (job_posting_id)`를 추가한다.
+- 재요청마다 새 행을 쌓는 이력 구조에서, 첨삭 결과가 어느 공고를 기준으로 생성됐는지 구분할 수 있게 한다.
+- 기존 V10 DB에는 `V11__add_job_posting_to_cover_letter_ai_reviews.sql`을 한 번 실행한다.

@@ -8,6 +8,7 @@ import kr.co.firstdayproject.entity.coverletter.CoverLetter;
 import kr.co.firstdayproject.entity.coverletter.CoverLetterItem;
 import kr.co.firstdayproject.exception.AccessDeniedException;
 import kr.co.firstdayproject.exception.ResourceNotFoundException;
+import kr.co.firstdayproject.repository.coverletter.CoverLetterAiReviewRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class CoverLetterService {
 
     private final CoverLetterRepository coverLetterRepository;
     private final CoverLetterItemRepository coverLetterItemRepository;
+    private final CoverLetterAiReviewRepository coverLetterAiReviewRepository;
 
     public List<CoverLetterDto.ListItem> findMyList(Long userId) {
         // userId에 해당하고 deletedAt이 null인 데이터만 조회
@@ -35,7 +37,8 @@ public class CoverLetterService {
                     .mapToInt(item -> item.getAnswer() == null ? 0 : item.getAnswer().length())
                     .sum();
 
-            boolean isAiReviewed = false; // TODO: AI 기능 연결 시 실제 조회로 교체
+            boolean isAiReviewed = coverLetterAiReviewRepository
+                    .existsByCoverLetterId(letter.getCoverLetterId());
 
             result.add(CoverLetterDto.ListItem.builder()
                     .id(letter.getCoverLetterId())

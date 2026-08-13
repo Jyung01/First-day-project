@@ -42,6 +42,7 @@ public class JobService {
     private static final int MAIN_JOB_COUNT = 6;
     private static final int JOB_LIST_PAGE_SIZE = 12;
     private static final int JOB_DETAIL_LIST_PAGE_SIZE = 3;
+    private static final int JOB_PICKER_PAGE_SIZE = 10;
 
     private final JobPostingRepository jobPostingRepository;
     private final ApplicationRepository applicationRepository;
@@ -233,6 +234,27 @@ public class JobService {
                 skillIds,
                 sortType,
                 JOB_LIST_PAGE_SIZE,
+                page,
+                authentication
+        );
+    }
+
+    /** 자소서 AI 첨삭 대상 공고 선택 picker에서 쓰는 검색 목록(10건씩) */
+    public Page<JobListItem> getJobPostingPickerList(
+            String keyword,
+            int page,
+            Authentication authentication
+    ) {
+        return getRecruitingJobPostingList(
+                keyword,
+                null,
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                null,
+                JOB_PICKER_PAGE_SIZE,
                 page,
                 authentication
         );
