@@ -1,8 +1,9 @@
 package kr.co.firstdayproject.controller.admin;
 
-import jakarta.servlet.http.HttpSession;
+import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.admin.config.AdminSiteSettingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/config")
 @RequiredArgsConstructor
 public class AdminConfigController {
-
-    // TODO: 실제 로그인 세션에서 관리자 ID를 담는 속성명으로 교체 필요.
-    // 예: session.getAttribute("loginAdmin") 형태로 User/Admin 객체를 담고 있다면
-    //     ((User) session.getAttribute("loginAdmin")).getUserId() 로 꺼내야 함.
-    private static final String SESSION_ADMIN_ID_KEY = "loginAdminId";
 
     private final AdminSiteSettingService adminSiteSettingService;
 
@@ -41,12 +37,12 @@ public class AdminConfigController {
             @RequestParam String supportPhone,
             @RequestParam String serviceHours,
             @RequestParam(required = false) String serviceDescription,
-            HttpSession session,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             RedirectAttributes redirectAttributes
     ) {
         try {
             adminSiteSettingService.updateBasicInfo(
-                    getAdminUserId(session),
+                    userDetails.getUserId(),
                     serviceName,
                     supportEmail,
                     supportPhone,
@@ -73,12 +69,12 @@ public class AdminConfigController {
             @RequestParam String businessNumber,
             @RequestParam String companyAddress,
             @RequestParam(required = false) String copyrightText,
-            HttpSession session,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             RedirectAttributes redirectAttributes
     ) {
         try {
             adminSiteSettingService.updateFooter(
-                    getAdminUserId(session),
+                    userDetails.getUserId(),
                     companyName,
                     businessNumber,
                     companyAddress,
@@ -102,12 +98,12 @@ public class AdminConfigController {
     public String updateImage(
             @RequestParam String imageType,
             @RequestParam MultipartFile imageFile,
-            HttpSession session,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             RedirectAttributes redirectAttributes
     ) {
         try {
             adminSiteSettingService.updateImage(
-                    getAdminUserId(session),
+                    userDetails.getUserId(),
                     imageType,
                     imageFile
             );
@@ -133,9 +129,4 @@ public class AdminConfigController {
 
     // "/policy" 매핑은 AdminPolicyController(/admin/config/policy)로 이전했습니다.
     // 여기 남겨두면 두 컨트롤러가 같은 경로를 잡아 "Ambiguous handler methods" 500 에러가 납니다.
-
-    private Long getAdminUserId(HttpSession session) {
-        Object adminId = session.getAttribute(SESSION_ADMIN_ID_KEY);
-        return adminId == null ? null : (Long) adminId;
-    }
 }
