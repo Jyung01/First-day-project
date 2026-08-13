@@ -47,7 +47,7 @@ public class SecurityConfig {
                         // TODO 권한 정책 확정 후 아래 규칙부터 순서대로 활성화
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/corp/**").hasRole("COMPANY")
-                        .requestMatchers("/my/**").authenticated()
+                        .requestMatchers("/my/**").hasRole("PERSONAL")
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
