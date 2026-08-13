@@ -33,67 +33,71 @@
                           th:text="|${coverLetter.title} · 문항 ${#lists.size(coverLetterItems)}개|">자기소개서 제목 · 문항 2개</span>
                 </div>
 
-                <!--
-                  정적 프로토타입: savedJobs는 관심 등록한 모집중 공고가 있다고 가정하고
-                  2건을 직접 써놓았습니다. 실제 연동 시:
-                  - myPageService.getSavedJobList(userId, "open", 0, N) 결과가 비어있지 않을 때만
-                    이 섹션 자체를 노출 (th:if="${not #lists.isEmpty(savedJobs)}")
-                  - th:each="posting : ${savedJobs}"로 교체
-                -->
-                <div class="cl-job-picker" th:if="${true}">
+                <!-- 관심 등록한 모집중 공고가 있을 때만 노출 (MyPageService.getSavedJobList(userId, "open", ...)) -->
+                <div class="cl-job-picker" th:if="${not #lists.isEmpty(savedJobs)}">
                     <h2 class="cl-job-picker__section-title">관심 등록한 공고</h2>
                     <ul class="cl-job-picker__list" id="cl-saved-job-list">
-                        <li class="cl-job-picker__item is-selected">
+                        <li class="cl-job-picker__item" th:each="job : ${savedJobs}">
                             <label>
-                                <input type="radio" name="jobPosting" checked />
+                                <input type="radio" name="jobPosting" th:value="${job.jobPostingId}" />
                                 <span class="cl-job-picker__text">
-                                    <span class="cl-job-picker__title">백엔드 신입 개발자 채용</span>
-                                    <span class="cl-job-picker__meta">첫출근 · 모집중</span>
-                                </span>
-                            </label>
-                        </li>
-                        <li class="cl-job-picker__item">
-                            <label>
-                                <input type="radio" name="jobPosting" />
-                                <span class="cl-job-picker__text">
-                                    <span class="cl-job-picker__title">AWS 클라우드 엔지니어</span>
-                                    <span class="cl-job-picker__meta">클라우드컴퍼니 · 모집중</span>
+                                    <span class="cl-job-picker__title" th:text="${job.title}">공고 제목</span>
+                                    <span class="cl-job-picker__meta"
+                                          th:text="|${job.companyName} · ${job.status}|">기업명 · 모집중</span>
                                 </span>
                             </label>
                         </li>
                     </ul>
                 </div>
 
-                <!--
-                  정적 프로토타입: 검색 결과는 항상 노출되는 영역입니다(관심공고 유무와 무관).
-                  실제 연동 시 초기 목록은 findLatestRecruitingJobPostings, 검색어 입력 시엔
-                  findRecruitingJobPostings(keyword, ...)로 교체하면 됩니다.
-                -->
+                <!-- 공고 검색 — 관심공고 유무와 무관하게 항상 노출. 검색어 없으면 최신 모집중 공고를 보여준다 -->
                 <div class="cl-job-picker">
                     <h2 class="cl-job-picker__section-title">공고 검색</h2>
-                    <div class="cl-job-picker__search">
-                        <input type="text" class="cl-input" placeholder="공고명 또는 기업명으로 검색" />
-                    </div>
-                    <ul class="cl-job-picker__list" id="cl-search-job-list">
-                        <li class="cl-job-picker__item">
+                    <form class="cl-job-picker__search" method="get" th:action="@{/my/cover-letter/ai-result}">
+                        <input type="hidden" name="id" th:value="${coverLetter.coverLetterId}" />
+                        <div class="cl-search-field">
+                            <svg class="cl-search-field__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                            <input type="text" name="keyword" class="cl-search-field__input" th:value="${keyword}"
+                                   placeholder="공고명 또는 기업명으로 검색" />
+                            <button type="submit" class="cl-search-field__submit">검색</button>
+                        </div>
+                    </form>
+                    <ul class="cl-job-picker__list" id="cl-search-job-list" th:if="${not #lists.isEmpty(jobSearchResults)}">
+                        <li class="cl-job-picker__item" th:each="job : ${jobSearchResults}">
                             <label>
-                                <input type="radio" name="jobPosting" />
+                                <input type="radio" name="jobPosting" th:value="${job.jobPostingId}" />
                                 <span class="cl-job-picker__text">
-                                    <span class="cl-job-picker__title">React 프론트엔드 개발자</span>
-                                    <span class="cl-job-picker__meta">OO테크 · 모집중</span>
-                                </span>
-                            </label>
-                        </li>
-                        <li class="cl-job-picker__item">
-                            <label>
-                                <input type="radio" name="jobPosting" />
-                                <span class="cl-job-picker__text">
-                                    <span class="cl-job-picker__title">핀테크 플랫폼 서버 개발자</span>
-                                    <span class="cl-job-picker__meta">핀테크컴퍼니 · 모집중</span>
+                                    <span class="cl-job-picker__title" th:text="${job.title}">공고 제목</span>
+                                    <span class="cl-job-picker__meta"
+                                          th:text="|${job.companyName} · ${job.workRegion}|">기업명 · 지역</span>
                                 </span>
                             </label>
                         </li>
                     </ul>
+                    <p class="cl-job-picker__empty" th:if="${#lists.isEmpty(jobSearchResults)}">검색 결과가 없습니다.</p>
+
+                    <nav class="pagination" th:if="${jobSearchPageInfo.totalPages() > 1}" aria-label="공고 검색 페이지">
+                        <a th:href="${jobSearchPageInfo.hasPreviousBlock()}
+                              ? @{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${jobSearchPageInfo.previousBlockPage()})}
+                              : '#'"
+                           th:classappend="${!jobSearchPageInfo.hasPreviousBlock()} ? 'is-disabled'"
+                           th:attr="aria-disabled=${!jobSearchPageInfo.hasPreviousBlock()}" aria-label="이전 페이지 그룹">‹</a>
+
+                        <a th:each="pageNumber : ${#numbers.sequence(jobSearchPageInfo.startPage(), jobSearchPageInfo.endPage())}"
+                           th:href="@{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${pageNumber})}"
+                           th:classappend="${pageNumber == jobSearchPageInfo.currentPage()} ? 'active'"
+                           th:attr="aria-current=${pageNumber == jobSearchPageInfo.currentPage()} ? 'page'"
+                           th:text="${pageNumber + 1}">1</a>
+
+                        <a th:href="${jobSearchPageInfo.hasNextBlock()}
+                              ? @{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${jobSearchPageInfo.nextBlockPage()})}
+                              : '#'"
+                           th:classappend="${!jobSearchPageInfo.hasNextBlock()} ? 'is-disabled'"
+                           th:attr="aria-disabled=${!jobSearchPageInfo.hasNextBlock()}" aria-label="다음 페이지 그룹">›</a>
+                    </nav>
                 </div>
 
                 <div class="cl-page-actions">
@@ -261,8 +265,15 @@
         const requestBtn = document.getElementById('btn-request-review');
         if (requestBtn) {
             requestBtn.addEventListener('click', () => {
+                const selected = document.querySelector('input[name="jobPosting"]:checked');
+                if (!selected) {
+                    alert('첨삭받을 채용공고를 선택해 주세요.');
+                    return;
+                }
+
                 const coverLetterId = requestBtn.dataset.coverLetterId;
-                location.href = `/my/cover-letter/ai-result?id=${coverLetterId}&mode=result&generating=true`;
+                const jobPostingId = selected.value;
+                location.href = `/my/cover-letter/ai-result?id=${coverLetterId}&jobPostingId=${jobPostingId}&mode=result&generating=true`;
             });
         }
 
