@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
  */
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin/cs/policy")
+@RequestMapping("/admin/config/policy")
 public class AdminPolicyController {
 
     private final PolicyService policyService;
@@ -24,8 +24,9 @@ public class AdminPolicyController {
     /** 약관 관리 목록 화면 */
     @GetMapping({"", "/list"})
     public String list(Model model) {
+        model.addAttribute("activeMenu", "policy");
         model.addAttribute("policies", policyService.getActivePolicies());
-        return "admin/policy/policy";
+        return "admin/config/policy";
     }
 
     /** 약관 상세 조회 (수정 모달을 열 때 AJAX로 호출) */
@@ -35,7 +36,7 @@ public class AdminPolicyController {
         return policyService.getPolicyByCode(policyCode);
     }
 
-    /** 약관 제목/본문 수정 */
+    /** 약관 제목/본문/구분(필수·선택) 수정 */
     @PutMapping("/{policyCode}")
     @ResponseBody
     public ResponseEntity<Void> update(
@@ -44,7 +45,8 @@ public class AdminPolicyController {
     ) {
         // TODO: 관리자 로그인/세션 연동 후 실제 로그인한 관리자 ID로 교체
         Long adminId = 1L;
-        policyService.updatePolicy(policyCode, body.get("title"), body.get("content"), adminId);
+        // "consentType"은 공개 정책(PUBLIC) 행에서는 전송되지 않으므로 null일 수 있음 -> 기존 값 유지
+        policyService.updatePolicy(policyCode, body.get("title"), body.get("content"), body.get("consentType"), adminId);
         return ResponseEntity.ok().build();
     }
 

@@ -44,9 +44,9 @@ public class PolicyService {
         return toDto(policy);
     }
 
-    /** 관리자 - 약관 제목/본문 수정 */
+    /** 관리자 - 약관 제목/본문/구분(필수·선택) 수정 */
     @Transactional
-    public void updatePolicy(String policyCode, String title, String content, Long adminId) {
+    public void updatePolicy(String policyCode, String title, String content, String consentType, Long adminId) {
         if (!StringUtils.hasText(title)) {
             throw new IllegalArgumentException("제목을 입력해주세요.");
         }
@@ -59,6 +59,10 @@ public class PolicyService {
 
         policy.setTitle(title.trim());
         policy.setContent(content.trim());
+        // 공개 정책(PUBLIC) 행은 프론트에서 consentType을 보내지 않으므로 null이면 기존 값 유지
+        if (StringUtils.hasText(consentType)) {
+            policy.setConsentType(consentType.trim());
+        }
         policy.setUpdatedBy(adminId);
         policy.setUpdatedAt(LocalDateTime.now());
     }

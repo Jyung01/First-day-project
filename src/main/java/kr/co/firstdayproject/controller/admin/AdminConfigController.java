@@ -131,11 +131,8 @@ public class AdminConfigController {
         return "admin/config/version";
     }
 
-    @GetMapping("/policy")
-    public String policy(Model model) {
-        model.addAttribute("activeMenu", "policy");
-        return "admin/config/policy";
-    }
+    // "/policy" 매핑은 AdminPolicyController(/admin/config/policy)로 이전했습니다.
+    // 여기 남겨두면 두 컨트롤러가 같은 경로를 잡아 "Ambiguous handler methods" 500 에러가 납니다.
 
     private Long getAdminUserId(HttpSession session) {
         Object adminId = session.getAttribute(SESSION_ADMIN_ID_KEY);
