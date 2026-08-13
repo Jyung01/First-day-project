@@ -185,7 +185,10 @@ public class PersonalSignupService {
             throw new PersonalSignupException("terms", "약관 동의 정보가 없습니다.");
         }
 
-        List<Policy> policies = policyRepository.findActiveSignupPolicies("개인", now);
+        List<Policy> policies = policyRepository.findActiveSignupPolicies(
+                "개인",
+                now.toLocalDate()
+        );
         Set<Long> displayedPolicyIds = policies.stream()
                 .map(Policy::getPolicyId)
                 .collect(Collectors.toSet());

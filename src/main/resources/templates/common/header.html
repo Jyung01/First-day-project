@@ -1,28 +1,22 @@
 <header
-        data-job-list-url="/job/list.html"
-        th:attr="data-job-list-url=@{/job/list}"
         th:fragment="header"
         xmlns:th="http://www.thymeleaf.org"
         xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-        class="site-header"
->
+        class="site-header">
     <div class="wrap header-inner">
         <a th:href="@{/}" class="header-logo" aria-label="첫출근 메인으로 이동">
-            <img
-                    th:src="@{/images/header-logo.svg}"
-                    width="160"
-                    height="40"
-                    alt="첫출근"
-                    class="header-logo__image"
-            />
+            <img th:src="@{/images/header-logo.svg}" width="160" height="40"
+                 alt="첫출근" class="header-logo__image"/>
         </a>
 
         <div class="mega-wrap" id="mega-wrap">
             <nav class="primary-nav">
-                <button type="button" class="nav-hamburger" id="mega-btn" aria-label="직무 메뉴 열기">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
+                <button type="button" class="nav-hamburger" id="mega-btn"
+                        aria-label="전체 메뉴 열기" aria-expanded="false" aria-controls="mega-panel">
+                    <span class="hamburger-lines" aria-hidden="true">
+                        <i></i><i></i><i></i>
+                    </span>
+                    <span class="hamburger-label">전체메뉴</span>
                 </button>
                 <a th:href="@{/job/list}" class="emph">채용공고</a>
                 <a th:href="@{/company/list}">기업정보</a>
@@ -30,44 +24,77 @@
                 <a th:href="@{/salary/list}">연봉정보</a>
             </nav>
 
-            <!-- 메가메뉴 패널 (전체 폭) -->
-            <div class="mega-panel">
-                <div class="mega-panel-inner">
-                    <!-- 좌측: 직군 목록 -->
-                    <ul class="mega-sidebar" id="mega-sidebar">
-                        <li data-cat="all">직군 전체</li>
-                        <li data-cat="dev" class="active">개발</li>
-                        <li data-cat="biz">경영·비즈니스</li>
-                        <li data-cat="marketing">마케팅·광고</li>
-                        <li data-cat="design">디자인</li>
-                        <li data-cat="cs">고객서비스·리테일</li>
-                        <li data-cat="sales">영업</li>
-                        <li data-cat="media">미디어</li>
-                        <li data-cat="engineering">엔지니어링·설계</li>
-                        <li data-cat="manufacturing">제조·생산</li>
-                        <li data-cat="finance">금융</li>
-                        <li data-cat="medical">의료·바이오</li>
-                        <li data-cat="edu">교육</li>
-                        <li data-cat="law">법률</li>
-                    </ul>
-
-                    <!-- 우측: 선택된 직군의 직무 목록 -->
-                    <div class="mega-content">
-                        <div class="mega-content-head">
-                            <span class="mega-cat-name" id="mega-cat-name">개발</span>
-                            <span class="mega-cat-hint"
-                            >원하는 직무를 선택하면 해당 조건의 채용공고 목록으로 이동</span
-                            >
+            <div class="mega-panel" id="mega-panel"
+                 th:with="headerJobCategoryGroups=${@jobService.getActiveJobCategoryGroups()},
+                          headerIndustryList=${@companyService.getIndustryList()},
+                          headerCompanySizeList=${@companyService.getCompanySizeList()}">
+                <div class="mega-service-grid">
+                    <section class="mega-service-group">
+                        <h3>채용공고 찾기</h3>
+                        <a th:href="@{/job/list}">전체 채용공고</a>
+                        <a th:href="@{/job/search(career='신입')}">신입 채용</a>
+                        <a th:href="@{/job/search(career='경력')}">경력 채용</a>
+                        <a th:href="@{/job/search(sort='deadline')}">마감 임박 공고</a>
+                    </section>
+                    <section class="mega-service-group">
+                        <h3>기업 알아보기</h3>
+                        <a th:href="@{/company/list}">전체 기업정보</a>
+                        <a th:href="@{/my/saved-companies}">관심기업</a>
+                        <div class="mega-company-filter" th:if="${!#lists.isEmpty(headerIndustryList)}">
+                            <strong>업종별</strong>
+                            <div>
+                                <a th:each="industry : ${headerIndustryList}"
+                                   th:href="@{/company/list(industry=${industry})}"
+                                   th:text="${industry}">업종</a>
+                            </div>
                         </div>
-                        <div class="mega-job-grid" id="mega-job-grid">
-                            <!-- JS로 채워짐 -->
+                        <div class="mega-company-filter" th:if="${!#lists.isEmpty(headerCompanySizeList)}">
+                            <strong>기업 규모별</strong>
+                            <div>
+                                <a th:each="companySize : ${headerCompanySizeList}"
+                                   th:href="@{/company/list(companySize=${companySize})}"
+                                   th:text="${companySize}">기업 규모</a>
+                            </div>
                         </div>
-                    </div>
+                    </section>
+                    <section class="mega-service-group">
+                        <h3>취업 준비</h3>
+                        <a th:href="@{/my/resume/list}">이력서 관리</a>
+                        <a th:href="@{/my/resume/form}">새 이력서 작성</a>
+                        <a th:href="@{/salary/list}">연봉 비교</a>
+                    </section>
+                    <section class="mega-service-group">
+                        <h3>나의 활동</h3>
+                        <a th:href="@{/my/applications}">지원 현황</a>
+                        <a th:href="@{/my/saved-jobs}">관심공고</a>
+                        <a th:href="@{/my/saved-companies}">관심기업</a>
+                        <a th:href="@{/my/reviews}">내가 작성한 후기</a>
+                    </section>
                 </div>
 
-                <div class="mega-panel-footer">
-                    출력 기준 · 1차 분류: 직군 · 2차 분류: 직무 · 관리자 카테고리 관리에서 명칭·순서·사용 여부
-                    설정 · 직무 클릭 → 선택 조건이 적용된 채용공고 목록 페이지로 이동
+                <div class="mega-category-section">
+                    <div class="mega-category-head">
+                        <div>
+                            <h3>직무별 채용공고</h3>
+                            <p>직무를 선택하면 해당 카테고리의 공고만 모아볼 수 있어요.</p>
+                        </div>
+                        <a class="mega-all-jobs" th:href="@{/job/list}">전체 공고 보기</a>
+                    </div>
+                    <div class="mega-category-groups">
+                        <section class="mega-category-group" th:each="group : ${headerJobCategoryGroups}">
+                            <a class="mega-parent-category"
+                               th:href="@{/job/search(parentCategoryId=${group.jobCategoryId})}"
+                               th:text="${group.categoryName}">직군</a>
+                            <div class="mega-child-categories">
+                                <a th:each="child : ${group.children}"
+                                   th:href="@{/job/search(categoryId=${child.jobCategoryId})}"
+                                   th:text="${child.categoryName}">직무</a>
+                            </div>
+                        </section>
+                    </div>
+                    <p class="mega-category-empty" th:if="${#lists.isEmpty(headerJobCategoryGroups)}">
+                        현재 사용 가능한 직무 카테고리가 없습니다.
+                    </p>
                 </div>
             </div>
         </div>
@@ -79,17 +106,12 @@
 
         <div class="header-right" aria-label="회원 메뉴" sec:authorize="isAuthenticated()">
             <span class="header-user-name">
-                <strong
-                        th:text="${#authentication.principal instanceof T(kr.co.firstdayproject.security.CustomUserDetails)
-                            ? #authentication.principal.displayName
-                            : #authentication.name}"
-                >회원</strong>님
+                <strong th:text="${#authentication.principal instanceof T(kr.co.firstdayproject.security.CustomUserDetails)
+                    ? #authentication.principal.displayName : #authentication.name}">회원</strong>님
             </span>
-
             <form class="header-logout-form" th:action="@{/logout}" method="post">
                 <button type="submit" class="btn btn-ghost">로그아웃</button>
             </form>
-
             <a sec:authorize="hasRole('PERSONAL')" th:href="@{/my}" class="btn btn-primary">마이페이지</a>
             <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}" class="btn btn-primary">관리자</a>
             <a sec:authorize="hasRole('COMPANY')" th:href="@{/corp}" class="btn btn-primary">기업관리</a>

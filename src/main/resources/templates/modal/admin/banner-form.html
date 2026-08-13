@@ -39,6 +39,8 @@
                             class="admin-modal__input"
                             type="text"
                             placeholder="배너 제목 입력"
+                            maxlength="200"
+                            required
                     />
                 </div>
 
@@ -65,7 +67,9 @@
                             name="displayOrder"
                             class="admin-modal__input"
                             type="number"
+                            min="0"
                             value="1"
+                            required
                     />
 
                     <span class="admin-modal__hint">
@@ -115,6 +119,7 @@
                                 id="bannerFile"
                                 type="file"
                                 name="bannerFile"
+                                accept="image/*"
                         />
 
                     </div>
@@ -128,6 +133,8 @@
                             class="admin-modal__input"
                             type="text"
                             placeholder="신입 개발자 채용 특별전"
+                            maxlength="255"
+                            required
                     />
                 </div>
 

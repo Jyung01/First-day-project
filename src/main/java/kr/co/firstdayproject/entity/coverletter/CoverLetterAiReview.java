@@ -34,6 +34,9 @@ public class CoverLetterAiReview {
     private Long coverLetterAiReviewId;
     @Column(name = "cover_letter_id", nullable = false)
     private Long coverLetterId;
+    /** 첨삭 대상으로 선택한 채용공고 */
+    @Column(name = "job_posting_id", nullable = false)
+    private Long jobPostingId;
     /** 첨삭 요청 당시 문항·답변 전체 스냅샷 */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "original_content", nullable = false, columnDefinition = "json")

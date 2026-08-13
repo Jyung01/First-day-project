@@ -493,15 +493,19 @@ CREATE TABLE cover_letter_items (
 CREATE TABLE cover_letter_ai_reviews (
   cover_letter_ai_review_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   cover_letter_id       BIGINT UNSIGNED NOT NULL,
+  job_posting_id        BIGINT UNSIGNED NOT NULL COMMENT '첨삭 대상으로 선택한 채용공고',
   original_content      JSON NOT NULL COMMENT '첨삭 요청 당시 문항·답변 전체 스냅샷',
   revised_content       JSON NOT NULL COMMENT 'AI가 제안한 문항별 수정 답변 전체',
   feedback              LONGTEXT NULL COMMENT '전체 첨삭 요약과 개선 이유',
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (cover_letter_ai_review_id),
   KEY idx_cover_letter_ai_reviews (cover_letter_id, created_at),
+  KEY idx_cover_letter_ai_reviews_job_posting (job_posting_id),
   CONSTRAINT fk_cover_letter_ai_reviews_cover
     FOREIGN KEY (cover_letter_id) REFERENCES cover_letters(cover_letter_id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_cover_letter_ai_reviews_job_posting
+    FOREIGN KEY (job_posting_id) REFERENCES job_postings(job_posting_id)
 ) ENGINE=InnoDB COMMENT='자기소개서 AI 첨삭 1회 결과; 원문·수정본·피드백을 한 행에 보존';
 
 -- =========================================================
@@ -514,6 +518,8 @@ CREATE TABLE applications (
   applicant_user_id     BIGINT UNSIGNED NOT NULL,
   resume_id             BIGINT UNSIGNED NULL COMMENT '지원에 사용한 이력서 원본; 원본 삭제 후에는 NULL',
   resume_snapshot_json  JSON NOT NULL COMMENT '지원 완료 시점의 이력서·지원자 연락처 전체 스냅샷',
+  cover_letter_id       BIGINT UNSIGNED NULL COMMENT '지원에 사용한 자기소개서 원본; 원본 삭제 후에는 NULL',
+  cover_letter_snapshot_json JSON NULL COMMENT '지원 완료 시점의 자기소개서 문항·답변 스냅샷; 자소서 미첨부 시 NULL',
   current_status        VARCHAR(20) NOT NULL DEFAULT '지원완료',
   applied_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   cancelled_at          DATETIME(6) NULL COMMENT '지원완료 단계에서 지원자가 취소한 시각',
@@ -522,10 +528,15 @@ CREATE TABLE applications (
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
                          ON UPDATE CURRENT_TIMESTAMP(6),
+  active_application_guard TINYINT
+                         GENERATED ALWAYS AS (
+                           CASE WHEN current_status = '지원취소' THEN NULL ELSE 1 END
+                         ) STORED,
   PRIMARY KEY (application_id),
-  UNIQUE KEY uk_applications_user_posting (applicant_user_id, job_posting_id),
+  UNIQUE KEY uk_applications_active (applicant_user_id, job_posting_id, active_application_guard),
   KEY idx_applications_user_status (applicant_user_id, current_status, applied_at),
   KEY idx_applications_posting_status (job_posting_id, current_status, applied_at),
+  KEY idx_applications_cover_letter (cover_letter_id),
   CONSTRAINT chk_applications_status
     CHECK (current_status IN
       ('지원완료','서류검토중','서류합격','면접예정','면접완료',
@@ -538,8 +549,11 @@ CREATE TABLE applications (
     FOREIGN KEY (applicant_user_id) REFERENCES users(user_id),
   CONSTRAINT fk_applications_resume
     FOREIGN KEY (resume_id) REFERENCES resumes(resume_id)
+    ON DELETE SET NULL,
+  CONSTRAINT fk_applications_cover_letter
+    FOREIGN KEY (cover_letter_id) REFERENCES cover_letters(cover_letter_id)
     ON DELETE SET NULL
-) ENGINE=InnoDB COMMENT='공고당 1회 지원과 제출 당시 이력서 JSON; 취소 후에도 같은 공고 재지원 불가';
+) ENGINE=InnoDB COMMENT='공고당 1회 지원과 제출 당시 이력서·자기소개서 JSON; 지원취소 후에는 같은 공고 재지원 가능';
 
 CREATE TABLE application_status_history (
   application_status_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -601,6 +615,7 @@ CREATE TABLE company_reviews (
   status                VARCHAR(10) NOT NULL DEFAULT '정상',
   hidden_reason         VARCHAR(1000) NULL,
   hidden_by             BIGINT UNSIGNED NULL,
+  admin_memo            VARCHAR(2000) NULL COMMENT '관리자 후기 처리 메모',
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
                          ON UPDATE CURRENT_TIMESTAMP(6),
@@ -652,6 +667,7 @@ CREATE TABLE interview_reviews (
   status                VARCHAR(10) NOT NULL DEFAULT '정상',
   hidden_reason         VARCHAR(1000) NULL,
   hidden_by             BIGINT UNSIGNED NULL,
+  admin_memo            VARCHAR(2000) NULL COMMENT '관리자 후기 처리 메모',
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
                          ON UPDATE CURRENT_TIMESTAMP(6),

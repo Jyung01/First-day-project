@@ -317,6 +317,14 @@
               <div class="job-operation-group">
                 <h3>기업 담당자</h3>
                 <strong th:text="${job.contactName()}">담당자</strong>
+                <p th:if="${job.contactDepartment() != null}">
+                  <span class="job-contact-label">부서</span>
+                  <span th:text="${job.contactDepartment()}">개발팀</span>
+                </p>
+                <p th:if="${job.contactPositionTitle() != null}">
+                  <span class="job-contact-label">직급·직책</span>
+                  <span th:text="${job.contactPositionTitle()}">팀장</span>
+                </p>
                 <p th:text="${job.contactEmail()}">이메일</p>
                 <p th:text="${job.contactPhone()}">연락처</p>
               </div>

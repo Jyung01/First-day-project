@@ -22,6 +22,7 @@ import kr.co.firstdayproject.service.corp.CompanyProfileUpdateException;
 import kr.co.firstdayproject.service.corp.CompanyReapplyException;
 import kr.co.firstdayproject.service.corp.CompanyAccountException;
 import kr.co.firstdayproject.service.corp.CorpService;
+import kr.co.firstdayproject.service.corp.CorpDashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,20 +50,26 @@ public class CorpController {
             "반려 사유가 등록되지 않았습니다. 고객센터에 문의해주세요.";
 
     private final CorpService corpService;
+    private final CorpDashboardService corpDashboardService;
 
     @GetMapping({"", "/index"})
     public String index(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             Model model
     ) {
+        if (userDetails == null || userDetails.getCompanyId() == null) {
+            return "redirect:/auth/login";
+        }
         if (isRejectedCompany(userDetails)) {
             return "redirect:/corp/company-info-rejected";
         }
 
         model.addAttribute("activeMenu", "dashboard");
-
-        // 화면 테스트용
         model.addAttribute("companyStatus", "APPROVED");
+        model.addAttribute(
+                "dashboard",
+                corpDashboardService.getDashboard(userDetails.getCompanyId())
+        );
 
         return "corp/index";
     }

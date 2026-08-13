@@ -185,10 +185,10 @@ public class CorpService {
         if (companyLogo != null && !companyLogo.isEmpty()) {
             validateCompanyLogo(companyLogo);
             String previousLogoUrl = company.getLogoUrl();
+            String uploadedLogoUrl;
             try {
-                company.setLogoUrl(
-                        awsS3Service.upload(companyLogo, "companies_logo")
-                );
+                uploadedLogoUrl = awsS3Service.upload(companyLogo, "companies_logo");
+                company.setLogoUrl(uploadedLogoUrl);
             } catch (IOException | RuntimeException exception) {
                 throw new CompanyProfileUpdateException(
                         "companyLogo",
@@ -196,7 +196,10 @@ public class CorpService {
                         exception
                 );
             }
-            awsS3Service.deletePublicByUrl(previousLogoUrl);
+            awsS3Service.synchronizePublicReplacement(
+                    previousLogoUrl,
+                    uploadedLogoUrl
+            );
         }
 
         company.setCompanyName(request.getCompanyName().trim());
@@ -241,11 +244,11 @@ public class CorpService {
 
         if (companyLogo != null && !companyLogo.isEmpty()) {
             String previousLogoUrl = company.getLogoUrl();
+            String uploadedLogoUrl;
             try {
                 validateCompanyLogo(companyLogo);
-                company.setLogoUrl(
-                        awsS3Service.upload(companyLogo, "companies_logo")
-                );
+                uploadedLogoUrl = awsS3Service.upload(companyLogo, "companies_logo");
+                company.setLogoUrl(uploadedLogoUrl);
             } catch (CompanyProfileUpdateException exception) {
                 throw new CompanyReapplyException(
                         "companyLogo",
@@ -257,7 +260,10 @@ public class CorpService {
                         "기업 로고를 업로드하지 못했습니다. 다시 시도해주세요."
                 );
             }
-            awsS3Service.deletePublicByUrl(previousLogoUrl);
+            awsS3Service.synchronizePublicReplacement(
+                    previousLogoUrl,
+                    uploadedLogoUrl
+            );
         }
 
         LocalDateTime now = LocalDateTime.now();

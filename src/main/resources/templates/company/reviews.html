@@ -78,9 +78,10 @@
         <div class="profile-right">
 
             <button class="wish-btn"
-                    th:data-company-id="${company.companyId}">
+                    th:data-company-id="${company.companyId}"
+                    th:classappend="${isWished} ? ' active'">
 
-                <i class="fa-regular fa-heart"></i>
+                <i th:class="${isWished} ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
 
                 관심기업
 

@@ -224,18 +224,11 @@
                                     자기소개서 · 2026.07.20 수정됨 · AI 첨삭 전
                                 </p>
                                 <a
-                                    th:if="${recentCoverLetter.aiReviewed}"
-                                    th:href="@{/my/cover-letter/detail(id=${recentCoverLetter.coverLetterId})}"
-                                    class="btn btn-primary btn-block"
-                                >
-                                    AI 첨삭 결과 보기
-                                </a>
-                                <a
-                                    th:unless="${recentCoverLetter.aiReviewed}"
                                     th:href="@{/my/cover-letter/ai-result(id=${recentCoverLetter.coverLetterId})}"
+                                    th:text="${recentCoverLetter.aiReviewed ? 'AI 첨삭 결과확인' : 'AI 첨삭하기'}"
                                     class="btn btn-primary btn-block"
                                 >
-                                    AI 첨삭하러 가기
+                                    AI 첨삭하기
                                 </a>
                             </div>
 

@@ -75,8 +75,8 @@
             color: var(--primary, #6c5ce7);
         }
 
-        /* ---------- 상태 라인 ---------- */
-        .cl-review-meta {
+        /* ---------- 결과 상태: 대상 공고 + 이전 이력 ---------- */
+        .cl-review-meta-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -85,7 +85,7 @@
             margin-bottom: 20px;
         }
 
-        .cl-review-meta__left {
+        .cl-review-meta-bar__target {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -93,9 +93,28 @@
             color: var(--text-muted, #8a8b94);
         }
 
+        .cl-history-select {
+            font-size: 13px;
+            color: var(--text-strong, #1c1c22);
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            padding: 8px 10px;
+            background: #fff;
+        }
+
         .status-badge--ai-done {
             background: #e6f7ee;
             color: #1f9d72;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .status-badge--pending {
+            background: #fff4e5;
+            color: #b5720d;
             font-size: 12px;
             font-weight: 600;
             padding: 4px 10px;
@@ -216,6 +235,115 @@
             text-align: center;
         }
 
+        /* ---------- 문항별 생성 로딩 상태 ---------- */
+        .cl-suggestion__loading {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .cl-suggestion__loading.is-active {
+            display: flex;
+        }
+
+        .cl-suggestion__spinner {
+            width: 26px;
+            height: 26px;
+            border: 3px solid var(--border, #e7e7ec);
+            border-top-color: var(--primary, #6c5ce7);
+            border-radius: 50%;
+            animation: cl-suggestion-spin .8s linear infinite;
+        }
+
+        .cl-suggestion__loading-text {
+            font-size: 13px;
+            color: var(--text-muted, #8a8b94);
+            margin: 0;
+        }
+
+        .cl-suggestion__content--hidden {
+            display: none;
+        }
+
+        @keyframes cl-suggestion-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ---------- 첨삭 요청 중 전체 화면 오버레이 ---------- */
+        .cl-generating-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            background: rgba(20, 20, 26, 0.55);
+        }
+
+        .cl-generating-overlay.is-active {
+            display: flex;
+        }
+
+        .cl-generating-overlay__box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            max-width: 320px;
+            padding: 32px 28px;
+            background: #fff;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+        }
+
+        .cl-generating-overlay__spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border, #e7e7ec);
+            border-top-color: var(--primary, #6c5ce7);
+            border-radius: 50%;
+            animation: cl-suggestion-spin .8s linear infinite;
+        }
+
+        .cl-generating-overlay__text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-strong, #1c1c22);
+            margin: 0;
+        }
+
+        .cl-generating-overlay__error {
+            display: none;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #d64545;
+            margin: 0;
+        }
+
+        .cl-generating-overlay__error.is-visible {
+            display: block;
+        }
+
+        .cl-generating-overlay__close {
+            display: none;
+        }
+
+        .cl-generating-overlay__error.is-visible ~ .cl-generating-overlay__close {
+            display: inline-block;
+        }
+
+        .cl-generating-overlay__box:has(.cl-generating-overlay__error.is-visible) .cl-generating-overlay__spinner {
+            display: none;
+        }
+
         /* ---------- 하단 안내 문구 ---------- */
         .cl-notice {
             display: flex;
@@ -250,25 +378,188 @@
             display: none;
         }
 
-        /* ---------- AI 첨삭 준비 중 안내 ---------- */
-        .cl-ai-pending {
-            padding: 24px;
-            border: 1px dashed var(--border, #dcdde3);
+        /* ---------- 선택 상태: 대상 자기소개서 요약 ---------- */
+        .cl-target-summary {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            background: #f7f7fb;
             border-radius: 10px;
-            background: #fafafb;
-            text-align: center;
+            font-size: 13px;
+            margin-bottom: 20px;
         }
 
-        .cl-ai-pending__title {
+        .cl-target-summary__label {
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-target-summary__value {
+            color: var(--text-muted, #767781);
+        }
+
+        /* ---------- 선택 상태: 채용공고 선택 ---------- */
+        .cl-job-picker {
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .cl-job-picker__section-title {
             font-size: 14px;
             font-weight: 700;
             color: var(--text-strong, #1c1c22);
-            margin: 0 0 8px;
+            margin: 0 0 14px;
         }
 
-        .cl-ai-pending__desc {
+        .cl-job-picker__search {
+            margin-bottom: 14px;
+        }
+
+        .cl-search-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 10px;
+            padding: 4px 4px 4px 14px;
+            background: #fff;
+            transition: border-color .15s ease;
+        }
+
+        .cl-search-field:focus-within {
+            border-color: var(--primary, #6c5ce7);
+        }
+
+        .cl-search-field__icon {
+            flex-shrink: 0;
+            color: #b5b6c0;
+        }
+
+        .cl-search-field__input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            padding: 10px 0;
+            background: transparent;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-search-field__submit {
+            flex-shrink: 0;
+            border: none;
+            background: var(--primary, #6c5ce7);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .cl-search-field__submit:hover {
+            opacity: .9;
+        }
+
+        .cl-job-picker__list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cl-job-picker__item {
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 10px;
+            transition: border-color .15s ease, background .15s ease;
+        }
+
+        .cl-job-picker__item.is-selected {
+            border-color: var(--primary, #6c5ce7);
+            background: #f4f2ff;
+        }
+
+        .cl-job-picker__item label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+        }
+
+        .cl-job-picker__text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 14px;
+        }
+
+        .cl-job-picker__title {
+            font-weight: 600;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-job-picker__meta {
+            font-size: 12px;
+            color: var(--text-muted, #8a8b94);
+        }
+
+        .cl-job-picker__empty {
             font-size: 13px;
             color: var(--text-muted, #8a8b94);
-            line-height: 1.6;
+            text-align: center;
+            padding: 20px 0 4px;
             margin: 0;
+        }
+
+        /* ---------- 공고 검색 페이지네이션 ---------- */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            display: grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--text-muted, #767781);
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .pagination a.active {
+            background: var(--primary, #6c5ce7);
+            border-color: var(--primary, #6c5ce7);
+            color: #fff;
+        }
+
+        .pagination a.is-disabled {
+            color: #cbd5e1;
+            background: #f8fafc;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* ---------- 하단 액션 (선택/결과 상태 공용) ---------- */
+        .cl-page-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cl-page-actions .cl-submit {
+            flex: 1;
+            text-align: center;
         }

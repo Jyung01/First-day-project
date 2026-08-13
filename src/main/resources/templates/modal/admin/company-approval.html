@@ -14,13 +14,13 @@
         aria-labelledby="companyApprovalModalTitle"
     >
         <header class="admin-modal__header">
-            <h2 id="companyApprovalModalTitle">기업 승인·반려</h2>
+            <h2 id="companyApprovalModalTitle">기업 상세</h2>
 
             <button
                 type="button"
                 class="admin-modal__close"
                 data-company-approval-close
-                aria-label="기업 승인 심사 닫기"
+                aria-label="기업 상세 닫기"
             >
                 ×
             </button>
@@ -28,28 +28,120 @@
 
         <form class="admin-company-approval-form" data-company-approval-form novalidate>
             <div class="admin-modal__body">
-                <h3 class="admin-company-name" data-company-name>코드웨이브 주식회사 · 신규 심사</h3>
+                <div class="admin-company-title-row">
+                    <div>
+                        <h3 class="admin-company-name" data-company-name>코드웨이브 주식회사</h3>
+                        <p class="admin-modal__meta">
+                            기업번호 <strong data-company-number>C-0129</strong>
+                            <span aria-hidden="true">·</span>
+                            <span data-company-review-type>신규 심사</span>
+                        </p>
+                    </div>
 
-                <div class="admin-company-summary">
-                    <p>
-                        사업자번호
-                        <strong data-company-business-number> 120-88-12345 </strong>
-
-                        <span aria-hidden="true">·</span>
-
-                        대표자
-                        <strong data-company-representative> 김대표 </strong>
-
-                        <span aria-hidden="true">·</span>
-
-                        담당자
-                        <strong data-company-manager> 김채용 </strong>
-                    </p>
-
-                    <p>입력 누락·형식 오류·부적절한 기업정보 여부만 검토합니다.</p>
+                    <strong class="admin-company-status is-pending" data-company-status>승인 대기</strong>
                 </div>
 
-                <fieldset class="admin-approval-fieldset">
+                <section class="admin-company-section" aria-labelledby="companyBasicInfoTitle">
+                    <h4 id="companyBasicInfoTitle">기업 기본정보</h4>
+
+                    <div class="admin-modal__grid">
+                        <div class="admin-modal__field">
+                            <span class="admin-modal__label">사업자등록번호</span>
+                            <div class="admin-modal__value" data-company-business-number>120-88-12345</div>
+                        </div>
+                        <div class="admin-modal__field">
+                            <span class="admin-modal__label">대표자</span>
+                            <div class="admin-modal__value" data-company-representative>김대표</div>
+                        </div>
+                        <div class="admin-modal__field">
+                            <span class="admin-modal__label">설립일</span>
+                            <div class="admin-modal__value" data-company-established-date>2021.03.15</div>
+                        </div>
+                        <div class="admin-modal__field">
+                            <span class="admin-modal__label">업종</span>
+                            <div class="admin-modal__value" data-company-industry>정보통신업</div>
+                        </div>
+                        <div class="admin-modal__field">
+                            <span class="admin-modal__label">기업 규모</span>
+                            <div class="admin-modal__value" data-company-size>중소기업</div>
+                        </div>
+                        <div class="admin-modal__field">
+                            <span class="admin-modal__label">신청일</span>
+                            <div class="admin-modal__value" data-company-requested-at>2026.07.22 10:30</div>
+                        </div>
+                        <div class="admin-modal__field" data-company-withdrawn-field hidden>
+                            <span class="admin-modal__label">탈퇴일</span>
+                            <div class="admin-modal__value" data-company-withdrawn-at>-</div>
+                        </div>
+                        <div class="admin-modal__field admin-modal__field--full">
+                            <span class="admin-modal__label">주소</span>
+                            <div class="admin-modal__value" data-company-address>서울특별시 강남구 테헤란로 123</div>
+                        </div>
+                        <div class="admin-modal__field admin-modal__field--full">
+                            <span class="admin-modal__label">홈페이지</span>
+                            <div class="admin-modal__value admin-modal__value--link" data-company-homepage>
+                                https://codewave.example.com
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-company-section" aria-labelledby="companyManagerInfoTitle">
+                    <h4 id="companyManagerInfoTitle">담당자 정보</h4>
+
+                    <div class="admin-modal__grid admin-modal__grid--three">
+                        <div class="admin-modal__field">
+                            <span class="admin-modal__label">담당자</span>
+                            <div class="admin-modal__value" data-company-manager>김태웅</div>
+                        </div>
+                        <div class="admin-modal__field">
+                            <span class="admin-modal__label">이메일</span>
+                            <div class="admin-modal__value" data-company-manager-email>manager@codewave.co.kr</div>
+                        </div>
+                        <div class="admin-modal__field">
+                            <span class="admin-modal__label">연락처</span>
+                            <div class="admin-modal__value" data-company-manager-phone>010-2456-7788</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-company-section" aria-labelledby="companyPublicInfoTitle">
+                    <h4 id="companyPublicInfoTitle">공개 정보</h4>
+
+                    <dl class="admin-company-description-list">
+                        <div>
+                            <dt>한 줄 소개</dt>
+                            <dd data-company-short-description>기술로 더 나은 업무 경험을 만드는 기업입니다.</dd>
+                        </div>
+                        <div>
+                            <dt>기업 소개</dt>
+                            <dd data-company-introduction>기업용 협업 서비스를 개발하고 운영합니다.</dd>
+                        </div>
+                        <div>
+                            <dt>복지</dt>
+                            <dd data-company-benefits>유연근무제 · 교육비 지원 · 건강검진</dd>
+                        </div>
+                    </dl>
+                </section>
+
+                <section class="admin-company-review-result" data-company-review-result hidden>
+                    <h4>최근 심사 결과</h4>
+                    <p>
+                        <span data-company-rejection-reason>입력 누락</span>
+                        <span aria-hidden="true">·</span>
+                        <span data-company-reviewed-at>2026.07.20 10:15</span>
+                    </p>
+                    <div data-company-rejection-message>
+                        설립일과 복지 정보를 입력한 뒤 재심사를 요청해주세요.
+                    </div>
+                </section>
+
+                <section data-company-review-controls>
+                    <div class="admin-modal__guide admin-modal__guide--review">
+                        입력 누락·형식 오류·부적절한 기업정보 여부를 확인한 뒤 처리해주세요.
+                    </div>
+
+                    <fieldset class="admin-approval-fieldset">
                     <legend>처리 결과</legend>
 
                     <div class="admin-approval-options">
@@ -65,9 +157,9 @@
                             <span>반려</span>
                         </label>
                     </div>
-                </fieldset>
+                    </fieldset>
 
-                <fieldset class="admin-approval-fieldset" data-rejection-reason-section disabled>
+                    <fieldset class="admin-approval-fieldset" data-rejection-reason-section disabled>
                     <legend>반려 사유 선택</legend>
 
                     <div class="admin-approval-options">
@@ -99,9 +191,9 @@
                             <span>부적절한 기업정보</span>
                         </label>
                     </div>
-                </fieldset>
+                    </fieldset>
 
-                <div class="admin-approval-message">
+                    <div class="admin-approval-message">
                     <label for="companyApprovalMessage"> 관리자 안내 </label>
 
                     <textarea
@@ -114,11 +206,14 @@
                     ></textarea>
 
                     <span class="admin-approval-count"> <span data-approval-message-count>0</span>/500 </span>
+                    </div>
+
+                    <p class="admin-modal__error" data-company-approval-error aria-live="polite"></p>
+                </section>
+
+                <div class="admin-modal__guide" data-company-status-guide>
+                    승인 또는 반려 처리 전 기업정보를 다시 확인해주세요.
                 </div>
-
-                <div class="admin-modal__guide">선택한 사유와 안내는 기업의 반려 정보 수정 화면에 표시됩니다.</div>
-
-                <p class="admin-modal__error" data-company-approval-error aria-live="polite"></p>
             </div>
 
             <footer class="admin-modal__footer">

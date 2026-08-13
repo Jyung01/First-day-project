@@ -1,216 +1,121 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.querySelector("[data-banner-modal]");
+    const form = document.getElementById("bannerForm");
+    const fileInput = document.getElementById("bannerFile");
+    const fileName = document.getElementById("fileName");
+    const title = document.getElementById("bannerModalTitle");
+    const submit = document.getElementById("bannerSubmitBtn");
+    let bannerId = null;
+    const close = () => {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+    };
+    const open = () => {
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+    };
+    const setValue = (name, value) => {
+        form.elements[name].value = value ?? "";
+    };
 
-    // ===============================
-    // 탭 메뉴
-    // ===============================
-    const tabs = document.querySelectorAll(".tab-btn");
-    const banners = document.querySelectorAll(".banner-card");
-
-    tabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-            tabs.forEach((btn) => btn.classList.remove("active"));
-            tab.classList.add("active");
-
-            const type = tab.dataset.tab;
-
-            banners.forEach((banner) => {
-                if (type === "all" || banner.dataset.type === type) {
-                    banner.style.display = "flex";
-                } else {
-                    banner.style.display = "none";
-                }
-            });
+    document.querySelectorAll(".review-tab .tab-btn").forEach((tab) => tab.addEventListener("click", () => {
+        document.querySelectorAll(".review-tab .tab-btn").forEach((item) => item.classList.remove("active"));
+        tab.classList.add("active");
+        document.querySelectorAll(".banner-card").forEach((card) => {
+            card.style.display = tab.dataset.tab === "all" || card.dataset.type === tab.dataset.tab ? "flex" : "none";
         });
+    }));
+
+    document.getElementById("openBannerModal")?.addEventListener("click", () => {
+        bannerId = null;
+        form.reset();
+        setValue("displayOrder", 1);
+        fileInput.required = true;
+        fileName.textContent = "선택된 파일 없음";
+        title.textContent = "배너 등록";
+        submit.textContent = "등록";
+        open();
+    });
+    modal.querySelectorAll("[data-banner-close]").forEach((button) => button.addEventListener("click", close));
+    fileInput.addEventListener("change", () => {
+        fileName.textContent = fileInput.files[0]?.name || "선택된 파일 없음";
     });
 
-    // ===============================
-    // 배너 등록 모달
-    // ===============================
-    const bannerModal = document.querySelector("[data-banner-modal]");
-    const openBannerBtn = document.getElementById("openBannerModal");
+    document.querySelectorAll(".edit-banner-btn").forEach((button) => button.addEventListener("click", async (event) => {
+        event.preventDefault();
+        try {
+            const response = await fetch(`/admin/banner/${button.dataset.bannerId}`);
+            const banner = await response.json();
+            if (!response.ok) throw new Error(banner.message || "배너 정보를 불러오지 못했습니다.");
+            bannerId = banner.bannerId;
+            form.reset();
+            setValue("bannerName", banner.bannerName);
+            setValue("placement", banner.placement);
+            setValue("displayOrder", banner.displayOrder);
+            setValue("linkUrl", banner.linkUrl);
+            setValue("altText", banner.altText);
+            setValue("startsAt", banner.startsAt);
+            setValue("endsAt", banner.endsAt);
+            fileInput.required = false;
+            fileName.textContent = "기존 이미지 유지 (변경 시 파일 선택)";
+            title.textContent = "배너 수정";
+            submit.textContent = "수정";
+            open();
+        } catch (error) {
+            showBannerResult(false, error.message);
+        }
+    }));
 
-    const modalTitle = document.getElementById("bannerModalTitle");
-    const submitBtn = document.getElementById("bannerSubmitBtn");
-    const bannerForm = document.getElementById("bannerForm");
-
-    const bannerFile = document.getElementById("bannerFile");
-    const fileName = document.getElementById("fileName");
-
-    let editMode = false;
-    let bannerId = null;
-
-    if (bannerModal && openBannerBtn) {
-        openBannerBtn.addEventListener("click", () => {
-
-            editMode = false;
-            bannerId = null;
-
-            bannerForm.reset();
-            fileName.textContent = "선택된 파일 없음";
-
-            modalTitle.textContent = "배너 등록";
-            submitBtn.textContent = "저장";
-
-            bannerModal.classList.add("is-open");
-            bannerModal.setAttribute("aria-hidden", "false")
-        });
-
-        document.querySelectorAll("[data-banner-close]").forEach((btn) => {
-            btn.addEventListener("click", () => {
-                bannerModal.classList.remove("is-open");
-                bannerModal.setAttribute("aria-hidden", "true");
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+        try {
+            const response = await fetch(bannerId ? `/admin/banner/${bannerId}` : "/admin/banner/register", {
+                method: "POST",
+                body: new FormData(form)
             });
-        });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || "배너를 저장하지 못했습니다.");
+            close();
+            showBannerResult(true, result.message, true);
+        } catch (error) {
+            showBannerResult(false, error.message);
+        }
+    });
 
-
-        // ===============================
-        // 등록/수정 submit
-        // ===============================
-        bannerForm.addEventListener("submit", async (e) => {
-
-            e.preventDefault();
-
-            if (editMode) {
-                // ********** 배너 수정 **********
-                const formData = new FormData(bannerForm);
-                // TODO
-                // PUT /admin/banner/{bannerId}
-                // fetch(`/admin/banner/${bannerId}`, {
-                //     method: "PUT",
-                //     body: formData
-                // });
-
-                bannerModal.classList.add("is-open");
-                bannerModal.setAttribute("aria-hidden", "false");
-            } else {
-                // ********** 배너 등록 **********
-                // TODO
-                const formData = new FormData(bannerForm);
+    document.querySelectorAll(".hide-banner-btn").forEach((button) => button.addEventListener("click", (event) => {
+        event.preventDefault();
+        const activate = button.dataset.active !== "true";
+        showConfirmModal({
+            iconClass: "warning",
+            title: activate ? "배너를 노출할까요?" : "배너를 숨길까요?",
+            message: activate ? "설정된 노출 기간에 사용자 화면에 표시됩니다." : "숨김 처리하면 사용자 화면에서 즉시 제외됩니다.",
+            leftText: "취소",
+            rightText: activate ? "노출" : "숨김",
+            leftClass: "btn-outline",
+            rightClass: activate ? "btn-primary" : "btn-danger",
+            onRight: async () => {
                 try {
-                    const response =  await fetch("/admin/banner/register", {
-                        method: "POST",
-                        body: formData
-                    });
-
-                    if (!response.ok) {
-                        alert("등록 실패");
-                        return;
-                    }
-
-                    alert("등록되었습니다.");
-                    bannerModal.classList.remove("is-open");
-                    bannerModal.setAttribute("aria-hidden", "true");
-
+                    const response = await fetch(`/admin/banner/${button.dataset.bannerId}/toggle`, {method: "POST"});
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || "노출 상태를 변경하지 못했습니다.");
                     location.reload();
-                } catch (e) {
-                    alert("등록 실패");
+                } catch (error) {
+                    showBannerResult(false, error.message);
                 }
-
             }
         });
-
-    }
-
-    // ===============================
-    // 배너 등록 - 파일 첨부
-    // ===============================
-
-
-    if (bannerFile && fileName) {
-        bannerFile.addEventListener("change", () => {
-            fileName.textContent =
-                bannerFile.files.length > 0
-                    ? bannerFile.files[0].name
-                    : "선택된 파일 없음";
-        });
-    }
-
-    // ===============================
-    // 수정하기 버튼 클릭
-    // ===============================
-    document.querySelectorAll(".edit-banner-btn").forEach((btn) => {
-
-        btn.addEventListener("click", (e) => {
-
-            e.preventDefault();
-
-            editMode = true;
-            bannerId = btn.dataset.bannerId;
-
-            // TODO
-            // const response = await fetch(`/admin/banner/${bannerId}`);
-            // const banner = await response.json();
-
-            // TODO 조회 데이터 화면에 세팅
-            // document.querySelector('input[name="title"]').value = banner.title;
-            // document.querySelector('select[name="position"]').value = banner.position;
-            // document.querySelector('input[name="priority"]').value = banner.priority;
-            // document.querySelector('input[name="url"]').value = banner.url;
-            // document.querySelector('input[name="altText"]').value = banner.altText;
-            // document.querySelector('input[name="startDate"]').value = banner.startDate;
-            // document.querySelector('input[name="endDate"]').value = banner.endDate;
-
-            // TODO 기존 이미지명 표시
-            // document.getElementById("fileName").textContent = banner.imageName;
-
-            modalTitle.textContent = "배너 수정";
-            submitBtn.textContent = "수정";
-
-            bannerModal.classList.add("is-open");
-            bannerModal.setAttribute("aria-hidden", "false");
-        });
-
-    });
-
-    // ===============================
-    // 배너 숨김
-    // ===============================
-    document.querySelectorAll(".hide-banner-btn").forEach((btn) => {
-
-        btn.addEventListener("click", (e) => {
-
-            e.preventDefault();
-
-            const bannerId = btn.dataset.bannerId;
-
-            showConfirmModal({
-
-                iconClass: "warning",
-                iconHtml: '<i class="fa-solid fa-eye-slash"></i>',
-
-                title: "배너를 숨길까요?",
-                message: "숨김 처리하면 사용자에게 더 이상 노출되지 않습니다.",
-
-                leftText: "취소",
-                rightText: "숨김",
-
-                leftClass: "btn-outline",
-                rightClass: "btn-danger",
-
-                onRight: async () => {
-
-                    // TODO : 배너 숨김 API
-                    //
-                    // await fetch(`/admin/banner/${bannerId}/hide`, {
-                    //     method: "PATCH"
-                    // });
-                    //
-                    // 성공 시
-                    // location.reload();
-                    //
-                    // 또는 상태만 변경
-                    // const card = btn.closest(".banner-card");
-                    // card.querySelector(".status").textContent = "숨김";
-                    // card.querySelector(".status").classList.remove("on");
-                    // card.querySelector(".status").classList.add("off");
-
-                }
-
-            });
-
-        });
-
-    });
-
-
+    }));
 });
+
+function showBannerResult(success, message, reload = false) {
+    showConfirmModal({
+        iconClass: success ? "success" : "danger",
+        title: success ? "저장되었습니다" : "처리할 수 없습니다",
+        message,
+        leftVisible: false,
+        rightText: "확인",
+        rightClass: "btn-primary",
+        onRight: reload ? () => location.reload() : null
+    });
+}
