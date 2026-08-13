@@ -1,12 +1,54 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>입사지원 완료 | 첫출근</title><link rel="stylesheet" th:href="@{/css/common.css}" href="/css/common.css"><link rel="stylesheet" th:href="@{/css/job/common.css}" href="/css/job/common.css"><link rel="stylesheet" th:href="@{/css/job/application.css}" href="/css/job/application.css"></head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>입사지원 완료 | 첫출근</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/job/common.css}">
+  <link rel="stylesheet" th:href="@{/css/job/application.css}">
+</head>
 <body class="job-header-active">
 <header th:replace="~{common/header :: header}"></header>
-<main class="job-page"><div class="complete-wrap"><section class="complete-card">
-  <div class="complete-icon" aria-hidden="true">✓</div><h1>입사지원이 완료되었습니다</h1><p>네이버클라우드의 채용공고에 정상적으로 지원했어요.</p>
-  <div class="complete-info"><h2>지원 정보</h2><dl><dt>공고</dt><dd>Java/Spring 백엔드 개발자</dd><dt>지원일</dt><dd>2026.07.27</dd><dt>지원 상태</dt><dd><strong style="color:#635bff">지원 완료</strong></dd></dl></div>
-  <div class="application-actions"><a class="job-secondary-button" th:href="@{/job/list}">채용공고 목록</a><a class="job-primary-button" th:href="@{/my/applications}">지원 내역 확인</a></div>
-</section></div></main>
+
+<main class="job-page">
+  <div class="complete-wrap">
+    <section class="complete-card">
+      <div class="complete-icon" aria-hidden="true">✓</div>
+      <h1>입사지원이 완료되었습니다</h1>
+      <p th:text="|${applicationView.companyName}의 채용공고에 정상적으로 지원했어요.|">
+        기업의 채용공고에 정상적으로 지원했어요.
+      </p>
+
+      <div class="complete-info">
+        <h2>지원 정보</h2>
+        <dl>
+          <dt>공고</dt>
+          <dd th:text="${applicationView.jobTitle}">채용공고 제목</dd>
+          <dt>지원일</dt>
+          <dd th:text="${#temporals.format(applicationView.appliedAt, 'yyyy.MM.dd HH:mm')}">
+            지원일
+          </dd>
+          <dt>지원 상태</dt>
+          <dd>
+            <strong class="application-status"
+                    th:text="${applicationView.currentStatus}">지원완료</strong>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="application-actions">
+        <a class="job-secondary-button" th:href="@{/job/list}">
+          채용공고 목록
+        </a>
+        <a class="job-primary-button" th:href="@{/my/applications}">
+          지원 내역 확인
+        </a>
+      </div>
+    </section>
+  </div>
+</main>
+
 <footer th:replace="~{common/footer :: footer}"></footer>
-</body></html>
+</body>
+</html>

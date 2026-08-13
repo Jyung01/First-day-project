@@ -10,9 +10,7 @@
           href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
 
-    </script>
 </head>
 <body>
 <!-- ============ 헤더 (공통 영역) ============ -->
@@ -23,14 +21,14 @@
     <div class="hero-banner"
          th:if="${!#lists.isEmpty(banners)}">
 
-        <div class="swiper bannerSwiper">
+        <div class="swiper bannerSwiper" th:attr="data-slide-count=${#lists.size(banners)}">
 
             <div class="swiper-wrapper">
 
                 <div class="swiper-slide"
                      th:each="banner : ${banners}">
 
-                    <a th:href="${banner.linkUrl}"
+                    <a th:href="${#strings.isEmpty(banner.linkUrl) ? null : banner.linkUrl}"
                        th:aria-label="${banner.altText}">
 
                         <img th:src="${banner.imageUrl}"
@@ -43,10 +41,10 @@
 
             </div>
 
-            <div class="swiper-pagination"></div>
+            <div class="swiper-pagination" th:if="${#lists.size(banners) > 1}"></div>
 
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev" th:if="${#lists.size(banners) > 1}"></div>
+            <div class="swiper-button-next" th:if="${#lists.size(banners) > 1}"></div>
 
         </div>
 
@@ -71,7 +69,7 @@
 
             <!--인기순-->
             <div class="job-grid popular-grid">
-                <div class="job-card" th:each="job : ${popularJobs}">
+                <a th:href="@{/job/detail(jobPostingId=${job.jobPostingId})}" class="job-card" th:each="job : ${popularJobs}">
 
                     <div class="co-row">
                         <img class="co-logo"
@@ -101,12 +99,12 @@
                               th:text="${job.categoryName}"></span>
                     </div>
 
-                </div>
+                </a>
             </div>
 
             <!--최신순-->
             <div class="job-grid latest-grid" style="display:none;">
-                <div class="job-card" th:each="job : ${latestJobs}">
+                <a th:href="@{/job/detail(jobPostingId=${job.jobPostingId})}" class="job-card" th:each="job : ${latestJobs}">
 
                     <div class="co-row">
                         <img class="co-logo"
@@ -136,7 +134,7 @@
                               th:text="${job.categoryName}"></span>
                     </div>
 
-                </div>
+                </a>
             </div>
         </section>
 
@@ -152,8 +150,10 @@
 
             <div class="company-grid">
 
-                <div class="company-card"
-                     th:each="company : ${popularCompanies}">
+                <a class="company-card"
+                     th:each="company : ${popularCompanies}"
+                   th:href="@{/company/detail(companyId=${company.companyId})}"
+                >
 
                     <img class="company-logo"
                          th:src="${company.logoUrl}"
@@ -180,7 +180,7 @@
                          th:text="${company.summary}">
                     </div>
 
-                </div>
+                </a>
 
             </div>
 

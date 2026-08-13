@@ -7,12 +7,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
+import java.util.List;
 import kr.co.firstdayproject.config.properties.AwsProperties;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
@@ -107,5 +111,64 @@ class AwsS3ServiceTest {
 
         assertThat(service.getPresignedUrl(null)).isNull();
         assertThat(service.getPresignedUrl(" ")).isNull();
+    }
+
+    @Test
+    void deletesPreviousPrivateFileOnlyAfterTransactionCommit() {
+        S3Client s3Client = mock(S3Client.class);
+        S3Presigner s3Presigner = mock(S3Presigner.class);
+        AwsS3Service service = new AwsS3Service(s3Client, s3Presigner, PROPERTIES);
+
+        TransactionSynchronizationManager.initSynchronization();
+        try {
+            service.synchronizePrivateReplacement(
+                    "personal_profile/previous.png",
+                    "personal_profile/uploaded.png"
+            );
+            List<TransactionSynchronization> synchronizations =
+                    TransactionSynchronizationManager.getSynchronizations();
+
+            assertThat(synchronizations).hasSize(1);
+            synchronizations.getFirst().afterCommit();
+            synchronizations.getFirst().afterCompletion(
+                    TransactionSynchronization.STATUS_COMMITTED
+            );
+        } finally {
+            TransactionSynchronizationManager.clearSynchronization();
+        }
+
+        ArgumentCaptor<DeleteObjectRequest> requestCaptor =
+                ArgumentCaptor.forClass(DeleteObjectRequest.class);
+        verify(s3Client).deleteObject(requestCaptor.capture());
+        assertThat(requestCaptor.getValue().bucket()).isEqualTo("private-bucket");
+        assertThat(requestCaptor.getValue().key())
+                .isEqualTo("personal_profile/previous.png");
+    }
+
+    @Test
+    void deletesUploadedPublicFileWhenTransactionRollsBack() {
+        S3Client s3Client = mock(S3Client.class);
+        S3Presigner s3Presigner = mock(S3Presigner.class);
+        AwsS3Service service = new AwsS3Service(s3Client, s3Presigner, PROPERTIES);
+
+        TransactionSynchronizationManager.initSynchronization();
+        try {
+            service.synchronizePublicReplacement(
+                    "https://cdn.firstday.test/companies_logo/previous.png",
+                    "https://cdn.firstday.test/companies_logo/uploaded.png"
+            );
+            TransactionSynchronizationManager.getSynchronizations()
+                    .getFirst()
+                    .afterCompletion(TransactionSynchronization.STATUS_ROLLED_BACK);
+        } finally {
+            TransactionSynchronizationManager.clearSynchronization();
+        }
+
+        ArgumentCaptor<DeleteObjectRequest> requestCaptor =
+                ArgumentCaptor.forClass(DeleteObjectRequest.class);
+        verify(s3Client).deleteObject(requestCaptor.capture());
+        assertThat(requestCaptor.getValue().bucket()).isEqualTo("public-bucket");
+        assertThat(requestCaptor.getValue().key())
+                .isEqualTo("companies_logo/uploaded.png");
     }
 }

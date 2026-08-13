@@ -100,6 +100,9 @@
         c.address_line1,
         c.short_description,
 
+        <!-- 관심기업이면 company_id, 아니면 null -->
+        MAX(sc.company_id) AS savedCompanyId,
+
         ROUND(AVG(cr.overall_rating), 1) AS averageRating,
         COUNT(cr.company_review_id) AS reviewCount,
         MAX(cr.summary) AS summary,
@@ -111,6 +114,11 @@
         END AS hasJobPosting
 
         FROM companies c
+
+        <!-- 관심기업 -->
+        LEFT JOIN saved_companies sc
+        ON c.company_id = sc.company_id
+        AND sc.user_id = #{userId}
 
         LEFT JOIN company_reviews cr
         ON c.company_id = cr.company_id
@@ -339,9 +347,34 @@
 
     </select>
 
+    <!-- 기업 정보 : 관심기업 조회 -->
+    <select id="countWish" resultType="int">
+        SELECT COUNT(*)
+        FROM saved_companies
+        WHERE user_id = #{userId}
+        AND company_id = #{companyId}
+    </select>
 
+    <!-- 기업 정보 : 관심기업 등록 -->
+    <insert id="insertWish">
+        INSERT INTO saved_companies (
+        user_id,
+        company_id,
+        created_at
+        )
+        VALUES (
+        #{userId},
+        #{companyId},
+        NOW()
+        )
+    </insert>
 
-
+    <!-- 기업 정보 : 관심기업 삭제 -->
+    <delete id="deleteWish">
+        DELETE FROM saved_companies
+        WHERE user_id = #{userId}
+        AND company_id = #{companyId}
+    </delete>
 
 
 </mapper>

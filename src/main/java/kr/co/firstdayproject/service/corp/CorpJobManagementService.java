@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import kr.co.firstdayproject.entity.job.JobPosting;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
+import kr.co.firstdayproject.service.ai.JobPostingEmbeddingSyncEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ public class CorpJobManagementService {
     );
 
     private final JobPostingRepository jobPostingRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void closeJobPosting(Long companyId, Long jobPostingId) {
@@ -47,6 +50,11 @@ public class CorpJobManagementService {
         }
 
         posting.setStatus("삭제");
+
+        eventPublisher.publishEvent(new JobPostingEmbeddingSyncEvent(
+            jobPostingId,
+            false
+        ));
     }
 
     private JobPosting getCompanyJobPosting(

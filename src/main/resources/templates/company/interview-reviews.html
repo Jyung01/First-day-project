@@ -22,11 +22,12 @@
 
     <script th:src="@{/js/company/detail.js}"></script>
     <script th:src="@{/js/company/review-reactions.js}"></script>
+    <script th:src="@{/js/modal/common/report-modal.js}"></script>
     <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
-    <script>
+    <script type="application/disabled">
         document.addEventListener("DOMContentLoaded", () => {
 
             const reportModal = document.getElementById("reportModal");
@@ -123,9 +124,10 @@
         <div class="profile-right">
 
             <button class="wish-btn"
-                    th:data-company-id="${company.companyId}">
+                    th:data-company-id="${company.companyId}"
+                    th:classappend="${isWished} ? ' active'">
 
-                <i class="fa-regular fa-heart"></i>
+                <i th:class="${isWished} ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
 
                 관심기업
 

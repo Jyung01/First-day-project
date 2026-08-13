@@ -23,21 +23,26 @@
             </header>
 
             <nav class="application-filter" aria-label="지원 상태 필터">
-                <button class="application-filter__button is-active" type="button" data-application-filter="all">
-                    전체 <strong>9</strong>
-                </button>
-                <button class="application-filter__button" type="button" data-application-filter="applied">
-                    지원 완료 <strong>1</strong>
-                </button>
-                <button class="application-filter__button" type="button" data-application-filter="review">
-                    검토 중 <strong>2</strong>
-                </button>
-                <button class="application-filter__button" type="button" data-application-filter="interview">
-                    면접 <strong>2</strong>
-                </button>
-                <button class="application-filter__button" type="button" data-application-filter="result">
-                    최종 결과 <strong>4</strong>
-                </button>
+                <a class="application-filter__button"
+                   th:classappend="${filter == 'all'} ? ' is-active'"
+                   th:href="@{/my/applications(filter='all',page=1)}">
+                    전체 <strong th:text="${applicationCounts.all}">0</strong>
+                </a>
+                <a class="application-filter__button"
+                   th:classappend="${filter == 'applied'} ? ' is-active'"
+                   th:href="@{/my/applications(filter='applied',page=1)}">
+                    지원 완료 <strong th:text="${applicationCounts.applied}">0</strong>
+                </a>
+                <a class="application-filter__button"
+                   th:classappend="${filter == 'progress'} ? ' is-active'"
+                   th:href="@{/my/applications(filter='progress',page=1)}">
+                    진행 중 <strong th:text="${applicationCounts.progress}">0</strong>
+                </a>
+                <a class="application-filter__button"
+                   th:classappend="${filter == 'result'} ? ' is-active'"
+                   th:href="@{/my/applications(filter='result',page=1)}">
+                    최종 결과 <strong th:text="${applicationCounts.result}">0</strong>
+                </a>
             </nav>
 
             <section class="application-list-card">
@@ -49,89 +54,69 @@
                     <span>상세</span>
                 </div>
 
-                <div class="application-row" data-application-group="review">
-                    <strong class="application-row__job">네이버클라우드 · 백엔드 개발자</strong>
-                    <time datetime="2026-07-18">2026.07.18</time>
-                    <span class="application-status application-status--reviewing">서류 검토 중</span>
-                    <time datetime="2026-07-20">2026.07.20</time>
-                    <a class="application-detail-link" th:href="@{/my/applications/101(status='REVIEWING')}">상세 보기</a>
+                <div class="application-row"
+                     th:each="item : ${applications}">
+                    <div class="application-row__company-job">
+                        <div class="application-row__logo">
+                            <img th:if="${item.companyLogoUrl != null and !item.companyLogoUrl.isBlank()}"
+                                 th:src="${item.companyLogoUrl}"
+                                 th:alt="${item.companyName + ' 로고'}">
+                            <span th:unless="${item.companyLogoUrl != null and !item.companyLogoUrl.isBlank()}"
+                                  th:text="${item.companyInitial}">기</span>
+                        </div>
+                        <strong class="application-row__job">
+                            <span th:text="${item.companyName}">기업명</span>
+                            <span aria-hidden="true"> · </span>
+                            <span th:text="${item.jobTitle}">채용공고명</span>
+                        </strong>
+                    </div>
+                    <time th:datetime="${item.appliedAt}"
+                          th:text="${#temporals.format(item.appliedAt, 'yyyy.MM.dd')}">
+                        2026.08.11
+                    </time>
+                    <span class="application-status"
+                          th:classappend="' application-status--' + ${item.statusVariant}"
+                          th:text="${item.statusLabel}">
+                        지원 완료
+                    </span>
+                    <time th:datetime="${item.latestChangedAt}"
+                          th:text="${#temporals.format(item.latestChangedAt, 'yyyy.MM.dd')}">
+                        2026.08.11
+                    </time>
+                    <a class="application-detail-link"
+                       th:href="@{/my/applications/{id}(id=${item.applicationId})}">
+                        상세 보기
+                    </a>
                 </div>
 
-                <div class="application-row" data-application-group="review">
-                    <strong class="application-row__job">무신사 · 백엔드 개발자</strong>
-                    <time datetime="2026-07-16">2026.07.16</time>
-                    <span class="application-status application-status--document-passed">서류 합격</span>
-                    <time datetime="2026-07-21">2026.07.21</time>
-                    <a class="application-detail-link" th:href="@{/my/applications/109(status='DOCUMENT_PASSED')}">상세 보기</a>
-                </div>
-
-                <div class="application-row" data-application-group="applied">
-                    <strong class="application-row__job">토스페이먼츠 · 플랫폼 개발자</strong>
-                    <time datetime="2026-07-15">2026.07.15</time>
-                    <span class="application-status application-status--applied">지원 완료</span>
-                    <time datetime="2026-07-15">2026.07.15</time>
-                    <a class="application-detail-link" th:href="@{/my/applications/102(status='APPLIED')}">상세 보기</a>
-                </div>
-
-                <div class="application-row" data-application-group="interview">
-                    <strong class="application-row__job">우아한형제들 · 데이터 엔지니어</strong>
-                    <time datetime="2026-07-10">2026.07.10</time>
-                    <span class="application-status application-status--interview">면접 예정</span>
-                    <time datetime="2026-07-19">2026.07.19</time>
-                    <a class="application-detail-link" th:href="@{/my/applications/103(status='INTERVIEW_SCHEDULED')}">상세 보기</a>
-                </div>
-
-                <div class="application-row" data-application-group="interview">
-                    <strong class="application-row__job">카카오엔터프라이즈 · 클라우드 엔지니어</strong>
-                    <time datetime="2026-06-28">2026.06.28</time>
-                    <span class="application-status application-status--interviewed">면접 완료</span>
-                    <time datetime="2026-07-08">2026.07.08</time>
-                    <a class="application-detail-link" th:href="@{/my/applications/104(status='INTERVIEWED')}">상세 보기</a>
-                </div>
-
-                <div class="application-row" data-application-group="result">
-                    <strong class="application-row__job">라인플러스 · 서버 개발자</strong>
-                    <time datetime="2026-06-20">2026.06.20</time>
-                    <span class="application-status application-status--passed">최종 합격</span>
-                    <time datetime="2026-07-05">2026.07.05</time>
-                    <a class="application-detail-link" th:href="@{/my/applications/105(status='PASSED')}">상세 보기</a>
-                </div>
-
-                <div class="application-row" data-application-group="result">
-                    <strong class="application-row__job">당근 · 백엔드 개발자</strong>
-                    <time datetime="2026-06-12">2026.06.12</time>
-                    <span class="application-status application-status--rejected">불합격</span>
-                    <time datetime="2026-07-02">2026.07.02</time>
-                    <a class="application-detail-link" th:href="@{/my/applications/106(status='DOCUMENT_REJECTED')}">상세 보기</a>
-                </div>
-
-                <div class="application-row" data-application-group="result">
-                    <strong class="application-row__job">쿠팡 · Java 개발자</strong>
-                    <time datetime="2026-05-18">2026.05.18</time>
-                    <span class="application-status application-status--joined">입사 완료</span>
-                    <time datetime="2026-06-30">2026.06.30</time>
-                    <a class="application-detail-link" th:href="@{/my/applications/107(status='JOINED')}">상세 보기</a>
-                </div>
-
-                <div class="application-row" data-application-group="result">
-                    <strong class="application-row__job">컬리 · 주문 플랫폼 개발자</strong>
-                    <time datetime="2026-05-10">2026.05.10</time>
-                    <span class="application-status application-status--canceled">지원 취소</span>
-                    <time datetime="2026-05-11">2026.05.11</time>
-                    <a class="application-detail-link" th:href="@{/my/applications/108(status='CANCELED')}">상세 보기</a>
-                </div>
-
-                <p class="application-empty" data-application-empty hidden>해당 상태의 지원 내역이 없습니다.</p>
+                <p class="application-empty"
+                   th:if="${#lists.isEmpty(applications)}">
+                    해당 상태의 지원 내역이 없습니다.
+                </p>
             </section>
 
-            <nav class="application-pagination" aria-label="지원 내역 페이지">
-                <a href="#" aria-label="이전 페이지">‹</a>
-                <a class="is-active" href="#" aria-current="page">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-                <a href="#">5</a>
-                <a href="#" aria-label="다음 페이지">›</a>
+            <nav class="application-pagination"
+                 th:if="${pageHandler.lastPage > 0}"
+                 aria-label="지원 내역 페이지">
+                <a class="application-pagination__arrow"
+                   th:if="${pageHandler.currentPage > 1}"
+                   th:href="@{/my/applications(filter=${filter},page=${pageHandler.currentPage - 1})}"
+                   aria-label="이전 페이지"><span aria-hidden="true"></span></a>
+                <span class="application-pagination__arrow is-disabled"
+                      th:unless="${pageHandler.currentPage > 1}"
+                      aria-disabled="true"><span aria-hidden="true"></span></span>
+                <a th:each="pageNo : ${#numbers.sequence(pageHandler.startPage, pageHandler.endPage)}"
+                   th:classappend="${pageNo == pageHandler.currentPage} ? ' is-active'"
+                   th:attr="aria-current=${pageNo == pageHandler.currentPage} ? 'page'"
+                   th:href="@{/my/applications(filter=${filter},page=${pageNo})}"
+                   th:text="${pageNo}">1</a>
+                <a class="application-pagination__arrow application-pagination__arrow--next"
+                   th:if="${pageHandler.currentPage < pageHandler.lastPage}"
+                   th:href="@{/my/applications(filter=${filter},page=${pageHandler.currentPage + 1})}"
+                   aria-label="다음 페이지"><span aria-hidden="true"></span></a>
+                <span class="application-pagination__arrow application-pagination__arrow--next is-disabled"
+                      th:unless="${pageHandler.currentPage < pageHandler.lastPage}"
+                      aria-disabled="true"><span aria-hidden="true"></span></span>
             </nav>
         </section>
     </div>
@@ -139,6 +124,5 @@
 
 <footer th:replace="~{common/footer :: footer}"></footer>
 <script th:src="@{/js/common.js}" src="/js/common.js"></script>
-<script th:src="@{/js/my/application/list.js}" src="/js/my/application/list.js"></script>
 </body>
 </html>

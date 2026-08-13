@@ -1,106 +1,218 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>지원자 상세 | 첫출근</title>
-    <link rel="stylesheet" th:href="@{/css/corp/common.css}" />
-    <link rel="stylesheet" th:href="@{/css/corp/management/common.css}" />
-    <link rel="stylesheet" th:href="@{/css/corp/management/applicant-detail.css}" />
-    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
-  </head>
-  <body class="corp-page">
-    <header th:replace="~{common/corp-header :: corpHeader}"></header>
-    <main class="corp-main">
-      <div class="corp-layout">
-        <aside th:replace="~{common/corp-aside :: corpAside}"></aside>
-        <section class="corp-content">
-          <div class="corp-page-heading">
-            <div>
-              <h1>지원자 상세</h1>
-              <p>지원자의 제출 문서를 확인하고 전형 상태를 변경합니다.</p>
-            </div>
-            <div class="corp-actions">
-              <a class="corp-button" th:href="@{/corp/applicant}">목록</a
-              ><button
-                class="corp-button corp-button--primary"
-                type="button"
-                data-applicant-status-open
-              >
-                상태 변경
-              </button>
-            </div>
-          </div>
-          <section class="corp-card applicant-hero">
-            <span class="avatar">김</span>
-            <div class="applicant-hero__copy">
-              <h2>김민준</h2>
-              <p>minjun@example.com · 010-1234-5678</p>
-              <p>백엔드 개발자 지원 · 2026.07.22 14:20</p>
-            </div>
-            <em class="corp-badge">서류검토중</em>
-          </section>
-          <div class="applicant-detail-grid">
-            <section class="corp-card document-panel">
-              <h2>제출 문서</h2>
-              <article class="document-item">
-                <div>
-                  <small>이력서</small><strong>백엔드 개발 이력서</strong
-                  ><time>2026.07.20 수정</time>
-                </div>
-                <a class="corp-button" th:href="@{/my/resume/detail(id=1)}"
-                  >보기</a
-                >
-              </article>
-              <article class="document-item">
-                <div>
-                  <small>자기소개서</small
-                  ><strong>첫출근랩 지원 자기소개서</strong
-                  ><time>2026.07.21 수정</time>
-                </div>
-                <a
-                  class="corp-button"
-                  th:href="@{/my/cover-letter/detail(id=1)}"
-                  >보기</a
-                >
-              </article>
-              <div class="applicant-message">
-                <strong>지원자 메시지</strong
-                ><textarea readonly>
-백엔드 서비스의 안정성과 성능을 개선해 온 경험을 첫출근랩의 채용 서비스에 기여하고 싶습니다.</textarea
-                >
-              </div>
-            </section>
-            <aside class="corp-card process-panel">
-              <h2>전형 상태</h2>
-              <em class="corp-badge">서류검토중</em>
-              <ul class="process-history">
-                <li><strong>지원완료</strong><time>07.22 14:20</time></li>
-                <li><strong>서류검토중</strong><time>07.22 16:30</time></li>
-              </ul>
-              <label for="managerMemo"><strong>담당자 메모</strong></label
-              ><textarea
-                id="managerMemo"
-                class="memo-area"
-                placeholder="지원자 검토 메모를 입력하세요."
-              >
-Spring 프로젝트 경험 확인 필요
-면접 가능 일정 문의 예정</textarea
-              ><button class="corp-button" type="button">메모 저장</button>
-            </aside>
-          </div>
-          <aside class="corp-note">
-            <strong>변경 가능한 지원 상태</strong><br />현재 단계의 다음 상태
-            또는 불합격만 선택할 수 있습니다. 단계 건너뛰기와 역방향 변경은
-            불가합니다.<br />상태 변경 전 확인 후 저장하며, 저장한 상태는 이전
-            상태로 되돌릴 수 없습니다.
-          </aside>
-        </section>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>지원자 상세 | 첫출근</title>
+  <link rel="stylesheet" th:href="@{/css/corp/common.css}">
+  <link rel="stylesheet" th:href="@{/css/corp/management/common.css}">
+  <link rel="stylesheet" th:href="@{/css/corp/management/applicant-detail.css}">
+  <link rel="stylesheet" th:href="@{/css/my/resume/detail.css}">
+  <link rel="stylesheet" th:href="@{/css/modal/common.css}">
+  <link rel="stylesheet" th:href="@{/css/modal/corp/application-document-modal.css}">
+</head>
+<body class="corp-page">
+<header th:replace="~{common/corp-header :: corpHeader}"></header>
+<main class="corp-main">
+  <div class="corp-layout">
+    <aside th:replace="~{common/corp-aside :: corpAside}"></aside>
+    <section class="corp-content">
+      <div class="corp-page-heading">
+        <div>
+          <h1>지원자 상세</h1>
+          <p>지원자의 제출 문서와 전형 진행 이력을 확인합니다.</p>
+        </div>
+        <div class="corp-actions">
+          <a class="corp-button" th:href="@{/corp/applicant}">목록</a>
+          <button class="corp-button corp-button--primary"
+                  type="button"
+                  data-applicant-status-open
+                  th:disabled="${!applicant.canChangeStatus()}"
+                  th:title="${applicant.canChangeStatus()
+                      ? '지원 상태 변경'
+                      : '종료된 지원은 상태를 변경할 수 없습니다.'}">
+            상태 변경
+          </button>
+        </div>
       </div>
-    </main>
-    <footer th:replace="~{common/corp-footer :: corpFooter}"></footer>
-    <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
-    <script th:src="@{/js/modal.js}"></script>
-    <script th:src="@{/js/corp/applicant-detail.js}"></script>
-  </body>
+
+      <section class="corp-card applicant-hero">
+        <span class="avatar" th:text="${applicant.applicantInitial}">김</span>
+        <div class="applicant-hero__copy">
+          <h2 th:text="${applicant.applicantName}">김민준</h2>
+          <p>
+            <span th:text="${applicant.email}">minjun@example.com</span>
+            <span aria-hidden="true"> · </span>
+            <span th:text="${applicant.phone ?: '연락처 없음'}">010-1234-5678</span>
+          </p>
+          <p>
+            <span th:text="${applicant.jobTitle}">백엔드 개발자</span>
+            <span> 지원 · </span>
+            <time th:datetime="${applicant.appliedAt}"
+                  th:text="${#temporals.format(applicant.appliedAt, 'yyyy.MM.dd HH:mm')}">
+              2026.08.11 12:30
+            </time>
+          </p>
+        </div>
+        <em class="corp-badge"
+            th:classappend="${applicant.statusVariant != 'default'
+                ? ' corp-badge--' + applicant.statusVariant
+                : ''}"
+            th:text="${applicant.currentStatus}">
+          지원완료
+        </em>
+      </section>
+
+      <p class="applicant-feedback applicant-feedback--success"
+         th:if="${memoSuccessMessage != null}"
+         th:text="${memoSuccessMessage}">
+        담당자 메모를 저장했습니다.
+      </p>
+      <p class="applicant-feedback applicant-feedback--error"
+         th:if="${memoErrorMessage != null}"
+         th:text="${memoErrorMessage}">
+        담당자 메모를 저장할 수 없습니다.
+      </p>
+      <p class="applicant-feedback applicant-feedback--success"
+         th:if="${statusSuccessMessage != null}"
+         th:text="${statusSuccessMessage}">
+        지원 상태를 변경했습니다.
+      </p>
+      <p class="applicant-feedback applicant-feedback--error"
+         th:if="${statusErrorMessage != null}"
+         th:text="${statusErrorMessage}">
+        지원 상태를 변경할 수 없습니다.
+      </p>
+
+      <div class="applicant-detail-grid">
+        <section class="corp-card document-panel">
+          <h2>제출 문서</h2>
+          <article class="document-item">
+            <div>
+              <small>이력서 · 필수</small>
+              <strong th:text="${applicant.resume['title'] ?: '제출 이력서'}">
+                백엔드 개발 이력서
+              </strong>
+              <span class="document-description">지원 당시 제출본</span>
+            </div>
+            <button class="corp-button"
+                    type="button"
+                    data-document-open="resume">
+              보기
+            </button>
+          </article>
+
+          <article class="document-item">
+            <div>
+              <small>자기소개서 · 선택</small>
+              <strong th:text="${applicant.hasCoverLetter()
+                  ? applicant.coverLetter['title']
+                  : '제출하지 않음'}">
+                자기소개서
+              </strong>
+              <span class="document-description"
+                    th:text="${applicant.hasCoverLetter()
+                        ? '지원 당시 제출본'
+                        : '자기소개서 없이 지원했습니다.'}">
+                지원 당시 제출본
+              </span>
+            </div>
+            <button class="corp-button"
+                    type="button"
+                    data-document-open="cover-letter"
+                    th:disabled="${!applicant.hasCoverLetter()}">
+              보기
+            </button>
+          </article>
+
+          <div class="applicant-message">
+            <strong>이력서 요약</strong>
+            <p th:text="${applicant.resume['summary'] ?: '작성된 이력서 요약이 없습니다.'}">
+              지원자가 작성한 이력서 요약입니다.
+            </p>
+          </div>
+        </section>
+
+        <aside class="corp-card process-panel">
+          <h2>전형 상태</h2>
+          <em class="corp-badge"
+              th:classappend="${applicant.statusVariant != 'default'
+                  ? ' corp-badge--' + applicant.statusVariant
+                  : ''}"
+              th:text="${applicant.currentStatus}">
+            지원완료
+          </em>
+          <ul class="process-history">
+            <li th:each="history : ${applicant.statusHistory}"
+                th:classappend="${history.status == applicant.currentStatus}
+                    ? ' is-current'">
+              <strong th:text="${history.status}">지원완료</strong>
+              <time th:datetime="${history.changedAt}"
+                    th:text="${#temporals.format(history.changedAt, 'MM.dd HH:mm')}">
+                08.11 12:30
+              </time>
+              <small th:if="${history.changeReason != null
+                              and !history.changeReason.isBlank()}"
+                     th:text="${history.changeReason}">
+                변경 사유
+              </small>
+            </li>
+          </ul>
+
+          <form method="post"
+                th:action="@{/corp/applicant/detail/memo}">
+            <input type="hidden" name="id" th:value="${applicant.applicationId}">
+            <label for="managerMemo"><strong>담당자 메모</strong></label>
+            <textarea id="managerMemo"
+                      name="memo"
+                      class="memo-area"
+                      maxlength="2000"
+                      placeholder="지원자 검토 메모를 입력하세요."
+                      th:text="${applicant.managerMemo}"></textarea>
+            <div class="memo-meta"
+                 th:if="${applicant.memoUpdatedAt != null}">
+              <span th:text="${applicant.memoAuthorName}">김담당</span>
+              <span aria-hidden="true"> · </span>
+              <time th:datetime="${applicant.memoUpdatedAt}"
+                    th:text="${#temporals.format(
+                        applicant.memoUpdatedAt,
+                        'yyyy.MM.dd HH:mm'
+                    )}">
+                2026.08.11 12:30
+              </time>
+            </div>
+            <button class="corp-button" type="submit">메모 저장</button>
+          </form>
+        </aside>
+      </div>
+
+      <aside class="corp-note">
+        제출 문서는 지원 완료 시점의 내용입니다. 지원자가 이후 원본을 수정하거나
+        삭제해도 이 화면의 제출 내용은 변경되지 않습니다.
+      </aside>
+
+      <form id="applicantStatusForm"
+            method="post"
+            th:action="@{/corp/applicant/detail/status}"
+            hidden>
+        <input type="hidden" name="id" th:value="${applicant.applicationId}">
+        <input type="hidden" name="nextStatus" data-next-status>
+      </form>
+      <div data-applicant-status-data
+           th:attr="data-current-status=${applicant.currentStatus},
+                    data-applicant-name=${applicant.applicantName}"
+           hidden>
+        <span th:each="nextStatus : ${applicant.allowedNextStatuses}"
+              data-status-option
+              th:text="${nextStatus}">서류검토중</span>
+      </div>
+    </section>
+  </div>
+</main>
+<footer th:replace="~{common/corp-footer :: corpFooter}"></footer>
+<div th:replace="~{modal/corp/application-document-modal :: applicationDocumentModal(${applicant})}"></div>
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/corp/applicant-detail.js}"></script>
+</body>
 </html>

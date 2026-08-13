@@ -1,11 +1,15 @@
 package kr.co.firstdayproject.config;
 
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -17,18 +21,32 @@ public class SecurityConfig {
     }
 
     @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public static ServletListenerRegistrationBean<HttpSessionEventPublisher>
+    httpSessionEventPublisher() {
+        return new ServletListenerRegistrationBean<>(
+                new HttpSessionEventPublisher()
+        );
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             LoginSuccessHandler loginSuccessHandler,
-            LoginFailureHandler loginFailureHandler
+            LoginFailureHandler loginFailureHandler,
+            SessionRegistry sessionRegistry
     ) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // TODO 권한 정책 확정 후 아래 규칙부터 순서대로 활성화
-                        // .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // .requestMatchers("/corp/**").hasRole("COMPANY")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/corp/**").hasRole("COMPANY")
                         .requestMatchers("/my/**").authenticated()
                         .anyRequest().permitAll()
                 )
@@ -46,6 +64,11 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
+                )
+                .sessionManagement(session -> session
+                        .maximumSessions(-1)
+                        .sessionRegistry(sessionRegistry)
+                        .expiredUrl("/auth/login?accountStatus=restricted")
                 )
                 .httpBasic(AbstractHttpConfigurer::disable);
 

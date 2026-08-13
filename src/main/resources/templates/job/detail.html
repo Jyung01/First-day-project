@@ -1,51 +1,287 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java/Spring 백엔드 개발자 | 첫출근</title><link rel="stylesheet" th:href="@{/css/common.css}" href="/css/common.css"><link rel="stylesheet" th:href="@{/css/job/common.css}" href="/css/job/common.css"><link rel="stylesheet" th:href="@{/css/job/detail.css}" href="/css/job/detail.css"><link rel="stylesheet" th:href="@{/css/modal/common.css}" href="/css/modal/common.css"><link rel="stylesheet" th:href="@{/css/modal/job/resume-select-modal.css}" href="/css/modal/job/resume-select-modal.css"></head>
-<body class="job-header-active">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${job.title + ' | 첫출근'}">채용공고 상세 | 첫출근</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/job/common.css}">
+  <link rel="stylesheet" th:href="@{/css/job/list.css}">
+  <link rel="stylesheet" th:href="@{/css/job/detail.css}">
+  <link rel="stylesheet" th:href="@{/css/modal/common.css}">
+  <link rel="stylesheet" th:href="@{/css/modal/common/report-modal.css}">
+  <link rel="stylesheet" th:href="@{/css/modal/job/resume-select-modal.css}">
+</head>
+<body class="job-header-active"
+      th:data-login-url="@{/auth/login}">
 <header th:replace="~{common/header :: header}"></header>
+
 <main class="job-page">
-  <section class="job-hero"><div class="job-container"><div class="job-hero-top"><h1>채용공고</h1><form class="job-search" th:action="@{/job/search}"><input name="keyword" placeholder="직무, 공고명, 기업명, 기술스택 검색"><button>검색</button></form></div>
-    <div th:replace="~{job/fragments/filter :: filterBar}"></div>
-  </div></section>
-  <div th:replace="~{job/fragments/filter :: activeFilters}"></div>
-  <section class="job-content"><div class="job-container job-split">
-    <div class="job-list-column">
-      <h2 class="job-result-count">검색 결과 <strong>128건</strong></h2>
-      <aside class="job-list-pane" aria-label="채용공고 목록">
-        <a class="job-card selected" th:href="@{/job/detail}"><div class="job-card-head"><span class="company-mark">네</span><span class="company-name">네이버클라우드</span></div><span class="job-badge hot">HOT</span><button class="bookmark">♡</button><h3>Java/Spring 백엔드 개발자</h3><p class="job-meta">서울 강남 · 신입/경력</p><div class="job-tags"><span class="job-tag">Java</span><span class="job-tag">Spring</span></div><div class="job-card-foot"><span>조회 128</span><span class="job-deadline">D-8</span></div></a>
-        <a class="job-card" href="#"><div class="job-card-head"><span class="company-mark">카</span><span class="company-name">카카오엔터프라이즈</span></div><span class="job-badge new">NEW</span><button class="bookmark">♡</button><h3>AI 플랫폼 서버 개발자</h3><p class="job-meta">경기 성남 · 신입</p><div class="job-tags"><span class="job-tag">Java</span><span class="job-tag">LLM</span></div><div class="job-card-foot"><span>조회 96</span><span class="job-deadline">D-12</span></div></a>
-        <a class="job-card" href="#"><div class="job-card-head"><span class="company-mark">토</span><span class="company-name">토스페이먼츠</span></div><button class="bookmark">♡</button><h3>Backend Engineer</h3><p class="job-meta">서울 강남 · 경력무관</p><div class="job-tags"><span class="job-tag">Kotlin</span><span class="job-tag">Kafka</span></div><div class="job-card-foot"><span>조회 214</span><span class="job-deadline">상시</span></div></a>
-      </aside>
-      <nav class="pagination job-list-pagination" aria-label="채용공고 목록 페이지">
-        <a href="#" aria-label="이전 페이지">‹</a>
-        <a class="active" href="#" aria-current="page">1</a>
-        <a href="#">2</a>
-        <a href="#">3</a>
-        <a href="#">4</a>
-        <a href="#">5</a>
-        <a href="#" aria-label="다음 페이지">›</a>
-      </nav>
-    </div>
-    <article class="job-detail-panel">
-      <div class="detail-main">
-        <div class="job-card-head"><span class="company-mark">네</span><div><strong>네이버클라우드</strong><p class="job-meta">서울 강남 · IT 서비스</p></div></div>
-        <span class="job-badge hot">HOT</span>
-        <button class="bookmark" type="button" aria-label="관심 공고 추가" aria-pressed="false">♡</button>
-        <div class="detail-title-row"><h2>Java/Spring 백엔드 개발자</h2><button class="report-button">신고</button></div>
-        <div class="detail-summary"><div><small>경력</small><strong>신입 · 경력</strong></div><div><small>학력</small><strong>학력무관</strong></div><div><small>고용형태</small><strong>정규직</strong></div><div><small>마감일</small><strong class="job-deadline">D-8</strong></div></div>
+  <section class="job-hero">
+    <div class="job-container">
+      <div class="job-hero-top">
+        <h1>채용공고</h1>
+        <form class="job-search" th:action="@{/job/search}" method="get">
+          <input name="keyword"
+                 th:value="${keyword}"
+                 aria-label="공고명, 기업명 검색"
+                 placeholder="공고명, 기업명 검색">
+          <button type="submit">검색</button>
+        </form>
       </div>
-      <div class="detail-tabs"><button class="active" data-detail-tab="job">채용 상세</button><button data-detail-tab="company">기업정보</button></div>
-      <div class="detail-copy" data-job-copy><section><h3>담당업무</h3><p>• 채용 서비스 백엔드 API 개발<br>• 대용량 트래픽 처리 및 성능 개선<br>• Spring 기반 서비스 설계와 운영</p></section><section><h3>자격요건</h3><p>• Java 또는 Kotlin 개발 경험<br>• Spring Boot와 관계형 데이터베이스 이해<br>• 협업과 코드리뷰에 익숙한 분</p></section><section><h3>우대사항</h3><p>• AWS 환경에서 서비스 운영 경험<br>• 테스트 코드 작성 경험</p></section><section class="detail-skills"><h3>기술 스택</h3><div class="detail-skill-list" aria-label="기술 스택"><span>Java</span><span>Spring</span><span>AWS</span><span>MySQL</span><span>Docker</span></div></section></div>
-      <div class="detail-copy" data-company-copy hidden><section><h3>네이버클라우드</h3><p>기술과 데이터를 통해 더 나은 업무 경험을 만드는 클라우드 플랫폼 기업입니다.</p></section><section><h3>기업 정보</h3><p>업종 IT 서비스 · 사원수 1,250명 · 서울특별시 강남구</p></section></div>
-      <div class="detail-actions"><button class="job-secondary-button" type="button">♡ 관심 공고</button><button class="job-primary-button" type="button" data-resume-modal-open>지원하기</button></div>
-    </article>
-  </div></section>
+      <div th:replace="~{job/fragments/filter :: filterBar}"></div>
+    </div>
+  </section>
+  <div th:replace="~{job/fragments/filter :: activeFilters}"></div>
+
+  <section class="job-content">
+    <div class="job-container job-split">
+      <div class="job-list-column">
+        <h2 class="job-result-count">
+          검색 결과 <strong th:text="|${jobPage.totalElements}건|">0건</strong>
+        </h2>
+
+        <aside class="job-list-pane" aria-label="채용공고 목록">
+          <a class="job-card"
+             th:each="item : ${jobs}"
+             th:classappend="${item.jobPostingId == job.jobPostingId} ? ' selected'"
+             th:href="@{/job/detail(
+               jobPostingId=${item.jobPostingId},
+               keyword=${keyword},
+               parentCategoryId=${parentCategoryId},
+               categoryId=${categoryIds},
+               region=${regions},
+               career=${careers},
+               education=${educations},
+               skillId=${skillIds},
+               sort=${sort},
+               page=${pageInfo.currentPage}
+             )}">
+            <div class="job-card-head">
+              <img class="company-logo"
+                   th:if="${!#strings.isEmpty(item.logoUrl)}"
+                   th:src="${item.logoUrl}"
+                   th:alt="|${item.companyName} 로고|">
+              <span class="company-mark"
+                    th:unless="${!#strings.isEmpty(item.logoUrl)}"
+                    th:text="${#strings.substring(item.companyName, 0, 1)}">기</span>
+              <span class="company-name" th:text="${item.companyName}">기업명</span>
+            </div>
+            <div class="job-card-actions">
+              <div class="job-badges">
+                <span class="job-badge hot" th:if="${item.hotPosting}">HOT</span>
+                <span class="job-badge new" th:if="${item.newPosting}">NEW</span>
+              </div>
+              <button class="bookmark"
+                      type="button"
+                      th:data-job-posting-id="${item.jobPostingId}"
+                      th:data-job-title="${item.title}"
+                      th:data-logged-in="${personalMember}"
+                      th:classappend="${item.bookmarked} ? ' active'"
+                      th:text="${item.bookmarked} ? '♥' : '♡'"
+                      th:attr="aria-pressed=${item.bookmarked}">♡</button>
+            </div>
+            <h3 th:text="${item.title}">공고 제목</h3>
+            <p class="job-meta">
+              <span th:text="${item.workRegion}">지역</span> ·
+              <span th:text="${item.careerType}">경력</span>
+            </p>
+            <div class="job-tags">
+              <span class="job-tag" th:text="${item.employmentType}">고용형태</span>
+              <span class="job-tag" th:text="${item.categoryName}">직무</span>
+            </div>
+            <div class="job-skill-tags"
+                 th:classappend="${#lists.isEmpty(item.skills)} ? ' is-empty'">
+              <span class="job-skill-tag"
+                    th:each="skill : ${item.skills}"
+                    th:text="${skill}">Java</span>
+              <span class="job-skill-more"
+                    th:if="${item.remainingSkillCount > 0}"
+                    th:text="${'+' + item.remainingSkillCount}">+2</span>
+              <span class="job-skill-empty"
+                    th:if="${#lists.isEmpty(item.skills)}">
+                기술 스택 미등록
+              </span>
+            </div>
+            <div class="job-card-foot">
+              <span th:text="|조회 ${item.viewCount}|">조회 0</span>
+              <span class="job-deadline" th:text="${item.deadlineText}">D-8</span>
+            </div>
+          </a>
+        </aside>
+
+        <nav class="pagination job-list-pagination" aria-label="채용공고 목록 페이지">
+          <a th:href="${pageInfo.currentPage > 0}
+             ? @{/job/detail(
+                 jobPostingId=${job.jobPostingId},
+                 keyword=${keyword},
+                 parentCategoryId=${parentCategoryId},
+                 categoryId=${categoryIds},
+                 region=${regions},
+                 career=${careers},
+                 education=${educations},
+                 skillId=${skillIds},
+                 sort=${sort},
+                 page=${pageInfo.currentPage - 1}
+               )}
+             : '#'"
+             th:classappend="${pageInfo.currentPage == 0} ? ' is-disabled'"
+             th:attr="aria-disabled=${pageInfo.currentPage == 0}"
+             aria-label="이전 페이지">‹</a>
+
+          <a th:each="pageNumber : ${#numbers.sequence(pageInfo.startPage, pageInfo.endPage)}"
+             th:href="@{/job/detail(
+               jobPostingId=${job.jobPostingId},
+               keyword=${keyword},
+               parentCategoryId=${parentCategoryId},
+               categoryId=${categoryIds},
+               region=${regions},
+               career=${careers},
+               education=${educations},
+               skillId=${skillIds},
+               sort=${sort},
+               page=${pageNumber}
+             )}"
+             th:classappend="${pageNumber == pageInfo.currentPage} ? ' active'"
+             th:text="${pageNumber + 1}">1</a>
+
+          <a th:href="${pageInfo.currentPage + 1 lt pageInfo.totalPages}
+             ? @{/job/detail(
+                 jobPostingId=${job.jobPostingId},
+                 keyword=${keyword},
+                 parentCategoryId=${parentCategoryId},
+                 categoryId=${categoryIds},
+                 region=${regions},
+                 career=${careers},
+                 education=${educations},
+                 skillId=${skillIds},
+                 sort=${sort},
+                 page=${pageInfo.currentPage + 1}
+               )}
+             : '#'"
+             th:classappend="${pageInfo.currentPage + 1 ge pageInfo.totalPages}
+                 ? ' is-disabled'"
+             th:attr="aria-disabled=${pageInfo.currentPage + 1 ge pageInfo.totalPages}"
+             aria-label="다음 페이지">›</a>
+        </nav>
+      </div>
+
+      <article class="job-detail-panel">
+        <div class="detail-main">
+          <div class="job-card-head">
+            <img class="company-logo"
+                 th:if="${!#strings.isEmpty(job.companyLogoUrl)}"
+                 th:src="${job.companyLogoUrl}"
+                 th:alt="|${job.companyName} 로고|">
+            <span class="company-mark"
+                  th:unless="${!#strings.isEmpty(job.companyLogoUrl)}"
+                  th:text="${#strings.substring(job.companyName, 0, 1)}">기</span>
+            <div>
+              <strong th:text="${job.companyName}">기업명</strong>
+              <p class="job-meta">
+                <span th:text="${job.workRegion}">근무 지역</span>
+                ·
+                <span th:text="${job.companyIndustry}">업종</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="detail-top-actions">
+            <div class="job-badges">
+              <span class="job-badge hot" th:if="${job.hotPosting}">HOT</span>
+              <span class="job-badge new" th:if="${job.newPosting}">NEW</span>
+            </div>
+            <button class="bookmark"
+                    type="button"
+                    th:data-job-posting-id="${job.jobPostingId}"
+                    th:data-job-title="${job.title}"
+                    th:data-logged-in="${personalMember}"
+                    th:classappend="${job.bookmarked} ? ' active'"
+                    th:text="${job.bookmarked} ? '♥' : '♡'"
+                    th:attr="aria-pressed=${job.bookmarked}"
+                    th:aria-label="${job.bookmarked}
+                        ? '관심 공고 해제'
+                        : '관심 공고 등록'">♡</button>
+          </div>
+
+          <div class="detail-title-row">
+            <div>
+              <p class="detail-category" th:text="${job.category}">직무</p>
+              <h1 th:text="${job.title}">채용공고 제목</h1>
+            </div>
+            <button class="report-button report-btn"
+                    type="button"
+                    th:data-logged-in="${personalMember}"
+                    data-report-type="jobPosting"
+                    th:data-target-id="${job.jobPostingId}"
+                    th:data-target-name="|채용공고 · ${job.title}|">신고</button>
+          </div>
+
+          <div class="detail-summary">
+            <div><small>경력</small><strong th:text="${job.career}">경력</strong></div>
+            <div><small>학력</small><strong th:text="${job.educationLevel}">학력</strong></div>
+            <div><small>고용형태</small><strong th:text="${job.employmentType}">고용형태</strong></div>
+            <div><small>마감일</small><strong class="job-deadline" th:text="${job.deadline}">마감일</strong></div>
+          </div>
+        </div>
+
+        <div class="detail-tabs">
+          <button class="active" type="button" data-detail-tab="job">채용 상세</button>
+          <button type="button" data-detail-tab="company">기업정보</button>
+        </div>
+
+        <div class="detail-copy" data-job-copy>
+          <section><h2>공고 소개</h2><p th:text="${job.introduction}"></p></section>
+          <section><h2>주요 업무</h2><p th:text="${job.mainTasks}"></p></section>
+          <section><h2>자격 요건</h2><p th:text="${job.qualifications}"></p></section>
+          <section><h2>우대 사항</h2><p th:text="${job.preferredConditions}"></p></section>
+          <section class="detail-skills" th:if="${!#lists.isEmpty(job.skills)}">
+            <h2>기술 스택</h2>
+            <div class="detail-skill-list">
+              <span th:each="skill : ${job.skills}" th:text="${skill}">기술</span>
+            </div>
+          </section>
+          <section th:if="${!#lists.isEmpty(job.benefits)}">
+            <h2>복리후생</h2>
+            <ul><li th:each="benefit : ${job.benefits}" th:text="${benefit}"></li></ul>
+          </section>
+          <section>
+            <h2>근무 정보</h2>
+            <p>근무지 · <span th:text="${job.workAddress}"></span></p>
+            <p>급여 · <span th:text="${job.salary}"></span></p>
+            <p>모집 인원 · <span th:text="|${job.headcount}명|"></span></p>
+          </section>
+        </div>
+
+        <div class="detail-copy" data-company-copy hidden>
+          <section><h2 th:text="${job.companyName}">기업명</h2><p th:text="${job.companyDescription}"></p></section>
+          <section><h2>기업 소개</h2><p th:text="${job.companyIntroduction}"></p></section>
+          <section><h2>기업 정보</h2><p th:text="|업종 ${job.companyIndustry} · ${job.companyAddress}|"></p></section>
+        </div>
+
+        <div class="detail-actions">
+          <button class="job-primary-button"
+                  type="button"
+                  data-resume-modal-open
+                  th:data-personal-member="${personalMember}"
+                  th:data-already-applied="${alreadyApplied}"
+                  th:data-job-posting-id="${job.jobPostingId}">지원하기</button>
+        </div>
+      </article>
+    </div>
+  </section>
 </main>
+
 <footer th:replace="~{common/footer :: footer}"></footer>
 <div th:replace="~{modal/job/resume-select-modal :: resumeSelectModal}"></div>
 <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
-<script th:src="@{/js/job/common.js}" src="/js/job/common.js"></script>
-<script th:src="@{/js/job/detail.js}" src="/js/job/detail.js"></script>
-<script th:src="@{/js/modal.js}" src="/js/modal.js"></script>
-<script th:src="@{/js/modal/job/resume-select-modal.js}" src="/js/modal/job/resume-select-modal.js"></script>
-</body></html>
+<div th:replace="~{modal/common/report-modal :: reportModal}"></div>
+<script th:src="@{/js/job/detail.js}"></script>
+<script th:src="@{/js/job/common.js}"></script>
+<script th:src="@{/js/job/filter.js}"></script>
+<script th:src="@{/js/job/bookmark.js}"></script>
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/modal/common/report-modal.js}"></script>
+<script th:src="@{/js/modal/job/resume-select-modal.js}"></script>
+</body>
+</html>

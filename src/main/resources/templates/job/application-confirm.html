@@ -1,23 +1,129 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>입사지원 확인 | 첫출근</title><link rel="stylesheet" th:href="@{/css/common.css}" href="/css/common.css"><link rel="stylesheet" th:href="@{/css/job/common.css}" href="/css/job/common.css"><link rel="stylesheet" th:href="@{/css/job/application.css}" href="/css/job/application.css"><link rel="stylesheet" th:href="@{/css/modal/common.css}" href="/css/modal/common.css"></head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>입사지원 확인 | 첫출근</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/job/common.css}">
+  <link rel="stylesheet" th:href="@{/css/job/application.css}">
+  <link rel="stylesheet" th:href="@{/css/modal/common.css}">
+</head>
 <body class="job-header-active">
 <header th:replace="~{common/header :: header}"></header>
+
 <main class="job-page application-page">
-  <div class="application-heading"><h1>입사지원 확인</h1><p>제출할 내용을 마지막으로 확인해주세요.</p></div>
+  <div class="application-heading">
+    <h1>입사지원 확인</h1>
+    <p>제출할 내용을 마지막으로 확인해주세요.</p>
+  </div>
+
   <div class="application-layout">
-    <form class="application-card" th:action="@{/job/application/complete}" method="get" data-application-form>
-      <section class="application-section"><h2>지원 공고</h2><div class="posting-summary"><span class="company-mark">네</span><div><span class="company-name">네이버클라우드</span><strong>Java/Spring 백엔드 개발자</strong></div><span class="job-deadline">D-8</span></div></section>
-      <section class="application-section"><h2>제출 이력서</h2><div class="document-row"><div><strong>백엔드 개발자 이력서</strong><small>2026.07.18 수정</small></div><a class="document-link" th:href="@{/my/resume/detail}">보기</a></div></section>
-      <section class="application-section"><h2>제출 자기소개서</h2><div class="document-row"><div><strong>성장 경험과 지원 동기</strong><small>2026.07.19 수정</small></div><a class="document-link" th:href="@{/my/cover-letter/detail}">보기</a></div></section>
-      <div class="agree-box"><label><input type="checkbox" required>지원서 제출 및 개인정보 제공에 동의합니다.</label><p>제출 후에는 지원 서류를 수정할 수 없습니다.</p></div>
-      <div class="application-actions"><a class="job-secondary-button" th:href="@{/job/detail(apply=true)}">이전</a><button class="job-primary-button" type="submit">최종 지원하기</button></div>
+    <form class="application-card"
+          th:action="@{/job/application}"
+          method="post"
+          data-application-form>
+      <input type="hidden"
+             name="jobPostingId"
+             th:value="${applicationView.jobPostingId}">
+      <input type="hidden"
+             name="resumeId"
+             th:value="${applicationView.resumeId}">
+      <input type="hidden"
+             name="coverLetterId"
+             th:if="${applicationView.coverLetterId != null}"
+             th:value="${applicationView.coverLetterId}">
+
+      <section class="application-section">
+        <h2>지원 공고</h2>
+        <div class="posting-summary">
+          <img class="company-logo"
+               th:if="${!#strings.isEmpty(applicationView.companyLogoUrl)}"
+               th:src="${applicationView.companyLogoUrl}"
+               th:alt="|${applicationView.companyName} 로고|">
+          <span class="company-mark"
+                th:unless="${!#strings.isEmpty(applicationView.companyLogoUrl)}"
+                th:text="${#strings.substring(applicationView.companyName, 0, 1)}">기</span>
+          <div>
+            <span class="company-name"
+                  th:text="${applicationView.companyName}">기업명</span>
+            <strong th:text="${applicationView.jobTitle}">채용공고 제목</strong>
+          </div>
+          <span class="job-deadline"
+                th:text="${applicationView.deadline}">마감일</span>
+        </div>
+      </section>
+
+      <section class="application-section">
+        <h2>제출 이력서 · 필수</h2>
+        <div class="document-row">
+          <div>
+            <strong th:text="${applicationView.resumeTitle}">이력서 제목</strong>
+            <small th:text="|${#temporals.format(applicationView.resumeUpdatedAt, 'yyyy.MM.dd')} 수정|">
+              수정일
+            </small>
+          </div>
+          <a class="document-link"
+             th:href="@{/my/resume/detail(id=${applicationView.resumeId})}">보기</a>
+        </div>
+      </section>
+
+      <section class="application-section">
+        <h2>제출 자기소개서 · 선택</h2>
+        <div class="document-row"
+             th:if="${applicationView.coverLetterId != null}">
+          <div>
+            <strong th:text="${applicationView.coverLetterTitle}">자기소개서 제목</strong>
+            <small th:text="|${#temporals.format(applicationView.coverLetterUpdatedAt, 'yyyy.MM.dd')} 수정|">
+              수정일
+            </small>
+          </div>
+          <a class="document-link"
+             th:href="@{/my/cover-letter/detail(id=${applicationView.coverLetterId})}">보기</a>
+        </div>
+        <div class="document-row"
+             th:unless="${applicationView.coverLetterId != null}">
+          <div>
+            <strong>제출하지 않음</strong>
+            <small>이력서만 제출합니다.</small>
+          </div>
+        </div>
+      </section>
+
+      <div class="agree-box">
+        <label>
+          <input type="checkbox" required>
+          지원서 제출 및 개인정보 제공에 동의합니다.
+        </label>
+        <p>제출 후에는 지원 서류를 수정할 수 없습니다.</p>
+      </div>
+
+      <div class="application-actions">
+        <a class="job-secondary-button"
+           th:href="@{/job/detail(jobPostingId=${applicationView.jobPostingId},apply=true)}">이전</a>
+        <button class="job-primary-button" type="submit">
+          최종 지원하기
+        </button>
+      </div>
     </form>
-    <aside class="application-side"><h3>지원 전 확인</h3><ul><li>✓ 공고 정보</li><li>✓ 이력서 선택</li><li>✓ 자기소개서 선택</li><li>✓ 개인정보 제공 동의</li></ul></aside>
+
+    <aside class="application-side">
+      <h3>지원 전 확인</h3>
+      <ul>
+        <li>✓ 공고 정보</li>
+        <li>✓ 이력서 선택</li>
+        <li th:if="${applicationView.coverLetterId != null}">
+          ✓ 자기소개서 선택
+        </li>
+        <li>✓ 개인정보 제공 동의</li>
+      </ul>
+    </aside>
   </div>
 </main>
+
 <footer th:replace="~{common/footer :: footer}"></footer>
 <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
-<script th:src="@{/js/modal.js}" src="/js/modal.js"></script>
-<script th:src="@{/js/job/application-confirm.js}" src="/js/job/application-confirm.js"></script>
-</body></html>
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/job/application-confirm.js}"></script>
+</body>
+</html>

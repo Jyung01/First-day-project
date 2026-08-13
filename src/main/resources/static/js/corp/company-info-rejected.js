@@ -29,6 +29,21 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    const rejectedBenefitBox = form.querySelector(
+        ".company-benefit-selection-box.is-rejected"
+    );
+    const benefitChipList = form.querySelector("[data-benefit-chip-list]");
+
+    /* 복지를 추가하거나 삭제하면 관리자 반려 강조를 해제한다. */
+    if (rejectedBenefitBox && benefitChipList) {
+        const benefitChangeObserver = new MutationObserver(function () {
+            rejectedBenefitBox.classList.remove("is-rejected");
+            benefitChangeObserver.disconnect();
+        });
+
+        benefitChangeObserver.observe(benefitChipList, { childList: true });
+    }
+
     const loginRejectionModal = document.querySelector(
         "[data-login-rejection-modal]"
     );
