@@ -235,6 +235,20 @@
 
                     </div>
 
+                    <div class="job-skill-tags"
+                         th:classappend="${#lists.isEmpty(job.skills)} ? ' is-empty'">
+                        <span class="job-skill-tag"
+                              th:each="skill : ${job.skills}"
+                              th:text="${skill}">Java</span>
+                        <span class="job-skill-more"
+                              th:if="${job.remainingSkillCount > 0}"
+                              th:text="${'+' + job.remainingSkillCount}">+2</span>
+                        <span class="job-skill-empty"
+                              th:if="${#lists.isEmpty(job.skills)}">
+                            기술 스택 미등록
+                        </span>
+                    </div>
+
                     <div class="job-card-foot">
 
                         <span th:text="|조회 ${job.viewCount}|">
@@ -259,10 +273,29 @@
 
             <!-- 조회 결과 없음 -->
             <div class="job-empty"
-                 th:if="${#lists.isEmpty(jobs)}">
-
-                현재 모집 중인 채용공고가 없습니다.
-
+                 th:if="${#lists.isEmpty(jobs)}"
+                 th:with="hasCondition=${
+                    (keyword != null and !#strings.isEmpty(keyword))
+                    or !#lists.isEmpty(categoryIds)
+                    or !#lists.isEmpty(regions)
+                    or !#lists.isEmpty(careers)
+                    or !#lists.isEmpty(educations)
+                    or !#lists.isEmpty(skillIds)
+                 }">
+                <span class="job-empty__icon" aria-hidden="true"></span>
+                <strong th:text="${hasCondition
+                    ? '조건에 맞는 채용공고가 없어요'
+                    : '현재 모집 중인 채용공고가 없어요'}">
+                    조건에 맞는 채용공고가 없어요
+                </strong>
+                <p th:text="${hasCondition
+                    ? '검색어나 선택한 필터의 범위를 넓혀서 다시 찾아보세요.'
+                    : '새로운 채용공고가 등록되면 이곳에서 확인할 수 있습니다.'}">
+                    검색 조건을 변경해 다시 찾아보세요.
+                </p>
+                <a th:if="${hasCondition}" th:href="@{/job}">
+                    검색 조건 초기화
+                </a>
             </div>
 
             <!-- 페이지네이션: 5페이지 단위 -->

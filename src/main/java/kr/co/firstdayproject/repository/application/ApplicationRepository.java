@@ -40,6 +40,11 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
         String excludedStatus
     );
 
+    long countByJobPostingIdAndCurrentStatusNotIn(
+            Long jobPostingId,
+            Collection<String> excludedStatuses
+    );
+
     long countByApplicantUserId(Long userId);
 
     long countByApplicantUserIdAndCurrentStatusIn(

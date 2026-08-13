@@ -1,0 +1,66 @@
+.version-description {
+    margin-top: 8px;
+    color: #94a3b8;
+    font-size: 12.5px;
+}
+
+.version-alert {
+    margin-bottom: 18px;
+    padding: 13px 16px;
+    border: 1px solid;
+    border-radius: 9px;
+    font-size: 13px;
+}
+
+.version-alert--success {
+    border-color: rgba(52, 211, 153, 0.35);
+    background: rgba(52, 211, 153, 0.1);
+    color: #6ee7b7;
+}
+
+.version-alert--error {
+    border-color: rgba(251, 113, 133, 0.35);
+    background: rgba(251, 113, 133, 0.1);
+    color: #fda4af;
+}
+
+.version-table th:first-child,
+.version-table td:first-child {
+    width: 72px;
+    text-align: center;
+}
+
+.version-table th:nth-last-child(-n + 2),
+.version-table td:nth-last-child(-n + 2) {
+    width: 92px;
+    text-align: center;
+}
+
+.version-table strong {
+    color: #e2e8f0;
+}
+
+.version-action {
+    color: #60a5fa;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.version-action:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.version-empty {
+    height: 120px;
+    color: #64748b;
+    text-align: center !important;
+}
+
+@media (max-width: 760px) {
+    .admin-section .panel-head {
+        align-items: flex-start;
+        gap: 16px;
+    }
+}

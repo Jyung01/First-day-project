@@ -1,5 +1,7 @@
 package kr.co.firstdayproject.dto.job;
 
+import java.util.List;
+
 public record JobListItem(
         Long jobPostingId,
         String logoUrl,
@@ -9,6 +11,10 @@ public record JobListItem(
         String careerType,
         String employmentType,
         String categoryName,
+
+        List<String> skills,
+
+        int remainingSkillCount,
 
         Long viewCount,
 

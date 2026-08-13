@@ -90,6 +90,19 @@
               <span class="job-tag" th:text="${item.employmentType}">고용형태</span>
               <span class="job-tag" th:text="${item.categoryName}">직무</span>
             </div>
+            <div class="job-skill-tags"
+                 th:classappend="${#lists.isEmpty(item.skills)} ? ' is-empty'">
+              <span class="job-skill-tag"
+                    th:each="skill : ${item.skills}"
+                    th:text="${skill}">Java</span>
+              <span class="job-skill-more"
+                    th:if="${item.remainingSkillCount > 0}"
+                    th:text="${'+' + item.remainingSkillCount}">+2</span>
+              <span class="job-skill-empty"
+                    th:if="${#lists.isEmpty(item.skills)}">
+                기술 스택 미등록
+              </span>
+            </div>
             <div class="job-card-foot">
               <span th:text="|조회 ${item.viewCount}|">조회 0</span>
               <span class="job-deadline" th:text="${item.deadlineText}">D-8</span>

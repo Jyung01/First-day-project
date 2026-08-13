@@ -125,12 +125,6 @@ public class AdminConfigController {
         return "redirect:/admin/config/site-setting";
     }
 
-    @GetMapping("/version")
-    public String version(Model model) {
-        model.addAttribute("activeMenu", "version");
-        return "admin/config/version";
-    }
-
     @GetMapping("/policy")
     public String policy(Model model) {
         model.addAttribute("activeMenu", "policy");

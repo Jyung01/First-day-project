@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 
 import kr.co.firstdayproject.dto.job.*;
 import kr.co.firstdayproject.entity.job.JobCategory;
@@ -17,6 +18,7 @@ import kr.co.firstdayproject.entity.job.JobPosting;
 import kr.co.firstdayproject.entity.job.JobPostingSkill;
 import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
+import kr.co.firstdayproject.repository.application.ApplicationRepository;
 import kr.co.firstdayproject.repository.job.JobCategoryRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
 import kr.co.firstdayproject.repository.job.SkillRepository;
@@ -42,6 +44,7 @@ public class JobService {
     private static final int JOB_DETAIL_LIST_PAGE_SIZE = 3;
 
     private final JobPostingRepository jobPostingRepository;
+    private final ApplicationRepository applicationRepository;
     private final JobCategoryRepository jobCategoryRepository;
     private final SkillRepository skillRepository;
     private final SavedJobService savedJobService;
@@ -70,6 +73,11 @@ public class JobService {
         posting.setViewCount(
                 (posting.getViewCount() == null ? 0L : posting.getViewCount()) + 1
         );
+        long applicantCount = applicationRepository
+                .countByJobPostingIdAndCurrentStatusNotIn(
+                        jobPostingId,
+                        List.of("지원취소", "채용종료")
+                );
 
         return new JobDetailView(
                 posting.getJobPostingId(),
@@ -102,7 +110,7 @@ public class JobService {
                         && !posting.getPublishedAt().isBefore(
                                 LocalDateTime.now().minusDays(7)
                         ),
-                posting.getViewCount() >= 100,
+                posting.getViewCount() >= 100 || applicantCount >= 10,
                 savedJobService.getSavedJobPostingIds(
                         List.of(jobPostingId),
                         authentication
@@ -310,6 +318,9 @@ public class JobService {
                         authentication
                 );
 
+        Map<Long, List<String>> skillNamesByPostingId =
+                getListSkillNames(queryPage.getContent());
+
         return queryPage.map(job -> {
             long viewCount =
                     job.viewCount() == null ? 0L : job.viewCount();
@@ -332,6 +343,13 @@ public class JobService {
             boolean bookmarked = savedJobPostingIds.contains(
                     job.jobPostingId()
             );
+            List<String> allSkills = skillNamesByPostingId.getOrDefault(
+                    job.jobPostingId(),
+                    List.of()
+            );
+            List<String> visibleSkills = allSkills.stream()
+                    .limit(3)
+                    .toList();
 
             return new JobListItem(
                     job.jobPostingId(),
@@ -342,6 +360,8 @@ public class JobService {
                     job.careerType(),
                     job.employmentType(),
                     job.categoryName(),
+                    visibleSkills,
+                    Math.max(allSkills.size() - visibleSkills.size(), 0),
                     viewCount,
                     applicantCount,               // applicantCount
                     newPosting,
@@ -353,6 +373,27 @@ public class JobService {
                     bookmarked
             );
         });
+    }
+
+    private Map<Long, List<String>> getListSkillNames(
+            List<JobListQueryItem> jobs
+    ) {
+        if (jobs.isEmpty()) {
+            return Map.of();
+        }
+
+        Map<Long, List<String>> result = new LinkedHashMap<>();
+        jobPostingSkillRepository.findListSkillsByJobPostingIds(
+                        jobs.stream()
+                                .map(JobListQueryItem::jobPostingId)
+                                .toList()
+                )
+                .forEach(item -> result.computeIfAbsent(
+                        item.jobPostingId(),
+                        ignored -> new ArrayList<>()
+                ).add(item.skillName()));
+
+        return Collections.unmodifiableMap(result);
     }
 
     private String normalizeKeyword(String keyword) {

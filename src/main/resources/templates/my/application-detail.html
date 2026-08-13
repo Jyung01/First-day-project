@@ -55,13 +55,18 @@
       <section class="application-progress-card">
         <h2>전형 진행 상태</h2>
         <ol class="application-progress"
-            th:style="'--history-count:' + ${applicationDetail.statusHistory.size()}">
-          <li class="is-complete"
-              th:each="history, stat : ${applicationDetail.statusHistory}"
-              th:classappend="${stat.last} ? ' is-current' : ''">
+            th:style="'--history-count:' + ${applicationDetail.progressStages().size()}">
+          <li th:each="stage, stat : ${applicationDetail.progressStages()}"
+              th:classappend="${' is-' + stage.state}">
             <span th:text="${stat.count}">1</span>
-            <strong th:text="${history.statusLabel}">지원 완료</strong>
-            <small th:text="${#temporals.format(history.changedAt, 'yyyy.MM.dd HH:mm')}">2026.07.18</small>
+            <strong th:text="${stage.label}">지원 완료</strong>
+            <small th:text="${stage.isPlanned()
+                ? '예정'
+                : (stage.changedAt == null
+                    ? '-'
+                    : #temporals.format(stage.changedAt, 'yyyy.MM.dd HH:mm'))}">
+              예정
+            </small>
           </li>
         </ol>
       </section>

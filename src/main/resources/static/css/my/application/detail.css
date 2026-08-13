@@ -171,15 +171,31 @@
 .application-progress li.is-current > span {
     border-color: var(--application-primary);
     background: var(--application-primary);
+    color: #fff;
 }
 
-.application-progress li.is-rejected {
+.application-progress li.is-current strong {
+    color: var(--application-primary);
+}
+
+.application-progress li.is-planned {
+    color: #a5afbd;
+}
+
+.application-progress li.is-planned > span {
+    border-style: dashed;
+    background: #fff;
+    color: #a5afbd;
+}
+
+.application-progress li.is-terminated {
     color: #d82d2d;
 }
 
-.application-progress li.is-rejected > span {
+.application-progress li.is-terminated > span {
     border-color: #d82d2d;
     background: #d82d2d;
+    color: #fff;
 }
 
 .application-detail-grid {
