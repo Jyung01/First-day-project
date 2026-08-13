@@ -6,6 +6,32 @@
     <title>약관·정책 관리 | 첫출근 관리자</title>
     <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
     <link rel="stylesheet" th:href="@{/css/admin/section-common.css}" />
+    <!--
+      아래 모달 스타일은 fallback 입니다.
+      common.css / section-common.css 에 이미 .modal-overlay 등이 정의되어 있다면 이 <style> 블록은 삭제해도 됩니다.
+    -->
+    <style>
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-box { width: 460px; max-width: 92vw; max-height: 88vh; overflow-y: auto; background: #1b2333; color: #e5e9f0; border-radius: 12px; padding: 24px 24px 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .modal-head h3 { margin: 0; font-size: 18px; }
+        .modal-close { background: none; border: none; color: #aab2c5; font-size: 20px; cursor: pointer; line-height: 1; }
+        .modal-error { color: #ff7a7a; font-size: 13px; margin: -4px 0 12px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; color: #aab2c5; margin-bottom: 6px; }
+        .form-group input[type="text"], .form-group textarea {
+            width: 100%; box-sizing: border-box; background: #10182a; border: 1px solid #2c3652;
+            border-radius: 8px; color: #e5e9f0; padding: 10px 12px; font-size: 14px; resize: vertical;
+        }
+        .radio-row { display: flex; gap: 20px; font-size: 14px; }
+        .radio-row label { display: flex; align-items: center; gap: 6px; color: #e5e9f0; }
+        .modal-note { font-size: 12px; color: #8a93a8; margin: 0 0 16px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+        .btn-secondary, .btn-primary { border: none; border-radius: 8px; padding: 9px 16px; font-size: 14px; cursor: pointer; }
+        .btn-secondary { background: #2c3652; color: #e5e9f0; }
+        .btn-primary { background: #3b6cf6; color: #fff; }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    </style>
 </head>
 <body>
 <div class="wrapper">
@@ -24,13 +50,20 @@
                     <table class="data-table">
                         <thead><tr><th>약관명</th><th>적용 대상</th><th>구분</th><th>관리</th></tr></thead>
                         <tbody>
-                        <tr><td>개인회원 서비스 이용약관</td><td>개인회원</td><td><span class="tag red">필수</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
-                        <tr><td>개인정보 수집·이용 동의</td><td>개인·기업 공용</td><td><span class="tag red">필수</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
-                        <tr><td>마케팅 정보 수신 동의</td><td>개인·기업 공용</td><td><span class="tag gray">선택</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
-                        <tr><td>채용정보 이메일 수신 동의</td><td>개인회원</td><td><span class="tag gray">선택</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
-                        <tr><td>기업회원 서비스 이용약관</td><td>기업회원</td><td><span class="tag red">필수</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
-                        <tr><td>기업정보 공개 동의</td><td>기업회원</td><td><span class="tag red">필수</span></td><td class="row-actions"><a href="#">내용·구분 수정</a></td></tr>
-                        <tr><td>개인정보처리방침</td><td>전체 공개</td><td><span class="tag blue">공개 정책</span></td><td class="row-actions"><a href="#">내용 수정</a></td></tr>
+                        <tr th:each="policy : ${policies}" th:attr="data-policy-code=${policy.policyCode}">
+                            <td th:text="${policy.title}">약관명</td>
+                            <td th:text="${policy.audience}">적용 대상</td>
+                            <td>
+                                <span class="tag red" th:if="${policy.consentType == '필수'}">필수</span>
+                                <span class="tag gray" th:if="${policy.consentType == '선택'}">선택</span>
+                                <span class="tag blue" th:if="${policy.consentType == '공개'}">공개 정책</span>
+                            </td>
+                            <td class="row-actions">
+                                <a href="#" class="js-edit-policy" th:attr="data-policy-code=${policy.policyCode}">
+                                    <span th:text="${policy.consentType == '공개'} ? '내용 수정' : '내용·구분 수정'">내용·구분 수정</span>
+                                </a>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -40,5 +73,170 @@
     </div>
     <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
 </div>
+
+<!-- 약관 내용 수정 모달 -->
+<div id="policyEditModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3>약관 내용 수정</h3>
+            <button type="button" class="modal-close" id="policyModalClose">&times;</button>
+        </div>
+
+        <p class="modal-error" id="policyModalError" style="display:none;"></p>
+
+        <div class="form-group">
+            <label>약관명</label>
+            <input type="text" id="policyTitleInput" maxlength="200" />
+        </div>
+
+        <div class="form-group" id="policyConsentTypeGroup">
+            <label>등의 구분</label>
+            <div class="radio-row">
+                <label><input type="radio" name="consentType" value="필수" id="consentRequired" /> 필수</label>
+                <label><input type="radio" name="consentType" value="선택" id="consentOptional" /> 선택</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>약관 본문</label>
+            <textarea id="policyContentInput" rows="10"></textarea>
+        </div>
+
+        <p class="modal-note">저장하면 회원가입 동의 화면과 푸터 정책 페이지의 현재 내용에 바로 반영됩니다.</p>
+
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="policyModalCancel">취소</button>
+            <button type="button" class="btn-primary" id="policyModalSave">약관 저장</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    (function () {
+        const baseUrl = /*[[@{/admin/config/policy}]]*/ '/admin/config/policy';
+
+        const modal = document.getElementById('policyEditModal');
+        const titleInput = document.getElementById('policyTitleInput');
+        const contentInput = document.getElementById('policyContentInput');
+        const errorEl = document.getElementById('policyModalError');
+        const consentGroup = document.getElementById('policyConsentTypeGroup');
+        const consentRequired = document.getElementById('consentRequired');
+        const consentOptional = document.getElementById('consentOptional');
+        const saveBtn = document.getElementById('policyModalSave');
+
+        let currentPolicyCode = null;
+        let currentIsPublic = false;
+
+        function openModal() {
+            errorEl.style.display = 'none';
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            currentPolicyCode = null;
+        }
+
+        function showError(message) {
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        async function loadPolicy(policyCode) {
+            const res = await fetch(baseUrl + '/' + encodeURIComponent(policyCode), {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) {
+                let detail = '';
+                try {
+                    const body = await res.json();
+                    detail = body && body.message ? body.message : '';
+                } catch (e) {
+                    detail = await res.text().catch(function () { return ''; });
+                }
+                throw new Error('약관 정보를 불러오지 못했습니다. (status=' + res.status + (detail ? ', ' + detail : '') + ')');
+            }
+            return res.json();
+        }
+
+        document.querySelectorAll('.js-edit-policy').forEach(function (link) {
+            link.addEventListener('click', async function (e) {
+                e.preventDefault();
+                const policyCode = link.getAttribute('data-policy-code');
+                try {
+                    const policy = await loadPolicy(policyCode);
+                    currentPolicyCode = policy.policyCode;
+                    currentIsPublic = policy.consentType === '공개';
+
+                    titleInput.value = policy.title || '';
+                    contentInput.value = policy.content || '';
+
+                    consentGroup.style.display = currentIsPublic ? 'none' : 'block';
+                    if (!currentIsPublic) {
+                        consentRequired.checked = policy.consentType === '필수';
+                        consentOptional.checked = policy.consentType === '선택';
+                    }
+
+                    openModal();
+                } catch (err) {
+                    alert(err.message);
+                }
+            });
+        });
+
+        document.getElementById('policyModalClose').addEventListener('click', closeModal);
+        document.getElementById('policyModalCancel').addEventListener('click', closeModal);
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) closeModal();
+        });
+
+        saveBtn.addEventListener('click', async function () {
+            if (!currentPolicyCode) return;
+
+            const title = titleInput.value.trim();
+            const content = contentInput.value.trim();
+
+            if (!title) {
+                showError('약관명을 입력해주세요.');
+                return;
+            }
+            if (!content) {
+                showError('약관 본문을 입력해주세요.');
+                return;
+            }
+
+            const payload = { title: title, content: content };
+            if (!currentIsPublic) {
+                payload.consentType = consentRequired.checked ? '필수' : (consentOptional.checked ? '선택' : null);
+                if (!payload.consentType) {
+                    showError('등의 구분을 선택해주세요.');
+                    return;
+                }
+            }
+
+            saveBtn.disabled = true;
+            try {
+                const res = await fetch(baseUrl + '/' + encodeURIComponent(currentPolicyCode), {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(function () { return {}; });
+                    showError(err.message || '저장 중 오류가 발생했습니다.');
+                    return;
+                }
+
+                // 저장 성공: 목록에 즉시 반영되도록 새로고침
+                window.location.reload();
+            } catch (err) {
+                showError('저장 중 오류가 발생했습니다.');
+            } finally {
+                saveBtn.disabled = false;
+            }
+        });
+    })();
+</script>
 </body>
 </html>
