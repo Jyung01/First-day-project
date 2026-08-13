@@ -16,6 +16,9 @@ import kr.co.firstdayproject.entity.job.JobCategory;
 import kr.co.firstdayproject.entity.job.Skill;
 import kr.co.firstdayproject.entity.job.JobPosting;
 import kr.co.firstdayproject.entity.job.JobPostingSkill;
+import kr.co.firstdayproject.entity.resume.Resume;
+import kr.co.firstdayproject.entity.resume.ResumeCareer;
+import kr.co.firstdayproject.entity.resume.ResumeSkill;
 import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.application.ApplicationRepository;
@@ -23,6 +26,13 @@ import kr.co.firstdayproject.repository.job.JobCategoryRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
 import kr.co.firstdayproject.repository.job.SkillRepository;
 import kr.co.firstdayproject.repository.job.JobPostingSkillRepository;
+import kr.co.firstdayproject.repository.job.UserDesiredJobRepository;
+import kr.co.firstdayproject.repository.resume.ResumeRepository;
+import kr.co.firstdayproject.repository.resume.ResumeCareerRepository;
+import kr.co.firstdayproject.repository.resume.ResumeSkillRepository;
+import kr.co.firstdayproject.repository.coverletter.CoverLetterRepository;
+import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
+import kr.co.firstdayproject.service.ai.PersonalizedJobRecommendationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +61,13 @@ public class JobService {
     private final SavedJobService savedJobService;
     private final CompanyRepository companyRepository;
     private final JobPostingSkillRepository jobPostingSkillRepository;
+    private final UserDesiredJobRepository userDesiredJobRepository;
+    private final ResumeRepository resumeRepository;
+    private final ResumeCareerRepository resumeCareerRepository;
+    private final ResumeSkillRepository resumeSkillRepository;
+    private final CoverLetterRepository coverLetterRepository;
+    private final CoverLetterItemRepository coverLetterItemRepository;
+    private final java.util.Optional<PersonalizedJobRecommendationService> personalizedJobRecommendationService;
 
     @Transactional
     public JobDetailView getRecruitingJobPosting(
@@ -131,6 +148,179 @@ public class JobService {
         return jobPostingRepository.findPopularRecruitingJobPostings(
                 PageRequest.of(0, MAIN_JOB_COUNT)
         );
+    }
+
+    public List<MainJobListItem> getPersonalizedJobPostingList(Long userId) {
+        return getPersonalizedJobPostingList(userId, getPersonalizedJobMatchScores(userId));
+    }
+
+    public List<MainJobListItem> getPersonalizedJobPostingList(
+            Long userId,
+            Map<Long, Integer> semanticScores
+    ) {
+        if (userId == null) {
+            return List.of();
+        }
+
+        List<Long> desiredCategoryIds = userDesiredJobRepository
+                .findJobCategoriesByUserId(userId)
+                .stream()
+                .map(JobCategory::getJobCategoryId)
+                .distinct()
+                .toList();
+
+        Resume resume = resumeRepository
+                .findFirstByUserIdAndDeletedAtIsNullOrderByUpdatedAtDesc(userId)
+                .orElse(null);
+        Set<Long> resumeSkillIds = resume == null ? Set.of() : resumeSkillRepository
+                .findByIdResumeIdOrderByDisplayOrderAsc(resume.getResumeId())
+                .stream()
+                .map(ResumeSkill::getId)
+                .map(id -> id.getSkillId())
+                .collect(java.util.stream.Collectors.toSet());
+        int careerMonths = resume == null ? 0 : resumeCareerRepository
+                .findByResumeIdOrderByDisplayOrderAsc(resume.getResumeId())
+                .stream()
+                .mapToInt(this::careerMonths)
+                .sum();
+        String profileText = buildProfileText(resume, userId);
+
+        List<JobPosting> candidates = jobPostingRepository
+                .findByStatusOrderByPublishedAtDescJobPostingIdDesc(
+                        "모집중", PageRequest.of(0, 100)
+                );
+        if (candidates.isEmpty()) {
+            return List.of();
+        }
+
+        Map<Long, Company> companies = companyRepository.findAllById(candidates.stream()
+                        .map(JobPosting::getCompanyId).distinct().toList())
+                .stream().collect(java.util.stream.Collectors.toMap(
+                        Company::getCompanyId, company -> company));
+        Map<Long, JobCategory> categories = jobCategoryRepository.findAllById(candidates.stream()
+                        .map(JobPosting::getJobCategoryId)
+                        .filter(java.util.Objects::nonNull).distinct().toList())
+                .stream().collect(java.util.stream.Collectors.toMap(
+                        JobCategory::getJobCategoryId, category -> category));
+        Map<Long, Set<Long>> postingSkills = new java.util.HashMap<>();
+        jobPostingSkillRepository.findAllByIdJobPostingIdIn(candidates.stream()
+                        .map(JobPosting::getJobPostingId).toList())
+                .forEach(skill -> postingSkills.computeIfAbsent(
+                        skill.getId().getJobPostingId(), ignored -> new java.util.HashSet<>())
+                        .add(skill.getId().getSkillId()));
+
+        return candidates.stream()
+                .sorted(java.util.Comparator.comparingInt((JobPosting posting) ->
+                        recommendationScore(posting, desiredCategoryIds, resumeSkillIds,
+                                careerMonths, profileText, categories, postingSkills)
+                                + semanticScores.getOrDefault(posting.getJobPostingId(), 0))
+                        .reversed()
+                        .thenComparing(JobPosting::getPublishedAt,
+                                java.util.Comparator.nullsLast(java.util.Comparator.reverseOrder()))
+                        .thenComparing(JobPosting::getJobPostingId,
+                                java.util.Comparator.reverseOrder()))
+                .limit(MAIN_JOB_COUNT)
+                .map(posting -> new MainJobListItem(
+                        posting.getJobPostingId(),
+                        companies.get(posting.getCompanyId()) == null ? null
+                                : companies.get(posting.getCompanyId()).getLogoUrl(),
+                        companies.get(posting.getCompanyId()) == null ? "기업"
+                                : companies.get(posting.getCompanyId()).getCompanyName(),
+                        posting.getTitle(), posting.getWorkRegion(), posting.getCareerType(),
+                        posting.getEmploymentType(),
+                        categories.get(posting.getJobCategoryId()) == null ? "직무 미정"
+                                : categories.get(posting.getJobCategoryId()).getCategoryName(),
+                        posting.getViewCount()))
+                .toList();
+    }
+
+    public Map<Long, Integer> getPersonalizedJobMatchScores(Long userId) {
+        try {
+            return personalizedJobRecommendationService
+                    .map(service -> service.findSemanticMatchScores(userId))
+                    .orElseGet(Map::of);
+        } catch (RuntimeException exception) {
+            // 추천 API나 벡터 저장소가 일시적으로 사용할 수 없어도 메인은 열려야 한다.
+            return Map.of();
+        }
+    }
+
+    public Map<Long, List<String>> getPersonalizedJobMatchReasons(
+            Long userId, List<MainJobListItem> jobs, Map<Long, Integer> semanticScores
+    ) {
+        Resume resume = resumeRepository
+                .findFirstByUserIdAndDeletedAtIsNullOrderByUpdatedAtDesc(userId)
+                .orElse(null);
+        Set<Long> resumeSkillIds = resume == null ? Set.of() : resumeSkillRepository
+                .findByIdResumeIdOrderByDisplayOrderAsc(resume.getResumeId()).stream()
+                .map(ResumeSkill::getId).map(id -> id.getSkillId())
+                .collect(java.util.stream.Collectors.toSet());
+        Map<Long, String> skillNames = skillRepository.findAllById(resumeSkillIds).stream()
+                .collect(java.util.stream.Collectors.toMap(Skill::getSkillId, Skill::getSkillName));
+        Map<Long, Set<Long>> postingSkills = new java.util.HashMap<>();
+        jobPostingSkillRepository.findAllByIdJobPostingIdIn(jobs.stream()
+                        .map(MainJobListItem::jobPostingId).toList())
+                .forEach(skill -> postingSkills.computeIfAbsent(skill.getId().getJobPostingId(),
+                        ignored -> new java.util.HashSet<>()).add(skill.getId().getSkillId()));
+
+        Map<Long, List<String>> result = new java.util.HashMap<>();
+        jobs.forEach(job -> {
+            List<String> reasons = new ArrayList<>();
+            List<String> matchedSkills = postingSkills.getOrDefault(job.jobPostingId(), Set.of()).stream()
+                    .filter(resumeSkillIds::contains).map(skillNames::get)
+                    .filter(java.util.Objects::nonNull).limit(2).toList();
+            if (!matchedSkills.isEmpty()) reasons.add("보유 스킬 일치: " + String.join(", ", matchedSkills));
+            if (semanticScores.containsKey(job.jobPostingId())) reasons.add("이력서·자기소개서 경험과 연관");
+            if (resume != null && job.careerType() != null
+                    && (job.careerType().equals(resume.getCareerType()) || "경력무관".equals(job.careerType()))) {
+                reasons.add("경력 조건과 일치");
+            }
+            result.put(job.jobPostingId(), reasons);
+        });
+        return result;
+    }
+
+    private int recommendationScore(
+            JobPosting posting, List<Long> desiredCategoryIds, Set<Long> resumeSkillIds,
+            int careerMonths, String profileText, Map<Long, JobCategory> categories,
+            Map<Long, Set<Long>> postingSkills
+    ) {
+        int score = desiredCategoryIds.contains(posting.getJobCategoryId()) ? 100 : 0;
+        score += (int) postingSkills.getOrDefault(posting.getJobPostingId(), Set.of()).stream()
+                .filter(resumeSkillIds::contains).count() * 30;
+        if ("경력무관".equals(posting.getCareerType())) score += 8;
+        if (careerMonths == 0 && "신입".equals(posting.getCareerType())) score += 20;
+        if (careerMonths > 0 && "경력".equals(posting.getCareerType())) score += 20;
+        int years = careerMonths / 12;
+        if (posting.getMinExperienceYears() != null && years >= posting.getMinExperienceYears()) score += 15;
+        if (posting.getMaxExperienceYears() != null && years <= posting.getMaxExperienceYears()) score += 5;
+
+        JobCategory category = categories.get(posting.getJobCategoryId());
+        if (containsProfileTerm(profileText, posting.getTitle())) score += 12;
+        if (category != null && containsProfileTerm(profileText, category.getCategoryName())) score += 12;
+        return score;
+    }
+
+    private String buildProfileText(Resume resume, Long userId) {
+        StringBuilder text = new StringBuilder(resume == null || resume.getSummary() == null
+                ? "" : resume.getSummary());
+        coverLetterRepository.findFirstByUserIdAndDeletedAtIsNullOrderByUpdatedAtDesc(userId)
+                .ifPresent(letter -> coverLetterItemRepository
+                        .findByCoverLetterIdOrderByDisplayOrderAsc(letter.getCoverLetterId())
+                        .forEach(item -> text.append(' ').append(item.getAnswer())));
+        return text.toString().toLowerCase();
+    }
+
+    private boolean containsProfileTerm(String profileText, String term) {
+        return term != null && term.length() >= 2
+                && profileText.contains(term.toLowerCase());
+    }
+
+    private int careerMonths(ResumeCareer career) {
+        if (career.getStartDate() == null) return 0;
+        LocalDate end = Boolean.TRUE.equals(career.getIsCurrent()) || career.getEndDate() == null
+                ? LocalDate.now() : career.getEndDate();
+        return Math.max(0, (int) ChronoUnit.MONTHS.between(career.getStartDate(), end));
     }
 
     /**

@@ -57,6 +57,11 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
             Pageable pageable
     );
 
+    List<JobPosting> findByStatusOrderByPublishedAtDescJobPostingIdDesc(
+            String status,
+            Pageable pageable
+    );
+
     Optional<JobPosting> findByJobPostingIdAndCompanyId(
         Long jobPostingId,
         Long companyId
@@ -117,6 +122,24 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
              posting.jobPostingId DESC
     """)
     List<MainJobListItem> findPopularRecruitingJobPostings(
+            Pageable pageable
+    );
+
+    @Query("""
+    SELECT new kr.co.firstdayproject.dto.job.MainJobListItem(
+        posting.jobPostingId, company.logoUrl, company.companyName, posting.title,
+        posting.workRegion, posting.careerType, posting.employmentType,
+        category.categoryName, posting.viewCount
+    )
+    FROM JobPosting posting
+    JOIN Company company ON company.companyId = posting.companyId
+    LEFT JOIN JobCategory category ON category.jobCategoryId = posting.jobCategoryId
+    WHERE posting.status = '모집중'
+      AND posting.jobCategoryId IN :categoryIds
+    ORDER BY posting.publishedAt DESC, posting.viewCount DESC, posting.jobPostingId DESC
+    """)
+    List<MainJobListItem> findRecruitingJobPostingsByCategoryIds(
+            @Param("categoryIds") List<Long> categoryIds,
             Pageable pageable
     );
 
