@@ -2,6 +2,7 @@ package kr.co.firstdayproject.controller.my;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewDetail;
+import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewHistoryItem;
 import kr.co.firstdayproject.dto.common.PageInfo;
 import kr.co.firstdayproject.dto.job.JobListItem;
 import kr.co.firstdayproject.dto.my.CoverLetterDto;
@@ -85,6 +86,7 @@ public class CoverLetterController {
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Boolean reselect,
+            @RequestParam(required = false) Long reviewId,
             Model model,
             HttpServletRequest request
     ) {
@@ -96,16 +98,26 @@ public class CoverLetterController {
         CoverLetter letter = coverLetterService.getMine(id, userId);
         List<CoverLetterItem> items = coverLetterService.getItems(id, userId);
 
-        Optional<CoverLetterAiReviewDetail> latestReview =
-                coverLetterAiReviewService.getLatestReview(id, userId);
+        // reviewId가 없으면 최신 이력을 보여준다.
+        Optional<CoverLetterAiReviewDetail> selectedReview =
+                coverLetterAiReviewService.getReview(id, userId, reviewId);
         // reselect=true면 이미 첨삭 이력이 있어도 공고 재선택 화면(상태 A)을 보여준다.
-        boolean hasAiReview = latestReview.isPresent() && !Boolean.TRUE.equals(reselect);
+        boolean hasAiReview = selectedReview.isPresent() && !Boolean.TRUE.equals(reselect);
 
         model.addAttribute("activeMenu", "coverLetters");
         model.addAttribute("coverLetter", letter);
         model.addAttribute("coverLetterItems", items);
         model.addAttribute("hasAiReview", hasAiReview);
-        latestReview.ifPresent(detail -> model.addAttribute("latestReview", detail));
+        // 검색/페이지네이션 링크가 reselect=true를 계속 들고 다니게 해서, 상태 A(재선택)에서
+        // 페이지를 넘겨도 상태 B(결과 화면)로 되돌아가지 않게 한다.
+        model.addAttribute("reselect", reselect);
+        selectedReview.ifPresent(detail -> model.addAttribute("selectedReview", detail));
+
+        if (hasAiReview) {
+            List<CoverLetterAiReviewHistoryItem> reviewHistory =
+                    coverLetterAiReviewService.getReviewHistory(id, userId);
+            model.addAttribute("reviewHistory", reviewHistory);
+        }
 
         // 첨삭 대상 공고 선택 화면(상태 A)에 필요한 데이터.
         // 관심 등록한 모집중 공고를 우선 노출하고, 검색은 항상 열려있게 한다.
@@ -159,6 +171,37 @@ public class CoverLetterController {
         return ResponseEntity.ok(Map.of(
                 "redirectUrl",
                 "/my/cover-letter/ai-result?id=" + id
+        ));
+    }
+
+    /**
+     * AI 첨삭 결과 화면의 "이 내용으로 적용" — 문항 1개의 답변만 AI 제안 내용으로 교체한다.
+     */
+    @PatchMapping("/items/{itemId}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateItemAnswer(
+            @PathVariable Long itemId,
+            @RequestBody Map<String, String> body,
+            HttpServletRequest request
+    ) {
+        String answer = body.get("answer");
+        if (answer == null || answer.isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "적용할 내용이 없습니다."));
+        }
+
+        Long userId = getCurrentUserId(request);
+        try {
+            coverLetterService.updateItemAnswer(itemId, userId, answer);
+        } catch (Exception exception) {
+            log.error("자소서 문항 답변 적용 실패: itemId={}", itemId, exception);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_GATEWAY)
+                    .body(Map.of("message", "적용에 실패했습니다. 잠시 후 다시 시도해주세요."));
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "answer", answer
         ));
     }
 

@@ -6,8 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewDetail;
+import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewHistoryItem;
 import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewItemView;
 import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.entity.coverletter.CoverLetterAiReview;
@@ -16,6 +20,7 @@ import kr.co.firstdayproject.entity.job.JobPosting;
 import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterAiReviewRepository;
+import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
 import kr.co.firstdayproject.dto.ai.CoverLetterItemReviewResult;
 import kr.co.firstdayproject.service.ai.CoverLetterItemReviewService;
@@ -38,6 +43,7 @@ public class CoverLetterAiReviewService {
 
     private final CoverLetterService coverLetterService;
     private final CoverLetterAiReviewRepository coverLetterAiReviewRepository;
+    private final CoverLetterItemRepository coverLetterItemRepository;
     private final JobPostingRepository jobPostingRepository;
     private final CompanyRepository companyRepository;
     private final CoverLetterItemReviewService coverLetterItemReviewService;
@@ -48,20 +54,24 @@ public class CoverLetterAiReviewService {
     public CoverLetterAiReviewService(
         CoverLetterService coverLetterService,
         CoverLetterAiReviewRepository coverLetterAiReviewRepository,
+        CoverLetterItemRepository coverLetterItemRepository,
         JobPostingRepository jobPostingRepository,
         CompanyRepository companyRepository,
         @Lazy CoverLetterItemReviewService coverLetterItemReviewService
     ) {
         this.coverLetterService = coverLetterService;
         this.coverLetterAiReviewRepository = coverLetterAiReviewRepository;
+        this.coverLetterItemRepository = coverLetterItemRepository;
         this.jobPostingRepository = jobPostingRepository;
         this.companyRepository = companyRepository;
         this.coverLetterItemReviewService = coverLetterItemReviewService;
     }
 
     /**
-     * 문항을 순서대로 첨삭하고 결과를 저장한다. 문항 수만큼 OpenAI를 순차 호출하므로
-     * 응답까지 몇 초가 걸릴 수 있다 — 호출부(컨트롤러)가 완료를 기다린 뒤 리다이렉트한다.
+     * 문항을 첨삭하고 결과를 저장한다. 문항끼리는 서로 독립적이라 OpenAI 호출을 병렬로
+     * 실행한다 — 순차 호출이면 "문항 수 × 개별 응답시간"이 그대로 더해지지만, 병렬이면
+     * 가장 느린 문항 1개 응답시간 정도로 전체 대기시간이 줄어든다.
+     * 호출부(컨트롤러)가 이 메서드의 완료를 기다린 뒤 리다이렉트한다.
      */
     @Transactional
     public Long requestReview(Long coverLetterId, Long userId, Long jobPostingId) {
@@ -73,24 +83,25 @@ public class CoverLetterAiReviewService {
         JobPosting targetPosting = jobPostingRepository.findById(jobPostingId)
             .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 채용공고입니다."));
 
-        List<OriginalItemSnapshot> originalSnapshot = new ArrayList<>();
-        List<RevisedItemContent> revisedContent = new ArrayList<>();
+        List<OriginalItemSnapshot> originalSnapshot = items.stream()
+            .map(item -> new OriginalItemSnapshot(item.getQuestion(), item.getAnswer()))
+            .toList();
 
-        for (CoverLetterItem item : items) {
-            originalSnapshot.add(new OriginalItemSnapshot(item.getQuestion(), item.getAnswer()));
-
-            CoverLetterItemReviewResult result = coverLetterItemReviewService.review(
-                item.getQuestion(),
-                item.getAnswer(),
-                targetPosting
-            );
-
-            revisedContent.add(new RevisedItemContent(
-                result.summary(),
-                result.improvementPoints(),
-                result.revisedAnswer()
-            ));
-        }
+        // parallelStream이어도 List 소스의 순서(문항 순서)는 그대로 유지된다.
+        List<RevisedItemContent> revisedContent = items.parallelStream()
+            .map(item -> {
+                CoverLetterItemReviewResult result = coverLetterItemReviewService.review(
+                    item.getQuestion(),
+                    item.getAnswer(),
+                    targetPosting
+                );
+                return new RevisedItemContent(
+                    result.summary(),
+                    result.improvementPoints(),
+                    result.revisedAnswer()
+                );
+            })
+            .toList();
 
         CoverLetterAiReview review = CoverLetterAiReview.builder()
             .coverLetterId(coverLetterId)
@@ -105,12 +116,42 @@ public class CoverLetterAiReviewService {
         return review.getCoverLetterAiReviewId();
     }
 
+    /**
+     * reviewId를 지정하면 그 이력을, 없으면 가장 최근 이력을 조회한다.
+     * reviewId가 이 자기소개서의 것이 아니면(다른 사용자 것이거나 잘못된 값) 빈 값을 돌려준다.
+     */
     @Transactional(readOnly = true)
-    public Optional<CoverLetterAiReviewDetail> getLatestReview(Long coverLetterId, Long userId) {
+    public Optional<CoverLetterAiReviewDetail> getReview(Long coverLetterId, Long userId, Long reviewId) {
         coverLetterService.getMine(coverLetterId, userId);
-        return coverLetterAiReviewRepository
-            .findFirstByCoverLetterIdOrderByCreatedAtDesc(coverLetterId)
-            .map(this::toDetail);
+
+        Optional<CoverLetterAiReview> review = reviewId != null
+            ? coverLetterAiReviewRepository.findById(reviewId)
+                .filter(found -> found.getCoverLetterId().equals(coverLetterId))
+            : coverLetterAiReviewRepository.findFirstByCoverLetterIdOrderByCreatedAtDesc(coverLetterId);
+
+        return review.map(this::toDetail);
+    }
+
+    /** 이전 첨삭 이력 드롭다운에 표시할 목록 — 최신순, 대상 공고명 포함 */
+    @Transactional(readOnly = true)
+    public List<CoverLetterAiReviewHistoryItem> getReviewHistory(Long coverLetterId, Long userId) {
+        coverLetterService.getMine(coverLetterId, userId);
+        List<CoverLetterAiReview> reviews =
+            coverLetterAiReviewRepository.findByCoverLetterIdOrderByCreatedAtDesc(coverLetterId);
+
+        Set<Long> jobPostingIds = reviews.stream()
+            .map(CoverLetterAiReview::getJobPostingId)
+            .collect(Collectors.toSet());
+        Map<Long, String> titleByJobPostingId = jobPostingRepository.findAllById(jobPostingIds).stream()
+            .collect(Collectors.toMap(JobPosting::getJobPostingId, JobPosting::getTitle));
+
+        return reviews.stream()
+            .map(review -> new CoverLetterAiReviewHistoryItem(
+                review.getCoverLetterAiReviewId(),
+                titleByJobPostingId.getOrDefault(review.getJobPostingId(), "삭제된 공고"),
+                review.getCreatedAt()
+            ))
+            .toList();
     }
 
     private CoverLetterAiReviewDetail toDetail(CoverLetterAiReview review) {
@@ -131,14 +172,38 @@ public class CoverLetterAiReviewService {
             new TypeReference<List<RevisedItemContent>>() {}
         );
 
+        // "이 내용으로 적용" 시 갱신할 실제 CoverLetterItem을 찾기 위해 현재 문항 목록도
+        // 같은 순서(displayOrder)로 가져와 인덱스 기준으로 매칭한다. 첨삭 요청 이후 문항이
+        // 삭제/재정렬됐다면 어긋날 수 있어, 그 경우 해당 문항은 적용 대상 없음(null)으로 둔다.
+        List<CoverLetterItem> currentItems =
+            coverLetterItemRepository.findByCoverLetterIdOrderByDisplayOrderAsc(review.getCoverLetterId());
+
         List<CoverLetterAiReviewItemView> items = new ArrayList<>();
         for (int i = 0; i < originals.size(); i++) {
             OriginalItemSnapshot original = originals.get(i);
             RevisedItemContent revision = i < revisions.size() ? revisions.get(i) : null;
+            CoverLetterItem currentItem = i < currentItems.size() ? currentItems.get(i) : null;
+            Long coverLetterItemId = currentItem != null ? currentItem.getCoverLetterItemId() : null;
+
+            String currentAnswer = currentItem != null ? currentItem.getAnswer() : null;
+            // "원문" 표시는 스냅샷이 낡아 보이지 않도록, 현재 답변이 스냅샷과 다르면(이유
+            // 불문 — 이 리뷰를 적용했든, 다른 리뷰를 적용했든, 직접 수정했든) 항상 최신 답변을 보여준다.
+            boolean changedSinceSnapshot = currentAnswer != null && !currentAnswer.equals(original.answer());
+            String displayAnswer = changedSinceSnapshot ? currentAnswer : original.answer();
+
+            // 반면 "이미 반영됨"(버튼 비활성화)은 훨씬 좁게 판단해야 한다 — 현재 답변이
+            // "바로 이 리뷰가 제안한 수정안"과 정확히 일치할 때만이다. changedSinceSnapshot로
+            // 판단하면, 다른 공고(리뷰) 제안을 적용했을 뿐인데 이력 드롭다운에서 무관한
+            // 과거 리뷰를 열어봐도 "이미 반영됨"으로 잘못 뜨는 문제가 있었다.
+            boolean resolved = revision != null
+                && currentAnswer != null
+                && currentAnswer.equals(revision.revisedAnswer());
 
             items.add(new CoverLetterAiReviewItemView(
+                coverLetterItemId,
                 original.question(),
-                original.answer(),
+                displayAnswer,
+                resolved,
                 revision != null ? revision.summary() : null,
                 revision != null ? revision.improvementPoints() : List.of(),
                 revision != null ? revision.revisedAnswer() : null
