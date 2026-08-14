@@ -41,10 +41,16 @@
             <article class="job-detail-card">
               <header class="job-detail-card__header">
                 <div>
-                  <span
-                    class="job-detail-company"
-                    th:text="${job.companyName()}"
-                  >코드웨이브</span>
+                  <div class="job-detail-company-line">
+                    <span
+                      class="job-detail-company"
+                      th:text="${job.companyName()}"
+                    >코드웨이브</span>
+                    <span class="company-restriction-badge"
+                          th:if="${job.suspendedCompany()}">
+                      이용정지 기업
+                    </span>
+                  </div>
                   <h2 th:text="${job.title()}">백엔드 개발자 채용</h2>
                   <p>
                     공고번호
@@ -89,7 +95,13 @@
                 <dl class="job-detail-grid">
                   <div>
                     <dt>기업명</dt>
-                    <dd th:text="${job.companyName()}">코드웨이브</dd>
+                    <dd>
+                      <span th:text="${job.companyName()}">코드웨이브</span>
+                      <span class="company-restriction-badge"
+                            th:if="${job.suspendedCompany()}">
+                        이용정지
+                      </span>
+                    </dd>
                   </div>
                   <div>
                     <dt>업종</dt>

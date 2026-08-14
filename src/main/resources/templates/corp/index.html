@@ -90,10 +90,22 @@
               <div class="panel__header"><h2>공고 현황</h2></div>
               <ul class="job-status-list">
                 <li th:each="job : ${dashboard.recentJobs}">
-                  <a th:href="@{/corp/job/{id}(id=${job.jobPostingId})}">
+                  <a
+                    th:href="${job.status == '마감' or job.status == '재검토요청'}
+                      ? @{/corp/job/{id}(id=${job.jobPostingId})}
+                      : @{/corp/job/edit(id=${job.jobPostingId})}"
+                  >
                     <strong th:text="${job.title}">채용공고</strong>
                     <span th:text="${job.deadlineLabel}">-</span>
-                    <em th:classappend="${job.statusVariant == 'open'} ? ' is-open' : (${job.statusVariant == 'scheduled'} ? ' is-scheduled' : (${job.statusVariant == 'hidden'} ? ' is-hidden' : ''))"
+                    <em th:classappend="${job.statusVariant == 'open'}
+                          ? ' is-open'
+                          : (${job.statusVariant == 'scheduled'}
+                            ? ' is-scheduled'
+                            : (${job.statusVariant == 'hidden'}
+                              ? ' is-hidden'
+                              : (${job.statusVariant == 'review'}
+                                ? ' is-review'
+                                : '')))"
                         th:text="${job.status}">모집중</em>
                   </a>
                 </li>

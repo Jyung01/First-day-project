@@ -72,7 +72,7 @@ public class CorpDashboardService {
                 .toList();
 
         var jobs = jobPostingRepository
-                .findByCompanyIdOrderByUpdatedAtDescJobPostingIdDesc(
+                .findDashboardJobs(
                         companyId,
                         PageRequest.of(0, DASHBOARD_ITEM_COUNT)
                 ).stream()
@@ -116,7 +116,8 @@ public class CorpDashboardService {
         return switch (status) {
             case "모집중" -> "open";
             case "모집예정" -> "scheduled";
-            case "숨김", "재검토요청" -> "hidden";
+            case "숨김" -> "hidden";
+            case "재검토요청" -> "review";
             default -> "closed";
         };
     }

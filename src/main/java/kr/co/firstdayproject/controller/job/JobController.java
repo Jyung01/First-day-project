@@ -259,7 +259,7 @@ public class JobController {
         model.addAttribute("parentCategoryId", parentCategoryId);
         model.addAttribute(
                 "job",
-                jobService.getRecruitingJobPosting(
+                jobService.getViewableJobPosting(
                         jobPostingId,
                         authentication
                 )

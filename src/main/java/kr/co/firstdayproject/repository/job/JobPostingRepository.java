@@ -57,6 +57,19 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
             Pageable pageable
     );
 
+    @Query("""
+            select posting
+              from JobPosting posting
+             where posting.companyId = :companyId
+               and posting.status <> '삭제'
+             order by posting.updatedAt desc,
+                      posting.jobPostingId desc
+            """)
+    List<JobPosting> findDashboardJobs(
+            @Param("companyId") Long companyId,
+            Pageable pageable
+    );
+
     List<JobPosting> findByStatusOrderByPublishedAtDescJobPostingIdDesc(
             String status,
             Pageable pageable
@@ -169,6 +182,8 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
      AND application.currentStatus <> '지원취소'
      AND application.currentStatus <> '채용종료'
     WHERE posting.status = '모집중'
+      AND company.approvalStatus = '승인'
+      AND company.companyStatus = '정상'
       AND (
             :keyword IS NULL
             OR LOWER(posting.title)
@@ -228,6 +243,8 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     JOIN Company company
       ON company.companyId = posting.companyId
     WHERE posting.status = '모집중'
+      AND company.approvalStatus = '승인'
+      AND company.companyStatus = '정상'
       AND (
             :keyword IS NULL
             OR LOWER(posting.title)
@@ -319,7 +336,8 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     @Query(
         value = "SELECT new kr.co.firstdayproject.dto.admin.job."
             + "AdminJobListItem("
-            + "posting.jobPostingId, company.companyName, posting.title, "
+            + "posting.jobPostingId, company.companyName, "
+            + "company.companyStatus, posting.title, "
             + "category.categoryName, posting.createdAt, "
             + "posting.applyEndAt, posting.status) "
             + "FROM JobPosting posting "

@@ -10,6 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/corp/common.css}" />
     <link rel="stylesheet" th:href="@{/css/corp/management/common.css}" />
     <link rel="stylesheet" th:href="@{/css/corp/management/job-form.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
     <link rel="stylesheet" th:href="@{/css/modal/corp/ai-polish-modal.css}" />
     <link
       rel="stylesheet"
@@ -56,6 +57,7 @@
                 type="submit"
                 name="submitType"
                 th:value="${isHiddenEdit} ? 'REVIEW' : 'PUBLISH'"
+                th:attr="data-review-submit=${isHiddenEdit}"
               >
                 <span
                   th:text="${isHiddenEdit}
@@ -71,6 +73,7 @@
             id="jobForm"
             class="corp-card job-form-card"
             th:attr="data-edit=${isEdit},
+              data-hidden-edit=${isHiddenEdit},
               data-scheduled-edit=${isScheduledEdit == true},
               data-draft-edit=${isDraftEdit == true}"
             th:action="${isEdit}
@@ -589,6 +592,7 @@
     <div
       th:replace="~{modal/common/skill-select-modal :: skillSelectModal}"
     ></div>
+    <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
     <div th:replace="~{modal/corp/ai-polish-modal :: aiPolishModal}"></div>
     <div hidden data-job-skill-source>
       <span
@@ -601,6 +605,7 @@
     </div>
     <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script th:src="@{/js/common/postcode.js}"></script>
+    <script th:src="@{/js/modal.js}"></script>
     <script th:src="@{/js/corp/job-form.js}"></script>
     <script th:src="@{/js/modal/skill-select-modal.js}"></script>
   </body>

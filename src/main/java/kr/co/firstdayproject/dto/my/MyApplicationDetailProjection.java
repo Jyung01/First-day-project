@@ -8,6 +8,7 @@ public interface MyApplicationDetailProjection {
     Long getJobPostingId();
     String getCompanyName();
     String getCompanyLogoUrl();
+    String getCompanyStatus();
     String getJobTitle();
     String getCurrentStatus();
     LocalDateTime getAppliedAt();

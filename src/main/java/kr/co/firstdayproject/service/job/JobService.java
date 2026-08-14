@@ -70,18 +70,27 @@ public class JobService {
     private final java.util.Optional<PersonalizedJobRecommendationService> personalizedJobRecommendationService;
 
     @Transactional
-    public JobDetailView getRecruitingJobPosting(
+    public JobDetailView getViewableJobPosting(
             Long jobPostingId,
             Authentication authentication
     ) {
-        JobPosting posting = jobPostingRepository
-                .findByJobPostingIdAndStatusIn(
-                        jobPostingId,
-                        List.of("모집중")
-                )
+        JobPosting posting = jobPostingRepository.findById(jobPostingId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "조회할 수 없는 채용공고입니다."
                 ));
+
+        boolean recruiting = "모집중".equals(posting.getStatus());
+        boolean savedClosedPosting = "마감".equals(posting.getStatus())
+                && savedJobService.isSavedJob(
+                        jobPostingId,
+                        authentication
+                );
+
+        if (!recruiting && !savedClosedPosting) {
+            throw new IllegalArgumentException(
+                    "조회할 수 없는 채용공고입니다."
+            );
+        }
 
         Company company = companyRepository.findById(posting.getCompanyId())
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -97,8 +106,24 @@ public class JobService {
                         List.of("지원취소", "채용종료")
                 );
 
+        LocalDateTime now = LocalDateTime.now();
+        boolean availableCompany = "승인".equals(company.getApprovalStatus())
+                && "정상".equals(company.getCompanyStatus());
+        boolean acceptingApplications = availableCompany
+                && recruiting
+                && (posting.getApplyStartAt() == null
+                    || !posting.getApplyStartAt().isAfter(now))
+                && (posting.getApplyEndAt() == null
+                    || !posting.getApplyEndAt().isBefore(now));
+        String applicationUnavailableMessage = availableCompany
+                ? "현재 지원할 수 없는 채용공고입니다.\n"
+                    + "공고 상태를 확인한 후 다시 시도해주세요."
+                : "기업 계정 이용 제한으로 신규 입사지원이 "
+                    + "일시 중지되었습니다.";
+
         return new JobDetailView(
                 posting.getJobPostingId(),
+                posting.getStatus(),
                 posting.getTitle(),
                 company.getCompanyName(),
                 company.getLogoUrl(),
@@ -123,7 +148,9 @@ public class JobService {
                 parseBenefits(posting.getBenefitsJson()),
                 getSkillNames(posting.getJobPostingId()),
                 posting.getViewCount(),
-                getDeadlineText(posting.getApplyEndAt(), LocalDate.now()),
+                getDetailDeadlineText(posting, LocalDate.now()),
+                acceptingApplications,
+                applicationUnavailableMessage,
                 posting.getPublishedAt() != null
                         && !posting.getPublishedAt().isBefore(
                                 LocalDateTime.now().minusDays(7)
@@ -779,5 +806,15 @@ public class JobService {
         }
 
         return "D-" + days;
+    }
+
+    private String getDetailDeadlineText(
+            JobPosting posting,
+            LocalDate today
+    ) {
+        if (!"마감".equals(posting.getStatus())) {
+            return getDeadlineText(posting.getApplyEndAt(), today);
+        }
+        return "마감";
     }
 }

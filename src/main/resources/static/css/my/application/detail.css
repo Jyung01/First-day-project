@@ -81,6 +81,28 @@
     padding: 22px 24px 28px;
 }
 
+.application-suspension-notice {
+    margin-top: 20px;
+    padding: 20px 24px;
+    border: 1px solid #f3cf78;
+    border-radius: 12px;
+    background: #fffaf0;
+}
+
+.application-suspension-notice strong {
+    display: block;
+    margin-bottom: 7px;
+    color: #9a6700;
+    font-size: 16px;
+}
+
+.application-suspension-notice p {
+    margin: 0;
+    color: #6f5722;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
 .application-progress-card h2,
 .application-documents-card h2,
 .application-guide-card h2 {

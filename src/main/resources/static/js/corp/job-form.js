@@ -123,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
   restoreSelectedSkills();
 
   const form = document.querySelector("#jobForm");
+  let reviewFormChanged = true;
   const primaryJobCategory = document.querySelector("#primaryJobCategory");
   const jobCategory = document.querySelector("#category");
   const jobCategoryOptions = jobCategory
@@ -358,6 +359,24 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    if (event.submitter?.value === "REVIEW" && !reviewFormChanged) {
+      event.preventDefault();
+      showConfirmModal({
+        iconClass: "info",
+        iconHtml: "!",
+        title: "수정 사항이 없습니다",
+        message: "숨김 사유를 확인하고 공고 내용을 수정해 주세요.",
+        extraHtml: `
+          <div class="job-review-modal-notice">
+            공고 내용을 한 가지 이상 수정한 후 재검토를 요청할 수 있습니다.
+          </div>
+        `,
+        leftText: "확인",
+        rightVisible: false,
+      });
+      return;
+    }
+
     const experienceValid = validateRange(
       minExperience,
       maxExperience,
@@ -388,6 +407,49 @@ document.addEventListener("DOMContentLoaded", function () {
   updateSalaryFields();
   updateWorkRegion();
   updateApplicationPeriodLimits();
+
+  const reviewSubmitButton = document.querySelector("[data-review-submit]");
+  if (form?.dataset.hiddenEdit === "true" && reviewSubmitButton) {
+    const initialFormState = getComparableFormState(form);
+
+    function getComparableFormState(targetForm) {
+      return Array.from(new FormData(targetForm).entries())
+        .filter(function ([name]) {
+          return name !== "submitType" && !name.startsWith("_");
+        })
+        .map(function ([name, value]) {
+          return [name, String(value).trim()];
+        })
+        .sort(function (first, second) {
+          return (first[0] + first[1]).localeCompare(second[0] + second[1]);
+        })
+        .map(function ([name, value]) {
+          return name + "=" + value;
+        })
+        .join("&");
+    }
+
+    function updateReviewSubmitState() {
+      const changed = getComparableFormState(form) !== initialFormState;
+      reviewFormChanged = changed;
+      reviewSubmitButton.title = changed
+        ? "수정한 내용으로 재검토를 요청합니다."
+        : "공고 내용을 수정한 후 재검토를 요청할 수 있습니다.";
+    }
+
+    form.addEventListener("input", updateReviewSubmitState);
+    form.addEventListener("change", updateReviewSubmitState);
+
+    const skillInputs = form.querySelector("[data-skill-hidden-inputs]");
+    if (skillInputs) {
+      new MutationObserver(updateReviewSubmitState).observe(skillInputs, {
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    updateReviewSubmitState();
+  }
 
   const modal = document.querySelector("[data-ai-polish-modal]");
   if (!modal) return;
