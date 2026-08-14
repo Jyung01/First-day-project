@@ -52,7 +52,7 @@ public class JobService {
     private static final int MAIN_JOB_COUNT = 6;
     private static final int JOB_LIST_PAGE_SIZE = 12;
     private static final int JOB_DETAIL_LIST_PAGE_SIZE = 3;
-    private static final int JOB_PICKER_PAGE_SIZE = 10;
+    private static final int JOB_PICKER_PAGE_SIZE = 5;
 
     private final JobPostingRepository jobPostingRepository;
     private final ApplicationRepository applicationRepository;

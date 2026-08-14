@@ -48,6 +48,7 @@
                     <h2 class="cl-job-picker__section-title">공고 검색</h2>
                     <form class="cl-job-picker__search" method="get" th:action="@{/my/cover-letter/ai-result}">
                         <input type="hidden" name="id" th:value="${coverLetter.coverLetterId}" />
+                        <input type="hidden" name="reselect" th:if="${reselect}" th:value="${reselect}" />
                         <div class="cl-search-field">
                             <svg class="cl-search-field__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
@@ -74,19 +75,19 @@
 
                     <nav class="pagination" th:if="${jobSearchPageInfo.totalPages() > 1}" aria-label="공고 검색 페이지">
                         <a th:href="${jobSearchPageInfo.hasPreviousBlock()}
-                              ? @{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${jobSearchPageInfo.previousBlockPage()})}
+                              ? @{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${jobSearchPageInfo.previousBlockPage()}, reselect=${reselect})}
                               : '#'"
                            th:classappend="${!jobSearchPageInfo.hasPreviousBlock()} ? 'is-disabled'"
                            th:attr="aria-disabled=${!jobSearchPageInfo.hasPreviousBlock()}" aria-label="이전 페이지 그룹">‹</a>
 
                         <a th:each="pageNumber : ${#numbers.sequence(jobSearchPageInfo.startPage(), jobSearchPageInfo.endPage())}"
-                           th:href="@{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${pageNumber})}"
+                           th:href="@{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${pageNumber}, reselect=${reselect})}"
                            th:classappend="${pageNumber == jobSearchPageInfo.currentPage()} ? 'active'"
                            th:attr="aria-current=${pageNumber == jobSearchPageInfo.currentPage()} ? 'page'"
                            th:text="${pageNumber + 1}">1</a>
 
                         <a th:href="${jobSearchPageInfo.hasNextBlock()}
-                              ? @{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${jobSearchPageInfo.nextBlockPage()})}
+                              ? @{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${jobSearchPageInfo.nextBlockPage()}, reselect=${reselect})}
                               : '#'"
                            th:classappend="${!jobSearchPageInfo.hasNextBlock()} ? 'is-disabled'"
                            th:attr="aria-disabled=${!jobSearchPageInfo.hasNextBlock()}" aria-label="다음 페이지 그룹">›</a>
@@ -114,24 +115,31 @@
             </div>
 
             <!-- ===================== 상태 B: 첨삭 결과 (이력 있음) ===================== -->
-            <div th:if="${hasAiReview}" id="cl-review-result">
+            <div th:if="${hasAiReview}" id="cl-review-result"
+                 th:attr="data-cover-letter-id=${coverLetter.coverLetterId}">
                 <div class="cl-page-header">
                     <h1 class="cl-page-header__title">AI 첨삭 결과</h1>
                     <p class="cl-page-header__desc">원문과 AI 개선안을 비교하고 원하는 내용을 선택해 반영하세요.</p>
                 </div>
 
-                <!-- 이전 첨삭 이력 드롭다운 연결은 다음 단계에서 진행 예정 -->
                 <div class="cl-review-meta-bar">
                     <div class="cl-review-meta-bar__target">
                         <span class="status-badge status-badge--ai-done" id="cl-review-status-badge">AI 첨삭 완료</span>
-                        <span th:text="|${latestReview.targetJobPostingTitle()}${latestReview.targetCompanyName() != null ? ' · ' + latestReview.targetCompanyName() : ''} · ${#temporals.format(latestReview.createdAt(), 'M/d')} 요청|">공고명 · 기업명 · 8/14 요청</span>
+                        <span th:text="|${selectedReview.targetJobPostingTitle()}${selectedReview.targetCompanyName() != null ? ' · ' + selectedReview.targetCompanyName() : ''} · ${#temporals.format(selectedReview.createdAt(), 'M/d')} 요청|">공고명 · 기업명 · 8/14 요청</span>
                     </div>
+                    <select class="cl-history-select" id="cl-history-select" aria-label="이전 첨삭 이력"
+                            th:if="${#lists.size(reviewHistory) > 1}">
+                        <option th:each="history : ${reviewHistory}"
+                                th:value="${history.coverLetterAiReviewId()}"
+                                th:selected="${history.coverLetterAiReviewId() == selectedReview.coverLetterAiReviewId()}"
+                                th:text="|${#temporals.format(history.createdAt(), 'M/d')} · ${history.targetJobPostingTitle()}|">8/14 · 공고명</option>
+                    </select>
                 </div>
 
                 <div class="cl-review-tabs">
                     <div class="cl-review-tabs__left" id="cl-tab-buttons">
                         <button type="button"
-                                th:each="item, iter : ${latestReview.items()}"
+                                th:each="item, iter : ${selectedReview.items()}"
                                 th:text="|문항 ${iter.index + 1}|"
                                 th:classappend="${iter.index == 0} ? ' is-active' : ''"
                                 th:attr="data-index=${iter.index}"
@@ -139,8 +147,8 @@
                     </div>
                 </div>
 
-                <div th:each="item, iter : ${latestReview.items()}"
-                     th:attr="data-panel-index=${iter.index}"
+                <div th:each="item, iter : ${selectedReview.items()}"
+                     th:attr="data-panel-index=${iter.index}, data-item-id=${item.coverLetterItemId()}"
                      th:classappend="${iter.index == 0} ? '' : ' cl-panel--hidden'"
                      class="cl-review-panel">
 
@@ -156,8 +164,13 @@
                             <h2 class="cl-compare__title">AI 첨삭 제안</h2>
 
                             <div class="cl-suggestion__content">
+                                <!-- 원문과 바로 비교되도록 수정 제안을 맨 위에 배치, 이유(요약/개선포인트)는 아래에 -->
+                                <div class="cl-suggestion__example">
+                                    <p class="cl-suggestion__example-title">수정 제안</p>
+                                    <p class="cl-suggestion__example-text" th:text="${item.revisedAnswer()}">(첨삭된 답변 예시가 여기에 표시됩니다)</p>
+                                </div>
                                 <div class="cl-suggestion__summary-box">
-                                    <p class="cl-suggestion__summary-title">한 줄 요약</p>
+                                    <p class="cl-suggestion__summary-title">AI 개선점 요약</p>
                                     <p class="cl-suggestion__summary-text" th:text="${item.summary()}">첨삭 요약</p>
                                 </div>
                                 <ul class="cl-suggestion__points">
@@ -165,15 +178,14 @@
                                         <span class="cl-suggestion__point-label" th:text="|개선 ${pointIter.index + 1}.|">개선 1.</span><span th:text="${point}">개선 포인트</span>
                                     </li>
                                 </ul>
-                                <div class="cl-suggestion__example">
-                                    <p class="cl-suggestion__example-title">수정 제안</p>
-                                    <p class="cl-suggestion__example-text" th:text="${item.revisedAnswer()}">(첨삭된 답변 예시가 여기에 표시됩니다)</p>
-                                </div>
-                                <!-- 원문 유지 / 이 내용으로 적용 버튼 실동작은 다음 단계에서 진행 예정 -->
                                 <div class="cl-suggestion__actions">
-                                    <button type="button" class="btn btn-outline">원문 유지</button>
-                                    <button type="button" class="btn btn-primary">이 내용으로 적용</button>
+                                    <button type="button" class="btn btn-outline cl-keep-btn" th:disabled="${item.resolved()}">원문 유지</button>
+                                    <button type="button" class="btn btn-primary cl-apply-btn" th:disabled="${item.resolved()}">이 내용으로 적용</button>
                                 </div>
+                                <p class="cl-suggestion__apply-status"
+                                   th:classappend="${item.resolved()} ? ' is-success' : ''"
+                                   th:text="${item.resolved()} ? '이 첨삭 제안을 적용했거나, 자소서를 직접 수정해 이미 반영된 문항입니다.' : ''"
+                                   aria-live="polite"></p>
                             </div>
                         </div>
                     </div>
@@ -288,6 +300,86 @@
                 location.href = `/my/cover-letter/ai-result?id=${coverLetterId}&reselect=true`;
             });
         }
+
+        // 이전 첨삭 이력 드롭다운 — 선택한 이력의 reviewId로 다시 GET 요청
+        const historySelect = document.getElementById('cl-history-select');
+        const reviewResult = document.getElementById('cl-review-result');
+        if (historySelect && reviewResult) {
+            historySelect.addEventListener('change', () => {
+                const coverLetterId = reviewResult.dataset.coverLetterId;
+                location.href = `/my/cover-letter/ai-result?id=${coverLetterId}&reviewId=${historySelect.value}`;
+            });
+        }
+
+        // "원문 유지" / "이 내용으로 적용" (결과 상태) — 문항마다 각각 동작한다.
+        // "원문 유지"는 DB에 바꿀 게 없는 선택이라 화면 표시만 바꾸고, "적용"만 서버에 반영한다.
+        document.querySelectorAll('.cl-review-panel').forEach((panel) => {
+            const itemId = panel.dataset.itemId;
+            const keepBtn = panel.querySelector('.cl-keep-btn');
+            const applyBtn = panel.querySelector('.cl-apply-btn');
+            const statusEl = panel.querySelector('.cl-suggestion__apply-status');
+            const originalTextEl = panel.querySelector('.cl-original__text');
+            const originalCountEl = panel.querySelector('.cl-original__count');
+            const revisedTextEl = panel.querySelector('.cl-suggestion__example-text');
+
+            if (!keepBtn || !applyBtn) {
+                return;
+            }
+
+            // 첨삭 요청 이후 이 문항이 원본 자소서에서 삭제된 경우 적용할 대상이 없다.
+            if (!itemId || itemId === 'null') {
+                applyBtn.disabled = true;
+                applyBtn.title = '이 문항은 원본 자소서에서 삭제되어 적용할 수 없습니다.';
+                return;
+            }
+
+            keepBtn.addEventListener('click', () => {
+                keepBtn.disabled = true;
+                applyBtn.disabled = true;
+                statusEl.textContent = '원문을 유지했습니다.';
+                statusEl.classList.remove('is-error');
+                statusEl.classList.add('is-success');
+            });
+
+            applyBtn.addEventListener('click', () => {
+                const revisedAnswer = (revisedTextEl?.textContent || '').trim();
+                if (!revisedAnswer) {
+                    return;
+                }
+
+                keepBtn.disabled = true;
+                applyBtn.disabled = true;
+                statusEl.textContent = '적용하는 중...';
+                statusEl.classList.remove('is-error', 'is-success');
+
+                fetch(`/my/cover-letter/items/${itemId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answer: revisedAnswer })
+                })
+                    .then(async (res) => {
+                        const data = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                            throw new Error(data.message || '적용에 실패했습니다.');
+                        }
+
+                        if (originalTextEl) {
+                            originalTextEl.textContent = revisedAnswer;
+                        }
+                        if (originalCountEl) {
+                            originalCountEl.textContent = `원문 ${revisedAnswer.length}자`;
+                        }
+                        statusEl.textContent = '이 내용으로 적용했습니다. 자기소개서에 반영됐어요.';
+                        statusEl.classList.add('is-success');
+                    })
+                    .catch((err) => {
+                        keepBtn.disabled = false;
+                        applyBtn.disabled = false;
+                        statusEl.textContent = err.message;
+                        statusEl.classList.add('is-error');
+                    });
+            });
+        });
     });
 </script>
 </body></html>

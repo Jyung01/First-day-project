@@ -203,11 +203,7 @@
         }
 
         .cl-suggestion__example {
-            background: #fafafb;
-            border: 1px solid var(--border, #e7e7ec);
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .cl-suggestion__example-title {
@@ -218,9 +214,10 @@
         }
 
         .cl-suggestion__example-text {
-            font-size: 13px;
-            line-height: 1.6;
+            font-size: 14px;
+            line-height: 1.7;
             color: var(--text-strong, #1c1c22);
+            white-space: pre-line;
             margin: 0;
         }
 
@@ -233,6 +230,26 @@
         .cl-suggestion__actions .btn {
             flex: 1;
             text-align: center;
+        }
+
+        .cl-suggestion__actions .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .cl-suggestion__apply-status {
+            margin: 8px 0 0;
+            font-size: 12px;
+            line-height: 1.5;
+            min-height: 1em;
+        }
+
+        .cl-suggestion__apply-status.is-success {
+            color: #2f9e5c;
+        }
+
+        .cl-suggestion__apply-status.is-error {
+            color: #d64545;
         }
 
         /* ---------- 문항별 생성 로딩 상태 ---------- */

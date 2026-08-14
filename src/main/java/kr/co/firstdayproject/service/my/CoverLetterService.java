@@ -74,6 +74,19 @@ public class CoverLetterService {
         return coverLetterItemRepository.findByCoverLetterIdOrderByDisplayOrderAsc(coverLetterId);
     }
 
+    /** AI 첨삭 결과 화면의 "이 내용으로 적용"에서 문항 1개의 답변만 갱신할 때 사용 */
+    @Transactional
+    public void updateItemAnswer(Long coverLetterItemId, Long userId, String answer) {
+        CoverLetterItem item = coverLetterItemRepository.findById(coverLetterItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 문항입니다."));
+
+        // 소유권 검증 — 이 문항이 속한 자기소개서가 요청한 사용자 것인지 확인
+        getMine(item.getCoverLetterId(), userId);
+
+        item.setAnswer(answer);
+        item.setUpdatedAt(LocalDateTime.now());
+    }
+
     @Transactional
     public void update(Long coverLetterId, Long userId, CoverLetterDto.CreateRequest request) {
         CoverLetter letter = getMine(coverLetterId, userId);
