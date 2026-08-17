@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import kr.co.firstdayproject.dto.job.JobApplicationDocuments;
 import kr.co.firstdayproject.entity.application.Application;
+import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.entity.coverletter.CoverLetter;
 import kr.co.firstdayproject.entity.job.JobPosting;
 import kr.co.firstdayproject.entity.resume.Resume;
@@ -168,9 +169,15 @@ class JobApplicationServiceTest {
         Authentication authentication = personalAuthentication(7L);
         JobPosting posting = JobPosting.builder()
                 .jobPostingId(10L)
+                .companyId(30L)
                 .status("모집중")
                 .applyStartAt(LocalDateTime.now().minusDays(1))
                 .applyEndAt(LocalDateTime.now().plusDays(7))
+                .build();
+        Company company = Company.builder()
+                .companyId(30L)
+                .approvalStatus("승인")
+                .companyStatus("정상")
                 .build();
         Resume resume = Resume.builder()
                 .resumeId(11L)
@@ -183,6 +190,8 @@ class JobApplicationServiceTest {
 
         when(jobPostingRepository.findById(10L))
                 .thenReturn(java.util.Optional.of(posting));
+        when(companyRepository.findById(30L))
+                .thenReturn(java.util.Optional.of(company));
         when(applicationRepository
                 .existsByApplicantUserIdAndJobPostingIdAndCurrentStatusNot(
                         7L,
