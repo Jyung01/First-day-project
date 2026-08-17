@@ -15,6 +15,7 @@ public record MyApplicationDetailView(
         String currentStatus,
         String statusLabel,
         String statusVariant,
+        boolean processSuspended,
         LocalDateTime appliedAt,
         Map<String, Object> resume,
         Map<String, Object> coverLetter,

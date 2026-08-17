@@ -79,6 +79,7 @@ public class AdminJobService {
         return new AdminJobDetailView(
             posting.getJobPostingId(),
             company.getCompanyName(),
+            company.getCompanyStatus(),
             display(company.getIndustryName()),
             getCompanyAddress(company),
             contact == null ? "미등록" : contact.getName(),

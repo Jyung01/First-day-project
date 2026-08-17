@@ -123,6 +123,12 @@
     justify-self: center;
 }
 
+.application-status--suspended {
+    border-color: #f3cf78;
+    background: #fff7df;
+    color: #9a6700;
+}
+
 .application-detail-link {
     display: inline-flex;
     align-items: center;

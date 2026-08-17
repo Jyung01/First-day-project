@@ -10,6 +10,8 @@ public interface MyApplicationListProjection {
 
     String getCompanyLogoUrl();
 
+    String getCompanyStatus();
+
     String getJobTitle();
 
     String getCurrentStatus();

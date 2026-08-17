@@ -505,3 +505,13 @@
 .job-form-error p + p {
   margin-top: 4px;
 }
+.job-review-modal-notice {
+  padding: 13px 15px;
+  color: #5d6b82;
+  background: #f5f7fb;
+  border: 1px solid #e2e7f0;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: left;
+}

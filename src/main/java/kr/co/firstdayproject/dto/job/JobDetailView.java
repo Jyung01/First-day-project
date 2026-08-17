@@ -5,6 +5,7 @@ import java.util.List;
 
 public record JobDetailView(
         Long jobPostingId,
+        String status,
         String title,
         String companyName,
         String companyLogoUrl,
@@ -30,6 +31,8 @@ public record JobDetailView(
         List<String> skills,
         long viewCount,
         String deadline,
+        boolean acceptingApplications,
+        String applicationUnavailableMessage,
         boolean newPosting,
         boolean hotPosting,
         boolean bookmarked

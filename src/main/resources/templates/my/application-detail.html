@@ -52,6 +52,13 @@
         </div>
       </article>
 
+      <section class="application-suspension-notice"
+               th:if="${applicationDetail.processSuspended}">
+        <strong>전형 일시 중지</strong>
+        <p>기업 계정 이용 제한으로 채용 절차가 일시 중지되었습니다.<br>
+          기업 상태가 정상화되면 기존 단계부터 재개될 수 있습니다.</p>
+      </section>
+
       <section class="application-progress-card">
         <h2>전형 진행 상태</h2>
         <ol class="application-progress"
@@ -109,7 +116,12 @@
         <aside class="application-guide-card">
           <h2>지원 안내</h2>
           <div class="application-guide-copy">
-            <th:block th:switch="${applicationDetail.currentStatus}">
+            <th:block th:if="${applicationDetail.processSuspended}">
+              <p>기업 계정 이용 제한으로 채용 절차가 일시 중지되었습니다.<br>
+                기업 상태가 정상화되면 기존 단계부터 재개될 수 있습니다.</p>
+            </th:block>
+            <th:block th:unless="${applicationDetail.processSuspended}"
+                      th:switch="${applicationDetail.currentStatus}">
               <p th:case="'지원완료'">지원이 정상적으로 접수되었습니다.<br>기업이 검토를 시작하기 전까지 지원을 취소할 수 있습니다.</p>
               <p th:case="'서류검토중'">서류 검토가 시작되었습니다.<br>기업의 다음 전형 결과를 기다려주세요.</p>
               <p th:case="'서류합격'">서류 전형에 합격했습니다.<br>기업의 면접 일정 안내를 기다려주세요.</p>

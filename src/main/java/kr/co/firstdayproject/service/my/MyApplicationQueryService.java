@@ -134,11 +134,20 @@ public class MyApplicationQueryService {
                         : "?",
                 projection.getJobTitle(),
                 status,
-                resolveStatusLabel(status),
-                resolveStatusVariant(status),
+                isProcessSuspended(projection.getCompanyStatus())
+                        ? "전형 일시 중지"
+                        : resolveStatusLabel(status),
+                isProcessSuspended(projection.getCompanyStatus())
+                        ? "suspended"
+                        : resolveStatusVariant(status),
+                isProcessSuspended(projection.getCompanyStatus()),
                 projection.getAppliedAt(),
                 projection.getLatestChangedAt()
         );
+    }
+
+    private boolean isProcessSuspended(String companyStatus) {
+        return "이용정지".equals(companyStatus);
     }
 
     private String resolveStatusLabel(String status) {

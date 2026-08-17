@@ -147,13 +147,15 @@
 }
 
 .job-status-list em.is-scheduled {
-  background: #fff4d9;
   color: #b56e00;
 }
 
 .job-status-list em.is-hidden {
-  background: #ffe8e8;
   color: #d94a4a;
+}
+
+.job-status-list em.is-review {
+  color: #7a65d1;
 }
 
 @media (max-width: 1050px) {

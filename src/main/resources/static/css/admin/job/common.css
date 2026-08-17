@@ -116,6 +116,21 @@
   color: #e2e8f0;
 }
 
+.company-restriction-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 7px;
+  padding: 3px 7px;
+  border: 1px solid #7f1d1d;
+  border-radius: 999px;
+  background: #450a0a;
+  color: #fca5a5;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+
 .operation-table .operation-table-empty {
   height: 150px;
   color: #94a3b8;
@@ -242,6 +257,16 @@
   color: #60a5fa;
   font-size: 13px;
   font-weight: 700;
+}
+
+.job-detail-company-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.job-detail-company-line .company-restriction-badge {
+  margin-left: 0;
 }
 
 .job-detail-card__header h2 {

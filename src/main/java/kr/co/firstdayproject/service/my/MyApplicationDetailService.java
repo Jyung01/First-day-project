@@ -48,8 +48,13 @@ public class MyApplicationDetailService {
                         : "?",
                 application.getJobTitle(),
                 application.getCurrentStatus(),
-                statusLabel(application.getCurrentStatus()),
-                statusVariant(application.getCurrentStatus()),
+                "이용정지".equals(application.getCompanyStatus())
+                        ? "전형 일시 중지"
+                        : statusLabel(application.getCurrentStatus()),
+                "이용정지".equals(application.getCompanyStatus())
+                        ? "suspended"
+                        : statusVariant(application.getCurrentStatus()),
+                "이용정지".equals(application.getCompanyStatus()),
                 application.getAppliedAt(),
                 readSnapshot(application.getResumeSnapshotJson()),
                 readSnapshot(application.getCoverLetterSnapshotJson()),

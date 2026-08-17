@@ -26,7 +26,28 @@ document.addEventListener("DOMContentLoaded", () => {
     openButton?.focus();
   };
 
+  const showClosedPostingModal = () => {
+    const unavailableMessage = openButton
+      ?.dataset.applicationUnavailableMessage
+      || "현재 지원할 수 없는 채용공고입니다.\n"
+        + "공고 상태를 확인한 후 다시 시도해주세요.";
+
+    showConfirmModal({
+      iconClass: "danger",
+      iconHtml: "!",
+      title: "지원할 수 없습니다",
+      message: unavailableMessage,
+      leftVisible: false,
+      rightText: "확인",
+    });
+  };
+
   openButton?.addEventListener("click", () => {
+    if (openButton.dataset.acceptingApplications !== "true") {
+      showClosedPostingModal();
+      return;
+    }
+
     if (openButton.dataset.alreadyApplied === "true") {
       showAlreadyAppliedModal();
       return;
@@ -124,7 +145,9 @@ document.addEventListener("DOMContentLoaded", () => {
     openButton?.dataset.personalMember === "true"
     && new URLSearchParams(window.location.search).get("apply") === "true"
   ) {
-    if (openButton.dataset.alreadyApplied === "true") {
+    if (openButton.dataset.acceptingApplications !== "true") {
+      showClosedPostingModal();
+    } else if (openButton.dataset.alreadyApplied === "true") {
       showAlreadyAppliedModal();
     } else {
       openModal();

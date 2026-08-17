@@ -6,6 +6,7 @@ import java.util.List;
 public record AdminJobDetailView(
     Long jobPostingId,
     String companyName,
+    String companyStatus,
     String industryName,
     String companyAddress,
     String contactName,
@@ -38,4 +39,7 @@ public record AdminJobDetailView(
     String qualifications,
     String preferredConditions
 ) {
+    public boolean suspendedCompany() {
+        return "이용정지".equals(companyStatus);
+    }
 }

@@ -221,7 +221,15 @@
             <div><small>경력</small><strong th:text="${job.career}">경력</strong></div>
             <div><small>학력</small><strong th:text="${job.educationLevel}">학력</strong></div>
             <div><small>고용형태</small><strong th:text="${job.employmentType}">고용형태</strong></div>
-            <div><small>마감일</small><strong class="job-deadline" th:text="${job.deadline}">마감일</strong></div>
+            <div>
+              <small
+                th:text="${job.status == '마감'} ? '상태' : '마감일'"
+              >마감일</small>
+              <strong
+                class="job-deadline"
+                th:text="${job.deadline}"
+              >마감일</strong>
+            </div>
           </div>
         </div>
 
@@ -265,6 +273,8 @@
                   data-resume-modal-open
                   th:data-personal-member="${personalMember}"
                   th:data-already-applied="${alreadyApplied}"
+                  th:data-accepting-applications="${job.acceptingApplications}"
+                  th:data-application-unavailable-message="${job.applicationUnavailableMessage}"
                   th:data-job-posting-id="${job.jobPostingId}">지원하기</button>
         </div>
       </article>

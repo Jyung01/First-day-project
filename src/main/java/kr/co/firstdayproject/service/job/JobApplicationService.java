@@ -223,6 +223,16 @@ public class JobApplicationService {
                     "현재 지원할 수 없는 채용공고입니다."
             );
         }
+
+        Company company = getCompany(posting.getCompanyId());
+        if (!"승인".equals(company.getApprovalStatus())
+                || !"정상".equals(company.getCompanyStatus())) {
+            throw new IllegalArgumentException(
+                    "기업 계정 이용 제한으로 신규 입사지원이 "
+                            + "일시 중지되었습니다."
+            );
+        }
+
         if (posting.getApplyStartAt() != null
                 && posting.getApplyStartAt().isAfter(now)) {
             throw new IllegalArgumentException(
