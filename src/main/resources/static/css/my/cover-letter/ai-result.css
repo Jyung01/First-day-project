@@ -664,3 +664,36 @@
             outline: none;
             border-color: var(--primary, #6c5ce7);
         }
+
+        .cl-extra-info__item {
+            margin-top: 12px;
+        }
+
+        .cl-extra-info__question {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        /* 결과 화면 원문 칸 아래 — 첨삭 요청 때 사용자가 알려준 내용 */
+        .cl-original__extra {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border, #e7e7ec);
+        }
+
+        .cl-original__extra-title {
+            margin: 0 0 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted, #8a8b94);
+        }
+
+        .cl-original__extra-text {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-muted, #767781);
+        }
