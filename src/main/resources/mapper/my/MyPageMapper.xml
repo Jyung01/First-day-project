@@ -36,6 +36,8 @@
         JOIN companies c ON c.company_id = jp.company_id
         WHERE sj.user_id = #{userId}
           AND jp.status NOT IN ('임시저장', '숨김', '재검토요청', '삭제')
+          AND c.approval_status = '승인'
+          AND c.company_status = '정상'
         <include refid="savedJobFilter"/>
         ORDER BY sj.created_at DESC
         LIMIT #{offset}, #{pageSize}
@@ -48,6 +50,8 @@
         JOIN companies c ON c.company_id = jp.company_id
         WHERE sj.user_id = #{userId}
           AND jp.status NOT IN ('임시저장', '숨김', '재검토요청', '삭제')
+          AND c.approval_status = '승인'
+          AND c.company_status = '정상'
         <include refid="savedJobFilter"/>
     </select>
 

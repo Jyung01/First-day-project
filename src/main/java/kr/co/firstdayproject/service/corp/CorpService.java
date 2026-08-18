@@ -32,7 +32,7 @@ public class CorpService {
     private static final String PENDING_APPROVAL = "승인대기";
     private static final String WITHDRAWN_STATUS = "탈퇴";
     private static final List<String> ACTIVE_APPLICATION_STATUSES = List.of(
-            "지원완료", "서류검토중", "서류합격", "면접예정", "면접완료", "최종합격"
+            "지원완료", "서류검토중", "서류합격", "면접예정", "면접완료"
     );
     private static final List<String> ACTIVE_JOB_POSTING_STATUSES = List.of("모집중", "모집예정");
     private static final java.util.regex.Pattern PASSWORD_PATTERN =
@@ -115,13 +115,11 @@ public class CorpService {
     public CompanyWithdrawalSummary getWithdrawalSummary(Long companyId) {
         long activeJobCount = jobPostingRepository
                 .countByCompanyIdAndStatusIn(companyId, ACTIVE_JOB_POSTING_STATUSES);
-        long applicantCount = activeJobCount == 0L
-                ? 0L
-                : applicationRepository
-                        .countActiveApplicantsOfRecruitingCompany(
-                                companyId,
-                                ACTIVE_APPLICATION_STATUSES
-                        );
+        long applicantCount = applicationRepository
+                .countActiveApplicantsOfCompany(
+                        companyId,
+                        ACTIVE_APPLICATION_STATUSES
+                );
         return new CompanyWithdrawalSummary(activeJobCount, applicantCount);
     }
 
@@ -149,6 +147,11 @@ public class CorpService {
         }
 
         LocalDateTime now = LocalDateTime.now();
+        applicationRepository.recordCompanyWithdrawalStatusHistory(
+                companyId,
+                ACTIVE_APPLICATION_STATUSES,
+                now
+        );
         applicationRepository.terminateActiveApplicationsForCompanyWithdrawal(
                 companyId,
                 ACTIVE_APPLICATION_STATUSES,

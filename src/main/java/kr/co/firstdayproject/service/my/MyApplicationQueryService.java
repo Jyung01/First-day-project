@@ -141,6 +141,7 @@ public class MyApplicationQueryService {
                         ? "suspended"
                         : resolveStatusVariant(status),
                 isProcessSuspended(projection.getCompanyStatus()),
+                isCompanyWithdrawn(projection.getCompanyStatus()),
                 projection.getAppliedAt(),
                 projection.getLatestChangedAt()
         );
@@ -148,6 +149,10 @@ public class MyApplicationQueryService {
 
     private boolean isProcessSuspended(String companyStatus) {
         return "이용정지".equals(companyStatus);
+    }
+
+    private boolean isCompanyWithdrawn(String companyStatus) {
+        return "탈퇴".equals(companyStatus);
     }
 
     private String resolveStatusLabel(String status) {

@@ -48,7 +48,14 @@
           <span class="application-status"
                 th:classappend="' application-status--' + ${applicationDetail.statusVariant}"
                 th:text="${applicationDetail.statusLabel}">지원 완료</span>
-          <a th:href="@{/job/detail(jobPostingId=${applicationDetail.jobPostingId})}">공고 보기</a>
+          <a th:if="${!applicationDetail.companyUnavailable()}"
+             th:href="@{/job/detail(jobPostingId=${applicationDetail.jobPostingId})}">
+            공고 보기
+          </a>
+          <span class="application-job-unavailable"
+                th:if="${applicationDetail.companyUnavailable()}">
+            공고 비공개
+          </span>
         </div>
       </article>
 
@@ -57,6 +64,13 @@
         <strong>전형 일시 중지</strong>
         <p>기업 계정 이용 제한으로 채용 절차가 일시 중지되었습니다.<br>
           기업 상태가 정상화되면 기존 단계부터 재개될 수 있습니다.</p>
+      </section>
+
+      <section class="application-withdrawal-notice"
+               th:if="${applicationDetail.companyWithdrawn}">
+        <strong>탈퇴한 기업입니다</strong>
+        <p>기업 탈퇴로 기업정보와 채용공고는 비공개 처리되었습니다.<br>
+          지원 당시의 전형 결과와 제출 문서는 계속 확인할 수 있습니다.</p>
       </section>
 
       <section class="application-progress-card">

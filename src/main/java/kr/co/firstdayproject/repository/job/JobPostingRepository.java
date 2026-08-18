@@ -104,6 +104,8 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     LEFT JOIN JobCategory category
       ON category.jobCategoryId = posting.jobCategoryId
     WHERE posting.status = '모집중'
+      AND company.approvalStatus = '승인'
+      AND company.companyStatus = '정상'
     ORDER BY posting.publishedAt DESC,
              posting.jobPostingId DESC
     """)
@@ -130,6 +132,8 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     LEFT JOIN JobCategory category
       ON category.jobCategoryId = posting.jobCategoryId
     WHERE posting.status = '모집중'
+      AND company.approvalStatus = '승인'
+      AND company.companyStatus = '정상'
     ORDER BY posting.viewCount DESC,
              posting.publishedAt DESC,
              posting.jobPostingId DESC
@@ -148,6 +152,8 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     JOIN Company company ON company.companyId = posting.companyId
     LEFT JOIN JobCategory category ON category.jobCategoryId = posting.jobCategoryId
     WHERE posting.status = '모집중'
+      AND company.approvalStatus = '승인'
+      AND company.companyStatus = '정상'
       AND posting.jobCategoryId IN :categoryIds
     ORDER BY posting.publishedAt DESC, posting.viewCount DESC, posting.jobPostingId DESC
     """)

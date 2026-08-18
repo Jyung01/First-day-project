@@ -6,6 +6,7 @@ import kr.co.firstdayproject.dto.company.CompanyReviewsDTO;
 import kr.co.firstdayproject.dto.company.CompanySearchDTO;
 import kr.co.firstdayproject.dto.job.JobCategoryOption;
 import kr.co.firstdayproject.dto.job.JobDTO;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.util.PageHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,11 @@ public class CompanyService {
     // 기업정보 상세
     public CompanyDTO getCompanyDetail(Long companyId) {
         CompanyDTO company = companyDao.selectCompanyDetail(companyId);
+        if (company == null) {
+            throw new ResourceNotFoundException(
+                    "조회할 수 없는 기업정보입니다."
+            );
+        }
         company.setBenefitList(parseBenefits(company.getBenefits()));
         return company;
     }
@@ -103,6 +109,7 @@ public class CompanyService {
     // 기업 정보 : 관심기업 등록 및 해제
     @Transactional
     public boolean toggleWish(Long userId, Long companyId) {
+        getCompanyDetail(companyId);
 
         int count = companyDao.countWish(userId, companyId);
         // 이미 관심기업이면 삭제
