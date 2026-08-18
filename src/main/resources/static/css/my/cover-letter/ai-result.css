@@ -122,6 +122,35 @@
             white-space: nowrap;
         }
 
+        /* 브라우저 기본값은 한글을 음절 단위로 끊어서 "4학년"이 "4 / 학년"으로 쪼개진다.
+           영어는 단어 단위로 끊으면서 한글만 글자 단위로 자르는 셈이라 읽을 때 시선이 걸린다.
+           keep-all 로 띄어쓰기(어절) 기준으로 바꾼다. 긴 URL 등이 컬럼을 밀지 않도록
+           overflow-wrap 은 남겨 둔다. */
+        .cl-review-question,
+        .cl-original__text,
+        .cl-original__extra-text,
+        .cl-suggestion__example-text,
+        .cl-suggestion__summary-text,
+        .cl-suggestion__points-hint,
+        .cl-suggestion__point,
+        .cl-suggestion__added-note,
+        .cl-suggestion__failed {
+            word-break: keep-all;
+            overflow-wrap: anywhere;
+        }
+
+        /* ---------- 문항 질문 (좌우 컬럼 공통) ---------- */
+        /* 배경도 보더도 주지 않는다. 화면에 이미 흰 카드·회색 박스·보라 선이 있어서
+           네 번째 상자를 더하면 애써 만든 위계가 다시 흐려진다. 카드 제목(14px/700)보다
+           한 단계 큰 크기만으로 상위 계층이라는 게 읽힌다. */
+        .cl-review-question {
+            margin: 0 0 16px;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text-strong, #1c1c22);
+        }
+
         /* ---------- 원문 / AI 제안 2단 비교 ---------- */
         .cl-compare {
             display: grid;
@@ -136,6 +165,17 @@
             padding: 22px;
             display: flex;
             flex-direction: column;
+        }
+
+        /* 원문은 오른쪽 조언을 읽는 내내 대조 대상이라 화면에 붙여 둔다.
+           align-self: start 가 없으면 그리드가 두 열의 높이를 맞추려고 늘려서 sticky가 걸리지 않는다.
+           원문이 화면보다 길 수 있으므로 컬럼 안에서만 스크롤되게 한다. */
+        .cl-compare__col--original {
+            position: sticky;
+            top: 20px;
+            align-self: start;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
         }
 
         .cl-compare__title {
@@ -161,25 +201,49 @@
         }
 
         /* AI 제안 컬럼 */
+        /* 요약은 "무엇을 했는지" 설명이고, 사용자가 실제로 손댈 거리는 아래 개선 포인트에 있다.
+           그래서 강조색(보라)은 개선 포인트에만 주고 여기는 중립 배경으로 둔다.
+           단, 글자까지 회색으로 죽이지는 않는다 — 옅은 배경 + 회색 글씨는 "비활성"으로 읽혀서
+           사용자가 아예 안 읽고 넘어간다. 덜 중요한 게 아니라 손댈 거리가 아닐 뿐이다. */
         .cl-suggestion__summary-box {
-            background: #f4f2ff;
+            background: #f4f4f8;
             border-radius: 10px;
             padding: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .cl-suggestion__summary-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
-            color: #6c5ce7;
+            color: var(--text-strong, #1c1c22);
             margin: 0 0 6px;
         }
 
         .cl-suggestion__summary-text {
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.65;
             color: var(--text-strong, #1c1c22);
             margin: 0;
+        }
+
+        /* 요약 바로 뒤에 머리말 없이 목록이 나오면 요약의 연장선으로 읽힌다.
+           성격이 다른 블록이라는 신호를 준다. */
+        .cl-suggestion__points-head {
+            margin-bottom: 12px;
+        }
+
+        .cl-suggestion__points-title {
+            margin: 0 0 4px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-suggestion__points-hint {
+            margin: 0;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-muted, #8a8b94);
         }
 
         .cl-suggestion__points {
@@ -188,34 +252,49 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 14px;
         }
 
+        /* 4개가 같은 크기·색의 문단으로 붙어 있으면 벽처럼 보여 훑어지지 않는다.
+           항목마다 좌측 선을 그어 시작 지점을 만든다. */
         .cl-suggestion__point {
             font-size: 13px;
             line-height: 1.6;
             color: var(--text-strong, #1c1c22);
+            padding-left: 14px;
+            border-left: 3px solid #b9aef0;
         }
 
         .cl-suggestion__point-label {
             font-weight: 700;
             margin-right: 4px;
+            color: var(--primary, #6c5ce7);
         }
 
+        /* 수정 제안(고쳐 쓴 글)과 그 아래 조언(요약·개선 포인트)은 사용자가 할 일이 다른데,
+           이어 붙어 있으면 어디까지가 본문인지 경계가 사라진다. 본문만 카드로 떼어 낸다. */
         .cl-suggestion__example {
             margin-bottom: 20px;
+            padding: 16px 18px;
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 10px;
+            background: #fff;
         }
 
         .cl-suggestion__example-title {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--text-muted, #8a8b94);
-            margin: 0 0 8px;
+            margin: 0 0 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border, #f0f0f4);
+            /* 안쪽 개선 제안 개수가 float: right 라, BFC를 만들지 않으면 밑줄이 그 위를 지나간다. */
+            overflow: hidden;
         }
 
         .cl-suggestion__example-text {
-            font-size: 14px;
-            line-height: 1.7;
+            font-size: 15px;
+            line-height: 1.75;
             color: var(--text-strong, #1c1c22);
             white-space: pre-line;
             margin: 0;
@@ -387,6 +466,13 @@
         @media (max-width: 860px) {
             .cl-compare {
                 grid-template-columns: 1fr;
+            }
+
+            /* 1단으로 접히면 원문이 제안 위에 오므로 붙여 둘 이유가 없다. */
+            .cl-compare__col--original {
+                position: static;
+                max-height: none;
+                overflow-y: visible;
             }
         }
 
@@ -590,6 +676,14 @@
             padding: 1px 2px;
             -webkit-box-decoration-break: clone;
             box-decoration-break: clone;
+        }
+
+        /* 왼쪽 .cl-original__count 와 같은 자리·같은 무게로 맞춘다. */
+        .cl-suggestion__count {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-muted, #a6a7b1);
+            margin: 12px 0 0;
         }
 
         .cl-suggestion__added-note {
