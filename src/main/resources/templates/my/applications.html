@@ -66,6 +66,10 @@
                         </div>
                         <strong class="application-row__job">
                             <span th:text="${item.companyName}">기업명</span>
+                            <span class="application-company-state"
+                                  th:if="${item.companyWithdrawn}">
+                              탈퇴 기업
+                            </span>
                             <span aria-hidden="true"> · </span>
                             <span th:text="${item.jobTitle}">채용공고명</span>
                         </strong>

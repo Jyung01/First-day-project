@@ -55,6 +55,7 @@ public class MyApplicationDetailService {
                         ? "suspended"
                         : statusVariant(application.getCurrentStatus()),
                 "이용정지".equals(application.getCompanyStatus()),
+                "탈퇴".equals(application.getCompanyStatus()),
                 application.getAppliedAt(),
                 readSnapshot(application.getResumeSnapshotJson()),
                 readSnapshot(application.getCoverLetterSnapshotJson()),
