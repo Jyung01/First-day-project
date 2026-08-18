@@ -175,9 +175,14 @@
                      th:classappend="${iter.index == 0} ? '' : ' cl-panel--hidden'"
                      class="cl-review-panel">
 
+                    <!-- 질문은 원문과 제안 양쪽에 똑같이 걸리는 전제라 어느 한 컬럼에 넣지 않고
+                         위에 전폭으로 둔다. 원문 카드 안에 넣으면 사용자가 쓴 글과 기업이 낸 문제가
+                         한 덩어리로 보여, 질문까지 첨삭 대상인 것처럼 읽힌다. -->
+                    <p class="cl-review-question" th:text="${item.question()}">문항 질문</p>
+
                     <div class="cl-compare">
                         <!-- 원문 -->
-                        <div class="cl-compare__col">
+                        <div class="cl-compare__col cl-compare__col--original">
                             <h2 class="cl-compare__title">원문</h2>
                             <p class="cl-original__text" th:text="${item.answer()}">원문 내용</p>
                             <!-- 첨삭 결과에 이 내용으로 만들어진 문장이 들어가므로, 하이라이트 판정에서도
@@ -197,12 +202,12 @@
                             <div class="cl-suggestion__content">
                                 <!-- 원문과 바로 비교되도록 수정 제안을 맨 위에 배치, 이유(요약/개선포인트)는 아래에 -->
                                 <div class="cl-suggestion__example">
-                                    <!-- 다시 쓴 답변이 원문과 비슷할 때가 많아, 아래에 개선 제안이
+                                    <!-- 다시 쓴 답변이 원문과 비슷할 때가 많아, 아래에 사용자가 채울 거리가
                                          몇 개나 있는지 여기서 미리 알려준다. -->
                                     <p class="cl-suggestion__example-title">수정 제안<span
                                         class="cl-suggestion__points-count"
                                         th:if="${item.improvementPoints() != null and !item.improvementPoints().isEmpty()}"
-                                        th:text="|개선 제안 ${#lists.size(item.improvementPoints())}개|">개선 제안 0개</span></p>
+                                        th:text="|직접 보완할 점 ${#lists.size(item.improvementPoints())}개|">직접 보완할 점 0개</span></p>
                                     <!-- data-revised-answer는 적용 시 서버로 보낼 원본 문자열.
                                          본문에는 하이라이트용 <mark>이 끼어들 수 있으므로, 화면 표시와
                                          전송할 값을 분리해 마크업이 바뀌어도 저장 값이 흔들리지 않게 한다. -->
@@ -213,15 +218,31 @@
                                     <!-- 문항 하나가 실패해도 나머지는 저장되므로, 실패한 자리만 표시한다. -->
                                     <p class="cl-suggestion__failed"
                                        th:if="${item.revisedAnswer() == null}">이 문항은 첨삭 생성에 실패했습니다. 다시 첨삭을 요청하면 새로 생성됩니다.</p>
+                                    <!-- 자기소개서는 글자 수 제한이 있는 문서라, 적용했을 때 분량이
+                                         어떻게 되는지가 채택 여부를 가르는 정보다. 원문 쪽에만 있던 카운트를
+                                         제안 쪽에도 둬서 바로 비교되게 한다. -->
+                                    <p class="cl-suggestion__count"
+                                       th:if="${item.revisedAnswer() != null}"
+                                       th:text="|제안 ${#strings.length(item.revisedAnswer())}자|">제안 0자</p>
                                     <p class="cl-suggestion__added-note" aria-live="polite"></p>
                                 </div>
+                                <!-- 두 블록이 "개선"이라는 같은 단어를 쓰는 바람에, 사용자가 할 일인 아래 목록이
+                                     "AI가 개선한 항목"으로 읽혀 그냥 넘어갔다. 주어와 시제로 갈라 준다.
+                                     요약 = AI가 이미 한 일(과거), 목록 = 사용자가 앞으로 할 일(명령). -->
                                 <div class="cl-suggestion__summary-box">
-                                    <p class="cl-suggestion__summary-title">AI 개선점 요약</p>
+                                    <p class="cl-suggestion__summary-title">AI가 고친 부분</p>
                                     <p class="cl-suggestion__summary-text" th:text="${item.summary()}">첨삭 요약</p>
+                                </div>
+                                <div class="cl-suggestion__points-head"
+                                     th:if="${item.improvementPoints() != null and !item.improvementPoints().isEmpty()}">
+                                    <p class="cl-suggestion__points-title">직접 보완할 부분</p>
+                                    <!-- 여기 적힌 것들은 사용자만 아는 사실이라 AI가 채울 수 없다.
+                                         그 재료를 넣는 통로가 문항별 입력란이므로 연결을 만들어 준다. -->
+                                    <p class="cl-suggestion__points-hint">AI가 대신 쓸 수 없는 내용입니다. 다시 첨삭받을 때 문항별 입력란에 적으면 반영됩니다.</p>
                                 </div>
                                 <ul class="cl-suggestion__points">
                                     <li class="cl-suggestion__point" th:each="point, pointIter : ${item.improvementPoints()}">
-                                        <span class="cl-suggestion__point-label" th:text="|개선 ${pointIter.index + 1}.|">개선 1.</span><span th:text="${point}">개선 포인트</span>
+                                        <span class="cl-suggestion__point-label" th:text="|보완 ${pointIter.index + 1}.|">보완 1.</span><span th:text="${point}">보완할 점</span>
                                     </li>
                                 </ul>
                                 <div class="cl-suggestion__actions">
@@ -496,7 +517,7 @@
                     + ' 빠진 내용이 있다면 다시 첨삭받을 때 문항별 입력란에 적어주세요.';
             } else if (nearlyUnchanged) {
                 noteEl.textContent =
-                    '원문이 이미 충실해 크게 고칠 부분이 없습니다. 아래 개선 포인트를 확인하세요.';
+                    '원문이 이미 충실해 크게 고칠 부분이 없습니다. 아래 직접 보완할 부분을 확인하세요.';
             } else {
                 noteEl.textContent = '';
             }
