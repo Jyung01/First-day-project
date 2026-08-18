@@ -440,4 +440,43 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
             @Param("companyId") Long companyId,
             @Param("closedAt") LocalDateTime closedAt
     );
+
+    /**
+     * 주어진 공고 중 지금 외부에 노출해도 되는 것만 추린다.
+     * 조건은 일반 공고 목록(findRecruitingJobPostings)과 동일하게 맞춘다 —
+     * 목록에서 안 보이는 공고가 다른 경로로 새어 나가면 안 되기 때문이다.
+     *
+     * pgvector 검색 결과를 걸러내는 데 쓴다. 공고·기업 상태는 스케줄러나 관리자 조치로
+     * 수시로 바뀌어 벡터 스토어 메타데이터에 복제하면 곧 낡으므로, 원본인 MySQL에 직접 묻는다.
+     */
+    @Query("""
+            SELECT posting.jobPostingId
+              FROM JobPosting posting
+              JOIN Company company
+                ON company.companyId = posting.companyId
+             WHERE posting.jobPostingId IN :jobPostingIds
+               AND posting.status = '모집중'
+               AND company.approvalStatus = '승인'
+               AND company.companyStatus = '정상'
+            """)
+    List<Long> findVisibleIdsIn(
+            @Param("jobPostingIds") Collection<Long> jobPostingIds
+    );
+
+    /**
+     * 임베딩 백필용 — 커서(jobPostingId) 이후 공고 ID를 오름차순으로 가져온다.
+     * 공고 본문 전체를 메모리에 올리지 않으려고 ID만 조회한다.
+     */
+    @Query("""
+            SELECT posting.jobPostingId
+              FROM JobPosting posting
+             WHERE posting.jobPostingId > :afterJobPostingId
+             ORDER BY posting.jobPostingId ASC
+            """)
+    List<Long> findIdsAfter(
+            @Param("afterJobPostingId") Long afterJobPostingId,
+            Pageable pageable
+    );
+
+    long countByJobPostingIdGreaterThan(Long jobPostingId);
 }
