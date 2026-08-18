@@ -10,18 +10,29 @@ import kr.co.firstdayproject.repository.cs.InquiryAttachmentRepository;
 import kr.co.firstdayproject.repository.cs.InquiryCategoryRepository;
 import kr.co.firstdayproject.repository.cs.InquiryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +49,19 @@ public class QnaService {
 
     /** 프론트 필터 파라미터("PENDING"/"ANSWERED")를 실제 DB 상태값 목록으로 변환 */
     private static final List<String> PENDING_STATUSES = List.of(STATUS_RECEIVED, STATUS_IN_PROGRESS);
+
+    /** 첨부파일 정책 */
+    private static final int MAX_FILE_COUNT = 3;
+    private static final long MAX_FILE_SIZE = 10L * 1024 * 1024; // 10MB
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "pdf");
+
+    /**
+     * 첨부파일 저장 루트 경로.
+     * application.yml/properties에 cs.qna.upload-dir 설정이 없으면 기본값(./uploads/qna)을 사용합니다.
+     * 운영 환경(예: S3, 별도 스토리지 서버)을 쓰는 경우 이 부분을 해당 스토리지 클라이언트 호출로 교체하면 됩니다.
+     */
+    @Value("${cs.qna.upload-dir:uploads/qna}")
+    private String uploadDir;
 
     private final InquiryRepository inquiryRepository;
     private final InquiryCategoryRepository inquiryCategoryRepository;
@@ -75,10 +99,11 @@ public class QnaService {
         return getInquiryDetail(inquiryId);
     }
 
-    /** 사용자 - 문의 등록 (개인/기업회원 공통) */
+    /** 사용자 - 문의 등록 (개인/기업회원 공통), 첨부파일 0~3개 포함 */
     @Transactional
-    public Long createInquiry(Long userId, Long categoryId, String title, String content) {
+    public Long createInquiry(Long userId, Long categoryId, String title, String content, List<MultipartFile> files) {
         validateCreateInquiry(categoryId, title, content);
+        List<MultipartFile> validFiles = validateAndFilterFiles(files);
 
         Inquiry inquiry = Inquiry.builder()
                 .userId(userId)
@@ -91,6 +116,11 @@ public class QnaService {
                 .build();
 
         inquiryRepository.save(inquiry);
+
+        if (!validFiles.isEmpty()) {
+            saveAttachments(inquiry.getInquiryId(), validFiles);
+        }
+
         return inquiry.getInquiryId();
     }
 
@@ -112,6 +142,100 @@ public class QnaService {
         }
     }
 
+    /** 첨부파일 개수/용량/확장자 검증 후 빈 파일을 제외한 목록 반환 */
+    private List<MultipartFile> validateAndFilterFiles(List<MultipartFile> files) {
+        if (files == null || files.isEmpty()) {
+            return List.of();
+        }
+
+        List<MultipartFile> validFiles = files.stream()
+                .filter(f -> f != null && !f.isEmpty())
+                .collect(Collectors.toList());
+
+        if (validFiles.size() > MAX_FILE_COUNT) {
+            throw new IllegalArgumentException("첨부파일은 최대 " + MAX_FILE_COUNT + "개까지 등록할 수 있습니다.");
+        }
+
+        for (MultipartFile file : validFiles) {
+            if (file.getSize() > MAX_FILE_SIZE) {
+                throw new IllegalArgumentException(file.getOriginalFilename() + " 파일이 10MB를 초과합니다.");
+            }
+            String ext = extractExtension(file.getOriginalFilename());
+            if (!ALLOWED_EXTENSIONS.contains(ext)) {
+                throw new IllegalArgumentException("JPG, PNG, PDF 파일만 첨부할 수 있습니다.");
+            }
+        }
+
+        return validFiles;
+    }
+
+    /**
+     * 첨부파일을 디스크에 저장하고 InquiryAttachment 레코드를 생성합니다.
+     * NOTE: InquiryAttachment/InquiryAttachmentRepository 소스를 확인하지 못해
+     *       필드명(originalName, fileSize 등 기존 코드에서 쓰던 것 기준)을 추정해 작성했습니다.
+     *       실제 엔티티의 빌더 필드명이 다르면 이 메서드만 맞춰 수정해주세요.
+     */
+    private void saveAttachments(Long inquiryId, List<MultipartFile> files) {
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+        try {
+            Files.createDirectories(uploadPath);
+        } catch (IOException e) {
+            throw new UncheckedIOException("첨부파일 저장 폴더 생성에 실패했습니다.", e);
+        }
+
+        List<InquiryAttachment> attachments = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            String originalName = file.getOriginalFilename();
+            String ext = extractExtension(originalName);
+            String storedName = UUID.randomUUID() + (ext.isEmpty() ? "" : "." + ext);
+            Path targetPath = uploadPath.resolve(storedName);
+
+            try {
+                file.transferTo(targetPath.toFile());
+            } catch (IOException e) {
+                throw new UncheckedIOException("첨부파일 저장에 실패했습니다: " + originalName, e);
+            }
+
+            // NOTE: storageKey는 엔티티 설명상 "객체 스토리지" 키를 의도한 필드입니다.
+            //       현재는 별도 스토리지 연동 전이라 로컬 디스크 절대경로를 그대로 저장합니다.
+            //       추후 S3 등으로 전환 시 이 값을 버킷 키(예: "qna/{storedName}")로 바꾸고
+            //       업로드 로직도 해당 SDK 호출로 교체하면 됩니다.
+            InquiryAttachment attachment = InquiryAttachment.builder()
+                    .inquiryId(inquiryId)
+                    .originalName(originalName)
+                    .storageKey(targetPath.toString())
+                    .mimeType(file.getContentType() != null ? file.getContentType() : "application/octet-stream")
+                    .fileSize(file.getSize())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            attachments.add(attachment);
+        }
+
+        inquiryAttachmentRepository.saveAll(attachments);
+    }
+
+    private String extractExtension(String filename) {
+        if (!StringUtils.hasText(filename) || !filename.contains(".")) {
+            return "";
+        }
+        return filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+    }
+
+    /** 사용자 - 첨부파일이 본인 문의의 것인지 검증 후 반환 (다운로드용) */
+    public InquiryAttachment getMyAttachment(Long attachmentId, Long userId) {
+        InquiryAttachment attachment = inquiryAttachmentRepository.findById(attachmentId)
+                .orElseThrow(() -> new NoSuchElementException("첨부파일을 찾을 수 없습니다. id=" + attachmentId));
+
+        Inquiry inquiry = getInquiryOrThrow(attachment.getInquiryId());
+        if (!inquiry.getUserId().equals(userId)) {
+            throw new IllegalStateException("본인 문의의 첨부파일만 다운로드할 수 있습니다.");
+        }
+
+        return attachment;
+    }
+
     /** 사용자 - 문의 삭제 (본인 문의 + 답변대기 상태만 가능) */
     @Transactional
     public void deleteMyInquiry(Long inquiryId, Long userId) {
@@ -124,7 +248,18 @@ public class QnaService {
             throw new IllegalStateException("답변완료된 문의는 삭제할 수 없습니다.");
         }
 
-        // TODO: InquiryAttachmentRepository에 첨부파일 일괄 삭제 메서드(deleteByInquiryId 등)가 있다면 여기서 함께 호출
+        List<InquiryAttachment> attachments = inquiryAttachmentRepository.findByInquiryId(inquiryId);
+        if (!attachments.isEmpty()) {
+            for (InquiryAttachment attachment : attachments) {
+                try {
+                    Files.deleteIfExists(Path.of(attachment.getStorageKey()));
+                } catch (IOException e) {
+                    // 파일 삭제 실패는 문의 삭제 자체를 막지 않고 무시합니다. 필요 시 로깅 추가.
+                }
+            }
+            inquiryAttachmentRepository.deleteAll(attachments);
+        }
+
         inquiryRepository.delete(inquiry);
     }
 
