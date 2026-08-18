@@ -44,6 +44,17 @@ public class CoverLetterItemReviewService {
         - STAR(상황-과제-행동-결과) 구조는 원문에 있는 내용만으로 재배치할 수 있을 때만 적용하세요.
           구조를 채우려고 없는 결과를 만들어내지 마세요.
 
+        사실을 더하지 않고도 해야 하는 편집 — 이것까지 하지 않으면 첨삭이 아닙니다:
+        - 두괄식으로 돌리세요. 무엇을 했고 무엇을 고민했는지를 앞에 두고, 계기나 배경은 뒤로 보내세요.
+        - 힘 빠지는 소감 표현을 걷어내세요. "흥미를 느꼈습니다", "인상 깊었습니다", "좋은 경험이었습니다"
+          같은 문장은 정보를 담고 있지 않습니다. 그 자리에 무엇을 했는지가 오게 하세요.
+        - 늘어지는 문장은 나누고, 같은 말을 두 번 하는 곳은 하나로 합치세요.
+        - 대상 공고가 쓰는 용어에 표현을 맞추세요. 다만 사실이 아니라 어휘 수준에서만입니다.
+        - 어미만 바꾸거나 단어를 동의어로 교체한 결과는 첨삭이 아닙니다. 원문과 거의 같은 문장을
+          돌려주지 마세요. 바꿀 이유가 없는 문장은 차라리 그대로 두세요.
+        - 예외: 원문이 이미 잘 쓰여 있고 위 편집을 적용할 곳이 없다면 억지로 고치지 말고 거의 그대로
+          두세요. 그 경우에는 summary에 원문이 이미 충실하다는 점을 밝히세요.
+
         채용공고 활용 방법:
         - 대상 채용공고는 원문의 어떤 경험을 앞세우고 어떤 표현을 쓸지 고르는 기준으로만 쓰세요.
         - 공고에 적힌 회사명·제품명·서비스명을 지원자의 경험이나 포부 문장에 넣지 마세요.
@@ -51,10 +62,22 @@ public class CoverLetterItemReviewService {
         - 같은 직무군의 유사 공고가 함께 주어지면, 이 직무군에서 무엇이 중요하게 평가되는지
           판단하는 데만 참고하세요. 그 공고의 표현이나 요구사항을 지원자 문장으로 옮기지 마세요.
 
+        지원자 이력서가 함께 주어졌을 때 — 매우 중요:
+        - 이력서 내용은 improvementPoints를 구체적으로 쓰는 데만 사용하세요.
+          revisedAnswer 본문에는 절대 넣지 마세요. 원문에 없으면 이력서에 있어도 본문에 쓰지 않습니다.
+        - "관련 경험이 있다면 적으세요"처럼 뭉뚱그리지 말고, 이력서에 실제로 있는 항목을 짚어
+          "이력서에 적으신 ○○ 경험을 이 문항에 연결하면 좋습니다"처럼 쓰세요.
+        - 이력서의 경험과 자소서 원문의 경험을 하나로 합치지 마세요. 서로 다른 시기·다른 프로젝트의
+          일을 한 문장으로 묶으면 각각은 사실이어도 결과는 거짓이 됩니다.
+        - 이력서의 보유 기술은 "다룰 줄 안다"는 목록일 뿐입니다. 특정 프로젝트에서 사용했다고
+          단정하지 마세요.
+
         나머지 출력:
         - summary는 한두 문장으로 이번 첨삭의 핵심을 요약하세요.
+          원문이 이미 충실해 크게 고칠 부분이 없다면 그 사실을 먼저 밝히고, 그다음에 보강 방향을 말하세요.
         - improvementPoints는 구체적인 개선 포인트를 항목별로 나열하세요.
           원문에 없어서 본문에 넣지 못한 보강 사항도 여기에 담으세요.
+          이 공고에 중요한 순서로 최대 5개까지만 쓰세요. 항목을 채우려고 사소한 것까지 늘리지 마세요.
         """;
 
     private final ChatClient chatClient;
@@ -75,7 +98,8 @@ public class CoverLetterItemReviewService {
     public CoverLetterItemReviewOutcome review(
         String question,
         String answer,
-        JobPosting targetPosting
+        JobPosting targetPosting,
+        String applicantResume
     ) {
         List<Document> similarPostings = similarJobPostingSearchService.findSimilarPostings(
             answer,
@@ -84,7 +108,9 @@ public class CoverLetterItemReviewService {
             3
         );
 
-        String userPrompt = buildUserPrompt(question, answer, targetPosting, similarPostings);
+        String userPrompt = buildUserPrompt(
+            question, answer, targetPosting, similarPostings, applicantResume
+        );
 
         CoverLetterItemReviewResult result = chatClient.prompt()
             .system(SYSTEM_PROMPT)
@@ -117,7 +143,8 @@ public class CoverLetterItemReviewService {
         String question,
         String answer,
         JobPosting targetPosting,
-        List<Document> similarPostings
+        List<Document> similarPostings,
+        String applicantResume
     ) {
         StringBuilder builder = new StringBuilder();
 
@@ -133,6 +160,12 @@ public class CoverLetterItemReviewService {
             for (Document document : similarPostings) {
                 builder.append("- ").append(document.getText()).append('\n');
             }
+        }
+
+        if (applicantResume != null && !applicantResume.isBlank()) {
+            builder.append("\n[지원자 이력서 — improvementPoints를 구체적으로 쓰는 데만 사용]\n")
+                .append(applicantResume.trim())
+                .append('\n');
         }
 
         builder.append("\n[자기소개서 문항]\n").append(question).append('\n');

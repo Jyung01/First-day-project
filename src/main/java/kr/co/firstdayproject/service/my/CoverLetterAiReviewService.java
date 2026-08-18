@@ -24,6 +24,7 @@ import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
 import kr.co.firstdayproject.dto.ai.CoverLetterItemReviewOutcome;
 import kr.co.firstdayproject.dto.ai.RagEvidence;
+import kr.co.firstdayproject.service.ai.ApplicantResumeSummaryService;
 import kr.co.firstdayproject.service.ai.CoverLetterItemReviewService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,7 @@ public class CoverLetterAiReviewService {
     private final JobPostingRepository jobPostingRepository;
     private final CompanyRepository companyRepository;
     private final CoverLetterItemReviewService coverLetterItemReviewService;
+    private final ApplicantResumeSummaryService applicantResumeSummaryService;
     // 이 프로젝트는 spring-boot-starter-webmvc만 사용해 Jackson ObjectMapper 빈이
     // 자동 등록되지 않으므로, 전역 설정에 손대지 않고 이 서비스 전용으로 직접 생성한다.
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -58,8 +60,10 @@ public class CoverLetterAiReviewService {
         CoverLetterItemRepository coverLetterItemRepository,
         JobPostingRepository jobPostingRepository,
         CompanyRepository companyRepository,
-        @Lazy CoverLetterItemReviewService coverLetterItemReviewService
+        @Lazy CoverLetterItemReviewService coverLetterItemReviewService,
+        ApplicantResumeSummaryService applicantResumeSummaryService
     ) {
+        this.applicantResumeSummaryService = applicantResumeSummaryService;
         this.coverLetterService = coverLetterService;
         this.coverLetterAiReviewRepository = coverLetterAiReviewRepository;
         this.coverLetterItemRepository = coverLetterItemRepository;
@@ -101,6 +105,11 @@ public class CoverLetterAiReviewService {
             );
         }
 
+        // 이력서는 사용자가 직접 입력한 본인의 사실이라 첨삭 재료로 써도 지어내기가 아니다.
+        // 다만 본문에 섞이면 서로 다른 경험이 한 문장으로 합쳐질 수 있어, 프롬프트에서
+        // improvementPoints 용도로만 쓰도록 제한한다. 문항마다 같은 값이므로 한 번만 조회한다.
+        String applicantResume = applicantResumeSummaryService.buildSummary(userId);
+
         List<OriginalItemSnapshot> originalSnapshot = items.stream()
             .map(item -> new OriginalItemSnapshot(item.getQuestion(), item.getAnswer()))
             .toList();
@@ -112,7 +121,8 @@ public class CoverLetterAiReviewService {
             .map(item -> coverLetterItemReviewService.review(
                 item.getQuestion(),
                 item.getAnswer(),
-                targetPosting
+                targetPosting,
+                applicantResume
             ))
             .toList();
 
