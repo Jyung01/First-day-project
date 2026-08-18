@@ -35,6 +35,7 @@
 </header>
 
 <main class="job-page">
+    <div id="redirectFeedback" th:if="${errorMessage}" th:data-message="${errorMessage}" hidden></div>
 
     <section class="job-hero">
         <div class="job-container">
@@ -397,6 +398,10 @@
 
 <script th:src="@{/js/modal.js}"
         src="/js/modal.js">
+</script>
+
+<script th:src="@{/js/common/redirect-feedback.js}"
+        src="/js/common/redirect-feedback.js">
 </script>
 
 </body>

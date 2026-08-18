@@ -8,6 +8,7 @@ import kr.co.firstdayproject.dto.job.JobCategoryOption;
 import kr.co.firstdayproject.dto.job.JobDTO;
 import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.util.PageHandler;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

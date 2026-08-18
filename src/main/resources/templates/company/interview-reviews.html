@@ -27,54 +27,6 @@
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
-    <script type="application/disabled">
-        document.addEventListener("DOMContentLoaded", () => {
-
-            const reportModal = document.getElementById("reportModal");
-            const closeBtn = reportModal.querySelector(".modal-close");
-            const cancelBtn = reportModal.querySelector(".btn-cancel");
-
-            // 신고 버튼 클릭
-            document.querySelectorAll(".report-btn").forEach((btn) => {
-                btn.addEventListener("click", () => {
-
-                    // TODO : 나중에 신고 대상 정보 세팅
-                    // document.getElementById("reportTarget").value = "...";
-
-                    reportModal.classList.add("show");
-                });
-            });
-
-            // X 버튼
-            closeBtn.addEventListener("click", () => {
-                reportModal.classList.remove("show");
-            });
-
-            // 취소 버튼
-            cancelBtn.addEventListener("click", () => {
-                reportModal.classList.remove("show");
-            });
-
-            // 바깥 영역 클릭
-            reportModal.addEventListener("click", (e) => {
-                if (e.target === reportModal) {
-                    reportModal.classList.remove("show");
-                }
-            });
-
-            // 신고 접수(테스트)
-            document.getElementById("reportForm").addEventListener("submit", (e) => {
-                e.preventDefault();
-
-                reportModal.classList.remove("show");
-
-                // TODO : fetch 신고 API
-                // TODO : 신고 완료 모달 호출
-            })
-        });
-
-    </script>
-
 </head>
 <body>
 <header th:replace="~{common/header :: header}"></header>

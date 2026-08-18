@@ -14,6 +14,8 @@ public interface UserDesiredJobRepository extends JpaRepository<UserDesiredJob, 
 
     long countByIdJobCategoryId(Long jobCategoryId);
 
+    boolean existsByIdUserId(Long userId);
+
     void deleteByIdUserId(Long userId);
 
     @Query("""

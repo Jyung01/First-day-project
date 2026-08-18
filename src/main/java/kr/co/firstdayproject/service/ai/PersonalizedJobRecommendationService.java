@@ -17,9 +17,10 @@ import kr.co.firstdayproject.repository.resume.ResumeRepository;
 import kr.co.firstdayproject.repository.resume.ResumeSkillRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 /** Stores a private candidate profile embedding and searches job-posting embeddings. */
@@ -30,6 +31,8 @@ public class PersonalizedJobRecommendationService {
 
     private static final String PROFILE_SOURCE_TYPE = "user_profile";
     private final VectorStore vectorStore;
+    @Qualifier("postgresJdbcTemplate")
+    private final JdbcTemplate postgresJdbcTemplate;
     private final ResumeRepository resumeRepository;
     private final ResumeCareerRepository resumeCareerRepository;
     private final ResumeSkillRepository resumeSkillRepository;
@@ -38,34 +41,38 @@ public class PersonalizedJobRecommendationService {
     private final CoverLetterItemRepository coverLetterItemRepository;
 
     public Map<Long, Integer> findSemanticMatchScores(Long userId) {
-        String profile = buildProfile(userId);
-        if (profile.isBlank()) return Map.of();
+        String profileId = profileVectorId(userId);
+        String sql = """
+                SELECT candidate.metadata ->> 'source_id' AS source_id,
+                       ROUND((1 - (candidate.embedding <=> profile.embedding)) * 100)::int AS score
+                FROM ai.vector_store candidate
+                CROSS JOIN (SELECT embedding FROM ai.vector_store WHERE id = ?::uuid) profile
+                WHERE candidate.metadata ->> 'source_type' = 'job_posting'
+                ORDER BY candidate.embedding <=> profile.embedding
+                LIMIT 100
+                """;
+        Map<Long, Integer> scores = new LinkedHashMap<>();
+        postgresJdbcTemplate.query(sql, resultSet -> {
+            try {
+                scores.put(Long.valueOf(resultSet.getString("source_id")),
+                        Math.max(0, Math.min(resultSet.getInt("score"), 100)));
+            } catch (NumberFormatException ignored) {
+                // Ignore malformed vector-store metadata.
+            }
+        }, profileId);
+        return scores;
+    }
 
+    /** 저장·수정 완료 후에만 OpenAI 임베딩 API를 호출해 프로필 벡터를 갱신한다. */
+    public void upsertProfileEmbedding(Long userId) {
+        String profile = buildProfile(userId);
         String profileId = profileVectorId(userId);
         vectorStore.delete(List.of(profileId));
+        if (profile.isBlank()) return;
         vectorStore.add(List.of(new Document(profileId, profile, Map.of(
                 "source_type", PROFILE_SOURCE_TYPE,
                 "source_id", String.valueOf(userId)
         ))));
-
-        Map<Long, Integer> scores = new LinkedHashMap<>();
-        vectorStore.similaritySearch(SearchRequest.builder()
-                        .query(profile)
-                        .topK(100)
-                        .similarityThreshold(0.2)
-                        .filterExpression("source_type == 'job_posting'")
-                        .build())
-                .forEach(document -> {
-                    Object sourceId = document.getMetadata().get("source_id");
-                    if (sourceId == null) return;
-                    try {
-                        int percent = (int) Math.round(document.getScore() * 100);
-                        scores.put(Long.valueOf(sourceId.toString()), Math.max(0, Math.min(percent, 100)));
-                    } catch (NumberFormatException ignored) {
-                        // Ignore malformed vector-store metadata.
-                    }
-                });
-        return scores;
     }
 
     private String buildProfile(Long userId) {
