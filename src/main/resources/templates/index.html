@@ -51,71 +51,58 @@
     </div>
 
     <div class="wrap">
+        <section class="job-preparation" th:if="${personalMember}">
+            <div class="job-preparation-head">
+                <strong>취업 준비 현황</strong>
+                <span th:text="${jobPreparation.completedCount} + ' / 4 완료'"></span>
+            </div>
+            <div class="job-preparation-content">
+                <div class="job-preparation-steps" aria-label="취업 준비 단계">
+                    <div class="job-preparation-step"
+                         th:classappend="${jobPreparation.desiredJobCompleted} ? ' completed'">
+                        <span th:text="${jobPreparation.desiredJobCompleted} ? '✓' : '1'"></span><em>희망 직무</em>
+                    </div>
+                    <div class="job-preparation-step"
+                         th:classappend="${jobPreparation.resumeCompleted} ? ' completed'">
+                        <span th:text="${jobPreparation.resumeCompleted} ? '✓' : '2'"></span><em>이력서</em>
+                    </div>
+                    <div class="job-preparation-step"
+                         th:classappend="${jobPreparation.coverLetterCompleted} ? ' completed'">
+                        <span th:text="${jobPreparation.coverLetterCompleted} ? '✓' : '3'"></span><em>자기소개서</em>
+                    </div>
+                    <div class="job-preparation-step"
+                         th:classappend="${jobPreparation.applicationStarted} ? ' completed'">
+                        <span th:text="${jobPreparation.applicationStarted} ? '✓' : '4'"></span><em>지원 시작</em>
+                    </div>
+                </div>
+                <div class="job-preparation-next">
+                    <span th:text="${jobPreparation.nextTitle}"></span>
+                    <a th:href="${jobPreparation.nextHref}"
+                       th:text="${jobPreparation.nextActionLabel} + ' →'"></a>
+                </div>
+            </div>
+        </section>
+
         <!-- ============ 채용공고 모아보기 ============ -->
         <section class="block">
             <div class="block-head">
                 <div>
                     <div class="block-title">채용공고 모아보기</div>
-                    <div class="block-sub">희망 직무 기반 AI 추천 · 인기 공고 · 최신 공고</div>
+                    <div class="block-sub">인기 공고 · 최신 공고 · 필요할 때 확인하는 AI 맞춤 추천</div>
                 </div>
                 <a th:href="@{/job/list}" class="more-link">전체보기 →</a>
             </div>
 
             <div class="tabs">
-                <div class="tab active" data-tab="personalized">AI 맞춤 추천</div>
-                <div class="tab" data-tab="popular">인기 공고</div>
+                <button type="button" class="tab ai-recommendation-tab" data-tab="personalized"
+                        th:if="${personalMember}">AI 맞춤 추천</button>
+                <div class="tab active" data-tab="popular">인기 공고</div>
                 <div class="tab" data-tab="latest">최신 공고</div>
             </div>
 
-            <!--인기순-->
-            <div class="job-grid personalized-grid">
-                <a th:href="@{/job/detail(jobPostingId=${job.jobPostingId})}" class="job-card" th:each="job : ${personalizedJobs}">
-                    <div class="co-row">
-                        <img class="co-logo" th:src="${job.logoUrl}" alt="회사 로고">
-                        <div class="co-name" th:text="${job.companyName}"></div>
-                    </div>
-                    <div class="job-title" th:text="${job.title}"></div>
-                    <div class="ai-match" th:if="${aiMatchScores.containsKey(job.jobPostingId)}">
-                        <span class="ai-match-mark">AI</span>
-                        <span>추천 매칭</span>
-                        <strong th:text="${aiMatchScores.get(job.jobPostingId)} + '%'"></strong>
-                    </div>
-                    <div class="ai-reasons" th:if="${!#lists.isEmpty(aiMatchReasons.get(job.jobPostingId))}">
-                        <div class="ai-reasons-title">
-                            매칭 포인트
-                        </div>
-                        <div class="ai-reason-list">
-                            <span class="ai-reason"
-                                  th:each="reason : ${aiMatchReasons.get(job.jobPostingId)}"
-                                  th:classappend="${#strings.contains(reason, '스킬')} ? ' skill' : (${#strings.contains(reason, '경력')} ? ' career' : ' semantic')">
-                                <strong th:if="${#strings.contains(reason, '스킬')}">보유 스킬</strong>
-                                <strong th:if="${#strings.contains(reason, '경력')}">경력 조건</strong>
-                                <strong th:if="${!#strings.contains(reason, '스킬') and !#strings.contains(reason, '경력')}">자기소개서 경험</strong>
-                                <span th:if="${#strings.contains(reason, '스킬')}"
-                                      th:text="${#strings.substringAfter(reason, ': ')}"></span>
-                                <span th:if="${#strings.contains(reason, '경력')}">적합</span>
-                                <span th:if="${!#strings.contains(reason, '스킬') and !#strings.contains(reason, '경력')}">연관</span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="job-loc"><span th:text="${job.workRegion}"></span> · <span th:text="${job.careerType}"></span></div>
-                    <div class="tag-row">
-                        <span class="tag" th:text="${job.employmentType}"></span>
-                        <span class="tag" th:text="${job.categoryName}"></span>
-                    </div>
-                </a>
-                <div class="recommendation-empty" th:if="${#lists.isEmpty(personalizedJobs)}">
-                    <strong th:if="${personalMember}">희망 직무와 일치하는 모집 중 공고가 아직 없어요.</strong>
-                    <strong th:unless="${personalMember}">로그인하고 AI 맞춤 채용공고를 받아보세요.</strong>
-                    <p th:if="${personalMember}">희망 직무를 수정하면 더 다양한 공고를 추천해 드립니다.</p>
-                    <p th:unless="${personalMember}">희망 직무를 설정하면 관심 분야의 채용공고를 바로 확인할 수 있어요.</p>
-                    <a class="recommendation-link" th:href="${personalMember} ? @{/my/profile-edit} : @{/auth/login}">
-                        <span th:text="${personalMember} ? '희망 직무 설정하기' : '로그인하기'"></span> →
-                    </a>
-                </div>
-            </div>
+            <div class="job-grid personalized-grid" style="display:none;"></div>
 
-            <div class="job-grid popular-grid" style="display:none;">
+            <div class="job-grid popular-grid">
                 <a th:href="@{/job/detail(jobPostingId=${job.jobPostingId})}" class="job-card" th:each="job : ${popularJobs}">
 
                     <div class="co-row">
@@ -275,10 +262,13 @@
         <!-- ============ CTA 배너 ============ -->
         <section class="block">
             <div class="cta-banner">
-                <h2>첫출근과 함께 취업 준비를 시작해보세요</h2>
-                <p>맞춤 공고 추천부터 자기소개서 첨삭까지, 한 곳에서 준비하세요</p>
+                <h2 th:if="${companyMember}">첫출근과 함께 채용 관리를 시작해보세요</h2>
+                <h2 th:unless="${companyMember}">첫출근과 함께 취업 준비를 시작해보세요</h2>
+                <p th:if="${companyMember}">채용공고 등록부터 지원자 관리까지, 한 곳에서 관리하세요</p>
+                <p th:unless="${companyMember}">맞춤 공고 추천부터 자기소개서 첨삭까지, 한 곳에서 준비하세요</p>
                 <a th:href="${personalMember} ? @{/my/resume/form} : (${companyMember} ? @{/corp} : @{/auth/personal-signup})"
-                   class="btn btn-primary">지금 시작하기</a>
+                   class="btn btn-primary"
+                   th:text="${companyMember} ? '채용 관리로 이동하기' : '지금 시작하기'">지금 시작하기</a>
             </div>
         </section>
     </div>

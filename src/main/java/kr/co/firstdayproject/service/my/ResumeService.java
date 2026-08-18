@@ -26,9 +26,11 @@ import kr.co.firstdayproject.repository.resume.ResumeEducationRepository;
 import kr.co.firstdayproject.repository.resume.ResumeProjectRepository;
 import kr.co.firstdayproject.repository.resume.ResumeRepository;
 import kr.co.firstdayproject.repository.resume.ResumeSkillRepository;
+import kr.co.firstdayproject.service.ai.UserProfileEmbeddingSyncEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -46,6 +48,7 @@ public class ResumeService {
     private final ResumeSkillRepository resumeSkillRepository;
     private final SkillRepository skillRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<ResumeDto.ListItem> findMyList(Long userId) {
         List<Resume> resumes = resumeRepository.findByUserIdAndDeletedAtIsNullOrderByUpdatedAtDesc(userId);
@@ -83,6 +86,7 @@ public class ResumeService {
     public void delete(Long resumeId, Long userId) {
         Resume resume = getMine(resumeId, userId);
         resume.setDeletedAt(LocalDateTime.now());
+        eventPublisher.publishEvent(new UserProfileEmbeddingSyncEvent(userId));
     }
 
     public List<ResumeCareer> getCareers(Long resumeId) {
@@ -261,6 +265,7 @@ public class ResumeService {
         saveCareers(resume.getResumeId(), request.getCareers());
         saveProjects(resume.getResumeId(), request.getProjects());
         saveSkills(resume.getResumeId(), request.getSkillIds());
+        eventPublisher.publishEvent(new UserProfileEmbeddingSyncEvent(userId));
 
         return resume.getResumeId();
     }

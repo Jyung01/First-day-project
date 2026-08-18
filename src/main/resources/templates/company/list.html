@@ -25,6 +25,7 @@
 <header th:replace="~{common/header :: header}"></header>
 
 <main class="company-main">
+    <div id="redirectFeedback" th:if="${errorMessage}" th:data-message="${errorMessage}" hidden></div>
 
     <!-- 검색 영역 -->
     <section class="company-search-section">
@@ -227,5 +228,6 @@
 
 <!-- 공통 헤더·푸터 불러오기 -->
 <script th:src="@{../js/common.js}"></script>
+<script th:src="@{/js/common/redirect-feedback.js}"></script>
 </body>
 </html>

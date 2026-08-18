@@ -33,6 +33,7 @@ import kr.co.firstdayproject.repository.resume.ResumeSkillRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
 import kr.co.firstdayproject.service.ai.PersonalizedJobRecommendationService;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,7 +53,7 @@ public class JobService {
     private static final int MAIN_JOB_COUNT = 6;
     private static final int JOB_LIST_PAGE_SIZE = 12;
     private static final int JOB_DETAIL_LIST_PAGE_SIZE = 3;
-    private static final int JOB_PICKER_PAGE_SIZE = 5;
+    private static final int JOB_PICKER_PAGE_SIZE = 10;
 
     private final JobPostingRepository jobPostingRepository;
     private final ApplicationRepository applicationRepository;
@@ -74,8 +75,12 @@ public class JobService {
             Long jobPostingId,
             Authentication authentication
     ) {
-        JobPosting posting = jobPostingRepository.findById(jobPostingId)
-                .orElseThrow(() -> new IllegalArgumentException(
+        JobPosting posting = jobPostingRepository
+                .findByJobPostingIdAndStatusIn(
+                        jobPostingId,
+                        List.of("모집중", "마감")
+                )
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "조회할 수 없는 채용공고입니다."
                 ));
 
@@ -87,15 +92,19 @@ public class JobService {
                 );
 
         if (!recruiting && !savedClosedPosting) {
-            throw new IllegalArgumentException(
+            throw new ResourceNotFoundException(
                     "조회할 수 없는 채용공고입니다."
             );
         }
 
         Company company = companyRepository.findById(posting.getCompanyId())
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "기업 정보를 찾을 수 없습니다."
                 ));
+        if (!"승인".equals(company.getApprovalStatus())
+                || !"정상".equals(company.getCompanyStatus())) {
+            throw new ResourceNotFoundException("조회할 수 없는 채용공고입니다.");
+        }
 
         posting.setViewCount(
                 (posting.getViewCount() == null ? 0L : posting.getViewCount()) + 1
@@ -233,14 +242,14 @@ public class JobService {
         jobPostingSkillRepository.findAllByIdJobPostingIdIn(candidates.stream()
                         .map(JobPosting::getJobPostingId).toList())
                 .forEach(skill -> postingSkills.computeIfAbsent(
-                        skill.getId().getJobPostingId(), ignored -> new java.util.HashSet<>())
+                                skill.getId().getJobPostingId(), ignored -> new java.util.HashSet<>())
                         .add(skill.getId().getSkillId()));
 
         return candidates.stream()
                 .sorted(java.util.Comparator.comparingInt((JobPosting posting) ->
-                        recommendationScore(posting, desiredCategoryIds, resumeSkillIds,
-                                careerMonths, profileText, categories, postingSkills)
-                                + semanticScores.getOrDefault(posting.getJobPostingId(), 0))
+                                recommendationScore(posting, desiredCategoryIds, resumeSkillIds,
+                                        careerMonths, profileText, categories, postingSkills)
+                                        + semanticScores.getOrDefault(posting.getJobPostingId(), 0))
                         .reversed()
                         .thenComparing(JobPosting::getPublishedAt,
                                 java.util.Comparator.nullsLast(java.util.Comparator.reverseOrder()))
@@ -602,7 +611,7 @@ public class JobService {
                     visibleSkills,
                     Math.max(allSkills.size() - visibleSkills.size(), 0),
                     viewCount,
-                    applicantCount,               // applicantCount
+                    applicantCount,
                     newPosting,
                     hotPosting,
                     getDeadlineText(
@@ -808,13 +817,13 @@ public class JobService {
         return "D-" + days;
     }
 
-    private String getDetailDeadlineText(
-            JobPosting posting,
-            LocalDate today
-    ) {
-        if (!"마감".equals(posting.getStatus())) {
-            return getDeadlineText(posting.getApplyEndAt(), today);
-        }
-        return "마감";
+    private String getDetailDeadlineText(JobPosting posting, LocalDate today) {
+        if ("마감".equals(posting.getStatus())) return "마감";
+        if (posting.getApplyEndAt() == null) return "상시채용";
+        LocalDate endDate = posting.getApplyEndAt().toLocalDate();
+        long days = ChronoUnit.DAYS.between(today, endDate);
+        if (days < 0) return "마감";
+        if (days == 0) return "오늘 마감";
+        return "D-" + days + " (" + endDate + " 마감)";
     }
 }

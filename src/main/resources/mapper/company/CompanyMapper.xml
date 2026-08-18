@@ -14,7 +14,7 @@
         c.short_description,
 
         ROUND(AVG(cr.overall_rating), 1) AS averageRating,
-        COUNT(cr.company_review_id) AS reviewCount,
+        COUNT(DISTINCT cr.company_review_id) AS reviewCount,
         MAX(cr.summary) AS summary,
 
         <!-- 채용 중인 공고 존재 여부 -->
@@ -34,6 +34,9 @@
         LEFT JOIN job_postings jp
         ON c.company_id = jp.company_id
         AND jp.status = '모집중'
+
+        WHERE c.approval_status = '승인'
+        AND c.company_status = '정상'
 
         GROUP BY
         c.company_id,
@@ -55,6 +58,8 @@
             resultType="int">
         SELECT COUNT(*) FROM companies c
         <where>
+            c.approval_status = '승인'
+            AND c.company_status = '정상'
 
             <!-- 키워드 검색 (기업명, 한 줄 소개, 업종명) -->
             <if test="keyword != null and keyword != ''">
@@ -82,7 +87,14 @@
 
             <!-- 직무 필터 -->
             <if test="jobCategory != null and jobCategory != ''">
-                AND jc.category_name = #{jobCategory}
+                AND EXISTS (
+                    SELECT 1
+                    FROM job_postings jp
+                    JOIN job_categories jc ON jc.job_category_id = jp.job_category_id
+                    WHERE jp.company_id = c.company_id
+                      AND jp.status = '모집중'
+                      AND jc.category_name = #{jobCategory}
+                )
             </if>
         </where>
     </select>
@@ -104,7 +116,7 @@
         MAX(sc.company_id) AS savedCompanyId,
 
         ROUND(AVG(cr.overall_rating), 1) AS averageRating,
-        COUNT(cr.company_review_id) AS reviewCount,
+        COUNT(DISTINCT cr.company_review_id) AS reviewCount,
         MAX(cr.summary) AS summary,
 
         <!--  공고가 하나라도 있으면 1, 없으면 0 반환 -->
@@ -132,6 +144,8 @@
         ON jp.job_category_id = jc.job_category_id
 
         <where>
+            c.approval_status = '승인'
+            AND c.company_status = '정상'
 
             <!-- 키워드 검색 (기업명, 한 줄 소개, 업종명) -->
             <if test="keyword != null and keyword != ''">
@@ -256,6 +270,8 @@
         AND jp.status='모집중'
 
         WHERE c.company_id = #{companyId}
+        AND c.approval_status = '승인'
+        AND c.company_status = '정상'
 
         GROUP BY
         c.company_id,
@@ -284,12 +300,15 @@
         work_region,
         apply_end_at,
         DATEDIFF(apply_end_at, CURDATE()) AS dday
-        FROM job_postings
+        FROM job_postings jp
+        JOIN companies c ON c.company_id = jp.company_id
 
-        WHERE company_id = #{companyId}
-        AND status = '모집중'
+        WHERE jp.company_id = #{companyId}
+        AND jp.status = '모집중'
+        AND c.approval_status = '승인'
+        AND c.company_status = '정상'
 
-        ORDER BY apply_end_at ASC
+        ORDER BY jp.apply_end_at ASC
 
         LIMIT 5
 
@@ -324,6 +343,8 @@
 
         WHERE jp.company_id = #{companyId}
         AND jp.status = '모집중'
+        AND c.approval_status = '승인'
+        AND c.company_status = '정상'
 
         ORDER BY jp.apply_end_at ASC
 

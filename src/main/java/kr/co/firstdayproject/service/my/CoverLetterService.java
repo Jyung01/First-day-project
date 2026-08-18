@@ -11,8 +11,10 @@ import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterAiReviewRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterRepository;
+import kr.co.firstdayproject.service.ai.UserProfileEmbeddingSyncEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -23,6 +25,7 @@ public class CoverLetterService {
     private final CoverLetterRepository coverLetterRepository;
     private final CoverLetterItemRepository coverLetterItemRepository;
     private final CoverLetterAiReviewRepository coverLetterAiReviewRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<CoverLetterDto.ListItem> findMyList(Long userId) {
         // userId에 해당하고 deletedAt이 null인 데이터만 조회
@@ -65,6 +68,7 @@ public class CoverLetterService {
     public void delete(Long coverLetterId, Long userId) {
         CoverLetter letter = getMine(coverLetterId, userId);
         letter.setDeletedAt(LocalDateTime.now());
+        eventPublisher.publishEvent(new UserProfileEmbeddingSyncEvent(userId));
     }
 
     /** 자기소개서 문항 목록만 조회 (수정 폼에서 기존 내용 표시할 때 사용) */
@@ -112,6 +116,7 @@ public class CoverLetterService {
                 coverLetterItemRepository.save(item);
             }
         }
+        eventPublisher.publishEvent(new UserProfileEmbeddingSyncEvent(userId));
     }
 
     @Transactional
@@ -141,6 +146,7 @@ public class CoverLetterService {
                 coverLetterItemRepository.save(item);
             }
         }
+        eventPublisher.publishEvent(new UserProfileEmbeddingSyncEvent(userId));
 
         return letter.getCoverLetterId();
     }
