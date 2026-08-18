@@ -182,9 +182,19 @@ class CorpServiceTest {
         assertThat(company.getCompanyStatus()).isEqualTo("탈퇴");
         assertThat(company.getWithdrawnAt()).isNotNull();
         verify(applicationRepository)
+                .recordCompanyWithdrawalStatusHistory(
+                        org.mockito.ArgumentMatchers.eq(10L),
+                        org.mockito.ArgumentMatchers.argThat(statuses ->
+                                !statuses.contains("최종합격")
+                        ),
+                        org.mockito.ArgumentMatchers.any()
+                );
+        verify(applicationRepository)
                 .terminateActiveApplicationsForCompanyWithdrawal(
                         org.mockito.ArgumentMatchers.eq(10L),
-                        org.mockito.ArgumentMatchers.anyCollection(),
+                        org.mockito.ArgumentMatchers.argThat(statuses ->
+                                !statuses.contains("최종합격")
+                        ),
                         org.mockito.ArgumentMatchers.any()
                 );
         verify(jobPostingRepository).closeRecruitingPostingsForWithdrawal(
@@ -197,7 +207,7 @@ class CorpServiceTest {
     void countsWithdrawalSummaryWithoutLoadingJsonEntities() {
         when(jobPostingRepository.countByCompanyIdAndStatusIn(10L, List.of("모집중", "모집예정")))
                 .thenReturn(2L);
-        when(applicationRepository.countActiveApplicantsOfRecruitingCompany(
+        when(applicationRepository.countActiveApplicantsOfCompany(
                 org.mockito.ArgumentMatchers.eq(10L),
                 org.mockito.ArgumentMatchers.anyCollection()
         )).thenReturn(5L);

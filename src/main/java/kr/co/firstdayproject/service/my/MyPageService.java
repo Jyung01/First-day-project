@@ -222,7 +222,7 @@ public class MyPageService {
         long applicationInProgressCount = applicationRepository
                 .countByApplicantUserIdAndCurrentStatusIn(userId, IN_PROGRESS_APPLICATION_STATUSES);
 
-        long likedJobCount = savedJobRepository.countByIdUserId(userId);
+        long likedJobCount = savedJobRepository.countVisibleByUserId(userId);
         long likedJobDeadlineSoonCount = savedJobRepository.countDeadlineSoon(
                 userId, now, now.plusDays(DEADLINE_SOON_DAYS));
 

@@ -328,12 +328,41 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
               JOIN job_postings jp
                 ON jp.job_posting_id = a.job_posting_id
              WHERE jp.company_id = :companyId
-               AND jp.status = '모집중'
                AND a.current_status IN (:statuses)
             """, nativeQuery = true)
-    long countActiveApplicantsOfRecruitingCompany(
+    long countActiveApplicantsOfCompany(
             @Param("companyId") Long companyId,
             @Param("statuses") Collection<String> statuses
+    );
+
+    @Modifying(flushAutomatically = true)
+    @Query(value = """
+            INSERT INTO application_status_history (
+                application_id,
+                from_status,
+                to_status,
+                change_reason,
+                changed_by,
+                actor_type,
+                changed_at
+            )
+            SELECT a.application_id,
+                   a.current_status,
+                   '채용종료',
+                   '기업 탈퇴로 채용 절차가 종료되었습니다.',
+                   NULL,
+                   '시스템',
+                   :changedAt
+              FROM applications a
+              JOIN job_postings jp
+                ON jp.job_posting_id = a.job_posting_id
+             WHERE jp.company_id = :companyId
+               AND a.current_status IN (:statuses)
+            """, nativeQuery = true)
+    int recordCompanyWithdrawalStatusHistory(
+            @Param("companyId") Long companyId,
+            @Param("statuses") Collection<String> statuses,
+            @Param("changedAt") LocalDateTime changedAt
     );
 
     @Modifying(flushAutomatically = true)
@@ -346,7 +375,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
                    a.terminated_at = :terminatedAt,
                    a.updated_at = :terminatedAt
              WHERE jp.company_id = :companyId
-               AND jp.status = '모집중'
                AND a.current_status IN (:statuses)
             """, nativeQuery = true)
     int terminateActiveApplicationsForCompanyWithdrawal(

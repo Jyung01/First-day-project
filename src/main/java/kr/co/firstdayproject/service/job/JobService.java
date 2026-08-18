@@ -20,6 +20,7 @@ import kr.co.firstdayproject.entity.resume.Resume;
 import kr.co.firstdayproject.entity.resume.ResumeCareer;
 import kr.co.firstdayproject.entity.resume.ResumeSkill;
 import kr.co.firstdayproject.entity.company.Company;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.application.ApplicationRepository;
 import kr.co.firstdayproject.repository.job.JobCategoryRepository;
@@ -33,7 +34,6 @@ import kr.co.firstdayproject.repository.resume.ResumeSkillRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
 import kr.co.firstdayproject.service.ai.PersonalizedJobRecommendationService;
-import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -75,11 +75,13 @@ public class JobService {
             Long jobPostingId,
             Authentication authentication
     ) {
-        JobPosting posting = jobPostingRepository
-                .findByJobPostingIdAndStatusIn(
-                        jobPostingId,
-                        List.of("모집중", "마감")
-                )
+        JobPosting posting = jobPostingRepository.findById(jobPostingId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "조회할 수 없는 채용공고입니다."
+                ));
+
+        Company company = companyRepository.findById(posting.getCompanyId())
+                .filter(this::isPublicCompany)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "조회할 수 없는 채용공고입니다."
                 ));
@@ -97,15 +99,6 @@ public class JobService {
             );
         }
 
-        Company company = companyRepository.findById(posting.getCompanyId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "기업 정보를 찾을 수 없습니다."
-                ));
-        if (!"승인".equals(company.getApprovalStatus())
-                || !"정상".equals(company.getCompanyStatus())) {
-            throw new ResourceNotFoundException("조회할 수 없는 채용공고입니다.");
-        }
-
         posting.setViewCount(
                 (posting.getViewCount() == null ? 0L : posting.getViewCount()) + 1
         );
@@ -116,19 +109,14 @@ public class JobService {
                 );
 
         LocalDateTime now = LocalDateTime.now();
-        boolean availableCompany = "승인".equals(company.getApprovalStatus())
-                && "정상".equals(company.getCompanyStatus());
-        boolean acceptingApplications = availableCompany
-                && recruiting
+        boolean acceptingApplications = recruiting
                 && (posting.getApplyStartAt() == null
                     || !posting.getApplyStartAt().isAfter(now))
                 && (posting.getApplyEndAt() == null
                     || !posting.getApplyEndAt().isBefore(now));
-        String applicationUnavailableMessage = availableCompany
-                ? "현재 지원할 수 없는 채용공고입니다.\n"
-                    + "공고 상태를 확인한 후 다시 시도해주세요."
-                : "기업 계정 이용 제한으로 신규 입사지원이 "
-                    + "일시 중지되었습니다.";
+        String applicationUnavailableMessage =
+                "현재 지원할 수 없는 채용공고입니다.\n"
+                        + "공고 상태를 확인한 후 다시 시도해주세요.";
 
         return new JobDetailView(
                 posting.getJobPostingId(),
@@ -233,6 +221,14 @@ public class JobService {
                         .map(JobPosting::getCompanyId).distinct().toList())
                 .stream().collect(java.util.stream.Collectors.toMap(
                         Company::getCompanyId, company -> company));
+        candidates = candidates.stream()
+                .filter(posting -> isPublicCompany(
+                        companies.get(posting.getCompanyId())
+                ))
+                .toList();
+        if (candidates.isEmpty()) {
+            return List.of();
+        }
         Map<Long, JobCategory> categories = jobCategoryRepository.findAllById(candidates.stream()
                         .map(JobPosting::getJobCategoryId)
                         .filter(java.util.Objects::nonNull).distinct().toList())
@@ -268,6 +264,12 @@ public class JobService {
                                 : categories.get(posting.getJobCategoryId()).getCategoryName(),
                         posting.getViewCount()))
                 .toList();
+    }
+
+    private boolean isPublicCompany(Company company) {
+        return company != null
+                && "승인".equals(company.getApprovalStatus())
+                && "정상".equals(company.getCompanyStatus());
     }
 
     public Map<Long, Integer> getPersonalizedJobMatchScores(Long userId) {

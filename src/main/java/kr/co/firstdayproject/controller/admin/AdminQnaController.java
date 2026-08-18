@@ -2,6 +2,8 @@ package kr.co.firstdayproject.controller.admin;
 
 import kr.co.firstdayproject.dto.admin.InquiryDetailDto;
 import kr.co.firstdayproject.dto.admin.InquiryListItemDto;
+import kr.co.firstdayproject.service.cs.FaqService;
+import kr.co.firstdayproject.service.cs.NoticeService;
 import kr.co.firstdayproject.service.cs.QnaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,8 @@ import java.util.Map;
 public class AdminQnaController {
 
     private final QnaService qnaService;
+    private final NoticeService noticeService;
+    private final FaqService faqService;
 
     /** 1:1 문의 관리 목록 화면 */
     @GetMapping({"", "/list"})
@@ -43,7 +47,10 @@ public class AdminQnaController {
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("status", status);
         model.addAttribute("keyword", keyword);
+        // 상단 통계 카드(미답변 문의/공지사항/FAQ) - 3개 화면 공통, 항상 세 값을 다 채운다.
         model.addAttribute("pendingCount", qnaService.getPendingCount());
+        model.addAttribute("noticeCount", noticeService.getTotalCount());
+        model.addAttribute("faqCount", faqService.getTotalCount());
 
         return "admin/cs/qna";
     }

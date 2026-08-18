@@ -48,12 +48,7 @@
         <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
         <main class="admin-section">
             <div class="page-header"><h1>고객센터 관리 · 1:1 문의</h1><p>공지사항·FAQ를 관리하고 회원 문의에 답변합니다.</p></div>
-            <div class="stat-grid">
-                <div class="stat-card"><div class="label">미답변 문의</div><div class="value" th:text="${pendingCount} + '건'">7건</div></div>
-                <!-- TODO: 공지/FAQ 기능 연동 전까지 정적 표시 -->
-                <div class="stat-card orange"><div class="label">공지사항</div><div class="value">24건</div></div>
-                <div class="stat-card green"><div class="label">FAQ</div><div class="value">38건</div></div>
-            </div>
+            <div th:replace="~{common/admin-stat-grid :: statGrid(${pendingCount}, ${noticeCount}, ${faqCount})}"></div>
             <div class="panel">
                 <nav class="tabs" aria-label="고객센터 관리 메뉴">
                     <a class="tab" th:href="@{/admin/cs/notice}">공지사항</a><a class="tab" th:href="@{/admin/cs/faq}">FAQ</a><a class="tab active" th:href="@{/admin/cs/qna}">1:1 문의</a>

@@ -55,7 +55,7 @@
               <div class="attach-left">
                 <span>📎</span>
                 <span th:text="${a.originalName}">첨부파일.png</span>
-                <span class="attach-size" th:text="${a.fileSize}">2.4MB</span>
+                <span class="attach-size" th:data-bytes="${a.fileSize}">2.4MB</span>
               </div>
               <a th:href="@{/cs/qna/attachment/{id}(id=${a.attachmentId})}" class="download">다운로드</a>
             </div>
@@ -125,6 +125,19 @@
   const INQUIRY_ID = /*[[${inquiry.inquiryId}]]*/ 0;
   const DELETE_API = /*[[@{/cs/qna}]]*/ '/cs/qna';
   const LIST_URL = /*[[@{/cs/qna}]]*/ '/cs/qna';
+
+  // 첨부파일 용량을 바이트 그대로 두지 않고 KB/MB로 보기 좋게 표시
+  function formatFileSize(bytes) {
+    bytes = Number(bytes);
+    if (!Number.isFinite(bytes)) return '';
+    if (bytes < 1024) return `${bytes}B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
+  }
+
+  document.querySelectorAll('.attach-size[data-bytes]').forEach((el) => {
+    el.textContent = formatFileSize(el.dataset.bytes);
+  });
 
   function openDeleteModal() {
     document.getElementById('deleteModalOverlay').classList.add('open');

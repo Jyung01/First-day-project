@@ -16,6 +16,7 @@ public record MyApplicationDetailView(
         String statusLabel,
         String statusVariant,
         boolean processSuspended,
+        boolean companyWithdrawn,
         LocalDateTime appliedAt,
         Map<String, Object> resume,
         Map<String, Object> coverLetter,
@@ -29,12 +30,25 @@ public record MyApplicationDetailView(
         return "지원완료".equals(currentStatus);
     }
 
+    public boolean companyUnavailable() {
+        return processSuspended || companyWithdrawn;
+    }
+
     public List<MyApplicationProgressStage> progressStages() {
+        if ("불합격".equals(currentStatus)) {
+            return rejectedProgressStages();
+        }
+
         List<MyApplicationProgressStage> stages = new ArrayList<>();
         boolean terminal = isTerminalStatus(currentStatus);
 
         addProgressStage(stages, "지원완료", "지원 완료", terminal);
-        addProgressStage(stages, "서류검토중", "서류 검토 중", terminal);
+        addProgressStage(
+                stages,
+                "서류검토중",
+                documentReviewLabel(),
+                terminal
+        );
         addProgressStage(stages, "서류합격", "서류 합격", terminal);
         addProgressStage(
                 stages,
@@ -56,6 +70,78 @@ public record MyApplicationDetailView(
         }
 
         return stages;
+    }
+
+    private List<MyApplicationProgressStage> rejectedProgressStages() {
+        List<MyApplicationProgressStage> stages = new ArrayList<>();
+        MyApplicationHistoryItem rejection = findHistory("불합격");
+        boolean rejectedAfterInterview = statusHistory.stream()
+                .anyMatch(history -> List.of(
+                        "면접예정",
+                        "면접완료"
+                ).contains(history.status()));
+
+        addProgressStage(stages, "지원완료", "지원 완료", true);
+
+        if (rejectedAfterInterview) {
+            addProgressStage(stages, "서류검토중", "서류 검토", true);
+            addProgressStage(stages, "서류합격", "서류 합격", true);
+            addProgressStage(
+                    stages,
+                    List.of("면접예정", "면접완료"),
+                    "면접 전형",
+                    true
+            );
+            stages.add(rejectedStage(
+                    "면접불합격",
+                    "면접 불합격",
+                    rejection
+            ));
+            stages.add(plannedStage("입사완료", "입사 완료"));
+        } else {
+            addProgressStage(stages, "서류검토중", "서류 검토", true);
+            stages.add(rejectedStage(
+                    "서류불합격",
+                    "서류 불합격",
+                    rejection
+            ));
+            stages.add(plannedStage("면접전형", "면접 전형"));
+            stages.add(plannedStage("최종합격", "최종 합격"));
+            stages.add(plannedStage("입사완료", "입사 완료"));
+        }
+
+        return stages;
+    }
+
+    private String documentReviewLabel() {
+        return "서류검토중".equals(currentStatus)
+                ? "서류 검토 중"
+                : "서류 검토";
+    }
+
+    private MyApplicationProgressStage rejectedStage(
+            String status,
+            String label,
+            MyApplicationHistoryItem rejection
+    ) {
+        return new MyApplicationProgressStage(
+                status,
+                label,
+                rejection == null ? null : rejection.changedAt(),
+                "terminated"
+        );
+    }
+
+    private MyApplicationProgressStage plannedStage(
+            String status,
+            String label
+    ) {
+        return new MyApplicationProgressStage(
+                status,
+                label,
+                null,
+                "planned"
+        );
     }
 
     private void addProgressStage(

@@ -38,6 +38,11 @@ public class FaqService {
                 .collect(Collectors.toList());
     }
 
+    // 관리자 대시보드 상단 통계용 - FAQ 전체 건수
+    public long getTotalCount() {
+        return faqRepository.count();
+    }
+
     // 관리자 목록 (카테고리 필터 + 질문 검색 + 페이지네이션)
     public FaqDto.ListResponse getAdminList(Long faqCategoryId, String keyword, int page) {
         Pageable pageable = PageRequest.of(Math.max(page - 1, 0), PAGE_SIZE);

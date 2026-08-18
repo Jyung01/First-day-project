@@ -12,6 +12,7 @@ public record MyApplicationListItem(
         String statusLabel,
         String statusVariant,
         boolean processSuspended,
+        boolean companyWithdrawn,
         LocalDateTime appliedAt,
         LocalDateTime latestChangedAt
 ) {

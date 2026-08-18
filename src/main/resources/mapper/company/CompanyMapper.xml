@@ -36,7 +36,7 @@
         AND jp.status = '모집중'
 
         WHERE c.approval_status = '승인'
-        AND c.company_status = '정상'
+          AND c.company_status = '정상'
 
         GROUP BY
         c.company_id,
@@ -58,6 +58,9 @@
             resultType="int">
         SELECT COUNT(*) FROM companies c
         <where>
+            c.approval_status = '승인'
+            AND c.company_status = '정상'
+
             c.approval_status = '승인'
             AND c.company_status = '정상'
 
@@ -144,6 +147,9 @@
         ON jp.job_category_id = jc.job_category_id
 
         <where>
+            c.approval_status = '승인'
+            AND c.company_status = '정상'
+
             c.approval_status = '승인'
             AND c.company_status = '정상'
 
@@ -270,8 +276,8 @@
         AND jp.status='모집중'
 
         WHERE c.company_id = #{companyId}
-        AND c.approval_status = '승인'
-        AND c.company_status = '정상'
+          AND c.approval_status = '승인'
+          AND c.company_status = '정상'
 
         GROUP BY
         c.company_id,
