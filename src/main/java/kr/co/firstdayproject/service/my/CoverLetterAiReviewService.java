@@ -92,6 +92,15 @@ public class CoverLetterAiReviewService {
         JobPosting targetPosting = jobPostingRepository.findById(jobPostingId)
             .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 채용공고입니다."));
 
+        // jobPostingId는 클라이언트가 보낸 값이라 그대로 믿지 않는다. 검증이 없으면 공고 선택
+        // 화면에 뜨지도 않는 공고(마감됐거나, 미승인·이용정지 기업의 공고)로도 첨삭이 돌아간다.
+        // 판별 기준은 공고 목록·검색과 같은 findVisibleIdsIn을 재사용해 한 곳에서만 관리한다.
+        if (jobPostingRepository.findVisibleIdsIn(List.of(jobPostingId)).isEmpty()) {
+            throw new IllegalStateException(
+                "지금은 첨삭 대상으로 선택할 수 없는 공고입니다. 모집이 마감되었거나 공개되지 않은 공고일 수 있습니다."
+            );
+        }
+
         List<OriginalItemSnapshot> originalSnapshot = items.stream()
             .map(item -> new OriginalItemSnapshot(item.getQuestion(), item.getAnswer()))
             .toList();
