@@ -73,6 +73,9 @@ public class CoverLetterItemReviewService {
           단정하지 마세요.
 
         나머지 출력:
+        - summary와 improvementPoints의 문장은 지원자가 그대로 읽는 글입니다.
+          revisedAnswer, improvementPoints 같은 출력 항목 이름을 문장 안에 쓰지 마세요.
+          가리켜야 한다면 "아래 개선 포인트"처럼 부르세요.
         - summary는 한두 문장으로 이번 첨삭의 핵심을 요약하세요.
           원문이 이미 충실해 크게 고칠 부분이 없다면 그 사실을 먼저 밝히고, 그다음에 보강 방향을 말하세요.
         - improvementPoints는 구체적인 개선 포인트를 항목별로 나열하세요.
