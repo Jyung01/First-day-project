@@ -11,6 +11,8 @@ public interface CoverLetterRepository extends JpaRepository<CoverLetter, Long> 
 
     List<CoverLetter> findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(Long userId);
 
+    List<CoverLetter> findByUserIdAndDeletedAtIsNullOrderByUpdatedAtDesc(Long userId);
+
     Optional<CoverLetter> findFirstByUserIdAndDeletedAtIsNullOrderByUpdatedAtDesc(Long userId);
 
     long countByUserIdAndDeletedAtIsNull(Long userId);

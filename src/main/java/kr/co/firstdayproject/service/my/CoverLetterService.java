@@ -8,6 +8,7 @@ import kr.co.firstdayproject.entity.coverletter.CoverLetter;
 import kr.co.firstdayproject.entity.coverletter.CoverLetterItem;
 import kr.co.firstdayproject.exception.AccessDeniedException;
 import kr.co.firstdayproject.exception.ResourceNotFoundException;
+import kr.co.firstdayproject.repository.coverletter.CoverLetterAiReviewRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class CoverLetterService {
 
     private final CoverLetterRepository coverLetterRepository;
     private final CoverLetterItemRepository coverLetterItemRepository;
+    private final CoverLetterAiReviewRepository coverLetterAiReviewRepository;
 
     public List<CoverLetterDto.ListItem> findMyList(Long userId) {
         // userId에 해당하고 deletedAt이 null인 데이터만 조회
@@ -35,7 +37,8 @@ public class CoverLetterService {
                     .mapToInt(item -> item.getAnswer() == null ? 0 : item.getAnswer().length())
                     .sum();
 
-            boolean isAiReviewed = false; // TODO: AI 기능 연결 시 실제 조회로 교체
+            boolean isAiReviewed = coverLetterAiReviewRepository
+                    .existsByCoverLetterId(letter.getCoverLetterId());
 
             result.add(CoverLetterDto.ListItem.builder()
                     .id(letter.getCoverLetterId())
@@ -69,6 +72,19 @@ public class CoverLetterService {
         // 소유권 검증까지 같이 수행
         getMine(coverLetterId, userId);
         return coverLetterItemRepository.findByCoverLetterIdOrderByDisplayOrderAsc(coverLetterId);
+    }
+
+    /** AI 첨삭 결과 화면의 "이 내용으로 적용"에서 문항 1개의 답변만 갱신할 때 사용 */
+    @Transactional
+    public void updateItemAnswer(Long coverLetterItemId, Long userId, String answer) {
+        CoverLetterItem item = coverLetterItemRepository.findById(coverLetterItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 문항입니다."));
+
+        // 소유권 검증 — 이 문항이 속한 자기소개서가 요청한 사용자 것인지 확인
+        getMine(item.getCoverLetterId(), userId);
+
+        item.setAnswer(answer);
+        item.setUpdatedAt(LocalDateTime.now());
     }
 
     @Transactional

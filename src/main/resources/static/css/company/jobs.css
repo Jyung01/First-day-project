@@ -128,7 +128,8 @@
 
     border-radius:50%;
 
-    background:#f5f6fa;
+    /*background:#f5f6fa;*/
+    background:none;
 
     cursor:pointer;
 
@@ -138,24 +139,24 @@
 
 .bookmark-btn i{
 
-    font-size:17px;
+    font-size:18px;
 
     color:#999;
 
 }
 
-.bookmark-btn:hover{
-    background:#EEF0FF;
-}
+/*.bookmark-btn:hover{*/
+/*    background:#EEF0FF;*/
+/*}*/
 .bookmark-btn:hover i{
 
     color:#6F78D8;
 
 }
 /* 관심공고 등록 상태 */
-.bookmark-btn.active {
-    background: #EEF0FF;
-}
+/*.bookmark-btn.active {*/
+/*    background: #EEF0FF;*/
+/*}*/
 
 .bookmark-btn.active i {
     color: #6F78D8;

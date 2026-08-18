@@ -123,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
   restoreSelectedSkills();
 
   const form = document.querySelector("#jobForm");
+  let reviewFormChanged = true;
   const primaryJobCategory = document.querySelector("#primaryJobCategory");
   const jobCategory = document.querySelector("#category");
   const jobCategoryOptions = jobCategory
@@ -358,6 +359,24 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    if (event.submitter?.value === "REVIEW" && !reviewFormChanged) {
+      event.preventDefault();
+      showConfirmModal({
+        iconClass: "info",
+        iconHtml: "!",
+        title: "수정 사항이 없습니다",
+        message: "숨김 사유를 확인하고 공고 내용을 수정해 주세요.",
+        extraHtml: `
+          <div class="job-review-modal-notice">
+            공고 내용을 한 가지 이상 수정한 후 재검토를 요청할 수 있습니다.
+          </div>
+        `,
+        leftText: "확인",
+        rightVisible: false,
+      });
+      return;
+    }
+
     const experienceValid = validateRange(
       minExperience,
       maxExperience,
@@ -389,34 +408,190 @@ document.addEventListener("DOMContentLoaded", function () {
   updateWorkRegion();
   updateApplicationPeriodLimits();
 
+  const reviewSubmitButton = document.querySelector("[data-review-submit]");
+  if (form?.dataset.hiddenEdit === "true" && reviewSubmitButton) {
+    const initialFormState = getComparableFormState(form);
+
+    function getComparableFormState(targetForm) {
+      return Array.from(new FormData(targetForm).entries())
+        .filter(function ([name]) {
+          return name !== "submitType" && !name.startsWith("_");
+        })
+        .map(function ([name, value]) {
+          return [name, String(value).trim()];
+        })
+        .sort(function (first, second) {
+          return (first[0] + first[1]).localeCompare(second[0] + second[1]);
+        })
+        .map(function ([name, value]) {
+          return name + "=" + value;
+        })
+        .join("&");
+    }
+
+    function updateReviewSubmitState() {
+      const changed = getComparableFormState(form) !== initialFormState;
+      reviewFormChanged = changed;
+      reviewSubmitButton.title = changed
+        ? "수정한 내용으로 재검토를 요청합니다."
+        : "공고 내용을 수정한 후 재검토를 요청할 수 있습니다.";
+    }
+
+    form.addEventListener("input", updateReviewSubmitState);
+    form.addEventListener("change", updateReviewSubmitState);
+
+    const skillInputs = form.querySelector("[data-skill-hidden-inputs]");
+    if (skillInputs) {
+      new MutationObserver(updateReviewSubmitState).observe(skillInputs, {
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    updateReviewSubmitState();
+  }
+
   const modal = document.querySelector("[data-ai-polish-modal]");
   if (!modal) return;
   const original = modal.querySelector("[data-ai-polish-original]");
   const suggestion = modal.querySelector("[data-ai-polish-suggestion]");
-  const label = modal.querySelector("[data-ai-polish-label]");
+  const summary = modal.querySelector("[data-ai-polish-summary]");
+  const error = modal.querySelector("[data-ai-polish-error]");
+  const regenerateButton = modal.querySelector("[data-ai-polish-regenerate]");
+  const applyButton = modal.querySelector("[data-ai-polish-apply]");
   let target = null;
+  let currentFieldType = null;
+  let requesting = false;
 
-  function makeSuggestion(value) {
-    const text = value.trim();
-    if (!text) return "다듬을 문장을 먼저 입력해 주세요.";
-    return text.replace(/합니다\.?/g, "합니다.").replace(/\n{3,}/g, "\n\n");
+  const fieldTypes = {
+    intro: "INTRODUCTION",
+    editIntro: "INTRODUCTION",
+    tasks: "MAIN_TASKS",
+    editTasks: "MAIN_TASKS",
+    requirements: "QUALIFICATIONS",
+    editRequirements: "QUALIFICATIONS",
+    preferred: "PREFERRED_CONDITIONS",
+    editPreferred: "PREFERRED_CONDITIONS",
+  };
+
+  function setRequesting(value) {
+    requesting = value;
+    regenerateButton.disabled = value;
+    applyButton.disabled = value;
+    regenerateButton.textContent = value ? "생성 중..." : "다시 생성";
   }
+
+  function getInputValue(...selectors) {
+    for (const selector of selectors) {
+      const element = document.querySelector(selector);
+      if (element?.value?.trim()) return element.value.trim();
+    }
+    return null;
+  }
+
+  function getSelectedText(selector) {
+    const select = document.querySelector(selector);
+    const option = select?.selectedOptions?.[0];
+    if (!option?.value) return null;
+    return option.textContent.trim();
+  }
+
+  function getJobCategoryText() {
+    return [
+      getSelectedText("#primaryJobCategory"),
+      getSelectedText("#category"),
+    ]
+      .filter(Boolean)
+      .join(" - ") || null;
+  }
+
+  function getSelectedSkillNames() {
+    return Array.from(
+      document.querySelectorAll(
+        "[data-skill-chip-list] [data-skill-name]",
+      ),
+    )
+      .filter(function (skill) {
+        return !skill.hidden;
+      })
+      .map(function (skill) {
+        return (skill.dataset.skillName || skill.textContent).trim();
+      })
+      .filter(Boolean)
+      .filter(function (skill, index, skills) {
+        return skills.indexOf(skill) === index;
+      })
+      .slice(0, 5);
+  }
+
+  function getJobContext() {
+    return {
+      jobTitle: getInputValue("#jobTitle", "#editTitle"),
+      jobCategory: getJobCategoryText(),
+      employmentType: getSelectedText("#employment"),
+      careerType: getSelectedText("#careerType"),
+      educationLevel: getSelectedText("#education"),
+      workRegion: getInputValue("#workRegion"),
+      skillNames: getSelectedSkillNames(),
+    };
+  }
+
+  async function requestPolishedContent() {
+    if (!currentFieldType || !original.value.trim() || requesting) return;
+
+    setRequesting(true);
+    error.textContent = "";
+    suggestion.value = "AI 수정안을 생성하고 있습니다.";
+
+    try {
+      const response = await fetch("/corp/api/job-postings/ai-polish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fieldType: currentFieldType,
+          content: original.value,
+          ...getJobContext(),
+        }),
+      });
+      const result = await response.json().catch(function () {
+        return {};
+      });
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || "AI 수정안을 생성하지 못했습니다.",
+        );
+      }
+
+      suggestion.value = result.polishedContent;
+    } catch (requestError) {
+      suggestion.value = "";
+      error.textContent = requestError.message;
+    } finally {
+      setRequesting(false);
+    }
+  }
+
   function close() {
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
   }
   document.querySelectorAll("[data-ai-polish-open]").forEach(function (button) {
-    button.addEventListener("click", function () {
+    button.addEventListener("click", async function () {
       target = document.querySelector(button.dataset.aiPolishOpen);
       if (!target || !target.value.trim()) {
         target?.focus();
         return;
       }
-      label.textContent = button.dataset.aiPolishLabel || "상세 내용";
+      currentFieldType = fieldTypes[target.id];
+      const itemLabel = button.dataset.aiPolishLabel || "상세 내용";
+      summary.textContent = itemLabel;
       original.value = target.value;
-      suggestion.value = makeSuggestion(target.value);
+      suggestion.value = "";
+      error.textContent = "";
       modal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      await requestPolishedContent();
     });
   });
   modal.querySelectorAll("[data-ai-polish-close]").forEach(function (button) {
@@ -424,13 +599,20 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   modal
     .querySelector("[data-ai-polish-regenerate]")
-    .addEventListener("click", function () {
-      suggestion.value = makeSuggestion(original.value);
+    .addEventListener("click", async function () {
+      await requestPolishedContent();
     });
   modal
     .querySelector("[data-ai-polish-apply]")
     .addEventListener("click", function () {
-      if (target) target.value = suggestion.value;
+      if (!suggestion.value.trim()) {
+        error.textContent = "적용할 수정안이 없습니다.";
+        return;
+      }
+      if (target) {
+        target.value = suggestion.value;
+        target.dispatchEvent(new Event("input", { bubbles: true }));
+      }
       close();
     });
   document.addEventListener("keydown", function (event) {

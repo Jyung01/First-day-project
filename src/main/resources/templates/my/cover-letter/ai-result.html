@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"><head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>첫출근 — AI 첨삭 결과</title>
+    <title>첫출근 — AI 첨삭</title>
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <link rel="stylesheet" th:href="@{/css/my/common.css}" />
     <link rel="stylesheet" th:href="@{/css/my/cover-letter/ai-result.css}" />
@@ -12,50 +12,235 @@
         <aside th:replace="~{common/my-aside :: myAside}"></aside>
 
         <section class="mypage-content">
-            <div class="cl-page-header">
-                <h1 class="cl-page-header__title">AI 첨삭 결과</h1>
-                <p class="cl-page-header__desc">원문과 AI 개선안을 비교하고 원하는 내용을 선택해 반영하세요.</p>
-            </div>
 
-            <div class="cl-review-tabs">
-                <div class="cl-review-tabs__left" id="cl-tab-buttons">
-                    <button type="button"
-                            th:each="item, iter : ${coverLetterItems}"
-                            th:text="|문항 ${iter.index + 1}|"
-                            th:classappend="${iter.index == 0} ? ' is-active' : ''"
-                            th:attr="data-index=${iter.index}"
-                            class="cl-tab">문항 1</button>
+            <!-- ===================== 상태 A: 공고 선택 (이력 없음 / 재요청) ===================== -->
+            <div th:if="${!hasAiReview}">
+                <div class="cl-page-header">
+                    <h1 class="cl-page-header__title">AI 첨삭 요청</h1>
+                    <p class="cl-page-header__desc">첨삭받을 채용공고를 선택해 주세요.</p>
                 </div>
-            </div>
 
-            <div th:each="item, iter : ${coverLetterItems}"
-                 th:attr="data-panel-index=${iter.index}"
-                 th:classappend="${iter.index == 0} ? '' : ' cl-panel--hidden'"
-                 class="cl-review-panel">
+                <div class="cl-target-summary">
+                    <span class="cl-target-summary__label">자기소개서</span>
+                    <span class="cl-target-summary__value"
+                          th:text="|${coverLetter.title} · 문항 ${#lists.size(coverLetterItems)}개|">자기소개서 제목 · 문항 2개</span>
+                </div>
 
-                <div class="cl-review-meta">
-                    <div class="cl-review-meta__left">
-                        <span class="status-badge status-badge--pending">첨삭 준비 중</span>
-                        <span th:text="|${coverLetter.title} · 문항 ${iter.index + 1}|">자기소개서 · 문항 1</span>
+                <!-- 관심 등록한 모집중 공고가 있을 때만 노출 (MyPageService.getSavedJobList(userId, "open", ...)) -->
+                <div class="cl-job-picker" th:if="${not #lists.isEmpty(savedJobs)}">
+                    <h2 class="cl-job-picker__section-title">관심 등록한 공고</h2>
+                    <ul class="cl-job-picker__list" id="cl-saved-job-list">
+                        <li class="cl-job-picker__item" th:each="job : ${savedJobs}">
+                            <label>
+                                <input type="radio" name="jobPosting" th:value="${job.jobPostingId}" />
+                                <span class="cl-job-picker__text">
+                                    <span class="cl-job-picker__title" th:text="${job.title}">공고 제목</span>
+                                    <span class="cl-job-picker__meta"
+                                          th:text="|${job.companyName} · ${job.status}|">기업명 · 모집중</span>
+                                </span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 공고 검색 — 관심공고 유무와 무관하게 항상 노출. 검색어 없으면 최신 모집중 공고를 보여준다 -->
+                <div class="cl-job-picker">
+                    <h2 class="cl-job-picker__section-title">공고 검색</h2>
+                    <form class="cl-job-picker__search" method="get" th:action="@{/my/cover-letter/ai-result}">
+                        <input type="hidden" name="id" th:value="${coverLetter.coverLetterId}" />
+                        <input type="hidden" name="reselect" th:if="${reselect}" th:value="${reselect}" />
+                        <div class="cl-search-field">
+                            <svg class="cl-search-field__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                            <input type="text" name="keyword" class="cl-search-field__input" th:value="${keyword}"
+                                   placeholder="공고명 또는 기업명으로 검색" />
+                            <button type="submit" class="cl-search-field__submit">검색</button>
+                        </div>
+                    </form>
+                    <ul class="cl-job-picker__list" id="cl-search-job-list" th:if="${not #lists.isEmpty(jobSearchResults)}">
+                        <li class="cl-job-picker__item" th:each="job : ${jobSearchResults}">
+                            <label>
+                                <input type="radio" name="jobPosting" th:value="${job.jobPostingId}" />
+                                <span class="cl-job-picker__text">
+                                    <span class="cl-job-picker__title" th:text="${job.title}">공고 제목</span>
+                                    <span class="cl-job-picker__meta"
+                                          th:text="|${job.companyName} · ${job.workRegion}|">기업명 · 지역</span>
+                                </span>
+                            </label>
+                        </li>
+                    </ul>
+                    <p class="cl-job-picker__empty" th:if="${#lists.isEmpty(jobSearchResults)}">검색 결과가 없습니다.</p>
+
+                    <nav class="pagination" th:if="${jobSearchPageInfo.totalPages() > 1}" aria-label="공고 검색 페이지">
+                        <a th:href="${jobSearchPageInfo.hasPreviousBlock()}
+                              ? @{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${jobSearchPageInfo.previousBlockPage()}, reselect=${reselect})}
+                              : '#'"
+                           th:classappend="${!jobSearchPageInfo.hasPreviousBlock()} ? 'is-disabled'"
+                           th:attr="aria-disabled=${!jobSearchPageInfo.hasPreviousBlock()}" aria-label="이전 페이지 그룹">‹</a>
+
+                        <a th:each="pageNumber : ${#numbers.sequence(jobSearchPageInfo.startPage(), jobSearchPageInfo.endPage())}"
+                           th:href="@{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${pageNumber}, reselect=${reselect})}"
+                           th:classappend="${pageNumber == jobSearchPageInfo.currentPage()} ? 'active'"
+                           th:attr="aria-current=${pageNumber == jobSearchPageInfo.currentPage()} ? 'page'"
+                           th:text="${pageNumber + 1}">1</a>
+
+                        <a th:href="${jobSearchPageInfo.hasNextBlock()}
+                              ? @{/my/cover-letter/ai-result(id=${coverLetter.coverLetterId}, keyword=${keyword}, page=${jobSearchPageInfo.nextBlockPage()}, reselect=${reselect})}
+                              : '#'"
+                           th:classappend="${!jobSearchPageInfo.hasNextBlock()} ? 'is-disabled'"
+                           th:attr="aria-disabled=${!jobSearchPageInfo.hasNextBlock()}" aria-label="다음 페이지 그룹">›</a>
+                    </nav>
+                </div>
+
+                <!-- 자소서 본문에 안 적힌 사실을 여기서 받는다. 원문이 얇으면 AI가 다듬을 재료
+                     자체가 없어 표현 정리에 그치는데, 이 칸이 그 재료를 보충하는 유일한 통로다.
+                     이력서와 달리 사용자가 직접 확인해 준 정보라 본문에 반영해도 된다. -->
+                <div class="cl-extra-info">
+                    <p class="cl-extra-info__label">AI에게 더 알려주고 싶은 내용 (선택)</p>
+                    <p class="cl-extra-info__hint">자기소개서에 안 적었지만 알아두면 좋을 내용(맡은 역할, 구체적인 수치, 사용한 도구 등)을 문항별로 적어주세요. 해당 문항 첨삭에만 반영됩니다.</p>
+
+                    <!-- 입력란을 문항별로 나눈 이유: 하나로 받으면 문항마다 같은 값이 전달되고,
+                         어느 문항에 쓸지는 AI 판단에 맡겨야 한다. 실제로 주제가 넓은 문항(지원동기·포부)이
+                         관련 없는 내용까지 모두 끌어다 쓰는 문제가 반복됐다. 사용자가 직접 지정하면
+                         그 판단 자체가 사라진다. -->
+                    <div class="cl-extra-info__item" th:each="item, iter : ${coverLetterItems}">
+                        <label class="cl-extra-info__question"
+                               th:for="|extra-info-${item.coverLetterItemId}|"
+                               th:text="|문항 ${iter.index + 1}. ${item.question}|">문항 1. 질문</label>
+                        <textarea class="cl-extra-info__input"
+                                  rows="2" maxlength="1000"
+                                  th:id="|extra-info-${item.coverLetterItemId}|"
+                                  th:attr="data-item-id=${item.coverLetterItemId}"
+                                  placeholder="예) 제가 맡은 역할은 일정 관리였고, 5명과 함께 3개월간 진행했습니다"></textarea>
                     </div>
                 </div>
 
-                <div class="cl-compare">
-                    <!-- 원문 -->
-                    <div class="cl-compare__col">
-                        <h2 class="cl-compare__title">원문</h2>
-                        <p class="cl-original__text" th:text="${item.answer}">원문 내용</p>
-                        <p class="cl-original__count" th:text="|원문 ${item.answer != null ? #strings.length(item.answer) : 0}자|">원문 0자</p>
-                    </div>
+                <div class="cl-page-actions">
+                    <a th:href="@{/my/cover-letter/list}" class="btn btn-outline">취소</a>
+                    <button type="button" id="btn-request-review" class="btn btn-primary cl-submit"
+                            th:attr="data-cover-letter-id=${coverLetter.coverLetterId}">첨삭 요청하기</button>
+                </div>
 
-                    <!-- AI 첨삭 제안 (준비 중) -->
-                    <div class="cl-compare__col">
-                        <h2 class="cl-compare__title">AI 첨삭 제안</h2>
-                        <div class="cl-ai-pending">
-                            <p class="cl-ai-pending__title">AI 첨삭 기능은 준비 중입니다.</p>
-                            <p class="cl-ai-pending__desc">첨삭 기능이 연결되면 이 화면에서 원문과 AI 개선안을 비교하고, 원하는 내용을 선택해 반영할 수 있습니다.</p>
+                <!-- 첨삭 요청 중 전체 화면 오버레이. 문항 수만큼 OpenAI를 순차 호출해 몇 초~몇십 초 걸릴 수 있다. -->
+                <div class="cl-generating-overlay" id="cl-generating-overlay">
+                    <div class="cl-generating-overlay__box">
+                        <span class="cl-generating-overlay__spinner"></span>
+                        <p class="cl-generating-overlay__text" id="cl-generating-overlay__text">
+                            AI 첨삭을 생성하고 있어요. 문항 수에 따라 최대 1분 정도 걸릴 수 있어요.
+                        </p>
+                        <p class="cl-generating-overlay__error" id="cl-generating-overlay__error"></p>
+                        <button type="button" id="btn-generating-overlay-close"
+                                class="btn btn-outline cl-generating-overlay__close">닫기</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== 상태 B: 첨삭 결과 (이력 있음) ===================== -->
+            <div th:if="${hasAiReview}" id="cl-review-result"
+                 th:attr="data-cover-letter-id=${coverLetter.coverLetterId}">
+                <div class="cl-page-header">
+                    <h1 class="cl-page-header__title">AI 첨삭 결과</h1>
+                    <p class="cl-page-header__desc">원문과 AI 개선안을 비교하고 원하는 내용을 선택해 반영하세요.</p>
+                </div>
+
+                <div class="cl-review-meta-bar">
+                    <div class="cl-review-meta-bar__target">
+                        <span class="status-badge status-badge--ai-done" id="cl-review-status-badge">AI 첨삭 완료</span>
+                        <span th:text="|${selectedReview.targetJobPostingTitle()}${selectedReview.targetCompanyName() != null ? ' · ' + selectedReview.targetCompanyName() : ''} · ${#temporals.format(selectedReview.createdAt(), 'M/d')} 요청|">공고명 · 기업명 · 8/14 요청</span>
+                    </div>
+                    <select class="cl-history-select" id="cl-history-select" aria-label="이전 첨삭 이력"
+                            th:if="${#lists.size(reviewHistory) > 1}">
+                        <option th:each="history : ${reviewHistory}"
+                                th:value="${history.coverLetterAiReviewId()}"
+                                th:selected="${history.coverLetterAiReviewId() == selectedReview.coverLetterAiReviewId()}"
+                                th:text="|${#temporals.format(history.createdAt(), 'M/d')} · ${history.targetJobPostingTitle()}|">8/14 · 공고명</option>
+                    </select>
+                </div>
+
+                <div class="cl-review-tabs">
+                    <div class="cl-review-tabs__left" id="cl-tab-buttons">
+                        <button type="button"
+                                th:each="item, iter : ${selectedReview.items()}"
+                                th:text="|문항 ${iter.index + 1}|"
+                                th:classappend="${iter.index == 0} ? ' is-active' : ''"
+                                th:attr="data-index=${iter.index}"
+                                class="cl-tab">문항 1</button>
+                    </div>
+                </div>
+
+                <div th:each="item, iter : ${selectedReview.items()}"
+                     th:attr="data-panel-index=${iter.index}, data-item-id=${item.coverLetterItemId()}"
+                     th:classappend="${iter.index == 0} ? '' : ' cl-panel--hidden'"
+                     class="cl-review-panel">
+
+                    <div class="cl-compare">
+                        <!-- 원문 -->
+                        <div class="cl-compare__col">
+                            <h2 class="cl-compare__title">원문</h2>
+                            <p class="cl-original__text" th:text="${item.answer()}">원문 내용</p>
+                            <!-- 첨삭 결과에 이 내용으로 만들어진 문장이 들어가므로, 하이라이트 판정에서도
+                                 원문과 함께 "사용자가 제공한 내용"으로 취급한다. -->
+                            <div class="cl-original__extra" th:if="${item.additionalInfo() != null}">
+                                <p class="cl-original__extra-title">내가 알려준 내용</p>
+                                <p class="cl-original__extra-text"
+                                   th:attr="data-additional-info=${item.additionalInfo()}"
+                                   th:text="${item.additionalInfo()}">추가 정보</p>
+                            </div>
+                            <p class="cl-original__count" th:text="|원문 ${item.answer() != null ? #strings.length(item.answer()) : 0}자|">원문 0자</p>
+                        </div>
+
+                        <div class="cl-compare__col">
+                            <h2 class="cl-compare__title">AI 첨삭 제안</h2>
+
+                            <div class="cl-suggestion__content">
+                                <!-- 원문과 바로 비교되도록 수정 제안을 맨 위에 배치, 이유(요약/개선포인트)는 아래에 -->
+                                <div class="cl-suggestion__example">
+                                    <!-- 다시 쓴 답변이 원문과 비슷할 때가 많아, 아래에 개선 제안이
+                                         몇 개나 있는지 여기서 미리 알려준다. -->
+                                    <p class="cl-suggestion__example-title">수정 제안<span
+                                        class="cl-suggestion__points-count"
+                                        th:if="${item.improvementPoints() != null and !item.improvementPoints().isEmpty()}"
+                                        th:text="|개선 제안 ${#lists.size(item.improvementPoints())}개|">개선 제안 0개</span></p>
+                                    <!-- data-revised-answer는 적용 시 서버로 보낼 원본 문자열.
+                                         본문에는 하이라이트용 <mark>이 끼어들 수 있으므로, 화면 표시와
+                                         전송할 값을 분리해 마크업이 바뀌어도 저장 값이 흔들리지 않게 한다. -->
+                                    <p class="cl-suggestion__example-text"
+                                       th:if="${item.revisedAnswer() != null}"
+                                       th:attr="data-revised-answer=${item.revisedAnswer()}"
+                                       th:text="${item.revisedAnswer()}">(첨삭된 답변 예시가 여기에 표시됩니다)</p>
+                                    <!-- 문항 하나가 실패해도 나머지는 저장되므로, 실패한 자리만 표시한다. -->
+                                    <p class="cl-suggestion__failed"
+                                       th:if="${item.revisedAnswer() == null}">이 문항은 첨삭 생성에 실패했습니다. 다시 첨삭을 요청하면 새로 생성됩니다.</p>
+                                    <p class="cl-suggestion__added-note" aria-live="polite"></p>
+                                </div>
+                                <div class="cl-suggestion__summary-box">
+                                    <p class="cl-suggestion__summary-title">AI 개선점 요약</p>
+                                    <p class="cl-suggestion__summary-text" th:text="${item.summary()}">첨삭 요약</p>
+                                </div>
+                                <ul class="cl-suggestion__points">
+                                    <li class="cl-suggestion__point" th:each="point, pointIter : ${item.improvementPoints()}">
+                                        <span class="cl-suggestion__point-label" th:text="|개선 ${pointIter.index + 1}.|">개선 1.</span><span th:text="${point}">개선 포인트</span>
+                                    </li>
+                                </ul>
+                                <div class="cl-suggestion__actions">
+                                    <button type="button" class="btn btn-outline cl-keep-btn"
+                                            th:disabled="${item.resolved() or item.revisedAnswer() == null}">원문 유지</button>
+                                    <button type="button" class="btn btn-primary cl-apply-btn"
+                                            th:disabled="${item.resolved() or item.revisedAnswer() == null}">이 내용으로 적용</button>
+                                </div>
+                                <p class="cl-suggestion__apply-status"
+                                   th:classappend="${item.resolved()} ? ' is-success' : ''"
+                                   th:text="${item.resolved()} ? '이 첨삭 제안을 적용했거나, 자소서를 직접 수정해 이미 반영된 문항입니다.' : ''"
+                                   aria-live="polite"></p>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="cl-page-actions">
+                    <a href="#" id="btn-reselect-job" class="btn btn-outline">다른 공고로 다시 첨삭받기</a>
                 </div>
             </div>
 
@@ -70,6 +255,7 @@
 <script th:src="@{/js/common.js}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // 문항 탭 전환 (결과 상태)
         const tabButtons = document.querySelectorAll('#cl-tab-buttons .cl-tab');
         const panels = document.querySelectorAll('.cl-review-panel');
 
@@ -83,6 +269,315 @@
                 panels.forEach(panel => {
                     panel.classList.toggle('cl-panel--hidden', panel.dataset.panelIndex !== targetIndex);
                 });
+            });
+        });
+
+        // 공고 선택 (선택 상태) — 관심공고 목록 + 검색 목록 전체에서 라디오 하나만 선택되게 함
+        const jobItems = document.querySelectorAll('.cl-job-picker__item');
+        jobItems.forEach(item => {
+            item.querySelector('input[type="radio"]').addEventListener('change', () => {
+                jobItems.forEach(i => i.classList.remove('is-selected'));
+                item.classList.add('is-selected');
+            });
+        });
+
+        // 첨삭 요청하기 (선택 상태) — fetch()로 POST /my/cover-letter/{id}/ai-reviews 를 호출해
+        // 서버가 문항별 첨삭을 모두 생성/저장할 때까지 기다리는 동안 전체 화면 오버레이를 보여준다.
+        // 완료되면 응답의 redirectUrl로 이동, 실패하면 오버레이 안에 에러 메시지를 보여주고 되돌린다.
+        const requestBtn = document.getElementById('btn-request-review');
+        const overlay = document.getElementById('cl-generating-overlay');
+        const overlayText = document.getElementById('cl-generating-overlay__text');
+        const overlayError = document.getElementById('cl-generating-overlay__error');
+        const overlayCloseBtn = document.getElementById('btn-generating-overlay-close');
+
+        if (overlayCloseBtn && overlay) {
+            overlayCloseBtn.addEventListener('click', () => {
+                overlay.classList.remove('is-active');
+            });
+        }
+
+        if (requestBtn && overlay) {
+            requestBtn.addEventListener('click', () => {
+                const selected = document.querySelector('input[name="jobPosting"]:checked');
+                if (!selected) {
+                    alert('첨삭받을 채용공고를 선택해 주세요.');
+                    return;
+                }
+
+                const coverLetterId = requestBtn.dataset.coverLetterId;
+                const jobPostingId = selected.value;
+
+                requestBtn.disabled = true;
+                overlayError.textContent = '';
+                overlayError.classList.remove('is-visible');
+                overlayText.textContent = 'AI 첨삭을 생성하고 있어요. 문항 수에 따라 최대 1분 정도 걸릴 수 있어요.';
+                overlay.classList.add('is-active');
+
+                // 문항별 추가 정보 — 비어 있는 칸은 보내지 않는다.
+                const additionalInfo = {};
+                document.querySelectorAll('.cl-extra-info__input').forEach((input) => {
+                    const text = (input.value || '').trim();
+                    if (text && input.dataset.itemId) {
+                        additionalInfo[input.dataset.itemId] = text;
+                    }
+                });
+
+                fetch(`/my/cover-letter/${coverLetterId}/ai-reviews`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jobPostingId: Number(jobPostingId),
+                        additionalInfo: additionalInfo
+                    })
+                })
+                    .then(async (res) => {
+                        const data = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                            throw new Error(data.message || 'AI 첨삭 생성에 실패했습니다.');
+                        }
+                        location.href = data.redirectUrl;
+                    })
+                    .catch((err) => {
+                        overlayText.textContent = 'AI 첨삭 생성에 실패했어요.';
+                        overlayError.textContent = err.message
+                            + ' 계속 실패하면 잠시 후 다시 시도해 주세요.';
+                        overlayError.classList.add('is-visible');
+                        requestBtn.disabled = false;
+                    });
+            });
+        }
+
+        // 다른 공고로 다시 첨삭받기 (결과 상태) — 이미 첨삭 이력이 있어도 reselect=true로
+        // 공고 재선택 화면(상태 A)을 강제로 보여준다.
+        const reselectBtn = document.getElementById('btn-reselect-job');
+        if (reselectBtn) {
+            reselectBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const coverLetterId = new URLSearchParams(location.search).get('id');
+                location.href = `/my/cover-letter/ai-result?id=${coverLetterId}&reselect=true`;
+            });
+        }
+
+        // 이전 첨삭 이력 드롭다운 — 선택한 이력의 reviewId로 다시 GET 요청
+        const historySelect = document.getElementById('cl-history-select');
+        const reviewResult = document.getElementById('cl-review-result');
+        if (historySelect && reviewResult) {
+            historySelect.addEventListener('change', () => {
+                const coverLetterId = reviewResult.dataset.coverLetterId;
+                location.href = `/my/cover-letter/ai-result?id=${coverLetterId}&reviewId=${historySelect.value}`;
+            });
+        }
+
+        // AI 제안 중 "원문에 없던 문장"만 형광펜으로 표시한다.
+        //
+        // 어절 단위 diff를 쓰지 않는 이유: AI는 문장을 고치는 게 아니라 통째로 다시 쓰기 때문에
+        // 어절로 비교하면 제안 전체가 칠해져 정보량이 0이 된다. 그래서 문장 단위로 짝을 짓고,
+        // 원문에 짝이 없는 문장(= AI가 새로 만들어낸 주장)에만 표시한다. 사용자가 실제로
+        // 확인해야 하는 건 "무엇이 바뀌었나"가 아니라 "내가 하지 않은 얘기가 뭔가"이기 때문이다.
+
+        // 제안 문장의 단어 중 원문에서 온 비율이 이 값보다 낮으면 새로 추가된 문장으로 본다.
+        const ADDED_SENTENCE_MAX_OVERLAP = 0.3;
+
+        // 원문과 제안 전체의 단어 겹침이 이 값 이상이면 "거의 손대지 않았다"고 본다.
+        // 실측값: 지어낸 문장이 섞였을 때 0.27, 표현만 다듬었을 때 0.63, 거의 그대로일 때 0.82.
+        const NEARLY_UNCHANGED_MIN_SIMILARITY = 0.75;
+
+        // 조각마다 뒤따르는 공백까지 포함해 잘라낸다 — 그대로 이어붙이면 원본이 복원된다.
+        function splitSentences(text) {
+            return (text || '').match(/[^.!?。]+[.!?。]*\s*/g) || [];
+        }
+
+        function tokenize(sentence) {
+            return new Set(
+                sentence.toLowerCase()
+                    .replace(/[^0-9a-z가-힣\s]/g, ' ')
+                    .split(/\s+/)
+                    .filter((word) => word.length > 1)
+            );
+        }
+
+        // 제안 문장 기준으로 "이 문장의 단어 중 원문에도 있는 비율"을 센다.
+        function overlapRatio(revisedTokens, originalTokens) {
+            if (revisedTokens.size === 0 || originalTokens.size === 0) {
+                return 0;
+            }
+            let hit = 0;
+            revisedTokens.forEach((word) => {
+                if (originalTokens.has(word)) {
+                    hit += 1;
+                }
+            });
+            return hit / revisedTokens.size;
+        }
+
+        // 원문과 제안 전체가 얼마나 겹치는지 (교집합 / 합집합)
+        function similarity(left, right) {
+            const a = tokenize(left);
+            const b = tokenize(right);
+            if (a.size === 0 || b.size === 0) {
+                return 0;
+            }
+            let shared = 0;
+            a.forEach((word) => {
+                if (b.has(word)) {
+                    shared += 1;
+                }
+            });
+            return shared / (a.size + b.size - shared);
+        }
+
+        function escapeHtml(text) {
+            const holder = document.createElement('div');
+            holder.textContent = text;
+            return holder.innerHTML;
+        }
+
+        function highlightAddedSentences(panel) {
+            const revisedEl = panel.querySelector('.cl-suggestion__example-text');
+            const originalEl = panel.querySelector('.cl-original__text');
+            const noteEl = panel.querySelector('.cl-suggestion__added-note');
+            const revised = revisedEl && revisedEl.dataset.revisedAnswer;
+            if (!revisedEl || !originalEl || !revised) {
+                return;
+            }
+
+            // 비교 대상은 "원문"이 아니라 "사용자가 제공한 내용" 전체다. 첨삭 요청 시 직접 알려준
+            // 추가 정보로 만들어진 문장까지 표시하면, 정보를 성실히 줄수록 경고가 늘어난다.
+            const extraEl = panel.querySelector('.cl-original__extra-text');
+            const providedText = originalEl.textContent
+                + (extraEl ? '\n' + (extraEl.dataset.additionalInfo || '') : '');
+
+            const originalTokenSets = splitSentences(providedText).map(tokenize);
+            // 제공 내용 전체를 한 덩어리로도 비교한다. 문장별로만 재면, AI가 원문 두 문장을 하나로
+            // 합치거나 결론을 요약해 앞으로 빼는 순간 어느 원문 문장과도 겹침이 희석돼 오탐이 난다.
+            // 그런 문장은 원문 여기저기서 단어를 끌어오므로 전체와 비교하면 회복된다.
+            const providedTokens = tokenize(providedText);
+            let addedCount = 0;
+
+            const html = splitSentences(revised).map((piece) => {
+                const sentence = piece.trimEnd();
+                const trailing = piece.slice(sentence.length);
+                const tokens = tokenize(sentence);
+                const best = Math.max(
+                    originalTokenSets.reduce(
+                        (max, originalTokens) => Math.max(max, overlapRatio(tokens, originalTokens)),
+                        0
+                    ),
+                    overlapRatio(tokens, providedTokens)
+                );
+                // 단어가 거의 없는 조각(기호만 남은 경우 등)은 판단하지 않고 그대로 둔다.
+                if (tokens.size === 0 || best > ADDED_SENTENCE_MAX_OVERLAP) {
+                    return escapeHtml(piece);
+                }
+                addedCount += 1;
+                return '<mark class="cl-added">' + escapeHtml(sentence) + '</mark>' + escapeHtml(trailing);
+            }).join('');
+
+            revisedEl.innerHTML = html;
+
+            if (!noteEl) {
+                return;
+            }
+
+            // 원문이 이미 좋아서 고칠 게 없는 경우와, AI가 일을 안 한 경우는 화면상 똑같아 보인다.
+            // 전자라고 말해주지 않으면 사용자는 후자로 읽고, 정작 값어치가 있는 개선 포인트를
+            // 그냥 지나친다.
+            const nearlyUnchanged = addedCount === 0
+                && similarity(originalEl.textContent, revised) >= NEARLY_UNCHANGED_MIN_SIMILARITY;
+
+            if (addedCount > 0) {
+                // "원문에 없다"고 단정하지 않는다. 실제로 계산한 것은 원문 문장들과의 단어 겹침이라,
+                // AI가 두 문장을 합치거나 결론을 요약해 앞으로 빼면 원문에 있는 내용도 짝을 잃는다.
+                // 사용자가 할 일(확인)은 같으므로, 아는 것까지만 말한다.
+                noteEl.textContent =
+                    `표시된 ${addedCount}개 문장은 원문과 대응이 뚜렷하지 않습니다.`
+                    + ' 내가 실제로 한 일인지, 면접에서 설명할 수 있는지 확인하세요.'
+                    + ' 표현만 바뀐 것이면 그대로 두어도 됩니다.'
+                    + ' 빠진 내용이 있다면 다시 첨삭받을 때 문항별 입력란에 적어주세요.';
+            } else if (nearlyUnchanged) {
+                noteEl.textContent =
+                    '원문이 이미 충실해 크게 고칠 부분이 없습니다. 아래 개선 포인트를 확인하세요.';
+            } else {
+                noteEl.textContent = '';
+            }
+            noteEl.classList.toggle('is-visible', noteEl.textContent !== '');
+        }
+
+        document.querySelectorAll('.cl-review-panel').forEach(highlightAddedSentences);
+
+        // "원문 유지" / "이 내용으로 적용" (결과 상태) — 문항마다 각각 동작한다.
+        // "원문 유지"는 DB에 바꿀 게 없는 선택이라 화면 표시만 바꾸고, "적용"만 서버에 반영한다.
+        document.querySelectorAll('.cl-review-panel').forEach((panel) => {
+            const itemId = panel.dataset.itemId;
+            const keepBtn = panel.querySelector('.cl-keep-btn');
+            const applyBtn = panel.querySelector('.cl-apply-btn');
+            const statusEl = panel.querySelector('.cl-suggestion__apply-status');
+            const originalTextEl = panel.querySelector('.cl-original__text');
+            const originalCountEl = panel.querySelector('.cl-original__count');
+            const revisedTextEl = panel.querySelector('.cl-suggestion__example-text');
+
+            if (!keepBtn || !applyBtn) {
+                return;
+            }
+
+            // 첨삭 요청 이후 이 문항이 원본 자소서에서 삭제된 경우 적용할 대상이 없다.
+            if (!itemId || itemId === 'null') {
+                applyBtn.disabled = true;
+                applyBtn.title = '이 문항은 원본 자소서에서 삭제되어 적용할 수 없습니다.';
+                return;
+            }
+
+            keepBtn.addEventListener('click', () => {
+                keepBtn.disabled = true;
+                applyBtn.disabled = true;
+                statusEl.textContent = '원문을 유지했습니다.';
+                statusEl.classList.remove('is-error');
+                statusEl.classList.add('is-success');
+            });
+
+            applyBtn.addEventListener('click', () => {
+                // 본문에는 하이라이트 <mark>이 들어가 있을 수 있으므로 표시용 텍스트가 아니라
+                // 원본을 담아둔 data 속성에서 읽는다.
+                const revisedAnswer = (
+                    revisedTextEl?.dataset.revisedAnswer ?? revisedTextEl?.textContent ?? ''
+                ).trim();
+                if (!revisedAnswer) {
+                    return;
+                }
+
+                keepBtn.disabled = true;
+                applyBtn.disabled = true;
+                statusEl.textContent = '적용하는 중...';
+                statusEl.classList.remove('is-error', 'is-success');
+
+                fetch(`/my/cover-letter/items/${itemId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answer: revisedAnswer })
+                })
+                    .then(async (res) => {
+                        const data = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                            throw new Error(data.message || '적용에 실패했습니다.');
+                        }
+
+                        if (originalTextEl) {
+                            originalTextEl.textContent = revisedAnswer;
+                        }
+                        if (originalCountEl) {
+                            originalCountEl.textContent = `원문 ${revisedAnswer.length}자`;
+                        }
+                        // 적용 후에는 원문이 제안과 같아졌으므로 하이라이트가 남아 있으면 거짓말이 된다.
+                        highlightAddedSentences(panel);
+                        statusEl.textContent = '이 내용으로 적용했습니다. 자기소개서에 반영됐어요.';
+                        statusEl.classList.add('is-success');
+                    })
+                    .catch((err) => {
+                        keepBtn.disabled = false;
+                        applyBtn.disabled = false;
+                        statusEl.textContent = err.message;
+                        statusEl.classList.add('is-error');
+                    });
             });
         });
     });

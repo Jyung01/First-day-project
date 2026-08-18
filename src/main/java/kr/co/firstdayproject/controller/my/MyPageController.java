@@ -12,6 +12,8 @@ import kr.co.firstdayproject.entity.member.User;
 import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.job.JobService;
 import kr.co.firstdayproject.service.my.MyAccountException;
+import kr.co.firstdayproject.service.my.MyApplicationQueryService;
+import kr.co.firstdayproject.service.my.MyApplicationDetailService;
 import kr.co.firstdayproject.service.my.MyPageException;
 import kr.co.firstdayproject.service.my.MyPageService;
 import kr.co.firstdayproject.util.PageHandler;
@@ -43,6 +45,8 @@ public class MyPageController {
 
     private final JobService jobService;
     private final MyPageService myPageService;
+    private final MyApplicationQueryService myApplicationQueryService;
+    private final MyApplicationDetailService myApplicationDetailService;
 
     @GetMapping({"", "/index"})
     public String index(
@@ -214,21 +218,68 @@ public class MyPageController {
     }
 
     @GetMapping("/applications")
-    public String applications(Model model) {
+    public String applications(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "all") String filter,
+            @RequestParam(defaultValue = "1") int page,
+            Model model
+    ) {
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+
+        var result = myApplicationQueryService.getApplications(
+                userDetails.getUserId(),
+                filter,
+                page
+        );
+
         model.addAttribute("activeMenu", "applications");
+        model.addAttribute("applications", result.applications());
+        model.addAttribute("applicationCounts", result.counts());
+        model.addAttribute("filter", result.filter());
+        model.addAttribute("pageHandler", result.pageHandler());
         return "my/applications";
     }
 
     @GetMapping("/applications/{applicationNo}")
     public String applicationDetail(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long applicationNo,
-            @RequestParam(defaultValue = "APPLIED") String status,
             Model model
     ) {
-        model.addAttribute("applicationNo", applicationNo);
-        model.addAttribute("applicationStatus", status.toUpperCase());
+        if (userDetails == null) return "redirect:/auth/login";
+        model.addAttribute("applicationDetail", myApplicationDetailService.getDetail(
+                userDetails.getUserId(),
+                applicationNo
+        ));
         model.addAttribute("activeMenu", "applications");
         return "my/application-detail";
+    }
+
+    @PostMapping("/applications/{applicationNo}/cancel")
+    public String cancelApplication(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long applicationNo,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (userDetails == null) return "redirect:/auth/login";
+        try {
+            myApplicationDetailService.cancel(
+                    userDetails.getUserId(),
+                    applicationNo
+            );
+            redirectAttributes.addFlashAttribute(
+                    "applicationSuccessMessage",
+                    "지원을 취소했습니다."
+            );
+        } catch (IllegalArgumentException exception) {
+            redirectAttributes.addFlashAttribute(
+                    "applicationErrorMessage",
+                    exception.getMessage()
+            );
+        }
+        return "redirect:/my/applications/" + applicationNo;
     }
 
     @GetMapping("/saved-jobs")

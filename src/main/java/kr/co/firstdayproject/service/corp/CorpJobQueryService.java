@@ -40,7 +40,7 @@ public class CorpJobQueryService {
     private final JobPostingSkillRepository jobPostingSkillRepository;
     private final SkillRepository skillRepository;
 
-    public CorpJobDetailView getClosedJobPosting(
+    public CorpJobDetailView getReadOnlyJobPosting(
         Long companyId,
         Long jobPostingId
     ) {
@@ -52,9 +52,9 @@ public class CorpJobQueryService {
                 "채용공고를 찾을 수 없습니다."
             ));
 
-        if (!"마감".equals(posting.getStatus())) {
+        if (!List.of("마감", "재검토요청").contains(posting.getStatus())) {
             throw new IllegalArgumentException(
-                "마감된 채용공고만 조회할 수 있습니다."
+                "조회할 수 없는 상태의 채용공고입니다."
             );
         }
 

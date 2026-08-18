@@ -1,6 +1,12 @@
-<footer class="corp-footer" th:fragment="corpFooter">
+<footer
+        class="corp-footer"
+        xmlns:th="http://www.thymeleaf.org"
+        th:fragment="corpFooter"
+>
     <div class="corp-footer__inner">
         <p>© 2026 첫출근 기업관리</p>
-        <p>운영 버전 v1.0.0</p>
+        <p>
+            운영 버전 <span th:text="${siteVersionName}">v1.0.0</span>
+        </p>
     </div>
 </footer>

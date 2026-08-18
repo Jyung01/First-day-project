@@ -1,6 +1,6 @@
 .application-filter {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     margin-bottom: 22px;
     padding: 10px;
@@ -10,6 +10,9 @@
 }
 
 .application-filter__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-height: 42px;
     border: 1px solid var(--application-border);
     border-radius: 9px;
@@ -17,6 +20,7 @@
     color: var(--navy-900);
     font-size: 13px;
     font-weight: 700;
+    text-decoration: none;
 }
 
 .application-filter__button strong {
@@ -30,7 +34,6 @@
 }
 
 .application-list-card {
-    min-height: 560px;
     padding: 0 20px;
     border: 1px solid var(--application-border);
     border-radius: 14px;
@@ -83,6 +86,34 @@
     font-size: 14px;
 }
 
+.application-row__company-job {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.application-row__logo {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    overflow: hidden;
+    border: 1px solid var(--application-border);
+    border-radius: 10px;
+    background: #f4f7fb;
+    color: var(--navy-900);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.application-row__logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .application-row > time {
     justify-self: center;
     text-align: center;
@@ -90,6 +121,12 @@
 
 .application-row > .application-status {
     justify-self: center;
+}
+
+.application-status--suspended {
+    border-color: #f3cf78;
+    background: #fff7df;
+    color: #9a6700;
 }
 
 .application-detail-link {
@@ -129,7 +166,8 @@
     margin-top: 28px;
 }
 
-.application-pagination a {
+.application-pagination a,
+.application-pagination > span {
     display: grid;
     place-items: center;
     width: 38px;
@@ -139,6 +177,24 @@
     background: #fff;
     color: var(--application-muted);
     font-size: 13px;
+}
+
+.application-pagination__arrow > span {
+    width: 8px;
+    height: 8px;
+    border-bottom: 1.5px solid currentColor;
+    border-left: 1.5px solid currentColor;
+    transform: translateX(2px) rotate(45deg);
+}
+
+.application-pagination__arrow--next > span {
+    transform: translateX(-2px) rotate(225deg);
+}
+
+.application-pagination > .application-pagination__arrow.is-disabled {
+    background: #f5f7fa;
+    color: #c4cbd5;
+    cursor: default;
 }
 
 .application-pagination a.is-active {

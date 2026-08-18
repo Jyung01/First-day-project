@@ -34,6 +34,9 @@ public class CoverLetterAiReview {
     private Long coverLetterAiReviewId;
     @Column(name = "cover_letter_id", nullable = false)
     private Long coverLetterId;
+    /** 첨삭 대상으로 선택한 채용공고 */
+    @Column(name = "job_posting_id", nullable = false)
+    private Long jobPostingId;
     /** 첨삭 요청 당시 문항·답변 전체 스냅샷 */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "original_content", nullable = false, columnDefinition = "json")
@@ -45,6 +48,10 @@ public class CoverLetterAiReview {
     /** 전체 첨삭 요약과 개선 이유 */
     @Column(name = "feedback", columnDefinition = "LONGTEXT")
     private String feedback;
+    /** 문항별 RAG 검색 근거 문단; 문항 순서와 같은 순서의 배열 */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "rag_context", columnDefinition = "json")
+    private String ragContext;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 }
