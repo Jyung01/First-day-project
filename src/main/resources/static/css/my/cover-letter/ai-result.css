@@ -580,3 +580,35 @@
             flex: 1;
             text-align: center;
         }
+
+        /* ---------- 원문에 없던 문장 표시 ---------- */
+        /* box-decoration-break가 없으면 문장이 두 줄에 걸칠 때 배경과 모서리가 끊긴다. */
+        .cl-suggestion__example-text mark.cl-added {
+            background: #fff3cd;
+            color: inherit;
+            border-radius: 3px;
+            padding: 1px 2px;
+            -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
+        }
+
+        .cl-suggestion__added-note {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border, #e7e7ec);
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-muted, #767781);
+        }
+
+        .cl-suggestion__added-note.is-visible {
+            display: block;
+        }
+
+        /* 수정 제안 제목 오른쪽에 개선 제안 개수를 붙여, 아래에 내용이 더 있음을 알린다. */
+        .cl-suggestion__points-count {
+            float: right;
+            font-weight: 600;
+            color: var(--primary, #6c5ce7);
+        }

@@ -22,7 +22,9 @@ import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterAiReviewRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
-import kr.co.firstdayproject.dto.ai.CoverLetterItemReviewResult;
+import kr.co.firstdayproject.dto.ai.CoverLetterItemReviewOutcome;
+import kr.co.firstdayproject.dto.ai.RagEvidence;
+import kr.co.firstdayproject.service.ai.ApplicantResumeSummaryService;
 import kr.co.firstdayproject.service.ai.CoverLetterItemReviewService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,7 @@ public class CoverLetterAiReviewService {
     private final JobPostingRepository jobPostingRepository;
     private final CompanyRepository companyRepository;
     private final CoverLetterItemReviewService coverLetterItemReviewService;
+    private final ApplicantResumeSummaryService applicantResumeSummaryService;
     // 이 프로젝트는 spring-boot-starter-webmvc만 사용해 Jackson ObjectMapper 빈이
     // 자동 등록되지 않으므로, 전역 설정에 손대지 않고 이 서비스 전용으로 직접 생성한다.
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -57,8 +60,10 @@ public class CoverLetterAiReviewService {
         CoverLetterItemRepository coverLetterItemRepository,
         JobPostingRepository jobPostingRepository,
         CompanyRepository companyRepository,
-        @Lazy CoverLetterItemReviewService coverLetterItemReviewService
+        @Lazy CoverLetterItemReviewService coverLetterItemReviewService,
+        ApplicantResumeSummaryService applicantResumeSummaryService
     ) {
+        this.applicantResumeSummaryService = applicantResumeSummaryService;
         this.coverLetterService = coverLetterService;
         this.coverLetterAiReviewRepository = coverLetterAiReviewRepository;
         this.coverLetterItemRepository = coverLetterItemRepository;
@@ -72,8 +77,16 @@ public class CoverLetterAiReviewService {
      * 실행한다 — 순차 호출이면 "문항 수 × 개별 응답시간"이 그대로 더해지지만, 병렬이면
      * 가장 느린 문항 1개 응답시간 정도로 전체 대기시간이 줄어든다.
      * 호출부(컨트롤러)가 이 메서드의 완료를 기다린 뒤 리다이렉트한다.
+     *
+     * 이 메서드에는 의도적으로 {@code @Transactional}을 붙이지 않는다. 트랜잭션으로 감싸면
+     * OpenAI 응답을 기다리는 수 초~수십 초 동안 DB 커넥션을 빌린 채로 붙잡게 되는데,
+     * 커넥션 풀은 기본 10개뿐이라 동시 요청이 몰리면 첨삭과 무관한 페이지까지 커넥션을 못 받아
+     * 사이트 전체가 멈춘다. 앞쪽 조회들은 각자 짧게 커넥션을 쓰고 반납하며, 마지막 save()는
+     * 리포지토리가 자체 트랜잭션으로 처리하는 단일 INSERT라 원자성도 유지된다.
+     *
+     * 참고로 트랜잭션은 호출 스레드에 묶이므로 parallelStream이 갈라낸 스레드는 어차피
+     * 트랜잭션 밖이다. 저 람다 안에서는 DB를 건드리지 말 것.
      */
-    @Transactional
     public Long requestReview(Long coverLetterId, Long userId, Long jobPostingId) {
         List<CoverLetterItem> items = coverLetterService.getItems(coverLetterId, userId);
         if (items.isEmpty()) {
@@ -83,24 +96,48 @@ public class CoverLetterAiReviewService {
         JobPosting targetPosting = jobPostingRepository.findById(jobPostingId)
             .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 채용공고입니다."));
 
+        // jobPostingId는 클라이언트가 보낸 값이라 그대로 믿지 않는다. 검증이 없으면 공고 선택
+        // 화면에 뜨지도 않는 공고(마감됐거나, 미승인·이용정지 기업의 공고)로도 첨삭이 돌아간다.
+        // 판별 기준은 공고 목록·검색과 같은 findVisibleIdsIn을 재사용해 한 곳에서만 관리한다.
+        if (jobPostingRepository.findVisibleIdsIn(List.of(jobPostingId)).isEmpty()) {
+            throw new IllegalStateException(
+                "지금은 첨삭 대상으로 선택할 수 없는 공고입니다. 모집이 마감되었거나 공개되지 않은 공고일 수 있습니다."
+            );
+        }
+
+        // 이력서는 사용자가 직접 입력한 본인의 사실이라 첨삭 재료로 써도 지어내기가 아니다.
+        // 다만 본문에 섞이면 서로 다른 경험이 한 문장으로 합쳐질 수 있어, 프롬프트에서
+        // improvementPoints 용도로만 쓰도록 제한한다. 문항마다 같은 값이므로 한 번만 조회한다.
+        String applicantResume = applicantResumeSummaryService.buildSummary(userId);
+
         List<OriginalItemSnapshot> originalSnapshot = items.stream()
             .map(item -> new OriginalItemSnapshot(item.getQuestion(), item.getAnswer()))
             .toList();
 
         // parallelStream이어도 List 소스의 순서(문항 순서)는 그대로 유지된다.
-        List<RevisedItemContent> revisedContent = items.parallelStream()
-            .map(item -> {
-                CoverLetterItemReviewResult result = coverLetterItemReviewService.review(
-                    item.getQuestion(),
-                    item.getAnswer(),
-                    targetPosting
-                );
-                return new RevisedItemContent(
-                    result.summary(),
-                    result.improvementPoints(),
-                    result.revisedAnswer()
-                );
-            })
+        // 리스트에 add하는 방식으로 바꾸면 병렬 실행에서 순서가 깨져 toDetail()의 인덱스 매칭이
+        // 어긋나므로, 아래 세 리스트 모두 map().toList() 형태를 유지해야 한다.
+        List<CoverLetterItemReviewOutcome> outcomes = items.parallelStream()
+            .map(item -> coverLetterItemReviewService.review(
+                item.getQuestion(),
+                item.getAnswer(),
+                targetPosting,
+                applicantResume
+            ))
+            .toList();
+
+        List<RevisedItemContent> revisedContent = outcomes.stream()
+            .map(outcome -> new RevisedItemContent(
+                outcome.result().summary(),
+                outcome.result().improvementPoints(),
+                outcome.result().revisedAnswer()
+            ))
+            .toList();
+
+        // 첨삭의 근거로 프롬프트에 들어간 검색 문단을 문항 순서 그대로 남긴다(REQ-903).
+        // original_content·revised_content와 같은 인덱스 규칙이라 나란히 읽을 수 있다.
+        List<List<RagEvidence>> ragContext = outcomes.stream()
+            .map(CoverLetterItemReviewOutcome::evidence)
             .toList();
 
         CoverLetterAiReview review = CoverLetterAiReview.builder()
@@ -109,11 +146,13 @@ public class CoverLetterAiReviewService {
             .originalContent(writeJson(originalSnapshot))
             .revisedContent(writeJson(revisedContent))
             .feedback(buildOverallFeedback(revisedContent))
+            .ragContext(writeJson(ragContext))
             .createdAt(LocalDateTime.now())
             .build();
 
-        coverLetterAiReviewRepository.save(review);
-        return review.getCoverLetterAiReviewId();
+        // 트랜잭션 밖에서 저장하므로 영속성 컨텍스트에 기대지 않고 저장된 엔티티에서 id를 읽는다.
+        CoverLetterAiReview saved = coverLetterAiReviewRepository.save(review);
+        return saved.getCoverLetterAiReviewId();
     }
 
     /**

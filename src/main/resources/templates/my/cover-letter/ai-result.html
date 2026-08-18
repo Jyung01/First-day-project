@@ -166,8 +166,19 @@
                             <div class="cl-suggestion__content">
                                 <!-- 원문과 바로 비교되도록 수정 제안을 맨 위에 배치, 이유(요약/개선포인트)는 아래에 -->
                                 <div class="cl-suggestion__example">
-                                    <p class="cl-suggestion__example-title">수정 제안</p>
-                                    <p class="cl-suggestion__example-text" th:text="${item.revisedAnswer()}">(첨삭된 답변 예시가 여기에 표시됩니다)</p>
+                                    <!-- 다시 쓴 답변이 원문과 비슷할 때가 많아, 아래에 개선 제안이
+                                         몇 개나 있는지 여기서 미리 알려준다. -->
+                                    <p class="cl-suggestion__example-title">수정 제안<span
+                                        class="cl-suggestion__points-count"
+                                        th:if="${item.improvementPoints() != null and !item.improvementPoints().isEmpty()}"
+                                        th:text="|개선 제안 ${#lists.size(item.improvementPoints())}개|">개선 제안 0개</span></p>
+                                    <!-- data-revised-answer는 적용 시 서버로 보낼 원본 문자열.
+                                         본문에는 하이라이트용 <mark>이 끼어들 수 있으므로, 화면 표시와
+                                         전송할 값을 분리해 마크업이 바뀌어도 저장 값이 흔들리지 않게 한다. -->
+                                    <p class="cl-suggestion__example-text"
+                                       th:attr="data-revised-answer=${item.revisedAnswer()}"
+                                       th:text="${item.revisedAnswer()}">(첨삭된 답변 예시가 여기에 표시됩니다)</p>
+                                    <p class="cl-suggestion__added-note" aria-live="polite"></p>
                                 </div>
                                 <div class="cl-suggestion__summary-box">
                                     <p class="cl-suggestion__summary-title">AI 개선점 요약</p>
@@ -311,6 +322,124 @@
             });
         }
 
+        // AI 제안 중 "원문에 없던 문장"만 형광펜으로 표시한다.
+        //
+        // 어절 단위 diff를 쓰지 않는 이유: AI는 문장을 고치는 게 아니라 통째로 다시 쓰기 때문에
+        // 어절로 비교하면 제안 전체가 칠해져 정보량이 0이 된다. 그래서 문장 단위로 짝을 짓고,
+        // 원문에 짝이 없는 문장(= AI가 새로 만들어낸 주장)에만 표시한다. 사용자가 실제로
+        // 확인해야 하는 건 "무엇이 바뀌었나"가 아니라 "내가 하지 않은 얘기가 뭔가"이기 때문이다.
+
+        // 제안 문장의 단어 중 원문에서 온 비율이 이 값보다 낮으면 새로 추가된 문장으로 본다.
+        const ADDED_SENTENCE_MAX_OVERLAP = 0.3;
+
+        // 원문과 제안 전체의 단어 겹침이 이 값 이상이면 "거의 손대지 않았다"고 본다.
+        // 실측값: 지어낸 문장이 섞였을 때 0.27, 표현만 다듬었을 때 0.63, 거의 그대로일 때 0.82.
+        const NEARLY_UNCHANGED_MIN_SIMILARITY = 0.75;
+
+        // 조각마다 뒤따르는 공백까지 포함해 잘라낸다 — 그대로 이어붙이면 원본이 복원된다.
+        function splitSentences(text) {
+            return (text || '').match(/[^.!?。]+[.!?。]*\s*/g) || [];
+        }
+
+        function tokenize(sentence) {
+            return new Set(
+                sentence.toLowerCase()
+                    .replace(/[^0-9a-z가-힣\s]/g, ' ')
+                    .split(/\s+/)
+                    .filter((word) => word.length > 1)
+            );
+        }
+
+        // 제안 문장 기준으로 "이 문장의 단어 중 원문에도 있는 비율"을 센다.
+        function overlapRatio(revisedTokens, originalTokens) {
+            if (revisedTokens.size === 0 || originalTokens.size === 0) {
+                return 0;
+            }
+            let hit = 0;
+            revisedTokens.forEach((word) => {
+                if (originalTokens.has(word)) {
+                    hit += 1;
+                }
+            });
+            return hit / revisedTokens.size;
+        }
+
+        // 원문과 제안 전체가 얼마나 겹치는지 (교집합 / 합집합)
+        function similarity(left, right) {
+            const a = tokenize(left);
+            const b = tokenize(right);
+            if (a.size === 0 || b.size === 0) {
+                return 0;
+            }
+            let shared = 0;
+            a.forEach((word) => {
+                if (b.has(word)) {
+                    shared += 1;
+                }
+            });
+            return shared / (a.size + b.size - shared);
+        }
+
+        function escapeHtml(text) {
+            const holder = document.createElement('div');
+            holder.textContent = text;
+            return holder.innerHTML;
+        }
+
+        function highlightAddedSentences(panel) {
+            const revisedEl = panel.querySelector('.cl-suggestion__example-text');
+            const originalEl = panel.querySelector('.cl-original__text');
+            const noteEl = panel.querySelector('.cl-suggestion__added-note');
+            const revised = revisedEl && revisedEl.dataset.revisedAnswer;
+            if (!revisedEl || !originalEl || !revised) {
+                return;
+            }
+
+            const originalTokenSets = splitSentences(originalEl.textContent).map(tokenize);
+            let addedCount = 0;
+
+            const html = splitSentences(revised).map((piece) => {
+                const sentence = piece.trimEnd();
+                const trailing = piece.slice(sentence.length);
+                const tokens = tokenize(sentence);
+                const best = originalTokenSets.reduce(
+                    (max, originalTokens) => Math.max(max, overlapRatio(tokens, originalTokens)),
+                    0
+                );
+                // 단어가 거의 없는 조각(기호만 남은 경우 등)은 판단하지 않고 그대로 둔다.
+                if (tokens.size === 0 || best > ADDED_SENTENCE_MAX_OVERLAP) {
+                    return escapeHtml(piece);
+                }
+                addedCount += 1;
+                return '<mark class="cl-added">' + escapeHtml(sentence) + '</mark>' + escapeHtml(trailing);
+            }).join('');
+
+            revisedEl.innerHTML = html;
+
+            if (!noteEl) {
+                return;
+            }
+
+            // 원문이 이미 좋아서 고칠 게 없는 경우와, AI가 일을 안 한 경우는 화면상 똑같아 보인다.
+            // 전자라고 말해주지 않으면 사용자는 후자로 읽고, 정작 값어치가 있는 개선 포인트를
+            // 그냥 지나친다.
+            const nearlyUnchanged = addedCount === 0
+                && similarity(originalEl.textContent, revised) >= NEARLY_UNCHANGED_MIN_SIMILARITY;
+
+            if (addedCount > 0) {
+                noteEl.textContent =
+                    `표시된 ${addedCount}개 문장은 원문에 없던 내용입니다. 사실인지 확인하고 적용하세요.`;
+            } else if (nearlyUnchanged) {
+                noteEl.textContent =
+                    '원문이 이미 충실해 크게 고칠 부분이 없습니다. 아래 개선 포인트를 확인하세요.';
+            } else {
+                noteEl.textContent = '';
+            }
+            noteEl.classList.toggle('is-visible', noteEl.textContent !== '');
+        }
+
+        document.querySelectorAll('.cl-review-panel').forEach(highlightAddedSentences);
+
         // "원문 유지" / "이 내용으로 적용" (결과 상태) — 문항마다 각각 동작한다.
         // "원문 유지"는 DB에 바꿀 게 없는 선택이라 화면 표시만 바꾸고, "적용"만 서버에 반영한다.
         document.querySelectorAll('.cl-review-panel').forEach((panel) => {
@@ -342,7 +471,11 @@
             });
 
             applyBtn.addEventListener('click', () => {
-                const revisedAnswer = (revisedTextEl?.textContent || '').trim();
+                // 본문에는 하이라이트 <mark>이 들어가 있을 수 있으므로 표시용 텍스트가 아니라
+                // 원본을 담아둔 data 속성에서 읽는다.
+                const revisedAnswer = (
+                    revisedTextEl?.dataset.revisedAnswer ?? revisedTextEl?.textContent ?? ''
+                ).trim();
                 if (!revisedAnswer) {
                     return;
                 }
@@ -369,6 +502,8 @@
                         if (originalCountEl) {
                             originalCountEl.textContent = `원문 ${revisedAnswer.length}자`;
                         }
+                        // 적용 후에는 원문이 제안과 같아졌으므로 하이라이트가 남아 있으면 거짓말이 된다.
+                        highlightAddedSentences(panel);
                         statusEl.textContent = '이 내용으로 적용했습니다. 자기소개서에 반영됐어요.';
                         statusEl.classList.add('is-success');
                     })

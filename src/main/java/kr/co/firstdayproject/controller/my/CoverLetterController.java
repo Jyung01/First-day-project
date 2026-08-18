@@ -8,6 +8,8 @@ import kr.co.firstdayproject.dto.job.JobListItem;
 import kr.co.firstdayproject.dto.my.CoverLetterDto;
 import kr.co.firstdayproject.entity.coverletter.CoverLetter;
 import kr.co.firstdayproject.entity.coverletter.CoverLetterItem;
+import kr.co.firstdayproject.exception.AccessDeniedException;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.service.job.JobService;
 import kr.co.firstdayproject.service.my.CoverLetterAiReviewService;
 import kr.co.firstdayproject.service.my.CoverLetterService;
@@ -153,6 +155,26 @@ public class CoverLetterController {
         Long userId = getCurrentUserId(request);
         try {
             coverLetterAiReviewService.requestReview(id, userId, jobPostingId);
+        } catch (AccessDeniedException exception) {
+            // 남의 자기소개서에 대한 요청 — 전역 핸들러가 403으로 처리하도록 그대로 올린다.
+            throw exception;
+        } catch (ResourceNotFoundException | IllegalStateException | IllegalArgumentException exception) {
+            // 요청 자체가 잘못된 경우(없는 공고, 선택 불가 공고, 문항 없음)라 다시 시도해도
+            // 결과가 같다. "잠시 후 다시 시도" 대신 이유를 그대로 알려준다.
+            log.warn(
+                    "자소서 AI 첨삭 요청 거부: coverLetterId={}, jobPostingId={}, 사유={}",
+                    id,
+                    jobPostingId,
+                    exception.getMessage()
+            );
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of(
+                            "message",
+                            exception.getMessage() != null
+                                    ? exception.getMessage()
+                                    : "첨삭을 요청할 수 없습니다."
+                    ));
         } catch (Exception exception) {
             log.error(
                     "자소서 AI 첨삭 생성 실패: coverLetterId={}, jobPostingId={}",

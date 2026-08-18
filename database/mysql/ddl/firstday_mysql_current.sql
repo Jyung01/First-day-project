@@ -497,6 +497,7 @@ CREATE TABLE cover_letter_ai_reviews (
   original_content      JSON NOT NULL COMMENT '첨삭 요청 당시 문항·답변 전체 스냅샷',
   revised_content       JSON NOT NULL COMMENT 'AI가 제안한 문항별 수정 답변 전체',
   feedback              LONGTEXT NULL COMMENT '전체 첨삭 요약과 개선 이유',
+  rag_context           JSON NULL COMMENT '문항별 RAG 검색 근거 문단; 문항 순서와 같은 순서의 배열',
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (cover_letter_ai_review_id),
   KEY idx_cover_letter_ai_reviews (cover_letter_id, created_at),

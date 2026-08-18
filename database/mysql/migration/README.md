@@ -17,6 +17,7 @@
 | V9 | `V9__add_admin_memo_to_company_reviews.sql` | `company_reviews.admin_memo` 추가 |
 | V10 | `V10__add_admin_memo_to_interview_reviews.sql` | `interview_reviews.admin_memo` 추가 |
 | V11 | `V11__add_job_posting_to_cover_letter_ai_reviews.sql` | `cover_letter_ai_reviews.job_posting_id` 추가 |
+| V12 | `V12__add_rag_context_to_cover_letter_ai_reviews.sql` | `cover_letter_ai_reviews.rag_context` 추가 |
 
 ## 적용 규칙
 
@@ -80,3 +81,9 @@
 - 인덱스 `idx_cover_letter_ai_reviews_job_posting (job_posting_id)`를 추가한다.
 - 재요청마다 새 행을 쌓는 이력 구조에서, 첨삭 결과가 어느 공고를 기준으로 생성됐는지 구분할 수 있게 한다.
 - 기존 V10 DB에는 `V11__add_job_posting_to_cover_letter_ai_reviews.sql`을 한 번 실행한다.
+
+## V12 반영 내용
+
+- `cover_letter_ai_reviews.rag_context`(JSON NULL)에 첨삭 생성 시 pgvector에서 검색해 프롬프트에 넣은 유사 공고 문단을 문항 순서와 같은 순서의 배열로 저장한다. `feedback` 다음 위치에 추가한다. (REQ-903)
+- 나중에 어떤 근거로 첨삭이 만들어졌는지 되짚을 수 있게 한다. 기존 행에는 근거가 없으므로 NULL을 허용한다.
+- 기존 V11 DB에는 `V12__add_rag_context_to_cover_letter_ai_reviews.sql`을 한 번 실행한다.
