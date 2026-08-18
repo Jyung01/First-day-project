@@ -150,11 +150,12 @@ public class CoverLetterController {
     public ResponseEntity<Map<String, Object>> requestAiReview(
             @PathVariable Long id,
             @RequestParam Long jobPostingId,
+            @RequestParam(required = false) String additionalInfo,
             HttpServletRequest request
     ) {
         Long userId = getCurrentUserId(request);
         try {
-            coverLetterAiReviewService.requestReview(id, userId, jobPostingId);
+            coverLetterAiReviewService.requestReview(id, userId, jobPostingId, additionalInfo);
         } catch (AccessDeniedException exception) {
             // 남의 자기소개서에 대한 요청 — 전역 핸들러가 403으로 처리하도록 그대로 올린다.
             throw exception;

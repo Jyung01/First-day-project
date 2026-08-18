@@ -624,3 +624,43 @@
             color: var(--text-muted, #767781);
             background: #fafafb;
         }
+
+        /* ---------- AI에게 더 알려주고 싶은 내용 ---------- */
+        .cl-extra-info {
+            margin-bottom: 16px;
+            padding: 16px 18px;
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .cl-extra-info__label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-extra-info__hint {
+            margin: 4px 0 10px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-muted, #767781);
+        }
+
+        .cl-extra-info__input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 13px;
+            line-height: 1.7;
+            resize: vertical;
+        }
+
+        .cl-extra-info__input:focus {
+            outline: none;
+            border-color: var(--primary, #6c5ce7);
+        }

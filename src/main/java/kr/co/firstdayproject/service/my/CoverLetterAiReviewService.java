@@ -94,7 +94,12 @@ public class CoverLetterAiReviewService {
      * 참고로 트랜잭션은 호출 스레드에 묶이므로 parallelStream이 갈라낸 스레드는 어차피
      * 트랜잭션 밖이다. 저 람다 안에서는 DB를 건드리지 말 것.
      */
-    public Long requestReview(Long coverLetterId, Long userId, Long jobPostingId) {
+    public Long requestReview(
+        Long coverLetterId,
+        Long userId,
+        Long jobPostingId,
+        String additionalInfo
+    ) {
         List<CoverLetterItem> items = coverLetterService.getItems(coverLetterId, userId);
         if (items.isEmpty()) {
             throw new IllegalStateException("첨삭할 문항이 없습니다.");
@@ -135,7 +140,8 @@ public class CoverLetterAiReviewService {
                         item.getQuestion(),
                         item.getAnswer(),
                         targetPosting,
-                        applicantResume
+                        applicantResume,
+                        additionalInfo
                     );
                 } catch (RuntimeException exception) {
                     log.error(

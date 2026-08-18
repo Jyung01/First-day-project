@@ -94,6 +94,16 @@
                     </nav>
                 </div>
 
+                <!-- 자소서 본문에 안 적힌 사실을 여기서 받는다. 원문이 얇으면 AI가 다듬을 재료
+                     자체가 없어 표현 정리에 그치는데, 이 칸이 그 재료를 보충하는 유일한 통로다.
+                     이력서와 달리 사용자가 직접 확인해 준 정보라 본문에 반영해도 된다. -->
+                <div class="cl-extra-info">
+                    <label class="cl-extra-info__label" for="extra-info">AI에게 더 알려주고 싶은 내용 (선택)</label>
+                    <p class="cl-extra-info__hint">자기소개서에 안 적었지만 알아두면 좋을 내용을 적어주세요. 첨삭에 반영됩니다.</p>
+                    <textarea id="extra-info" class="cl-extra-info__input" rows="3" maxlength="1000"
+                              placeholder="예) 동시 구매는 낙관적 락으로 처리했습니다 / 응답 속도는 따로 측정하지 않았습니다 / 팀에서 API 명세 문서화를 맡았습니다"></textarea>
+                </div>
+
                 <div class="cl-page-actions">
                     <a th:href="@{/my/cover-letter/list}" class="btn btn-outline">취소</a>
                     <button type="button" id="btn-request-review" class="btn btn-primary cl-submit"
@@ -284,6 +294,11 @@
 
                 const body = new URLSearchParams();
                 body.set('jobPostingId', jobPostingId);
+
+                const extraInfo = (document.getElementById('extra-info')?.value || '').trim();
+                if (extraInfo) {
+                    body.set('additionalInfo', extraInfo);
+                }
 
                 fetch(`/my/cover-letter/${coverLetterId}/ai-reviews`, {
                     method: 'POST',
