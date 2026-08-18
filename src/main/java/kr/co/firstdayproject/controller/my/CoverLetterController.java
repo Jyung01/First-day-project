@@ -3,6 +3,7 @@ package kr.co.firstdayproject.controller.my;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewDetail;
 import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewHistoryItem;
+import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewRequest;
 import kr.co.firstdayproject.dto.common.PageInfo;
 import kr.co.firstdayproject.dto.job.JobListItem;
 import kr.co.firstdayproject.dto.my.CoverLetterDto;
@@ -149,13 +150,20 @@ public class CoverLetterController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> requestAiReview(
             @PathVariable Long id,
-            @RequestParam Long jobPostingId,
-            @RequestParam(required = false) String additionalInfo,
+            @RequestBody CoverLetterAiReviewRequest body,
             HttpServletRequest request
     ) {
+        Long jobPostingId = body.jobPostingId();
+        if (jobPostingId == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "첨삭받을 채용공고를 선택해 주세요."));
+        }
+
         Long userId = getCurrentUserId(request);
         try {
-            coverLetterAiReviewService.requestReview(id, userId, jobPostingId, additionalInfo);
+            coverLetterAiReviewService.requestReview(
+                    id, userId, jobPostingId, body.additionalInfo()
+            );
         } catch (AccessDeniedException exception) {
             // 남의 자기소개서에 대한 요청 — 전역 핸들러가 403으로 처리하도록 그대로 올린다.
             throw exception;

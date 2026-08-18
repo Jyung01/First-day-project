@@ -98,7 +98,7 @@ public class CoverLetterAiReviewService {
         Long coverLetterId,
         Long userId,
         Long jobPostingId,
-        String additionalInfo
+        Map<Long, String> additionalInfoByItemId
     ) {
         List<CoverLetterItem> items = coverLetterService.getItems(coverLetterId, userId);
         if (items.isEmpty()) {
@@ -122,8 +122,16 @@ public class CoverLetterAiReviewService {
         // improvementPoints 용도로만 쓰도록 제한한다. 문항마다 같은 값이므로 한 번만 조회한다.
         String applicantResume = applicantResumeSummaryService.buildSummary(userId);
 
+        // 사용자가 알려준 추가 정보도 함께 남긴다. 첨삭 결과에 그 내용으로 만들어진 문장이
+        // 들어가므로, 나중에 "원문에 없는 문장"을 판단할 때 이것도 사용자가 제공한 내용으로 쳐야 한다.
         List<OriginalItemSnapshot> originalSnapshot = items.stream()
-            .map(item -> new OriginalItemSnapshot(item.getQuestion(), item.getAnswer()))
+            .map(item -> new OriginalItemSnapshot(
+                item.getQuestion(),
+                item.getAnswer(),
+                additionalInfoByItemId == null
+                    ? null
+                    : additionalInfoByItemId.get(item.getCoverLetterItemId())
+            ))
             .toList();
 
         // parallelStream이어도 List 소스의 순서(문항 순서)는 그대로 유지된다.
@@ -141,7 +149,10 @@ public class CoverLetterAiReviewService {
                         item.getAnswer(),
                         targetPosting,
                         applicantResume,
-                        additionalInfo
+                        // 이 문항에 대해 사용자가 적은 내용만 넘긴다 — 다른 문항 것은 애초에 보이지 않는다.
+                        additionalInfoByItemId == null
+                            ? null
+                            : additionalInfoByItemId.get(item.getCoverLetterItemId())
                     );
                 } catch (RuntimeException exception) {
                     log.error(
@@ -277,6 +288,7 @@ public class CoverLetterAiReviewService {
                 coverLetterItemId,
                 original.question(),
                 displayAnswer,
+                original.additionalInfo(),
                 resolved,
                 revision != null ? revision.summary() : null,
                 revision != null ? revision.improvementPoints() : List.of(),
@@ -326,7 +338,11 @@ public class CoverLetterAiReviewService {
         }
     }
 
-    private record OriginalItemSnapshot(String question, String answer) {
+    /**
+     * additionalInfo는 이 기능이 생기기 전에 만들어진 이력에는 없으므로 null로 역직렬화된다.
+     * 별도 컬럼을 만들지 않고 기존 original_content JSON 안에 넣어 마이그레이션을 피했다.
+     */
+    private record OriginalItemSnapshot(String question, String answer, String additionalInfo) {
     }
 
     private record RevisedItemContent(

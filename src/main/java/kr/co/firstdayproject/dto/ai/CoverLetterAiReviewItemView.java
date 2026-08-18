@@ -16,6 +16,8 @@ public record CoverLetterAiReviewItemView(
     Long coverLetterItemId,
     String question,
     String answer,
+    /** 첨삭 요청 시 사용자가 이 문항에 대해 직접 알려준 내용. 없으면 null */
+    String additionalInfo,
     boolean resolved,
     String summary,
     List<String> improvementPoints,
