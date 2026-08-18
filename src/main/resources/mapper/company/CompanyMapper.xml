@@ -61,12 +61,9 @@
             c.approval_status = '승인'
             AND c.company_status = '정상'
 
-            c.approval_status = '승인'
-            AND c.company_status = '정상'
-
             <!-- 키워드 검색 (기업명, 한 줄 소개, 업종명) -->
             <if test="keyword != null and keyword != ''">
-                (
+                AND (
                 c.company_name LIKE CONCAT('%', #{keyword}, '%')
                 OR c.short_description LIKE CONCAT('%', #{keyword}, '%')
                 OR c.industry_name LIKE CONCAT('%', #{keyword}, '%')
@@ -150,12 +147,9 @@
             c.approval_status = '승인'
             AND c.company_status = '정상'
 
-            c.approval_status = '승인'
-            AND c.company_status = '정상'
-
             <!-- 키워드 검색 (기업명, 한 줄 소개, 업종명) -->
             <if test="keyword != null and keyword != ''">
-                (
+                AND (
                 c.company_name LIKE CONCAT('%', #{keyword}, '%')
                 OR c.short_description LIKE CONCAT('%', #{keyword}, '%')
                 OR c.industry_name LIKE CONCAT('%', #{keyword}, '%')
