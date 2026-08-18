@@ -73,8 +73,16 @@ public class CoverLetterAiReviewService {
      * 실행한다 — 순차 호출이면 "문항 수 × 개별 응답시간"이 그대로 더해지지만, 병렬이면
      * 가장 느린 문항 1개 응답시간 정도로 전체 대기시간이 줄어든다.
      * 호출부(컨트롤러)가 이 메서드의 완료를 기다린 뒤 리다이렉트한다.
+     *
+     * 이 메서드에는 의도적으로 {@code @Transactional}을 붙이지 않는다. 트랜잭션으로 감싸면
+     * OpenAI 응답을 기다리는 수 초~수십 초 동안 DB 커넥션을 빌린 채로 붙잡게 되는데,
+     * 커넥션 풀은 기본 10개뿐이라 동시 요청이 몰리면 첨삭과 무관한 페이지까지 커넥션을 못 받아
+     * 사이트 전체가 멈춘다. 앞쪽 조회들은 각자 짧게 커넥션을 쓰고 반납하며, 마지막 save()는
+     * 리포지토리가 자체 트랜잭션으로 처리하는 단일 INSERT라 원자성도 유지된다.
+     *
+     * 참고로 트랜잭션은 호출 스레드에 묶이므로 parallelStream이 갈라낸 스레드는 어차피
+     * 트랜잭션 밖이다. 저 람다 안에서는 DB를 건드리지 말 것.
      */
-    @Transactional
     public Long requestReview(Long coverLetterId, Long userId, Long jobPostingId) {
         List<CoverLetterItem> items = coverLetterService.getItems(coverLetterId, userId);
         if (items.isEmpty()) {
@@ -123,8 +131,9 @@ public class CoverLetterAiReviewService {
             .createdAt(LocalDateTime.now())
             .build();
 
-        coverLetterAiReviewRepository.save(review);
-        return review.getCoverLetterAiReviewId();
+        // 트랜잭션 밖에서 저장하므로 영속성 컨텍스트에 기대지 않고 저장된 엔티티에서 id를 읽는다.
+        CoverLetterAiReview saved = coverLetterAiReviewRepository.save(review);
+        return saved.getCoverLetterAiReviewId();
     }
 
     /**
