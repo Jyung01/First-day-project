@@ -10,8 +10,8 @@
 
 ## 현재 버전
 
-- 최신 변경 버전: V11
+- 최신 변경 버전: V12
 - 신규 DB 생성: `ddl/firstday_mysql_current.sql` 실행
-- V10 DB 업데이트: `migration/V11__add_job_posting_to_cover_letter_ai_reviews.sql` 실행
+- V11 DB 업데이트: `migration/V12__add_rag_context_to_cover_letter_ai_reviews.sql` 실행
 
 버전별 변경사항 상세는 `migration/README.md`에서 관리한다.

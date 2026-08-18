@@ -1,7 +1,9 @@
 package kr.co.firstdayproject.service.ai;
 
 import java.util.List;
+import kr.co.firstdayproject.dto.ai.CoverLetterItemReviewOutcome;
 import kr.co.firstdayproject.dto.ai.CoverLetterItemReviewResult;
+import kr.co.firstdayproject.dto.ai.RagEvidence;
 import kr.co.firstdayproject.entity.job.JobPosting;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.document.Document;
@@ -43,7 +45,11 @@ public class CoverLetterItemReviewService {
         this.similarJobPostingSearchService = similarJobPostingSearchService;
     }
 
-    public CoverLetterItemReviewResult review(
+    /**
+     * 검색된 근거 문단은 프롬프트에만 쓰고 버리지 않고, 첨삭 결과와 함께 돌려준다.
+     * 상위 서비스가 이를 첨삭 이력 행에 같이 저장해 나중에 근거를 되짚을 수 있게 한다(REQ-903).
+     */
+    public CoverLetterItemReviewOutcome review(
         String question,
         String answer,
         JobPosting targetPosting
@@ -57,11 +63,31 @@ public class CoverLetterItemReviewService {
 
         String userPrompt = buildUserPrompt(question, answer, targetPosting, similarPostings);
 
-        return chatClient.prompt()
+        CoverLetterItemReviewResult result = chatClient.prompt()
             .system(SYSTEM_PROMPT)
             .user(userPrompt)
             .call()
             .entity(CoverLetterItemReviewResult.class);
+
+        return new CoverLetterItemReviewOutcome(result, toEvidence(similarPostings));
+    }
+
+    /**
+     * 검색 결과가 없으면 빈 리스트를 그대로 돌려준다 — null로 바꾸지 않는다.
+     * 저장 단계에서 "검색은 돌았으나 결과 없음(빈 배열)"과 "이 기능 이전에 만들어진 첨삭(null)"을
+     * 구분할 수 있어야, 나중에 RAG가 왜 안 먹었는지 추적할 수 있다.
+     */
+    private List<RagEvidence> toEvidence(List<Document> documents) {
+        return documents.stream()
+            .map(document -> {
+                Object sourceId = document.getMetadata().get("source_id");
+                return new RagEvidence(
+                    sourceId != null ? sourceId.toString() : null,
+                    document.getText(),
+                    document.getScore()
+                );
+            })
+            .toList();
     }
 
     private String buildUserPrompt(

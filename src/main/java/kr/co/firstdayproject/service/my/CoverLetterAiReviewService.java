@@ -22,7 +22,8 @@ import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterAiReviewRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterItemRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
-import kr.co.firstdayproject.dto.ai.CoverLetterItemReviewResult;
+import kr.co.firstdayproject.dto.ai.CoverLetterItemReviewOutcome;
+import kr.co.firstdayproject.dto.ai.RagEvidence;
 import kr.co.firstdayproject.service.ai.CoverLetterItemReviewService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -88,19 +89,28 @@ public class CoverLetterAiReviewService {
             .toList();
 
         // parallelStream이어도 List 소스의 순서(문항 순서)는 그대로 유지된다.
-        List<RevisedItemContent> revisedContent = items.parallelStream()
-            .map(item -> {
-                CoverLetterItemReviewResult result = coverLetterItemReviewService.review(
-                    item.getQuestion(),
-                    item.getAnswer(),
-                    targetPosting
-                );
-                return new RevisedItemContent(
-                    result.summary(),
-                    result.improvementPoints(),
-                    result.revisedAnswer()
-                );
-            })
+        // 리스트에 add하는 방식으로 바꾸면 병렬 실행에서 순서가 깨져 toDetail()의 인덱스 매칭이
+        // 어긋나므로, 아래 세 리스트 모두 map().toList() 형태를 유지해야 한다.
+        List<CoverLetterItemReviewOutcome> outcomes = items.parallelStream()
+            .map(item -> coverLetterItemReviewService.review(
+                item.getQuestion(),
+                item.getAnswer(),
+                targetPosting
+            ))
+            .toList();
+
+        List<RevisedItemContent> revisedContent = outcomes.stream()
+            .map(outcome -> new RevisedItemContent(
+                outcome.result().summary(),
+                outcome.result().improvementPoints(),
+                outcome.result().revisedAnswer()
+            ))
+            .toList();
+
+        // 첨삭의 근거로 프롬프트에 들어간 검색 문단을 문항 순서 그대로 남긴다(REQ-903).
+        // original_content·revised_content와 같은 인덱스 규칙이라 나란히 읽을 수 있다.
+        List<List<RagEvidence>> ragContext = outcomes.stream()
+            .map(CoverLetterItemReviewOutcome::evidence)
             .toList();
 
         CoverLetterAiReview review = CoverLetterAiReview.builder()
@@ -109,6 +119,7 @@ public class CoverLetterAiReviewService {
             .originalContent(writeJson(originalSnapshot))
             .revisedContent(writeJson(revisedContent))
             .feedback(buildOverallFeedback(revisedContent))
+            .ragContext(writeJson(ragContext))
             .createdAt(LocalDateTime.now())
             .build();
 
