@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.entity.coverletter.CoverLetterAiReview;
 import kr.co.firstdayproject.entity.coverletter.CoverLetterItem;
 import kr.co.firstdayproject.entity.job.JobPosting;
+import kr.co.firstdayproject.exception.AiReviewGenerationException;
 import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterAiReviewRepository;
@@ -26,6 +28,8 @@ import kr.co.firstdayproject.dto.ai.CoverLetterItemReviewOutcome;
 import kr.co.firstdayproject.dto.ai.RagEvidence;
 import kr.co.firstdayproject.service.ai.ApplicantResumeSummaryService;
 import kr.co.firstdayproject.service.ai.CoverLetterItemReviewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +46,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class CoverLetterAiReviewService {
+
+    private static final Logger log =
+        LoggerFactory.getLogger(CoverLetterAiReviewService.class);
 
     private final CoverLetterService coverLetterService;
     private final CoverLetterAiReviewRepository coverLetterAiReviewRepository;
@@ -87,7 +94,12 @@ public class CoverLetterAiReviewService {
      * 참고로 트랜잭션은 호출 스레드에 묶이므로 parallelStream이 갈라낸 스레드는 어차피
      * 트랜잭션 밖이다. 저 람다 안에서는 DB를 건드리지 말 것.
      */
-    public Long requestReview(Long coverLetterId, Long userId, Long jobPostingId) {
+    public Long requestReview(
+        Long coverLetterId,
+        Long userId,
+        Long jobPostingId,
+        Map<Long, String> additionalInfoByItemId
+    ) {
         List<CoverLetterItem> items = coverLetterService.getItems(coverLetterId, userId);
         if (items.isEmpty()) {
             throw new IllegalStateException("첨삭할 문항이 없습니다.");
@@ -110,24 +122,57 @@ public class CoverLetterAiReviewService {
         // improvementPoints 용도로만 쓰도록 제한한다. 문항마다 같은 값이므로 한 번만 조회한다.
         String applicantResume = applicantResumeSummaryService.buildSummary(userId);
 
+        // 사용자가 알려준 추가 정보도 함께 남긴다. 첨삭 결과에 그 내용으로 만들어진 문장이
+        // 들어가므로, 나중에 "원문에 없는 문장"을 판단할 때 이것도 사용자가 제공한 내용으로 쳐야 한다.
         List<OriginalItemSnapshot> originalSnapshot = items.stream()
-            .map(item -> new OriginalItemSnapshot(item.getQuestion(), item.getAnswer()))
+            .map(item -> new OriginalItemSnapshot(
+                item.getQuestion(),
+                item.getAnswer(),
+                additionalInfoByItemId == null
+                    ? null
+                    : additionalInfoByItemId.get(item.getCoverLetterItemId())
+            ))
             .toList();
 
         // parallelStream이어도 List 소스의 순서(문항 순서)는 그대로 유지된다.
         // 리스트에 add하는 방식으로 바꾸면 병렬 실행에서 순서가 깨져 toDetail()의 인덱스 매칭이
         // 어긋나므로, 아래 세 리스트 모두 map().toList() 형태를 유지해야 한다.
+        //
+        // 문항 하나가 실패해도 나머지는 살린다. 예외를 그대로 올리면 이미 응답을 받아온 다른
+        // 문항까지 버려지고, 사용자는 수십 초를 기다린 끝에 아무것도 받지 못한다.
+        // 실패한 자리는 null로 남기며, toDetail()이 이미 null을 다루고 있어 조회는 그대로 동작한다.
         List<CoverLetterItemReviewOutcome> outcomes = items.parallelStream()
-            .map(item -> coverLetterItemReviewService.review(
-                item.getQuestion(),
-                item.getAnswer(),
-                targetPosting,
-                applicantResume
-            ))
+            .map(item -> {
+                try {
+                    return coverLetterItemReviewService.review(
+                        item.getQuestion(),
+                        item.getAnswer(),
+                        targetPosting,
+                        applicantResume,
+                        // 이 문항에 대해 사용자가 적은 내용만 넘긴다 — 다른 문항 것은 애초에 보이지 않는다.
+                        additionalInfoByItemId == null
+                            ? null
+                            : additionalInfoByItemId.get(item.getCoverLetterItemId())
+                    );
+                } catch (RuntimeException exception) {
+                    log.error(
+                        "자소서 문항 첨삭 실패 — 나머지 문항은 계속 진행: coverLetterId={}, coverLetterItemId={}",
+                        coverLetterId,
+                        item.getCoverLetterItemId(),
+                        exception
+                    );
+                    return null;
+                }
+            })
             .toList();
 
+        // 남길 결과가 하나도 없으면 빈 이력을 만들지 않고 실패로 응답한다.
+        if (outcomes.stream().allMatch(Objects::isNull)) {
+            throw new AiReviewGenerationException("모든 문항의 첨삭 생성에 실패했습니다.");
+        }
+
         List<RevisedItemContent> revisedContent = outcomes.stream()
-            .map(outcome -> new RevisedItemContent(
+            .map(outcome -> outcome == null ? null : new RevisedItemContent(
                 outcome.result().summary(),
                 outcome.result().improvementPoints(),
                 outcome.result().revisedAnswer()
@@ -136,8 +181,9 @@ public class CoverLetterAiReviewService {
 
         // 첨삭의 근거로 프롬프트에 들어간 검색 문단을 문항 순서 그대로 남긴다(REQ-903).
         // original_content·revised_content와 같은 인덱스 규칙이라 나란히 읽을 수 있다.
+        // 원소가 빈 배열이면 검색 결과가 없었던 것, null이면 그 문항의 첨삭 자체가 실패한 것이다.
         List<List<RagEvidence>> ragContext = outcomes.stream()
-            .map(CoverLetterItemReviewOutcome::evidence)
+            .map(outcome -> outcome == null ? null : outcome.evidence())
             .toList();
 
         CoverLetterAiReview review = CoverLetterAiReview.builder()
@@ -242,6 +288,7 @@ public class CoverLetterAiReviewService {
                 coverLetterItemId,
                 original.question(),
                 displayAnswer,
+                original.additionalInfo(),
                 resolved,
                 revision != null ? revision.summary() : null,
                 revision != null ? revision.improvementPoints() : List.of(),
@@ -261,7 +308,12 @@ public class CoverLetterAiReviewService {
     private String buildOverallFeedback(List<RevisedItemContent> revisedContent) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < revisedContent.size(); i++) {
-            String summary = revisedContent.get(i).summary();
+            RevisedItemContent revision = revisedContent.get(i);
+            if (revision == null) {
+                // 생성에 실패한 문항 — 요약할 내용이 없다.
+                continue;
+            }
+            String summary = revision.summary();
             if (summary == null || summary.isBlank()) {
                 continue;
             }
@@ -286,7 +338,11 @@ public class CoverLetterAiReviewService {
         }
     }
 
-    private record OriginalItemSnapshot(String question, String answer) {
+    /**
+     * additionalInfo는 이 기능이 생기기 전에 만들어진 이력에는 없으므로 null로 역직렬화된다.
+     * 별도 컬럼을 만들지 않고 기존 original_content JSON 안에 넣어 마이그레이션을 피했다.
+     */
+    private record OriginalItemSnapshot(String question, String answer, String additionalInfo) {
     }
 
     private record RevisedItemContent(

@@ -94,6 +94,29 @@
                     </nav>
                 </div>
 
+                <!-- 자소서 본문에 안 적힌 사실을 여기서 받는다. 원문이 얇으면 AI가 다듬을 재료
+                     자체가 없어 표현 정리에 그치는데, 이 칸이 그 재료를 보충하는 유일한 통로다.
+                     이력서와 달리 사용자가 직접 확인해 준 정보라 본문에 반영해도 된다. -->
+                <div class="cl-extra-info">
+                    <p class="cl-extra-info__label">AI에게 더 알려주고 싶은 내용 (선택)</p>
+                    <p class="cl-extra-info__hint">자기소개서에 안 적었지만 알아두면 좋을 내용(맡은 역할, 구체적인 수치, 사용한 도구 등)을 문항별로 적어주세요. 해당 문항 첨삭에만 반영됩니다.</p>
+
+                    <!-- 입력란을 문항별로 나눈 이유: 하나로 받으면 문항마다 같은 값이 전달되고,
+                         어느 문항에 쓸지는 AI 판단에 맡겨야 한다. 실제로 주제가 넓은 문항(지원동기·포부)이
+                         관련 없는 내용까지 모두 끌어다 쓰는 문제가 반복됐다. 사용자가 직접 지정하면
+                         그 판단 자체가 사라진다. -->
+                    <div class="cl-extra-info__item" th:each="item, iter : ${coverLetterItems}">
+                        <label class="cl-extra-info__question"
+                               th:for="|extra-info-${item.coverLetterItemId}|"
+                               th:text="|문항 ${iter.index + 1}. ${item.question}|">문항 1. 질문</label>
+                        <textarea class="cl-extra-info__input"
+                                  rows="2" maxlength="1000"
+                                  th:id="|extra-info-${item.coverLetterItemId}|"
+                                  th:attr="data-item-id=${item.coverLetterItemId}"
+                                  placeholder="예) 제가 맡은 역할은 일정 관리였고, 5명과 함께 3개월간 진행했습니다"></textarea>
+                    </div>
+                </div>
+
                 <div class="cl-page-actions">
                     <a th:href="@{/my/cover-letter/list}" class="btn btn-outline">취소</a>
                     <button type="button" id="btn-request-review" class="btn btn-primary cl-submit"
@@ -157,6 +180,14 @@
                         <div class="cl-compare__col">
                             <h2 class="cl-compare__title">원문</h2>
                             <p class="cl-original__text" th:text="${item.answer()}">원문 내용</p>
+                            <!-- 첨삭 결과에 이 내용으로 만들어진 문장이 들어가므로, 하이라이트 판정에서도
+                                 원문과 함께 "사용자가 제공한 내용"으로 취급한다. -->
+                            <div class="cl-original__extra" th:if="${item.additionalInfo() != null}">
+                                <p class="cl-original__extra-title">내가 알려준 내용</p>
+                                <p class="cl-original__extra-text"
+                                   th:attr="data-additional-info=${item.additionalInfo()}"
+                                   th:text="${item.additionalInfo()}">추가 정보</p>
+                            </div>
                             <p class="cl-original__count" th:text="|원문 ${item.answer() != null ? #strings.length(item.answer()) : 0}자|">원문 0자</p>
                         </div>
 
@@ -176,8 +207,12 @@
                                          본문에는 하이라이트용 <mark>이 끼어들 수 있으므로, 화면 표시와
                                          전송할 값을 분리해 마크업이 바뀌어도 저장 값이 흔들리지 않게 한다. -->
                                     <p class="cl-suggestion__example-text"
+                                       th:if="${item.revisedAnswer() != null}"
                                        th:attr="data-revised-answer=${item.revisedAnswer()}"
                                        th:text="${item.revisedAnswer()}">(첨삭된 답변 예시가 여기에 표시됩니다)</p>
+                                    <!-- 문항 하나가 실패해도 나머지는 저장되므로, 실패한 자리만 표시한다. -->
+                                    <p class="cl-suggestion__failed"
+                                       th:if="${item.revisedAnswer() == null}">이 문항은 첨삭 생성에 실패했습니다. 다시 첨삭을 요청하면 새로 생성됩니다.</p>
                                     <p class="cl-suggestion__added-note" aria-live="polite"></p>
                                 </div>
                                 <div class="cl-suggestion__summary-box">
@@ -190,8 +225,10 @@
                                     </li>
                                 </ul>
                                 <div class="cl-suggestion__actions">
-                                    <button type="button" class="btn btn-outline cl-keep-btn" th:disabled="${item.resolved()}">원문 유지</button>
-                                    <button type="button" class="btn btn-primary cl-apply-btn" th:disabled="${item.resolved()}">이 내용으로 적용</button>
+                                    <button type="button" class="btn btn-outline cl-keep-btn"
+                                            th:disabled="${item.resolved() or item.revisedAnswer() == null}">원문 유지</button>
+                                    <button type="button" class="btn btn-primary cl-apply-btn"
+                                            th:disabled="${item.resolved() or item.revisedAnswer() == null}">이 내용으로 적용</button>
                                 </div>
                                 <p class="cl-suggestion__apply-status"
                                    th:classappend="${item.resolved()} ? ' is-success' : ''"
@@ -276,13 +313,22 @@
                 overlayText.textContent = 'AI 첨삭을 생성하고 있어요. 문항 수에 따라 최대 1분 정도 걸릴 수 있어요.';
                 overlay.classList.add('is-active');
 
-                const body = new URLSearchParams();
-                body.set('jobPostingId', jobPostingId);
+                // 문항별 추가 정보 — 비어 있는 칸은 보내지 않는다.
+                const additionalInfo = {};
+                document.querySelectorAll('.cl-extra-info__input').forEach((input) => {
+                    const text = (input.value || '').trim();
+                    if (text && input.dataset.itemId) {
+                        additionalInfo[input.dataset.itemId] = text;
+                    }
+                });
 
                 fetch(`/my/cover-letter/${coverLetterId}/ai-reviews`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: body.toString()
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jobPostingId: Number(jobPostingId),
+                        additionalInfo: additionalInfo
+                    })
                 })
                     .then(async (res) => {
                         const data = await res.json().catch(() => ({}));
@@ -395,16 +441,29 @@
                 return;
             }
 
-            const originalTokenSets = splitSentences(originalEl.textContent).map(tokenize);
+            // 비교 대상은 "원문"이 아니라 "사용자가 제공한 내용" 전체다. 첨삭 요청 시 직접 알려준
+            // 추가 정보로 만들어진 문장까지 표시하면, 정보를 성실히 줄수록 경고가 늘어난다.
+            const extraEl = panel.querySelector('.cl-original__extra-text');
+            const providedText = originalEl.textContent
+                + (extraEl ? '\n' + (extraEl.dataset.additionalInfo || '') : '');
+
+            const originalTokenSets = splitSentences(providedText).map(tokenize);
+            // 제공 내용 전체를 한 덩어리로도 비교한다. 문장별로만 재면, AI가 원문 두 문장을 하나로
+            // 합치거나 결론을 요약해 앞으로 빼는 순간 어느 원문 문장과도 겹침이 희석돼 오탐이 난다.
+            // 그런 문장은 원문 여기저기서 단어를 끌어오므로 전체와 비교하면 회복된다.
+            const providedTokens = tokenize(providedText);
             let addedCount = 0;
 
             const html = splitSentences(revised).map((piece) => {
                 const sentence = piece.trimEnd();
                 const trailing = piece.slice(sentence.length);
                 const tokens = tokenize(sentence);
-                const best = originalTokenSets.reduce(
-                    (max, originalTokens) => Math.max(max, overlapRatio(tokens, originalTokens)),
-                    0
+                const best = Math.max(
+                    originalTokenSets.reduce(
+                        (max, originalTokens) => Math.max(max, overlapRatio(tokens, originalTokens)),
+                        0
+                    ),
+                    overlapRatio(tokens, providedTokens)
                 );
                 // 단어가 거의 없는 조각(기호만 남은 경우 등)은 판단하지 않고 그대로 둔다.
                 if (tokens.size === 0 || best > ADDED_SENTENCE_MAX_OVERLAP) {
@@ -427,8 +486,14 @@
                 && similarity(originalEl.textContent, revised) >= NEARLY_UNCHANGED_MIN_SIMILARITY;
 
             if (addedCount > 0) {
+                // "원문에 없다"고 단정하지 않는다. 실제로 계산한 것은 원문 문장들과의 단어 겹침이라,
+                // AI가 두 문장을 합치거나 결론을 요약해 앞으로 빼면 원문에 있는 내용도 짝을 잃는다.
+                // 사용자가 할 일(확인)은 같으므로, 아는 것까지만 말한다.
                 noteEl.textContent =
-                    `표시된 ${addedCount}개 문장은 원문에 없던 내용입니다. 사실인지 확인하고 적용하세요.`;
+                    `표시된 ${addedCount}개 문장은 원문과 대응이 뚜렷하지 않습니다.`
+                    + ' 내가 실제로 한 일인지, 면접에서 설명할 수 있는지 확인하세요.'
+                    + ' 표현만 바뀐 것이면 그대로 두어도 됩니다.'
+                    + ' 빠진 내용이 있다면 다시 첨삭받을 때 문항별 입력란에 적어주세요.';
             } else if (nearlyUnchanged) {
                 noteEl.textContent =
                     '원문이 이미 충실해 크게 고칠 부분이 없습니다. 아래 개선 포인트를 확인하세요.';

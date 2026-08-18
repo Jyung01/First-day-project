@@ -612,3 +612,88 @@
             font-weight: 600;
             color: var(--primary, #6c5ce7);
         }
+
+        /* 문항 하나가 실패했을 때 그 자리에만 표시 */
+        .cl-suggestion__failed {
+            margin: 0;
+            padding: 14px 16px;
+            border: 1px dashed var(--border, #e7e7ec);
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted, #767781);
+            background: #fafafb;
+        }
+
+        /* ---------- AI에게 더 알려주고 싶은 내용 ---------- */
+        .cl-extra-info {
+            margin-bottom: 16px;
+            padding: 16px 18px;
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .cl-extra-info__label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-extra-info__hint {
+            margin: 4px 0 10px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-muted, #767781);
+        }
+
+        .cl-extra-info__input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 13px;
+            line-height: 1.7;
+            resize: vertical;
+        }
+
+        .cl-extra-info__input:focus {
+            outline: none;
+            border-color: var(--primary, #6c5ce7);
+        }
+
+        .cl-extra-info__item {
+            margin-top: 12px;
+        }
+
+        .cl-extra-info__question {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        /* 결과 화면 원문 칸 아래 — 첨삭 요청 때 사용자가 알려준 내용 */
+        .cl-original__extra {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border, #e7e7ec);
+        }
+
+        .cl-original__extra-title {
+            margin: 0 0 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted, #8a8b94);
+        }
+
+        .cl-original__extra-text {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-muted, #767781);
+        }
