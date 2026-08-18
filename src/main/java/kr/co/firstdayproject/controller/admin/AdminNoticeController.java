@@ -1,7 +1,9 @@
 package kr.co.firstdayproject.controller.admin;
 
 import kr.co.firstdayproject.dto.cs.NoticeDto;
+import kr.co.firstdayproject.service.cs.FaqService;
 import kr.co.firstdayproject.service.cs.NoticeService;
+import kr.co.firstdayproject.service.cs.QnaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +25,8 @@ public class AdminNoticeController {
     private static final int PAGE_SIZE = 10;
 
     private final NoticeService noticeService;
+    private final QnaService qnaService;
+    private final FaqService faqService;
 
     // 목록 페이지 (화면 1개)
     @GetMapping({"", "/list"})
@@ -39,6 +43,10 @@ public class AdminNoticeController {
         model.addAttribute("noticePage", noticePage);
         model.addAttribute("currentPage", page);
         model.addAttribute("keyword", keyword);
+        // 상단 통계 카드(미답변 문의/공지사항/FAQ) - 3개 화면 공통, 항상 세 값을 다 채운다.
+        model.addAttribute("pendingCount", qnaService.getPendingCount());
+        model.addAttribute("noticeCount", noticePage.getTotalElements());
+        model.addAttribute("faqCount", faqService.getTotalCount());
         return "admin/cs/notice";
     }
 

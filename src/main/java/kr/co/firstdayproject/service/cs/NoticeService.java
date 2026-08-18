@@ -28,6 +28,11 @@ public class NoticeService {
                 .map(NoticeDto.ListItem::from);
     }
 
+    // 관리자 대시보드 상단 통계용 - 공지사항 전체 건수(상태 무관)
+    public long getTotalCount() {
+        return noticeRepository.count();
+    }
+
     public NoticeDto.Detail getDetail(Long noticeId) {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지사항입니다. id=" + noticeId));
