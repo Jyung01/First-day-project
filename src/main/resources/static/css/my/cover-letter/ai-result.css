@@ -612,3 +612,15 @@
             font-weight: 600;
             color: var(--primary, #6c5ce7);
         }
+
+        /* 문항 하나가 실패했을 때 그 자리에만 표시 */
+        .cl-suggestion__failed {
+            margin: 0;
+            padding: 14px 16px;
+            border: 1px dashed var(--border, #e7e7ec);
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted, #767781);
+            background: #fafafb;
+        }

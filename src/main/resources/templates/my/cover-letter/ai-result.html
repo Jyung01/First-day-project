@@ -176,8 +176,12 @@
                                          본문에는 하이라이트용 <mark>이 끼어들 수 있으므로, 화면 표시와
                                          전송할 값을 분리해 마크업이 바뀌어도 저장 값이 흔들리지 않게 한다. -->
                                     <p class="cl-suggestion__example-text"
+                                       th:if="${item.revisedAnswer() != null}"
                                        th:attr="data-revised-answer=${item.revisedAnswer()}"
                                        th:text="${item.revisedAnswer()}">(첨삭된 답변 예시가 여기에 표시됩니다)</p>
+                                    <!-- 문항 하나가 실패해도 나머지는 저장되므로, 실패한 자리만 표시한다. -->
+                                    <p class="cl-suggestion__failed"
+                                       th:if="${item.revisedAnswer() == null}">이 문항은 첨삭 생성에 실패했습니다. 다시 첨삭을 요청하면 새로 생성됩니다.</p>
                                     <p class="cl-suggestion__added-note" aria-live="polite"></p>
                                 </div>
                                 <div class="cl-suggestion__summary-box">
@@ -190,8 +194,10 @@
                                     </li>
                                 </ul>
                                 <div class="cl-suggestion__actions">
-                                    <button type="button" class="btn btn-outline cl-keep-btn" th:disabled="${item.resolved()}">원문 유지</button>
-                                    <button type="button" class="btn btn-primary cl-apply-btn" th:disabled="${item.resolved()}">이 내용으로 적용</button>
+                                    <button type="button" class="btn btn-outline cl-keep-btn"
+                                            th:disabled="${item.resolved() or item.revisedAnswer() == null}">원문 유지</button>
+                                    <button type="button" class="btn btn-primary cl-apply-btn"
+                                            th:disabled="${item.resolved() or item.revisedAnswer() == null}">이 내용으로 적용</button>
                                 </div>
                                 <p class="cl-suggestion__apply-status"
                                    th:classappend="${item.resolved()} ? ' is-success' : ''"
@@ -427,8 +433,11 @@
                 && similarity(originalEl.textContent, revised) >= NEARLY_UNCHANGED_MIN_SIMILARITY;
 
             if (addedCount > 0) {
+                // "원문에 없다"고 단정하지 않는다. 실제로 계산한 것은 원문 문장들과의 단어 겹침이라,
+                // AI가 두 문장을 합치거나 결론을 요약해 앞으로 빼면 원문에 있는 내용도 짝을 잃는다.
+                // 사용자가 할 일(확인)은 같으므로, 아는 것까지만 말한다.
                 noteEl.textContent =
-                    `표시된 ${addedCount}개 문장은 원문에 없던 내용입니다. 사실인지 확인하고 적용하세요.`;
+                    `표시된 ${addedCount}개 문장은 원문과 대응이 뚜렷하지 않습니다. 내용이 맞는지 확인하고 적용하세요.`;
             } else if (nearlyUnchanged) {
                 noteEl.textContent =
                     '원문이 이미 충실해 크게 고칠 부분이 없습니다. 아래 개선 포인트를 확인하세요.';
