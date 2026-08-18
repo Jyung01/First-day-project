@@ -166,7 +166,12 @@
                             <div class="cl-suggestion__content">
                                 <!-- 원문과 바로 비교되도록 수정 제안을 맨 위에 배치, 이유(요약/개선포인트)는 아래에 -->
                                 <div class="cl-suggestion__example">
-                                    <p class="cl-suggestion__example-title">수정 제안</p>
+                                    <!-- 다시 쓴 답변이 원문과 비슷할 때가 많아, 아래에 개선 제안이
+                                         몇 개나 있는지 여기서 미리 알려준다. -->
+                                    <p class="cl-suggestion__example-title">수정 제안<span
+                                        class="cl-suggestion__points-count"
+                                        th:if="${item.improvementPoints() != null and !item.improvementPoints().isEmpty()}"
+                                        th:text="|개선 제안 ${#lists.size(item.improvementPoints())}개|">개선 제안 0개</span></p>
                                     <!-- data-revised-answer는 적용 시 서버로 보낼 원본 문자열.
                                          본문에는 하이라이트용 <mark>이 끼어들 수 있으므로, 화면 표시와
                                          전송할 값을 분리해 마크업이 바뀌어도 저장 값이 흔들리지 않게 한다. -->
@@ -327,6 +332,10 @@
         // 제안 문장의 단어 중 원문에서 온 비율이 이 값보다 낮으면 새로 추가된 문장으로 본다.
         const ADDED_SENTENCE_MAX_OVERLAP = 0.3;
 
+        // 원문과 제안 전체의 단어 겹침이 이 값 이상이면 "거의 손대지 않았다"고 본다.
+        // 실측값: 지어낸 문장이 섞였을 때 0.27, 표현만 다듬었을 때 0.63, 거의 그대로일 때 0.82.
+        const NEARLY_UNCHANGED_MIN_SIMILARITY = 0.75;
+
         // 조각마다 뒤따르는 공백까지 포함해 잘라낸다 — 그대로 이어붙이면 원본이 복원된다.
         function splitSentences(text) {
             return (text || '').match(/[^.!?。]+[.!?。]*\s*/g) || [];
@@ -353,6 +362,22 @@
                 }
             });
             return hit / revisedTokens.size;
+        }
+
+        // 원문과 제안 전체가 얼마나 겹치는지 (교집합 / 합집합)
+        function similarity(left, right) {
+            const a = tokenize(left);
+            const b = tokenize(right);
+            if (a.size === 0 || b.size === 0) {
+                return 0;
+            }
+            let shared = 0;
+            a.forEach((word) => {
+                if (b.has(word)) {
+                    shared += 1;
+                }
+            });
+            return shared / (a.size + b.size - shared);
         }
 
         function escapeHtml(text) {
@@ -391,12 +416,26 @@
 
             revisedEl.innerHTML = html;
 
-            if (noteEl) {
-                noteEl.textContent = addedCount > 0
-                    ? `표시된 ${addedCount}개 문장은 원문에 없던 내용입니다. 사실인지 확인하고 적용하세요.`
-                    : '';
-                noteEl.classList.toggle('is-visible', addedCount > 0);
+            if (!noteEl) {
+                return;
             }
+
+            // 원문이 이미 좋아서 고칠 게 없는 경우와, AI가 일을 안 한 경우는 화면상 똑같아 보인다.
+            // 전자라고 말해주지 않으면 사용자는 후자로 읽고, 정작 값어치가 있는 개선 포인트를
+            // 그냥 지나친다.
+            const nearlyUnchanged = addedCount === 0
+                && similarity(originalEl.textContent, revised) >= NEARLY_UNCHANGED_MIN_SIMILARITY;
+
+            if (addedCount > 0) {
+                noteEl.textContent =
+                    `표시된 ${addedCount}개 문장은 원문에 없던 내용입니다. 사실인지 확인하고 적용하세요.`;
+            } else if (nearlyUnchanged) {
+                noteEl.textContent =
+                    '원문이 이미 충실해 크게 고칠 부분이 없습니다. 아래 개선 포인트를 확인하세요.';
+            } else {
+                noteEl.textContent = '';
+            }
+            noteEl.classList.toggle('is-visible', noteEl.textContent !== '');
         }
 
         document.querySelectorAll('.cl-review-panel').forEach(highlightAddedSentences);
