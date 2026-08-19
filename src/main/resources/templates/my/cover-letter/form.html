@@ -4,7 +4,9 @@
     <title>첫출근 — 자기소개서 작성·수정</title>
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/my/cover-letter/common.css}" />
     <link rel="stylesheet" th:href="@{/css/my/cover-letter/form.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
 </head><body>
 <header th:replace="~{common/header :: header}"></header>
 <main class="mypage">
@@ -74,6 +76,7 @@
                     <a th:href="@{/my/cover-letter/list}" class="btn btn-outline">취소</a>
                     <button type="button" id="btn-save" class="btn btn-primary cl-submit">저장</button>
                 </div>
+                <p id="cl-form-feedback" class="cl-inline-feedback" role="alert" hidden></p>
             </form>
         </section>
     </div>
@@ -83,7 +86,21 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const questionsContainer = document.getElementById('cl-questions');
+        const formFeedback = document.getElementById('cl-form-feedback');
         let questionCounter = questionsContainer.querySelectorAll('.cl-question').length;
+
+        function showFeedback(message, target = null) {
+            formFeedback.textContent = message;
+            formFeedback.hidden = false;
+            target?.classList.add('cl-field-invalid');
+            target?.focus();
+        }
+
+        function clearFeedback(target = null) {
+            formFeedback.hidden = true;
+            formFeedback.textContent = '';
+            target?.classList.remove('cl-field-invalid');
+        }
 
         // 글자수 카운터 갱신
         function bindCharCount(questionEl) {
@@ -99,7 +116,7 @@
         function bindRemove(questionEl) {
             questionEl.querySelector('.cl-question__remove').addEventListener('click', () => {
                 if (questionsContainer.querySelectorAll('.cl-question').length <= 1) {
-                    alert('문항은 최소 1개 이상이어야 합니다.');
+                    showFeedback('문항은 최소 1개 이상이어야 합니다.', questionEl);
                     return;
                 }
                 questionEl.remove();
@@ -141,7 +158,7 @@
 
             const title = document.getElementById('cl-title').value.trim();
             if (!title) {
-                alert('제목을 입력해주세요.');
+                showFeedback('제목을 입력해 주세요.', document.getElementById('cl-title'));
                 return null;
             }
 
@@ -157,9 +174,14 @@
             });
 
             if (hasEmptyItem) {
-                alert('모든 문항의 질문과 답변을 입력해주세요.');
+                const firstEmpty = Array.from(
+                    questionsContainer.querySelectorAll('.cl-question__prompt, .cl-textarea')
+                ).find(input => !input.value.trim());
+                showFeedback('모든 문항의 질문과 답변을 입력해 주세요.', firstEmpty);
                 return null;
             }
+
+            clearFeedback();
 
             try {
                 const url = id ? `/my/cover-letter/${id}` : '/my/cover-letter';
@@ -172,7 +194,7 @@
                 if (!res.ok) throw new Error('저장 실패');
                 return id ?? await res.json();
             } catch (err) {
-                alert('저장 중 오류가 발생했습니다.');
+                showFeedback('저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
                 return null;
             }
         }
@@ -180,10 +202,22 @@
         document.getElementById('btn-save').addEventListener('click', async () => {
             const id = await submitForm();
             if (id != null) {
-                alert('저장되었습니다. AI 첨삭은 자기소개서 목록에서 요청할 수 있습니다.');
-                location.href = '/my/cover-letter/list';
+                showConfirmModal({
+                    iconClass: 'success',
+                    iconHtml: '✓',
+                    title: '저장되었습니다',
+                    message: '변경 중인 자기소개서가 정상적으로 저장되었습니다.\n확인을 누르면 이전 화면으로 이동합니다.',
+                    leftVisible: false,
+                    rightText: '확인',
+                    closeOnOverlay: false,
+                    onRight: () => {
+                        location.href = '/my/cover-letter/list';
+                    }
+                });
             }
         });
     });
 </script>
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<script th:src="@{/js/modal.js}"></script>
 </body></html>

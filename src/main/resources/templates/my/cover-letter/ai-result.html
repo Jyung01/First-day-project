@@ -4,6 +4,7 @@
     <title>첫출근 — AI 첨삭</title>
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/my/cover-letter/common.css}" />
     <link rel="stylesheet" th:href="@{/css/my/cover-letter/ai-result.css}" />
 </head><body>
 <header th:replace="~{common/header :: header}"></header>
@@ -311,6 +312,12 @@
         const overlayError = document.getElementById('cl-generating-overlay__error');
         const overlayCloseBtn = document.getElementById('btn-generating-overlay-close');
 
+        document.addEventListener('change', (event) => {
+            if (event.target.matches('input[name="jobPosting"]')) {
+                document.getElementById('cl-job-selection-feedback')?.remove();
+            }
+        });
+
         if (overlayCloseBtn && overlay) {
             overlayCloseBtn.addEventListener('click', () => {
                 overlay.classList.remove('is-active');
@@ -321,7 +328,18 @@
             requestBtn.addEventListener('click', () => {
                 const selected = document.querySelector('input[name="jobPosting"]:checked');
                 if (!selected) {
-                    alert('첨삭받을 채용공고를 선택해 주세요.');
+                    let feedback = document.getElementById('cl-job-selection-feedback');
+                    if (!feedback) {
+                        feedback = document.createElement('p');
+                        feedback.id = 'cl-job-selection-feedback';
+                        feedback.className = 'cl-inline-feedback';
+                        feedback.setAttribute('role', 'alert');
+                        feedback.setAttribute('tabindex', '-1');
+                        requestBtn.insertAdjacentElement('beforebegin', feedback);
+                    }
+                    feedback.textContent = '첨삭받을 채용공고를 선택해 주세요.';
+                    feedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    feedback.focus({ preventScroll: true });
                     return;
                 }
 

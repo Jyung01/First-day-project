@@ -4,7 +4,10 @@
 <title>첫출근 — 자기소개서 관리</title>
 <link rel="stylesheet" th:href="@{/css/common.css}" />
 <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+<link rel="stylesheet" th:href="@{/css/my/cover-letter/common.css}" />
 <link rel="stylesheet" th:href="@{/css/my/cover-letter/list.css}" />
+<link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+<link rel="stylesheet" th:href="@{/css/common/toast.css}" />
 </head><body>
 <header th:replace="~{common/header :: header}"></header>
 <main class="mypage">
@@ -54,6 +57,7 @@
                     </div>
                 </li>
             </ul>
+            <p id="cl-list-feedback" class="cl-inline-feedback" role="alert" hidden></p>
 
             <!-- 등록된 자기소개서가 없을 때 (기본은 숨김) -->
             <div class="cl-empty" style="display:none;">
@@ -76,16 +80,29 @@
         document.querySelectorAll('.js-delete').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                if (!confirm('정말 삭제하시겠습니까?')) return;
-
                 const id = btn.dataset.id;
-                try {
-                    const res = await fetch(`/my/cover-letter/${id}`, { method: 'DELETE' });
-                    if (!res.ok) throw new Error('삭제 실패');
-                    btn.closest('.cl-card').remove();
-                } catch (err) {
-                    alert('삭제 중 오류가 발생했습니다.');
-                }
+                showConfirmModal({
+                    iconClass: 'danger',
+                    iconHtml: '!',
+                    title: '삭제할까요?',
+                    message: '삭제한 내용은 복구할 수 없습니다.\n자기소개서 삭제 시 제출 완료된 지원 문서는 유지됩니다.',
+                    leftText: '취소',
+                    rightText: '삭제',
+                    rightClass: 'btn-danger',
+                    onRight: async () => {
+                        const feedback = document.getElementById('cl-list-feedback');
+                        try {
+                            const res = await fetch(`/my/cover-letter/${id}`, { method: 'DELETE' });
+                            if (!res.ok) throw new Error('삭제 실패');
+                            btn.closest('.cl-card').remove();
+                            feedback.hidden = true;
+                            showToast('자기소개서가 삭제되었습니다.');
+                        } catch (err) {
+                            feedback.textContent = '삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
+                            feedback.hidden = false;
+                        }
+                    }
+                });
             });
         });
     });
@@ -93,11 +110,16 @@
 
 <!-- 공통 확인 모달 -->
 <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
-
-<script th:src="@{/js/common.js}"></script>
+<div th:replace="~{common/toast :: toast}"></div>
 
 <!-- 공통 모달 -->
 <script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/common/toast.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        showToastFromQuery('deleted', '자기소개서가 삭제되었습니다.');
+    });
+</script>
 
 </body>
 </html>
