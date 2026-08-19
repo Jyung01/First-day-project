@@ -11,6 +11,7 @@ public record JobPostingAiPolishRequest(
         String careerType,
         String educationLevel,
         String workRegion,
-        List<String> skillNames
+        List<String> skillNames,
+        String previousResult
 ) {
 }

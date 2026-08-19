@@ -539,6 +539,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function requestPolishedContent() {
     if (!currentFieldType || !original.value.trim() || requesting) return;
 
+    const previousResult = suggestion.value.trim();
     setRequesting(true);
     error.textContent = "";
     suggestion.value = "AI 수정안을 생성하고 있습니다.";
@@ -550,6 +551,7 @@ document.addEventListener("DOMContentLoaded", function () {
         body: JSON.stringify({
           fieldType: currentFieldType,
           content: original.value,
+          previousResult: previousResult || null,
           ...getJobContext(),
         }),
       });
@@ -576,15 +578,44 @@ document.addEventListener("DOMContentLoaded", function () {
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
   }
+
+  function showEmptyPolishWarning(field, itemLabel) {
+    const formField = field.closest(".form-field");
+    if (!formField) return;
+
+    let warning = formField.querySelector("[data-ai-polish-empty-warning]");
+    if (!warning) {
+      warning = document.createElement("small");
+      warning.className = "ai-polish-empty-warning";
+      warning.dataset.aiPolishEmptyWarning = "";
+      warning.setAttribute("role", "alert");
+      warning.setAttribute("aria-live", "polite");
+      field.insertAdjacentElement("afterend", warning);
+    }
+
+    warning.textContent = `${itemLabel} 내용을 먼저 입력해 주세요.`;
+    field.classList.add("is-ai-polish-empty");
+    field.focus();
+
+    field.addEventListener(
+      "input",
+      function clearEmptyPolishWarning() {
+        field.classList.remove("is-ai-polish-empty");
+        warning.remove();
+      },
+      { once: true },
+    );
+  }
+
   document.querySelectorAll("[data-ai-polish-open]").forEach(function (button) {
     button.addEventListener("click", async function () {
       target = document.querySelector(button.dataset.aiPolishOpen);
+      const itemLabel = button.dataset.aiPolishLabel || "상세 내용";
       if (!target || !target.value.trim()) {
-        target?.focus();
+        if (target) showEmptyPolishWarning(target, itemLabel);
         return;
       }
       currentFieldType = fieldTypes[target.id];
-      const itemLabel = button.dataset.aiPolishLabel || "상세 내용";
       summary.textContent = itemLabel;
       original.value = target.value;
       suggestion.value = "";
