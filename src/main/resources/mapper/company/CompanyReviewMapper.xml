@@ -415,7 +415,13 @@
 
     </insert>
 
-
+    <!-- 관리자 대시보드 : 오늘 작성된 기업리뷰 수 -->
+    <select id="selectTodayReviewCount" resultType="int">
+        SELECT COUNT(*)
+        FROM company_reviews
+        WHERE created_at BETWEEN #{start} AND #{end}
+        AND status = '정상'
+    </select>
 
 
 </mapper>

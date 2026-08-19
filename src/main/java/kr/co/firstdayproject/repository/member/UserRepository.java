@@ -38,10 +38,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmailIgnoreCase(String email);
 
     Optional<User> findFirstByCompanyIdAndUserTypeOrderByUserIdAsc(
-        Long companyId,
-        String userType
+            Long companyId,
+            String userType
     );
 
+    long countByUserTypeAndCreatedAtBetween(String userType, LocalDateTime createdAtAfter, LocalDateTime createdAtBefore);
+
+
+}
     List<User> findByCompanyIdInAndUserTypeOrderByUserIdAsc(
             Collection<Long> companyIds,
             String userType

@@ -8,6 +8,7 @@ import kr.co.firstdayproject.dto.job.JobDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,8 @@ public interface CompanyDao {
     // 기업 상세 - 채용공고 : 스킬 조회
     List<String> selectSkillListByJobPostingId(Long jobPostingId);
 
+    // 관리자 대시보드 : 승인 대기 기업 수
+    int selectPendingApprovalCount();
     // 기업 정보 - 관심기업 조회
     int countWish(
             @Param("userId") Long userId,
@@ -56,5 +59,12 @@ public interface CompanyDao {
             @Param("userId") Long userId,
             @Param("companyId") Long companyId
     );
+
+    // 관리자 대시보드 : 최근 기업 심사 요청 목록
+    List<CompanyDTO> selectRecentApprovalRequests(@Param("limit") int limit);
+
+    // 관리자 대시보드 : 오늘 신규 기업 신청 수
+    int selectTodayApplicationCount(@Param("start") LocalDateTime start,
+                                    @Param("end") LocalDateTime end);
 
 }

@@ -368,6 +368,33 @@
 
     </select>
 
+    <!-- 관리자 대시보드 : 승인 대기 기업 수 -->
+    <select id="selectPendingApprovalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM companies
+        WHERE approval_status = '승인대기'
+    </select>
+
+    <!-- 관리자 대시보드 : 최근 기업 심사 요청 (승인 대기, 재신청 우선 최신순) -->
+    <select id="selectRecentApprovalRequests"
+            resultType="kr.co.firstdayproject.dto.company.CompanyDTO">
+
+        SELECT
+        company_id,
+        company_name,
+        approval_status,
+        reapply_requested_at,
+        created_at
+
+        FROM companies
+
+        WHERE approval_status = '승인대기'
+
+        ORDER BY COALESCE(reapply_requested_at, created_at) DESC
+
+        LIMIT #{limit}
+
+    </select>
     <!-- 기업 정보 : 관심기업 조회 -->
     <select id="countWish" resultType="int">
         SELECT COUNT(*)
@@ -397,5 +424,11 @@
         AND company_id = #{companyId}
     </delete>
 
+    <!-- 관리자 대시보드 : 오늘 신규 기업 신청 수 -->
+    <select id="selectTodayApplicationCount" resultType="int">
+        SELECT COUNT(*)
+        FROM companies
+        WHERE created_at BETWEEN #{start} AND #{end}
+    </select>
 
 </mapper>

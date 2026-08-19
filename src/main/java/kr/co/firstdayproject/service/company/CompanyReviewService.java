@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -194,5 +196,12 @@ public class CompanyReviewService {
 
         int helpCount = companyReviewDao.selectReviewReactionCount(reviewType, reviewId);
         return Map.of("helpful", helpful, "helpCount", helpCount);
+    }
+
+    // 관리자 대시보드 : 오늘 작성된 기업리뷰 수
+    public int getTodayReviewCount() {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        return companyReviewDao.selectTodayReviewCount(start, end);
     }
 }
