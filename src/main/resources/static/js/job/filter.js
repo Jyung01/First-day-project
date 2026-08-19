@@ -77,7 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
       () => setTimeout(updateAllGroupSelectButtons, 0),
     );
 
-    showCategory(parentButtons[0]);
+    const selectedParentCategoryId = new URLSearchParams(window.location.search)
+      .get("parentCategoryId");
+    const selectedParentButton = parentButtons.find(
+      (button) => button.dataset.parentId === selectedParentCategoryId,
+    );
+    showCategory(selectedParentButton || parentButtons[0]);
     setTimeout(updateAllGroupSelectButtons, 0);
   };
 

@@ -15,6 +15,7 @@
 
         ROUND(AVG(cr.overall_rating), 1) AS averageRating,
         COUNT(DISTINCT cr.company_review_id) AS reviewCount,
+        COUNT(DISTINCT jp.job_posting_id) AS jobPostingCount,
         MAX(cr.summary) AS summary,
 
         <!-- 채용 중인 공고 존재 여부 -->
@@ -49,7 +50,7 @@
         averageRating DESC,
         reviewCount DESC
 
-        LIMIT 4;
+        LIMIT 5;
 
     </select>
 

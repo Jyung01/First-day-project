@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>첫출근 — 메인 리디자인</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main-redesign.css(v='20260819-6')}"/>
+</head>
+<body>
+<header th:replace="~{common/header :: header}"></header>
+
+<main class="redesign-main">
+    <section class="redesign-hero">
+        <div class="redesign-wrap">
+            <p class="hero-kicker">첫출근</p>
+            <h1>공고를 찾는 순간부터, 첫 지원까지.</h1>
+        </div>
+        <div class="hero-media" aria-label="첫출근을 향해 걸어가는 구직자의 모습을 담은 영상 영역">
+            <!-- static/video/firstday-hero.mp4 파일을 추가하면 자동 재생됩니다. -->
+            <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+                <source th:src="@{/video/firstday-hero.mp4}" type="video/mp4"/>
+            </video>
+        </div>
+    </section>
+
+    <section class="redesign-search-section">
+        <div class="redesign-wrap search-job-layout">
+            <div class="job-search-panel">
+                <p class="section-eyebrow">JOB SEARCH</p>
+                <h2>내게 맞는 공고를 찾아보세요</h2>
+                <form th:action="@{/job/search}" method="get" class="redesign-search-form">
+                    <label class="sr-only" for="redesignKeyword">공고 검색</label>
+                    <input id="redesignKeyword" name="keyword" type="search"
+                           placeholder="직무, 기술, 기업명을 검색해보세요"/>
+                    <button type="submit" aria-label="공고 검색">→</button>
+                </form>
+                <div class="quick-filters" aria-label="빠른 공고 필터">
+                    <a th:href="@{/job/search(career='신입')}">신입</a>
+                    <a th:href="@{/job/search(sort='deadline')}">마감임박</a>
+                    <a th:href="@{/job/search(region='서울')}">서울</a>
+                    <a th:href="@{/job/list}">IT·개발</a>
+                </div>
+            </div>
+
+            <section class="today-jobs" aria-labelledby="todayJobsTitle">
+                <div class="mini-section-head">
+                    <div>
+                        <p class="section-eyebrow">NOW HIRING</p>
+                        <h2 id="todayJobsTitle">오늘의 채용공고</h2>
+                    </div>
+                    <a th:href="@{/job/list}">더보기 <span>→</span></a>
+                </div>
+                <div class="today-tabs" role="tablist">
+                    <button type="button" class="today-tab active" data-job-list="latest">최신 공고</button>
+                    <button type="button" class="today-tab" data-job-list="popular">인기 공고</button>
+                </div>
+                <div class="today-job-list" data-job-list-content="latest">
+                    <a th:each="job : ${latestJobs}" th:href="@{/job/detail(jobPostingId=${job.jobPostingId})}" class="today-job-row">
+                        <div>
+                            <strong th:text="${job.title}">채용공고 제목</strong>
+                            <span th:text="${job.companyName} + ' · ' + ${job.workRegion}">기업명 · 지역</span>
+                        </div>
+                        <em th:text="${job.careerType}">신입</em><span class="row-arrow">→</span>
+                    </a>
+                </div>
+                <div class="today-job-list" data-job-list-content="popular" hidden>
+                    <a th:each="job : ${popularJobs}" th:href="@{/job/detail(jobPostingId=${job.jobPostingId})}" class="today-job-row">
+                        <div>
+                            <strong th:text="${job.title}">채용공고 제목</strong>
+                            <span th:text="${job.companyName} + ' · ' + ${job.workRegion}">기업명 · 지역</span>
+                        </div>
+                        <em th:text="${job.careerType}">신입</em><span class="row-arrow">→</span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <section class="redesign-section companies-section">
+        <div class="redesign-wrap">
+            <div class="company-section-heading">
+                <p class="section-eyebrow">COMPANIES</p>
+                <h2>지금 채용 중인 기업</h2>
+                <p>새로운 시작을 함께할 기업을 만나보세요.</p>
+            </div>
+            <div class="company-collage"
+                 th:classappend="${#lists.size(popularCompanies) == 4} ? 'company-collage--four' : ''">
+                <a th:each="company, stat : ${popularCompanies}"
+                   th:if="${stat.index < 5}"
+                   th:href="@{/company/detail(companyId=${company.companyId})}"
+                   class="company-collage-card" th:classappend="|company-card-${stat.count}|">
+                    <img class="company-card-image"
+                         th:src="@{|/images/main/company-card-${stat.count}.png|}"
+                         alt=""/>
+                    <div class="company-card-content">
+                        <strong th:text="${company.companyName}">기업명</strong>
+                        <span th:text="${'진행 중 공고 ' + (company.jobPostingCount != null ? company.jobPostingCount : 0) + '개'}">진행 중 공고</span>
+                    </div>
+                </a>
+            </div>
+            <a th:href="@{/company/list}" class="company-all-link">전체 기업 보기 <span>→</span></a>
+        </div>
+    </section>
+
+    <section class="redesign-section categories-section">
+        <div class="redesign-wrap category-layout">
+            <div class="category-intro">
+                <p class="section-eyebrow">JOB CATEGORY</p>
+                <h2>어떤 직무를<br/>찾고 있나요?</h2>
+                <p>관심 있는 직무를 선택하고<br/>맞춤 공고를 확인해보세요.</p>
+                <a th:href="@{/job/list}" class="category-all-link">전체 직무로 공고 보기 →</a>
+            </div>
+            <div class="category-list">
+                <a th:each="group, stat : ${jobCategoryGroups}"
+                   th:if="${stat.index < 5}"
+                   th:href="@{/job/search(parentCategoryId=${group.jobCategoryId})}">
+                    <strong th:text="${group.categoryName}">직무</strong>
+                    <i aria-hidden="true">→</i>
+                </a>
+                <p th:if="${#lists.isEmpty(jobCategoryGroups)}" class="empty-message">현재 표시할 직무 카테고리가 없습니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="redesign-section ai-match-section" id="ai-recommendations">
+        <div class="redesign-wrap ai-match-layout">
+            <div class="ai-match-intro">
+                <p class="section-eyebrow">AI MATCH</p>
+                <h2>AI가 찾은<br/>나에게 맞는 공고</h2>
+                <p>희망 직무와 등록한 경험을 바탕으로<br/>공고를 추천해요.</p>
+                <div class="ai-flow" aria-label="AI 추천 과정">
+                    <span>희망 직무</span><i>→</i>
+                    <span>이력서·자소서 경험</span><i>→</i>
+                    <span>AI 맞춤 공고</span>
+                </div>
+            </div>
+            <div class="ai-match-list" id="redesignAiList" th:attr="data-personal-member=${personalMember}">
+                <div class="ai-empty-state" th:unless="${personalMember}">
+                    <strong>로그인하면 나에게 맞는 공고를 추천해드려요.</strong>
+                    <a th:href="@{/auth/login}">로그인하기 →</a>
+                </div>
+                <div class="ai-loading-state" th:if="${personalMember}">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="redesign-section tools-section">
+        <div class="redesign-wrap">
+            <div class="section-heading-row">
+                <div>
+                    <p class="section-eyebrow">FIRSTDAY TOOLS</p>
+                    <h2>첫출근 도구</h2>
+                </div>
+            </div>
+            <div class="tool-cards">
+                <a th:href="@{/my/resume/list}" class="tool-card resume-tool">
+                    <img class="tool-card-image" th:src="@{/images/main/tool-resume.png}" alt="이력서를 검토하는 업무 책상"/>
+                    <span>RESUME</span><h3>이력서 관리</h3><p>이력서를 등록하고 최신 상태로 관리하세요.</p><i>→</i>
+                </a>
+                <a th:href="@{/my/cover-letter/list}" class="tool-card cover-letter-tool">
+                    <img class="tool-card-image" th:src="@{/images/main/tool-cover-letter.png}" alt="자기소개서를 검토하는 업무 책상"/>
+                    <span>AI FEEDBACK</span><h3>AI 자기소개서 첨삭</h3><p>작성한 자기소개서를 더 설득력 있게 다듬어보세요.</p><i>→</i>
+                </a>
+                <a th:href="@{/my/applications}" class="tool-card application-tool">
+                    <img class="tool-card-image" th:src="@{/images/main/tool-application.png}" alt="지원 일정을 관리하는 업무 책상"/>
+                    <span>APPLICATION</span><h3>지원 현황</h3><p>내 지원 현황을 한눈에 확인하세요.</p><i>→</i>
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{common/footer :: footer}"></footer>
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/main-redesign.js(v='20260819-6')}"></script>
+</body>
+</html>

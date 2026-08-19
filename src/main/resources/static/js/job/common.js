@@ -20,6 +20,16 @@ document.addEventListener("DOMContentLoaded", () => {
     "skillId",
   ];
   const currentParameters = new URLSearchParams(window.location.search);
+  const selectedParentCategoryId = currentParameters.get("parentCategoryId");
+  const categoryFilter = filterRoot?.querySelector(".job-category-filter");
+
+  if (selectedParentCategoryId && categoryFilter) {
+    const selectedParent = [...categoryFilter.querySelectorAll(".category-parent-item")]
+      .find((button) => button.dataset.parentId === selectedParentCategoryId);
+    if (selectedParent) {
+      categoryFilter.dataset.selectedParentLabel = selectedParent.textContent.trim();
+    }
+  }
 
   filterRoot?.querySelectorAll("[data-filter-group]").forEach((group) => {
     const choices = [
@@ -44,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const buildFilterParameters = () => {
     const parameters = new URLSearchParams(window.location.search);
     filterParameterNames.forEach((name) => parameters.delete(name));
+    parameters.delete("parentCategoryId");
     parameters.delete("page");
 
     filterRoot?.querySelectorAll("[data-filter-group]").forEach((group) => {
@@ -93,14 +104,31 @@ document.addEventListener("DOMContentLoaded", () => {
       filterChips.append(chip);
     });
 
-    activeFilters.hidden = selected.length === 0;
+    const selectedParentLabel = categoryFilter?.dataset.selectedParentLabel;
+    if (selectedParentLabel) {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "filter-chip";
+      chip.textContent = `${selectedParentLabel} ×`;
+      chip.addEventListener("click", () => {
+        categoryFilter.dataset.selectedParentLabel = "";
+        currentParameters.delete("parentCategoryId");
+        window.location.href = `/job/search?${currentParameters.toString()}`;
+      });
+      filterChips.prepend(chip);
+    }
+
+    activeFilters.hidden = selected.length === 0 && !selectedParentLabel;
   };
 
   const updateFilterToggle = (group) => {
     const label = group.dataset.filterLabel;
     const count = group.querySelectorAll('input:checked:not([data-filter-all])').length;
+    const selectedParentLabel = group.dataset.selectedParentLabel;
     group.querySelector(".multi-filter-toggle").firstChild.textContent =
-      count === 0 ? `${label} 전체 ` : `${label} ${count}개 `;
+      count === 0 && selectedParentLabel
+        ? `${selectedParentLabel} `
+        : count === 0 ? `${label} 전체 ` : `${label} ${count}개 `;
   };
 
   filterRoot?.querySelectorAll("[data-filter-group]").forEach((group) => {
@@ -129,6 +157,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     choices.forEach((choice) => {
       choice.addEventListener("change", () => {
+        if (group.classList.contains("job-category-filter")) {
+          group.dataset.selectedParentLabel = "";
+        }
         const selectedCount = choices.filter((item) => item.checked).length;
         all.checked = selectedCount === 0;
         all.indeterminate = false;

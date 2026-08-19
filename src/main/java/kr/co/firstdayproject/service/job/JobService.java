@@ -213,6 +213,15 @@ public class JobService {
                 .findByStatusOrderByPublishedAtDescJobPostingIdDesc(
                         "모집중", PageRequest.of(0, 100)
                 );
+
+        // AI 벡터에는 기업 상태가 바뀌기 전 공고도 남을 수 있다. 추천 결과를 만들기 전
+        // 원본 DB의 공개 가능 조건(모집중 · 승인 · 정상)을 다시 적용한다.
+        Set<Long> visiblePostingIds = Set.copyOf(jobPostingRepository.findVisibleIdsIn(
+                candidates.stream().map(JobPosting::getJobPostingId).toList()
+        ));
+        candidates = candidates.stream()
+                .filter(posting -> visiblePostingIds.contains(posting.getJobPostingId()))
+                .toList();
         if (candidates.isEmpty()) {
             return List.of();
         }

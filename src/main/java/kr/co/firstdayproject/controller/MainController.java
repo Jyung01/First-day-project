@@ -51,4 +51,31 @@ public class MainController {
 
         return "index";
     }
+
+    // 리디자인 메인 페이지 미리보기
+    @GetMapping("/main/redesign")
+    public String redesignIndex(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            Model model
+    ) {
+        model.addAttribute("banners",
+                bannerService.getActiveBanners("main"));
+        model.addAttribute("latestJobs",
+                jobService.getLatestJobPostingList());
+        model.addAttribute("popularJobs",
+                jobService.getPopularJobPostingList());
+        model.addAttribute("popularCompanies",
+                companyService.getPopularCompanyList());
+        model.addAttribute("jobCategoryGroups",
+                jobService.getActiveJobCategoryGroups());
+
+        boolean personalMember = userDetails != null
+                && "개인".equals(userDetails.getUserType());
+        boolean companyMember = userDetails != null
+                && "기업".equals(userDetails.getUserType());
+        model.addAttribute("personalMember", personalMember);
+        model.addAttribute("companyMember", companyMember);
+
+        return "index-redesign";
+    }
 }

@@ -309,6 +309,7 @@
       ? @{/job/search(
           page=${pageInfo.previousBlockPage},
           keyword=${keyword},
+          parentCategoryId=${parentCategoryId},
           categoryId=${categoryIds},
           region=${regions},
           career=${careers},
@@ -332,6 +333,7 @@
                         th:href="@{/job/search(
                           page=${pageNumber},
                           keyword=${keyword},
+                          parentCategoryId=${parentCategoryId},
                           categoryId=${categoryIds},
                           region=${regions},
                           career=${careers},
@@ -353,6 +355,7 @@
       ? @{/job/search(
           page=${pageInfo.nextBlockPage},
           keyword=${keyword},
+          parentCategoryId=${parentCategoryId},
           categoryId=${categoryIds},
           region=${regions},
           career=${careers},
