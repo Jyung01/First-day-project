@@ -75,6 +75,11 @@ public class PersonalizedJobRecommendationService {
         ))));
     }
 
+    /** 회원 탈퇴 시 프로필 벡터를 제거한다. 재생성하지 않는다. */
+    public void deleteProfileEmbedding(Long userId) {
+        vectorStore.delete(List.of(profileVectorId(userId)));
+    }
+
     private String buildProfile(Long userId) {
         StringBuilder profile = new StringBuilder();
         Resume resume = resumeRepository

@@ -18,6 +18,7 @@
 | V10 | `V10__add_admin_memo_to_interview_reviews.sql` | `interview_reviews.admin_memo` 추가 |
 | V11 | `V11__add_job_posting_to_cover_letter_ai_reviews.sql` | `cover_letter_ai_reviews.job_posting_id` 추가 |
 | V12 | `V12__add_rag_context_to_cover_letter_ai_reviews.sql` | `cover_letter_ai_reviews.rag_context` 추가 |
+| V13 | `V13__add_member_withdrawal_to_termination_reason.sql` | `applications.termination_reason` CHECK 허용값에 `회원탈퇴` 추가 |
 
 ## 적용 규칙
 
@@ -87,3 +88,9 @@
 - `cover_letter_ai_reviews.rag_context`(JSON NULL)에 첨삭 생성 시 pgvector에서 검색해 프롬프트에 넣은 유사 공고 문단을 문항 순서와 같은 순서의 배열로 저장한다. `feedback` 다음 위치에 추가한다. (REQ-903)
 - 나중에 어떤 근거로 첨삭이 만들어졌는지 되짚을 수 있게 한다. 기존 행에는 근거가 없으므로 NULL을 허용한다.
 - 기존 V11 DB에는 `V12__add_rag_context_to_cover_letter_ai_reviews.sql`을 한 번 실행한다.
+
+## V13 반영 내용
+
+- `applications.termination_reason` CHECK 제약(`chk_applications_termination`) 허용값에 `회원탈퇴`를 추가한다. 기존에는 `기업탈퇴`만 허용했다.
+- 회원(지원자) 탈퇴로 진행 중이던 지원이 채용종료되는 경우를 기업탈퇴와 구분해서 저장할 수 있게 한다.
+- 기존 V12 DB에는 `V13__add_member_withdrawal_to_termination_reason.sql`을 한 번 실행한다.

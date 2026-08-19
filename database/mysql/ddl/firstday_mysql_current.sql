@@ -524,7 +524,7 @@ CREATE TABLE applications (
   current_status        VARCHAR(20) NOT NULL DEFAULT '지원완료',
   applied_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   cancelled_at          DATETIME(6) NULL COMMENT '지원완료 단계에서 지원자가 취소한 시각',
-  termination_reason    VARCHAR(20) NULL COMMENT '채용종료 원인; 현재는 기업탈퇴',
+  termination_reason    VARCHAR(20) NULL COMMENT '채용종료 원인; 기업탈퇴 또는 회원탈퇴',
   terminated_at         DATETIME(6) NULL COMMENT '지원 절차가 채용종료로 끝난 시각',
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
@@ -543,7 +543,7 @@ CREATE TABLE applications (
       ('지원완료','서류검토중','서류합격','면접예정','면접완료',
        '최종합격','입사완료','불합격','지원취소','채용종료')),
   CONSTRAINT chk_applications_termination
-    CHECK (termination_reason IS NULL OR termination_reason IN ('기업탈퇴')),
+    CHECK (termination_reason IS NULL OR termination_reason IN ('기업탈퇴','회원탈퇴')),
   CONSTRAINT fk_applications_posting
     FOREIGN KEY (job_posting_id) REFERENCES job_postings(job_posting_id),
   CONSTRAINT fk_applications_applicant
