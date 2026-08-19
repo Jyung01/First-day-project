@@ -42,10 +42,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             String userType
     );
 
-    long countByUserTypeAndCreatedAtBetween(String userType, LocalDateTime createdAtAfter, LocalDateTime createdAtBefore);
-
-
-}
     List<User> findByCompanyIdInAndUserTypeOrderByUserIdAsc(
             Collection<Long> companyIds,
             String userType

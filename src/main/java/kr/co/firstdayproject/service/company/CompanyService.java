@@ -123,6 +123,8 @@ public class CompanyService {
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end = start.plusDays(1);
         return companyDao.selectTodayApplicationCount(start, end);
+    }
+
     // 기업 정보 : 관심기업 등록 및 해제
     @Transactional
     public boolean toggleWish(Long userId, Long companyId) {
