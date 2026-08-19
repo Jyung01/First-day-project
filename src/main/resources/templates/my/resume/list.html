@@ -15,6 +15,8 @@
         <!-- 이력서 목록 -->
         <link rel="stylesheet" th:href="@{/css/my/resume/list.css}" />
 
+        <link rel="stylesheet" th:href="@{/css/common/toast.css}" />
+
         <!-- 공통 모달 -->
         <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
     </head>
@@ -125,6 +127,8 @@
         <!-- 공통 확인 모달 -->
         <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
 
+        <div th:replace="~{common/toast :: toast}"></div>
+
         <script th:src="@{/js/common.js}"></script>
 
         <!-- 공통 모달 -->
@@ -132,5 +136,16 @@
 
         <!-- 이력서 목록 -->
         <script th:src="@{/js/my/resume/list.js}"></script>
+
+        <!-- 저장 완료 안내 토스트 -->
+        <script th:src="@{/js/common/toast.js}"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                showToastFromQuery("saved", {
+                    created: "이력서가 등록되었습니다.",
+                    updated: "이력서가 수정되었습니다."
+                });
+            });
+        </script>
     </body>
 </html>
