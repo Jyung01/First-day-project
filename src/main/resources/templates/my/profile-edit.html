@@ -16,6 +16,8 @@
         <link rel="stylesheet" th:href="@{/css/my/profile-edit.css}" />
 
         <!-- 공통 확인 모달 -->
+        <link rel="stylesheet" th:href="@{/css/common/toast.css}" />
+
         <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
 
         <!-- 직무 선택 모달 -->
@@ -247,13 +249,6 @@
                             </fieldset>
 
                             <p
-                                class="profile-form-message is-visible is-success"
-                                th:if="${param.saved != null}"
-                            >
-                                변경사항이 저장되었습니다.
-                            </p>
-
-                            <p
                                 class="profile-form-message"
                                 th:classappend="${#fields.hasAnyErrors()} ? ' is-visible' : ''"
                                 th:text="${#fields.hasAnyErrors() ? #strings.listJoin(#fields.allErrors(), ' ') : ''}"
@@ -287,6 +282,9 @@
         <!-- 공통 확인 모달 -->
         <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
 
+        <!-- 저장 완료 안내 토스트 -->
+        <div th:replace="~{common/toast :: toast}"></div>
+
         <!-- 비밀번호 변경 모달 -->
         <div th:replace="~{modal/my/password-change-modal :: passwordChangeModal}"></div>
 
@@ -305,5 +303,13 @@
 
         <!-- 비밀번호 변경 모달 -->
         <script th:src="@{/js/modal/my/password-change-modal.js}"></script>
+
+        <!-- 저장 완료 토스트 -->
+        <script th:src="@{/js/common/toast.js}"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                showToastFromQuery("saved", "변경사항이 저장되었습니다.");
+            });
+        </script>
     </body>
 </html>

@@ -67,38 +67,6 @@
             border-color: var(--primary, #6c5ce7);
         }
 
-        .cl-job-select {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 12px 14px;
-            border: 1px solid var(--border, #dcdde3);
-            border-radius: 8px;
-            background: #fafafb;
-            cursor: pointer;
-        }
-
-        .cl-job-select__text {
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .cl-job-select__title {
-            font-weight: 600;
-            color: var(--text-strong, #1c1c22);
-        }
-
-        .cl-job-select__meta {
-            color: var(--text-muted, #8a8b94);
-        }
-
-        .cl-job-select__chevron {
-            flex-shrink: 0;
-            color: #b5b6c0;
-        }
-
         /* ---------- 문항 카드 ---------- */
         .cl-question {
             border: 1px solid var(--border, #e7e7ec);

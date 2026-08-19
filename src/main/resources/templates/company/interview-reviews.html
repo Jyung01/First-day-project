@@ -22,58 +22,11 @@
 
     <script th:src="@{/js/company/detail.js}"></script>
     <script th:src="@{/js/company/review-reactions.js}"></script>
+    <script th:src="@{/js/modal/common/report-modal.js}"></script>
     <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-
-            const reportModal = document.getElementById("reportModal");
-            const closeBtn = reportModal.querySelector(".modal-close");
-            const cancelBtn = reportModal.querySelector(".btn-cancel");
-
-            // 신고 버튼 클릭
-            document.querySelectorAll(".report-btn").forEach((btn) => {
-                btn.addEventListener("click", () => {
-
-                    // TODO : 나중에 신고 대상 정보 세팅
-                    // document.getElementById("reportTarget").value = "...";
-
-                    reportModal.classList.add("show");
-                });
-            });
-
-            // X 버튼
-            closeBtn.addEventListener("click", () => {
-                reportModal.classList.remove("show");
-            });
-
-            // 취소 버튼
-            cancelBtn.addEventListener("click", () => {
-                reportModal.classList.remove("show");
-            });
-
-            // 바깥 영역 클릭
-            reportModal.addEventListener("click", (e) => {
-                if (e.target === reportModal) {
-                    reportModal.classList.remove("show");
-                }
-            });
-
-            // 신고 접수(테스트)
-            document.getElementById("reportForm").addEventListener("submit", (e) => {
-                e.preventDefault();
-
-                reportModal.classList.remove("show");
-
-                // TODO : fetch 신고 API
-                // TODO : 신고 완료 모달 호출
-            })
-        });
-
-    </script>
-
 </head>
 <body>
 <header th:replace="~{common/header :: header}"></header>
@@ -123,9 +76,10 @@
         <div class="profile-right">
 
             <button class="wish-btn"
-                    th:data-company-id="${company.companyId}">
+                    th:data-company-id="${company.companyId}"
+                    th:classappend="${isWished} ? ' active'">
 
-                <i class="fa-regular fa-heart"></i>
+                <i th:class="${isWished} ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
 
                 관심기업
 

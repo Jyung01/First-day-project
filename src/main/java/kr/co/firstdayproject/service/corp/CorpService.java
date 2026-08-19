@@ -32,7 +32,7 @@ public class CorpService {
     private static final String PENDING_APPROVAL = "승인대기";
     private static final String WITHDRAWN_STATUS = "탈퇴";
     private static final List<String> ACTIVE_APPLICATION_STATUSES = List.of(
-            "지원완료", "서류검토중", "서류합격", "면접예정", "면접완료", "최종합격"
+            "지원완료", "서류검토중", "서류합격", "면접예정", "면접완료"
     );
     private static final List<String> ACTIVE_JOB_POSTING_STATUSES = List.of("모집중", "모집예정");
     private static final java.util.regex.Pattern PASSWORD_PATTERN =
@@ -115,13 +115,11 @@ public class CorpService {
     public CompanyWithdrawalSummary getWithdrawalSummary(Long companyId) {
         long activeJobCount = jobPostingRepository
                 .countByCompanyIdAndStatusIn(companyId, ACTIVE_JOB_POSTING_STATUSES);
-        long applicantCount = activeJobCount == 0L
-                ? 0L
-                : applicationRepository
-                        .countActiveApplicantsOfRecruitingCompany(
-                                companyId,
-                                ACTIVE_APPLICATION_STATUSES
-                        );
+        long applicantCount = applicationRepository
+                .countActiveApplicantsOfCompany(
+                        companyId,
+                        ACTIVE_APPLICATION_STATUSES
+                );
         return new CompanyWithdrawalSummary(activeJobCount, applicantCount);
     }
 
@@ -149,6 +147,11 @@ public class CorpService {
         }
 
         LocalDateTime now = LocalDateTime.now();
+        applicationRepository.recordCompanyWithdrawalStatusHistory(
+                companyId,
+                ACTIVE_APPLICATION_STATUSES,
+                now
+        );
         applicationRepository.terminateActiveApplicationsForCompanyWithdrawal(
                 companyId,
                 ACTIVE_APPLICATION_STATUSES,
@@ -185,10 +188,10 @@ public class CorpService {
         if (companyLogo != null && !companyLogo.isEmpty()) {
             validateCompanyLogo(companyLogo);
             String previousLogoUrl = company.getLogoUrl();
+            String uploadedLogoUrl;
             try {
-                company.setLogoUrl(
-                        awsS3Service.upload(companyLogo, "companies_logo")
-                );
+                uploadedLogoUrl = awsS3Service.upload(companyLogo, "companies_logo");
+                company.setLogoUrl(uploadedLogoUrl);
             } catch (IOException | RuntimeException exception) {
                 throw new CompanyProfileUpdateException(
                         "companyLogo",
@@ -196,7 +199,10 @@ public class CorpService {
                         exception
                 );
             }
-            awsS3Service.deletePublicByUrl(previousLogoUrl);
+            awsS3Service.synchronizePublicReplacement(
+                    previousLogoUrl,
+                    uploadedLogoUrl
+            );
         }
 
         company.setCompanyName(request.getCompanyName().trim());
@@ -241,11 +247,11 @@ public class CorpService {
 
         if (companyLogo != null && !companyLogo.isEmpty()) {
             String previousLogoUrl = company.getLogoUrl();
+            String uploadedLogoUrl;
             try {
                 validateCompanyLogo(companyLogo);
-                company.setLogoUrl(
-                        awsS3Service.upload(companyLogo, "companies_logo")
-                );
+                uploadedLogoUrl = awsS3Service.upload(companyLogo, "companies_logo");
+                company.setLogoUrl(uploadedLogoUrl);
             } catch (CompanyProfileUpdateException exception) {
                 throw new CompanyReapplyException(
                         "companyLogo",
@@ -257,7 +263,10 @@ public class CorpService {
                         "기업 로고를 업로드하지 못했습니다. 다시 시도해주세요."
                 );
             }
-            awsS3Service.deletePublicByUrl(previousLogoUrl);
+            awsS3Service.synchronizePublicReplacement(
+                    previousLogoUrl,
+                    uploadedLogoUrl
+            );
         }
 
         LocalDateTime now = LocalDateTime.now();

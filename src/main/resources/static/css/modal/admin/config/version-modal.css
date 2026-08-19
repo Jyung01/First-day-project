@@ -1,0 +1,87 @@
+.admin-common-modal.version-modal .modal {
+    position: relative;
+    max-width: 660px;
+}
+
+.version-modal-close {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    color: #cbd5e1;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.version-modal-close:hover {
+    background: #1e293b;
+    color: #fff;
+}
+
+.version-modal .modal-form-body {
+    margin-top: 24px;
+}
+
+.version-modal .version-modal-table {
+    display: grid;
+    grid-template-columns: 118px minmax(0, 1fr);
+    border-top: 1px solid #334155;
+    border-left: 1px solid #334155;
+}
+
+.version-modal .version-modal-label,
+.version-modal .version-modal-value {
+    min-height: 52px;
+    padding: 14px;
+    border-right: 1px solid #334155;
+    border-bottom: 1px solid #334155;
+    box-sizing: border-box;
+}
+
+.version-modal .version-modal-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1e293b;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.version-modal .version-modal-value {
+    color: #e2e8f0;
+    font-size: 13px;
+    line-height: 1.75;
+    white-space: pre-wrap;
+}
+
+.version-modal .version-modal-value--notes {
+    min-height: 145px;
+}
+
+.version-modal .version-field-error {
+    min-height: 18px;
+    margin-top: -8px;
+    color: #f87171;
+    font-size: 11px;
+}
+
+.version-modal .modal-form-body textarea {
+    min-height: 150px;
+}
+
+.version-modal .modal-footer.one-button #formRightBtn {
+    display: none;
+}
+
+.version-modal .modal-footer.one-button {
+    grid-template-columns: 1fr;
+}
+
+@media (max-width: 520px) {
+    .version-modal .version-modal-table {
+        grid-template-columns: 92px minmax(0, 1fr);
+    }
+}

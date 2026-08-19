@@ -505,3 +505,27 @@
 .job-form-error p + p {
   margin-top: 4px;
 }
+
+.form-field textarea.is-ai-polish-empty {
+  border-color: #e6a23c;
+  box-shadow: 0 0 0 3px rgb(230 162 60 / 12%);
+}
+
+.ai-polish-empty-warning {
+  display: block;
+  margin-top: 7px;
+  color: #b56a08;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.job-review-modal-notice {
+  padding: 13px 15px;
+  color: #5d6b82;
+  background: #f5f7fb;
+  border: 1px solid #e2e7f0;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: left;
+}

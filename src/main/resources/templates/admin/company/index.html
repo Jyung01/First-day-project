@@ -13,82 +13,109 @@
 
     <body>
         <div class="wrapper">
-            <!-- 관리자 헤더 -->
             <header th:replace="~{common/admin-header :: adminHeader}"></header>
 
             <div class="container">
-                <!-- 관리자 사이드바 -->
                 <aside th:replace="~{common/admin-aside :: adminAside}"></aside>
 
-                <!-- 기업 관리 콘텐츠 -->
                 <main class="content management-content">
                     <section class="management-heading">
                         <h1>기업 관리</h1>
-
                         <p>기업 가입 심사와 승인 상태, 공개 정보를 관리합니다.</p>
                     </section>
 
-                    <!-- 통계 -->
                     <section class="management-stats">
                         <article class="management-stat-card">
                             <span>승인 대기</span>
-                            <strong>6건</strong>
-                            <small>신규 4 · 재심사 2</small>
+                            <strong th:text="|${statistics.pendingCount}건|">0건</strong>
+                            <small th:text="|신규 ${statistics.newReviewCount} · 재심사 ${statistics.reReviewCount}|">
+                                신규 0 · 재심사 0
+                            </small>
                         </article>
 
                         <article class="management-stat-card">
                             <span>승인 기업</span>
-                            <strong>126개</strong>
-                            <small>현재 공개 중</small>
+                            <strong th:text="|${statistics.approvedCount}개|">0개</strong>
+                            <small>현재 정상 이용 중</small>
                         </article>
 
                         <article class="management-stat-card">
                             <span>반려 기업</span>
-                            <strong>3건</strong>
-                            <small>수정·재심사 가능</small>
+                            <strong th:text="|${statistics.rejectedCount}건|">0건</strong>
+                            <small>정보 수정·재심사 가능</small>
                         </article>
                     </section>
 
-                    <!-- 기업 목록 -->
                     <section class="management-panel">
-                        <div class="management-tabs" role="tablist" aria-label="기업 승인 상태">
-                            <button type="button" class="management-tab" data-company-status="ALL">전체</button>
-
-                            <button type="button" class="management-tab is-active" data-company-status="PENDING">
-                                승인 대기
-                            </button>
-
-                            <button type="button" class="management-tab" data-company-status="APPROVED">승인</button>
-
-                            <button type="button" class="management-tab" data-company-status="REJECTED">반려</button>
-
-                            <button type="button" class="management-tab" data-company-status="SUSPENDED">
-                                이용정지
-                            </button>
+                        <div class="management-tabs" role="tablist" aria-label="기업 상태">
+                            <a
+                                class="management-tab"
+                                role="tab"
+                                th:classappend="${selectedStatus == 'ALL'} ? ' is-active'"
+                                th:attr="aria-selected=${selectedStatus == 'ALL'}"
+                                th:href="@{/admin/company(status='ALL',keyword=${keyword},page=1)}"
+                            >전체</a>
+                            <a
+                                class="management-tab"
+                                role="tab"
+                                th:classappend="${selectedStatus == 'PENDING'} ? ' is-active'"
+                                th:attr="aria-selected=${selectedStatus == 'PENDING'}"
+                                th:href="@{/admin/company(status='PENDING',keyword=${keyword},page=1)}"
+                            >승인 대기</a>
+                            <a
+                                class="management-tab"
+                                role="tab"
+                                th:classappend="${selectedStatus == 'APPROVED'} ? ' is-active'"
+                                th:attr="aria-selected=${selectedStatus == 'APPROVED'}"
+                                th:href="@{/admin/company(status='APPROVED',keyword=${keyword},page=1)}"
+                            >승인</a>
+                            <a
+                                class="management-tab"
+                                role="tab"
+                                th:classappend="${selectedStatus == 'REJECTED'} ? ' is-active'"
+                                th:attr="aria-selected=${selectedStatus == 'REJECTED'}"
+                                th:href="@{/admin/company(status='REJECTED',keyword=${keyword},page=1)}"
+                            >반려</a>
+                            <a
+                                class="management-tab"
+                                role="tab"
+                                th:classappend="${selectedStatus == 'SUSPENDED'} ? ' is-active'"
+                                th:attr="aria-selected=${selectedStatus == 'SUSPENDED'}"
+                                th:href="@{/admin/company(status='SUSPENDED',keyword=${keyword},page=1)}"
+                            >이용정지</a>
+                            <a
+                                class="management-tab"
+                                role="tab"
+                                th:classappend="${selectedStatus == 'WITHDRAWN'} ? ' is-active'"
+                                th:attr="aria-selected=${selectedStatus == 'WITHDRAWN'}"
+                                th:href="@{/admin/company(status='WITHDRAWN',keyword=${keyword},page=1)}"
+                            >탈퇴</a>
                         </div>
 
-                        <form class="management-search" data-company-search-form>
-                            <select class="management-select" name="reviewType">
-                                <option value="">심사 유형 전체</option>
-                                <option value="NEW">신규 심사</option>
-                                <option value="REVIEW">재심사</option>
-                            </select>
+                        <form
+                            class="management-search management-search--company"
+                            method="get"
+                            th:action="@{/admin/company}"
+                        >
+                            <input type="hidden" name="status" th:value="${selectedStatus}" />
 
                             <input
                                 type="search"
                                 class="management-search-input"
                                 name="keyword"
                                 placeholder="기업명 · 사업자번호 검색"
-                                data-company-keyword
+                                th:value="${keyword}"
                             />
 
                             <button type="submit" class="management-search-button">검색</button>
 
-                            <span class="management-total"> 총 6건 </span>
+                            <span class="management-total" th:text="|총 ${companyPage.totalElements}건|">
+                                총 0건
+                            </span>
                         </form>
 
                         <div class="management-table-wrap">
-                            <table class="management-table">
+                            <table class="management-table management-table--company">
                                 <thead>
                                     <tr>
                                         <th>번호</th>
@@ -103,98 +130,80 @@
                                 </thead>
 
                                 <tbody>
-                                    <tr data-company-row data-status="PENDING">
-                                        <td>C-0129</td>
-                                        <td>코드웨이브</td>
-                                        <td>120-88-12345</td>
-                                        <td>김태웅</td>
-                                        <td>07.22</td>
-                                        <td>신규 심사</td>
+                                    <tr th:each="company : ${companyPage.content}">
+                                        <td th:text="${company.companyNumber}">C-0001</td>
+                                        <td th:text="${company.companyName}" th:title="${company.companyName}">
+                                            기업명
+                                        </td>
+                                        <td th:text="${company.businessNumber}" th:title="${company.businessNumber}">
+                                            000-00-00000
+                                        </td>
+                                        <td th:text="${company.managerName}">담당자</td>
+                                        <td th:text="${company.requestedAt == null
+                                            ? '-'
+                                            : #temporals.format(company.requestedAt, 'yy.MM.dd')}">
+                                            -
+                                        </td>
+                                        <td th:text="${company.reviewTypeLabel}">신규 심사</td>
                                         <td>
-                                            <span class="status-text is-pending"> 승인 대기 </span>
+                                            <span
+                                                class="status-text"
+                                                th:classappend="| is-${#strings.toLowerCase(company.statusCode)}|"
+                                                th:text="${company.statusLabel}"
+                                            >승인 대기</span>
                                         </td>
                                         <td>
                                             <button
                                                 type="button"
                                                 class="management-detail-link"
-                                                data-company-approval-open
-                                                data-company-id="C-0129"
-                                                data-company-name="코드웨이브 주식회사"
-                                                data-review-type="신규 심사"
-                                                data-business-number="120-88-12345"
-                                                data-representative="김대표"
-                                                data-manager="김태웅"
-                                            >
-                                                심사
-                                            </button>
-                                        </td>
-                                    </tr>
-
-                                    <tr data-company-row data-status="PENDING">
-                                        <td>C-0128</td>
-                                        <td>넥스트랩</td>
-                                        <td>220-19-28475</td>
-                                        <td>이인서</td>
-                                        <td>07.22</td>
-                                        <td>재심사</td>
-                                        <td>
-                                            <span class="status-text is-pending"> 승인 대기 </span>
-                                        </td>
-                                        <td>
-                                            <a
-                                                th:href="@{/admin/company/detail(id='C-0128')}"
-                                                class="management-detail-link"
-                                            >
-                                                재심사
-                                            </a>
-                                        </td>
-                                    </tr>
-
-                                    <tr data-company-row data-status="PENDING">
-                                        <td>C-0127</td>
-                                        <td>브릿지웍스</td>
-                                        <td>314-02-88421</td>
-                                        <td>박담당</td>
-                                        <td>07.21</td>
-                                        <td>신규 심사</td>
-                                        <td>
-                                            <span class="status-text is-pending"> 승인 대기 </span>
-                                        </td>
-                                        <td>
-                                            <a
-                                                th:href="@{/admin/company/detail(id='C-0127')}"
-                                                class="management-detail-link"
-                                            >
-                                                심사
-                                            </a>
+                                                data-company-detail-open
+                                                th:attr="data-company-detail-url=@{/admin/company/{companyId}(companyId=${company.companyId})}"
+                                                th:text="${company.statusCode == 'PENDING'
+                                                    ? (company.reviewTypeCode == 'REVIEW' ? '재심사' : '심사')
+                                                    : '상세'}"
+                                            >상세</button>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
 
-                        <p class="management-empty" data-company-empty hidden>조건에 맞는 기업이 없습니다.</p>
+                        <p class="management-empty" th:if="${companyPage.empty}">
+                            조건에 맞는 기업이 없습니다.
+                        </p>
 
-                        <nav class="management-pagination" aria-label="기업 목록 페이지">
-                            <a href="#" aria-label="이전 페이지">‹</a>
-                            <a href="#" class="is-current">1</a>
-                            <a href="#">2</a>
-                            <a href="#">3</a>
-                            <a href="#">4</a>
-                            <a href="#">5</a>
-                            <a href="#" aria-label="다음 페이지">›</a>
+                        <nav
+                            class="management-pagination"
+                            th:if="${companyPage.totalPages > 1}"
+                            aria-label="기업 목록 페이지"
+                        >
+                            <a
+                                th:if="${!companyPage.first}"
+                                th:href="@{/admin/company(status=${selectedStatus},keyword=${keyword},page=${companyPage.number})}"
+                                aria-label="이전 페이지"
+                            >‹</a>
+                            <a
+                                th:each="pageNumber : ${#numbers.sequence(startPage, endPage)}"
+                                th:classappend="${pageNumber == companyPage.number + 1} ? ' is-current'"
+                                th:attr="aria-current=${pageNumber == companyPage.number + 1} ? 'page'"
+                                th:href="@{/admin/company(status=${selectedStatus},keyword=${keyword},page=${pageNumber})}"
+                                th:text="${pageNumber}"
+                            >1</a>
+                            <a
+                                th:if="${!companyPage.last}"
+                                th:href="@{/admin/company(status=${selectedStatus},keyword=${keyword},page=${companyPage.number + 2})}"
+                                aria-label="다음 페이지"
+                            >›</a>
                         </nav>
                     </section>
                 </main>
             </div>
 
-            <!-- 관리자 푸터 -->
             <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
         </div>
 
         <div th:replace="~{modal/admin/company-approval :: companyApprovalModal}"></div>
 
         <script th:src="@{/js/modal/admin/company-approval.js}"></script>
-        <script th:src="@{/js/admin/company-list.js}"></script>
     </body>
 </html>

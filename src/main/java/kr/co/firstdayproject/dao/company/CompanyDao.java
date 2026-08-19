@@ -42,6 +42,23 @@ public interface CompanyDao {
 
     // 관리자 대시보드 : 승인 대기 기업 수
     int selectPendingApprovalCount();
+    // 기업 정보 - 관심기업 조회
+    int countWish(
+            @Param("userId") Long userId,
+            @Param("companyId") Long companyId
+    );
+
+    // 기업 정보 - 관심기업 등록
+    int insertWish(
+            @Param("userId") Long userId,
+            @Param("companyId") Long companyId
+    );
+
+    // 기업 정보 - 관심기업 삭제
+    int deleteWish(
+            @Param("userId") Long userId,
+            @Param("companyId") Long companyId
+    );
 
     // 관리자 대시보드 : 최근 기업 심사 요청 목록
     List<CompanyDTO> selectRecentApprovalRequests(@Param("limit") int limit);

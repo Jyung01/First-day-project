@@ -182,9 +182,19 @@ class CorpServiceTest {
         assertThat(company.getCompanyStatus()).isEqualTo("탈퇴");
         assertThat(company.getWithdrawnAt()).isNotNull();
         verify(applicationRepository)
+                .recordCompanyWithdrawalStatusHistory(
+                        org.mockito.ArgumentMatchers.eq(10L),
+                        org.mockito.ArgumentMatchers.argThat(statuses ->
+                                !statuses.contains("최종합격")
+                        ),
+                        org.mockito.ArgumentMatchers.any()
+                );
+        verify(applicationRepository)
                 .terminateActiveApplicationsForCompanyWithdrawal(
                         org.mockito.ArgumentMatchers.eq(10L),
-                        org.mockito.ArgumentMatchers.anyCollection(),
+                        org.mockito.ArgumentMatchers.argThat(statuses ->
+                                !statuses.contains("최종합격")
+                        ),
                         org.mockito.ArgumentMatchers.any()
                 );
         verify(jobPostingRepository).closeRecruitingPostingsForWithdrawal(
@@ -197,7 +207,7 @@ class CorpServiceTest {
     void countsWithdrawalSummaryWithoutLoadingJsonEntities() {
         when(jobPostingRepository.countByCompanyIdAndStatusIn(10L, List.of("모집중", "모집예정")))
                 .thenReturn(2L);
-        when(applicationRepository.countActiveApplicantsOfRecruitingCompany(
+        when(applicationRepository.countActiveApplicantsOfCompany(
                 org.mockito.ArgumentMatchers.eq(10L),
                 org.mockito.ArgumentMatchers.anyCollection()
         )).thenReturn(5L);
@@ -305,6 +315,7 @@ class CorpServiceTest {
         Company company = Company.builder()
                 .companyId(10L)
                 .approvalStatus("반려")
+                .logoUrl("https://cdn.test/companies_logo/previous.png")
                 .build();
         CompanyReapplyRequest request = validReapplyRequest();
         MockMultipartFile logo = new MockMultipartFile(
@@ -327,6 +338,10 @@ class CorpServiceTest {
                 .isEqualTo("https://cdn.test/companies_logo/logo.png");
         assertThat(company.getApprovalStatus()).isEqualTo("승인대기");
         verify(awsS3Service).upload(logo, "companies_logo");
+        verify(awsS3Service).synchronizePublicReplacement(
+                "https://cdn.test/companies_logo/previous.png",
+                "https://cdn.test/companies_logo/logo.png"
+        );
     }
 
     private CompanyReapplyRequest validReapplyRequest() {

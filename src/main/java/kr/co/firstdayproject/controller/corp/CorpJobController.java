@@ -87,15 +87,17 @@ public class CorpJobController {
             ? null
             : userDetails.getCompanyId();
 
-        model.addAttribute(
-            "job",
-            corpJobQueryService.getClosedJobPosting(
-                companyId,
-                jobPostingId
-            )
+        var job = corpJobQueryService.getReadOnlyJobPosting(
+            companyId,
+            jobPostingId
         );
+        model.addAttribute("job", job);
         model.addAttribute("isReadOnly", true);
         model.addAttribute("isHidden", false);
+        model.addAttribute(
+            "isReviewReadOnly",
+            "재검토요청".equals(job.status())
+        );
         return "corp/job-edit";
     }
 

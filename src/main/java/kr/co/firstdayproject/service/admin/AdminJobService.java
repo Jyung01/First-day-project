@@ -79,9 +79,12 @@ public class AdminJobService {
         return new AdminJobDetailView(
             posting.getJobPostingId(),
             company.getCompanyName(),
+            company.getCompanyStatus(),
             display(company.getIndustryName()),
             getCompanyAddress(company),
             contact == null ? "미등록" : contact.getName(),
+            contact == null ? null : trimToNull(contact.getDepartment()),
+            contact == null ? null : trimToNull(contact.getPositionTitle()),
             contact == null ? "미등록" : contact.getEmail(),
             contact == null ? "미등록" : display(contact.getPhone()),
             posting.getTitle(),
@@ -113,6 +116,13 @@ public class AdminJobService {
             display(posting.getQualifications()),
             display(posting.getPreferredConditions())
         );
+    }
+
+    private String trimToNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
     }
 
     public Page<AdminJobListItem> getJobPostings(

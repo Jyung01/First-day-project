@@ -26,25 +26,31 @@
           <div class="summary-grid">
             <article class="summary-card">
               <span class="summary-card__label">진행 중 공고</span
-              ><strong class="summary-card__value">4건</strong
-              ><span class="summary-card__detail">마감 임박 1건</span>
+              ><strong class="summary-card__value"
+                       th:text="${dashboard.stats.recruitingJobCount + '건'}">0건</strong
+              ><span class="summary-card__detail"
+                     th:text="${'마감 임박 ' + dashboard.stats.closingSoonJobCount + '건'}">마감 임박 0건</span>
             </article>
             <article class="summary-card">
               <span class="summary-card__label">신규 지원자</span
-              ><strong class="summary-card__value">12명</strong
-              ><span class="summary-card__detail is-green">오늘 3명</span>
+              ><strong class="summary-card__value"
+                       th:text="${dashboard.stats.recentApplicantCount + '명'}">0명</strong
+              ><span class="summary-card__detail is-green"
+                     th:text="${'오늘 ' + dashboard.stats.todayApplicantCount + '명'}">오늘 0명</span>
             </article>
             <article class="summary-card">
               <span class="summary-card__label">검토 대기</span
-              ><strong class="summary-card__value">7명</strong
+              ><strong class="summary-card__value"
+                       th:text="${dashboard.stats.pendingReviewCount + '명'}">0명</strong
               ><span class="summary-card__detail is-orange"
                 >서류 확인 필요</span
               >
             </article>
             <article class="summary-card">
-              <span class="summary-card__label">이번 달 조회</span
-              ><strong class="summary-card__value">1,284회</strong
-              ><span class="summary-card__detail">전월 대비 +18%</span>
+              <span class="summary-card__label">누적 공고 조회</span
+              ><strong class="summary-card__value"
+                       th:text="${#numbers.formatInteger(dashboard.stats.totalViewCount, 1, 'COMMA') + '회'}">0회</strong
+              ><span class="summary-card__detail">전체 공고 기준</span>
             </article>
           </div>
           <div class="dashboard-panels">
@@ -65,50 +71,49 @@
                 <span>지원자</span><span>지원 공고</span><span>지원일</span
                 ><span>상태</span>
               </div>
-              <a class="applicant-row" th:href="@{/corp/applicant/detail}"
-                ><strong>김민준</strong><span>백엔드 개발자</span
-                ><time>07.22</time><em class="corp-badge">서류검토중</em></a
-              ><a class="applicant-row" th:href="@{/corp/applicant/detail}"
-                ><strong>이서연</strong><span>데이터 엔지니어</span
-                ><time>07.22</time><em class="corp-badge">지원완료</em></a
-              ><a class="applicant-row" th:href="@{/corp/applicant/detail}"
-                ><strong>박지훈</strong><span>프론트엔드 개발자</span
-                ><time>07.21</time
-                ><em class="corp-badge corp-badge--green">면접예정</em></a
-              ><a class="applicant-row" th:href="@{/corp/applicant/detail}"
-                ><strong>최유진</strong><span>백엔드 개발자</span
-                ><time>07.21</time
-                ><em class="corp-badge corp-badge--green">서류합격</em></a
-              >
+              <a class="applicant-row"
+                 th:each="applicant : ${dashboard.recentApplicants}"
+                 th:href="@{/corp/applicant/detail(id=${applicant.applicationId})}">
+                <strong th:text="${applicant.applicantName}">지원자</strong>
+                <span th:text="${applicant.jobTitle}">지원 공고</span>
+                <time th:text="${#temporals.format(applicant.appliedAt, 'MM.dd')}">08.11</time>
+                <em class="corp-badge"
+                    th:classappend="${applicant.statusVariant == 'green'} ? ' corp-badge--green' : (${applicant.statusVariant == 'gray'} ? ' corp-badge--gray' : '')"
+                    th:text="${applicant.status}">지원완료</em>
+              </a>
+              <p class="dashboard-empty"
+                 th:if="${#lists.isEmpty(dashboard.recentApplicants)}">
+                최근 지원자가 없습니다.
+              </p>
             </section>
             <section class="panel">
               <div class="panel__header"><h2>공고 현황</h2></div>
               <ul class="job-status-list">
-                <li>
-                  <a th:href="@{/corp/job}"
-                    ><strong>백엔드 개발자</strong><span>D-7</span
-                    ><em class="is-open">모집중</em></a
+                <li th:each="job : ${dashboard.recentJobs}">
+                  <a
+                    th:href="${job.status == '마감' or job.status == '재검토요청'}
+                      ? @{/corp/job/{id}(id=${job.jobPostingId})}
+                      : @{/corp/job/edit(id=${job.jobPostingId})}"
                   >
-                </li>
-                <li>
-                  <a th:href="@{/corp/job}"
-                    ><strong>데이터 엔지니어</strong><span>D-14</span
-                    ><em class="is-open">모집중</em></a
-                  >
-                </li>
-                <li>
-                  <a th:href="@{/corp/job}"
-                    ><strong>서비스 기획자</strong><span>-</span
-                    ><em>임시저장</em></a
-                  >
-                </li>
-                <li>
-                  <a th:href="@{/corp/job}"
-                    ><strong>프론트엔드 개발자</strong><span>07.18</span
-                    ><em>마감</em></a
-                  >
+                    <strong th:text="${job.title}">채용공고</strong>
+                    <span th:text="${job.deadlineLabel}">-</span>
+                    <em th:classappend="${job.statusVariant == 'open'}
+                          ? ' is-open'
+                          : (${job.statusVariant == 'scheduled'}
+                            ? ' is-scheduled'
+                            : (${job.statusVariant == 'hidden'}
+                              ? ' is-hidden'
+                              : (${job.statusVariant == 'review'}
+                                ? ' is-review'
+                                : '')))"
+                        th:text="${job.status}">모집중</em>
+                  </a>
                 </li>
               </ul>
+              <p class="dashboard-empty"
+                 th:if="${#lists.isEmpty(dashboard.recentJobs)}">
+                등록된 채용공고가 없습니다.
+              </p>
             </section>
           </div>
           <aside class="dashboard-guide">
