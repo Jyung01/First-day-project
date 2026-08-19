@@ -25,4 +25,15 @@ public class UserProfileEmbeddingEventListener {
             log.error("개인회원 프로필 임베딩 동기화 실패: userId={}", event.userId(), exception);
         }
     }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onUserProfileEmbeddingDelete(UserProfileEmbeddingDeleteEvent event) {
+        try {
+            recommendationService.deleteProfileEmbedding(event.userId());
+        } catch (Exception exception) {
+            // 탈퇴 자체는 pgvector 장애에 영향받지 않아야 한다.
+            // 실패하면 벡터가 남으므로 로그로 추적할 수 있게 남긴다.
+            log.error("탈퇴 회원 프로필 임베딩 삭제 실패: userId={}", event.userId(), exception);
+        }
+    }
 }

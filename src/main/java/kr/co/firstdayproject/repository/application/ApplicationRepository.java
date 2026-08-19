@@ -382,4 +382,48 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
             @Param("statuses") Collection<String> statuses,
             @Param("terminatedAt") LocalDateTime terminatedAt
     );
+
+    @Modifying(flushAutomatically = true)
+    @Query(value = """
+            INSERT INTO application_status_history (
+                application_id,
+                from_status,
+                to_status,
+                change_reason,
+                changed_by,
+                actor_type,
+                changed_at
+            )
+            SELECT a.application_id,
+                   a.current_status,
+                   '채용종료',
+                   '지원자 회원 탈퇴로 채용 절차가 종료되었습니다.',
+                   NULL,
+                   '시스템',
+                   :changedAt
+              FROM applications a
+             WHERE a.applicant_user_id = :userId
+               AND a.current_status IN (:statuses)
+            """, nativeQuery = true)
+    int recordMemberWithdrawalStatusHistory(
+            @Param("userId") Long userId,
+            @Param("statuses") Collection<String> statuses,
+            @Param("changedAt") LocalDateTime changedAt
+    );
+
+    @Modifying(flushAutomatically = true)
+    @Query(value = """
+            UPDATE applications a
+               SET a.current_status = '채용종료',
+                   a.termination_reason = '회원탈퇴',
+                   a.terminated_at = :terminatedAt,
+                   a.updated_at = :terminatedAt
+             WHERE a.applicant_user_id = :userId
+               AND a.current_status IN (:statuses)
+            """, nativeQuery = true)
+    int terminateActiveApplicationsForMemberWithdrawal(
+            @Param("userId") Long userId,
+            @Param("statuses") Collection<String> statuses,
+            @Param("terminatedAt") LocalDateTime terminatedAt
+    );
 }
