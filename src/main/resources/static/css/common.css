@@ -97,7 +97,10 @@ nav.primary-nav{
   white-space:nowrap;
 }
 nav.primary-nav a:hover{ color: var(--navy-900); }
-nav.primary-nav a.emph{ color: var(--navy-900); }
+nav.primary-nav a.emph{
+  color: var(--blue-600);
+  font-weight:700;
+}
 
 .header-right{
   display:flex !important;

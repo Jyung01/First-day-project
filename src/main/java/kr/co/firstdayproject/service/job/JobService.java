@@ -826,6 +826,6 @@ public class JobService {
         long days = ChronoUnit.DAYS.between(today, endDate);
         if (days < 0) return "마감";
         if (days == 0) return "오늘 마감";
-        return "D-" + days + " (" + endDate + " 마감)";
+        return "D-" + days;
     }
 }

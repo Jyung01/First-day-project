@@ -18,10 +18,22 @@
                     </span>
                     <span class="hamburger-label">전체메뉴</span>
                 </button>
-                <a th:href="@{/job/list}" class="emph">채용공고</a>
-                <a th:href="@{/company/list}">기업정보</a>
-                <a th:href="@{/my/resume/list}">이력서</a>
-                <a th:href="@{/salary/list}">연봉정보</a>
+                <a
+                    th:href="@{/job/list}"
+                    th:classappend="${activeHeaderMenu == 'job'} ? 'emph'"
+                >채용공고</a>
+                <a
+                    th:href="@{/company/list}"
+                    th:classappend="${activeHeaderMenu == 'company'} ? 'emph'"
+                >기업정보</a>
+                <a
+                    th:href="@{/my/resume/list}"
+                    th:classappend="${activeHeaderMenu == 'resume'} ? 'emph'"
+                >이력서</a>
+                <a
+                    th:href="@{/salary/list}"
+                    th:classappend="${activeHeaderMenu == 'salary'} ? 'emph'"
+                >연봉정보</a>
             </nav>
 
             <div class="mega-panel" id="mega-panel"
