@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -100,5 +102,21 @@ public class CompanyService {
         return list;
     }
 
+    // 관리자 대시보드 : 승인 대기 기업 수
+    public int getPendingApprovalCount() {
+        return companyDao.selectPendingApprovalCount();
+    }
+
+    // 관리자 대시보드 : 최근 기업 심사 요청 (최대 limit건)
+    public List<CompanyDTO> getRecentApprovalRequests(int limit) {
+        return companyDao.selectRecentApprovalRequests(limit);
+    }
+
+    // 관리자 대시보드 : 오늘 신규 기업 신청 수
+    public int getTodayApplicationCount() {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        return companyDao.selectTodayApplicationCount(start, end);
+    }
 
 }

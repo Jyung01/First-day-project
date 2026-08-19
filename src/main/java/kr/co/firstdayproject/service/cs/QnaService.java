@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -75,6 +76,18 @@ public class QnaService {
     /** 관리자 대시보드 - 미답변 문의 건수 */
     public long getPendingCount() {
         return inquiryRepository.count(statusIn(PENDING_STATUSES));
+    }
+
+    /** 관리자 대시보드 - 오늘 답변 완료된 문의 건수 */
+    public long getTodayAnsweredCount() {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+
+        Specification<Inquiry> spec = Specification
+                .where(statusIn(List.of(STATUS_ANSWERED)))
+                .and((root, query, cb) -> cb.between(root.get("answeredAt"), start, end));
+
+        return inquiryRepository.count(spec);
     }
 
     /** 사용자 - 내 1:1 문의 목록 조회 (회원 본인 문의만) */

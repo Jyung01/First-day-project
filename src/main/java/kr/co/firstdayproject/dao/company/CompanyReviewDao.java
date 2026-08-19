@@ -5,6 +5,7 @@ import kr.co.firstdayproject.dto.company.InterviewReviewsDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -64,4 +65,8 @@ public interface CompanyReviewDao {
     int deleteReviewReaction(@Param("userId") Long userId,
                              @Param("reviewType") String reviewType,
                              @Param("reviewId") Long reviewId);
+
+    // 관리자 대시보드 : 오늘 작성된 기업리뷰 수
+    int selectTodayReviewCount(@Param("start") LocalDateTime start,
+                               @Param("end") LocalDateTime end);
 }

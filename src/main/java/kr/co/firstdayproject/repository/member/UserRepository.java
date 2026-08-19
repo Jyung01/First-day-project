@@ -1,6 +1,8 @@
 package kr.co.firstdayproject.repository.member;
 
 import kr.co.firstdayproject.entity.member.User;
+
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -19,7 +21,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmailIgnoreCase(String email);
 
     Optional<User> findFirstByCompanyIdAndUserTypeOrderByUserIdAsc(
-        Long companyId,
-        String userType
+            Long companyId,
+            String userType
     );
+
+    long countByUserTypeAndCreatedAtBetween(String userType, LocalDateTime createdAtAfter, LocalDateTime createdAtBefore);
+
+
 }
