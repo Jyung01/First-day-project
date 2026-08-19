@@ -58,6 +58,9 @@ src/main/resources/application-secret.properties
 uploads/
 src/main/resources/static/uploads/
 
+# 사이트 설정 이미지 업로드 (개발 단계 로컬 저장 경로)
+/src/main/resources/static/images/site/
+
 ### Temporary files ###
 *.tmp
 *.temp
