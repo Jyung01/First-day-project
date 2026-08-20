@@ -1,11 +1,13 @@
-<header class="header" xmlns:th="http://www.thymeleaf.org" th:fragment="adminHeader">
+<header class="header" xmlns:th="http://www.thymeleaf.org" th:fragment="adminHeader"
+        th:with="adminHeaderSiteSetting=${@adminSiteSettingService.getSiteSettingView()}">
     <div class="logo-box">
         <a th:href="@{/admin}" class="admin-logo">
             <img
-                th:src="@{/images/common/logo-footer.png}"
-                src="/images/common/logo-footer.png"
-                alt="첫출근 관리자"
-                class="admin-logo__image"
+                    th:src="@{${adminHeaderSiteSetting.footerLogoUrl != null && !#strings.isEmpty(adminHeaderSiteSetting.footerLogoUrl)}
+                            ? ${adminHeaderSiteSetting.footerLogoUrl}
+                            : '/images/common/logo-footer.png'}"
+                    alt="첫출근 관리자"
+                    class="admin-logo__image"
             />
         </a>
 
@@ -14,6 +16,8 @@
 
     <nav class="top-menu">
         <a th:href="@{/}" class="top-menu__button">서비스 홈</a>
-        <button type="button" class="top-menu__button">로그아웃</button>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="top-menu__button">로그아웃</button>
+        </form>
     </nav>
 </header>

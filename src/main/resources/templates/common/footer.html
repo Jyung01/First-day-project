@@ -1,16 +1,21 @@
-<footer th:fragment="footer" xmlns:th="http://www.thymeleaf.org" class="site-footer">
+<footer th:fragment="footer" xmlns:th="http://www.thymeleaf.org" class="site-footer"
+        th:with="footerSiteSetting=${@adminSiteSettingService.getSiteSettingView()}">
   <div class="wrap footer-inner">
     <div class="footer-brand">
       <a th:href="@{/}" class="footer-logo" aria-label="첫출근 메인으로 이동">
-        <!-- 권장 이미지 크기: 190 × 56px / 투명 SVG·PNG -->
         <img
-                th:src="@{/images/footer-logo.svg}"
+                th:src="@{${footerSiteSetting.footerLogoUrl != null && !#strings.isEmpty(footerSiteSetting.footerLogoUrl)}
+                            ? ${footerSiteSetting.footerLogoUrl}
+                            : '/images/footer-logo.svg'}"
                 width="190"
                 height="56"
                 alt="첫출근"
         />
       </a>
-      <div class="footer-slogan">설레는 첫 출근을 함께 준비합시다.<br />© 2026 FirstWork Inc.</div>
+      <div class="footer-slogan">
+        설레는 첫 출근을 함께 준비합니다.<br />
+        © 2026 FirstWork Inc.
+      </div>
     </div>
     <div class="footer-col">
       <div class="footer-col-title">서비스</div>
@@ -27,7 +32,9 @@
     </div>
   </div>
   <div class="wrap footer-bottom">
-    <div>서비스 v1.0.0</div>
+    <div>
+      서비스 <span th:text="${siteVersionName}">v1.0.0</span>
+    </div>
     <div class="legal">
       <a th:href="@{/policy/terms}">이용약관</a>
       <a th:href="@{/policy/privacy}">개인정보처리방침</a>
