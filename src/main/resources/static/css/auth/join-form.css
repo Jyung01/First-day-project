@@ -489,3 +489,20 @@
         height: 46px;
     }
 }
+/* =========================================================
+   이메일 인증 잠금 상태
+
+   인증번호 입력·재전송·확인은 발송된 뒤 ~ 인증 완료 전에만 열린다.
+   인증번호 받기는 인증이 끝나면 잠긴다. (상태 관리는 join-form.js)
+   잠긴 동안 누를 수 있는 것처럼 보이지 않도록 구분해 준다.
+========================================================= */
+
+.join-verification .auth-input:disabled,
+.join-verification .join-resend-button:disabled,
+.join-verification .join-primary-small-button:disabled,
+.join-outline-button:disabled {
+    color: #9aa3b2;
+    background: #f3f5f9;
+    border-color: #e2e6ee;
+    cursor: not-allowed;
+}

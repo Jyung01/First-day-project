@@ -62,12 +62,44 @@ document.addEventListener("DOMContentLoaded", function () {
         return data;
     }
 
-    function setEmailButtonsDisabled(disabled) {
-        [sendCodeButton, resendCodeButton, confirmCodeButton]
+    /*
+     * 인증번호 입력칸과 확인·재발송 버튼은 인증번호가 실제로 발송된 뒤에만 쓸 수 있다.
+     * 발송 전에 열어두면 넣을 수 있는 코드가 없는데도 입력이 가능해 혼란스럽고,
+     * "먼저 인증번호를 요청해주세요" 같은 서버 응답을 받고 나서야 알게 된다.
+     *
+     * 상태가 여러 곳(발송 성공, 요청 진행 중, 이메일 변경)에서 바뀌므로
+     * 값은 아래 두 플래그로만 두고 화면 반영은 이 함수 하나가 담당한다.
+     */
+    let codeSent = false;
+    let emailRequestInFlight = false;
+
+    function syncEmailControls() {
+        /*
+         * 인증번호 받기는 아직 인증하지 않았을 때만 필요하다.
+         * 요청이 도는 동안에는 중복 요청을 막는다.
+         */
+        if (sendCodeButton) {
+            sendCodeButton.disabled = emailRequestInFlight || emailVerified;
+        }
+
+        /*
+         * 인증번호 입력·재전송·확인은 "발송됐고 아직 인증 전"일 때만 쓸 수 있다.
+         * 인증이 끝나면 더 입력할 것이 없으므로 잠근다.
+         * 이메일을 고치면 emailVerified·codeSent가 모두 풀려 처음 상태로 돌아간다.
+         */
+        const codeControlsEnabled =
+            codeSent && !emailRequestInFlight && !emailVerified;
+
+        [resendCodeButton, confirmCodeButton, verificationCode]
             .filter(Boolean)
-            .forEach(function (button) {
-                button.disabled = disabled;
+            .forEach(function (element) {
+                element.disabled = !codeControlsEnabled;
             });
+    }
+
+    function setEmailRequestInFlight(inFlight) {
+        emailRequestInFlight = inFlight;
+        syncEmailControls();
     }
 
     function showMessage(element, message, success = false) {
@@ -130,6 +162,13 @@ document.addEventListener("DOMContentLoaded", function () {
     if (emailVerified) {
         showMessage(emailMessage, "이메일 인증이 완료되었습니다.", true);
     }
+
+    /*
+     * 첫 진입 시점에는 아직 발송된 인증번호가 없으므로 잠근 상태로 시작한다.
+     * 검증 실패로 폼이 다시 그려진 경우도 마찬가지다. 세션의 인증번호는 남아 있을 수 있지만,
+     * 사용자는 이미 인증을 마쳤거나(위 메시지) 다시 받아야 하는 상태다.
+     */
+    syncEmailControls();
     if (businessNumberInput && businessNumberChecked) {
         showMessage(
             businessNumberMessage,
@@ -295,6 +334,19 @@ document.addEventListener("DOMContentLoaded", function () {
     emailInput?.addEventListener("input", function () {
         emailVerified = false;
         clearMessage(emailMessage);
+
+        /*
+         * 이메일이 바뀌면 앞서 받은 인증번호는 다른 주소의 것이라 쓸 수 없다.
+         * 서버도 "인증번호를 요청한 이메일과 일치하지 않습니다"로 거절하므로,
+         * 입력칸을 비우고 다시 잠가 인증번호부터 받도록 되돌린다.
+         */
+        codeSent = false;
+
+        if (verificationCode) {
+            verificationCode.value = "";
+        }
+
+        syncEmailControls();
     });
 
     async function sendVerificationCode() {
@@ -306,7 +358,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const requestedEmail = emailInput.value.trim();
         emailVerified = false;
         clearMessage(emailMessage);
-        setEmailButtonsDisabled(true);
+        setEmailRequestInFlight(true);
 
         try {
             const data = await requestEmailVerification(
@@ -322,6 +374,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            // 발송이 성공한 지금부터 인증번호 입력칸과 확인·재발송 버튼을 쓸 수 있다.
+            codeSent = true;
+            syncEmailControls();
+
             if (verificationCode) {
                 verificationCode.value = "";
             }
@@ -335,7 +391,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     : "인증번호를 발송하지 못했습니다."
             );
         } finally {
-            setEmailButtonsDisabled(false);
+            setEmailRequestInFlight(false);
         }
     }
 
@@ -360,7 +416,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const requestedEmail = emailInput?.value.trim() ?? "";
         emailVerified = false;
         clearMessage(emailMessage);
-        setEmailButtonsDisabled(true);
+        setEmailRequestInFlight(true);
 
         try {
             const data = await requestEmailVerification(
@@ -376,6 +432,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            /*
+             * 인증 완료. 아래 finally의 setEmailRequestInFlight(false)가
+             * syncEmailControls를 부르면서 인증번호 관련 입력이 모두 잠긴다.
+             */
             emailVerified = true;
             showMessage(emailMessage, data.message, true);
         } catch (error) {
@@ -386,7 +446,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     : "이메일 인증을 확인하지 못했습니다."
             );
         } finally {
-            setEmailButtonsDisabled(false);
+            setEmailRequestInFlight(false);
         }
     });
 
