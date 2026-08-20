@@ -8,10 +8,6 @@ import java.io.IOException;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -20,18 +16,21 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * <p>아무 요청도 차단하지 않는다. 403으로 거부된(또는 거부됐을) 요청을 브라우저 네트워크 탭에서
  * 하나씩 찾는 대신, grep으로 모아볼 수 있게 로그로 남기는 것이 목적이다.
  *
- * <p>{@code app.security.csrf.enabled=true}일 때만 기록한다. CSRF가 꺼져 있으면 토큰 자체가
- * 발급되지 않아 모든 상태변경 요청이 예외 없이 걸리고, 그러면 신호가 아니라 소음이 된다.
- *
  * <p>전환이 끝나 CSRF가 항상 켜진 상태가 되면 이 필터는 역할이 끝나므로 삭제한다.
  *
- * <p><b>순서가 중요하다.</b> Spring Security 필터 체인은 음수 순서로 앞쪽에서 돌고,
- * 토큰이 없으면 {@code CsrfFilter}가 그 자리에서 403을 내고 체인을 끊는다.
- * 기본 순서(가장 낮은 우선순위)로 두면 정작 기록하고 싶은 요청이 여기까지 오지 못한다.
- * 그래서 Security보다 앞서 실행되도록 최우선 순위를 준다.
+ * <p><b>등록 위치가 중요하다.</b> {@code SecurityConfig}가 CSRF를 켤 때만
+ * {@code CsrfFilter} 바로 앞에 넣는다({@code addFilterBefore}). 이 자리여야 두 조건을 동시에 만족한다.
+ *
+ * <ul>
+ *   <li>{@code CsrfFilter}가 403으로 체인을 끊기 <b>전</b>이라 정작 기록하고 싶은 요청을 볼 수 있다.</li>
+ *   <li>{@code CharacterEncodingFilter}가 이미 지나간 <b>뒤</b>다. 이게 어긋나면
+ *       아래 {@code getParameter} 호출이 요청 본문을 기본 인코딩(ISO-8859-1)으로 파싱해 캐시해버려,
+ *       한글 폼 입력이 전부 깨진다.</li>
+ * </ul>
+ *
+ * <p>서블릿 필터로 자동 등록되지 않도록 {@code @Component}를 붙이지 않는다.
+ * 자동 등록되면 체인 맨 앞에서 한 번 더 돌아 위의 인코딩 문제가 그대로 재현된다.
  */
-@Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
 public class CsrfAuditFilter extends OncePerRequestFilter {
 
     /**
@@ -54,21 +53,12 @@ public class CsrfAuditFilter extends OncePerRequestFilter {
      */
     private static final String TOKEN_PARAMETER = "_csrf";
 
-    /**
-     * SecurityConfig의 CSRF 활성화 여부와 같은 속성을 본다. 둘이 어긋나지 않도록 값을 공유한다.
-     */
-    private final boolean csrfEnabled;
-
-    public CsrfAuditFilter(@Value("${app.security.csrf.enabled:false}") boolean csrfEnabled) {
-        this.csrfEnabled = csrfEnabled;
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        if (csrfEnabled && isMutating(request) && !hasToken(request)) {
+        if (isMutating(request) && !hasToken(request)) {
             AUDIT.warn("MISSING {} {}", request.getMethod(), path(request));
         }
 
