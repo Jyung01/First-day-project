@@ -45,6 +45,8 @@
         c.logo_url,
         c.short_description
 
+        HAVING COUNT(DISTINCT jp.job_posting_id) > 0
+
         ORDER BY
         hasJobPosting DESC,
         averageRating DESC,

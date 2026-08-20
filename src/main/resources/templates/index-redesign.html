@@ -3,24 +3,27 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>첫출근 — 메인 리디자인</title>
+    <title>첫출근 — 채용공고부터 첫 지원까지</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
-    <link rel="stylesheet" th:href="@{/css/main-redesign.css(v='20260819-6')}"/>
+    <link rel="stylesheet" th:href="@{/css/main-redesign.css(v='20260820-10')}"/>
 </head>
 <body>
 <header th:replace="~{common/header :: header}"></header>
 
 <main class="redesign-main">
     <section class="redesign-hero">
-        <div class="redesign-wrap">
-            <p class="hero-kicker">첫출근</p>
-            <h1>공고를 찾는 순간부터, 첫 지원까지.</h1>
-        </div>
-        <div class="hero-media" aria-label="첫출근을 향해 걸어가는 구직자의 모습을 담은 영상 영역">
-            <!-- static/video/firstday-hero.mp4 파일을 추가하면 자동 재생됩니다. -->
-            <video class="hero-video" autoplay muted loop playsinline preload="metadata">
-                <source th:src="@{/video/firstday-hero.mp4}" type="video/mp4"/>
-            </video>
+        <div class="hero-scroll-stage">
+            <div class="hero-copy">
+                <div class="redesign-wrap">
+                    <p class="hero-kicker">첫출근</p>
+                    <h1>공고를 찾는 순간부터, 첫 지원까지.</h1>
+                </div>
+            </div>
+            <div class="hero-media" aria-label="첫출근을 향해 걸어가는 구직자의 모습을 담은 영상 영역">
+                <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+                    <source th:src="@{/video/firstday-hero.mp4}" type="video/mp4"/>
+                </video>
+            </div>
         </div>
     </section>
 
@@ -39,7 +42,10 @@
                     <a th:href="@{/job/search(career='신입')}">신입</a>
                     <a th:href="@{/job/search(sort='deadline')}">마감임박</a>
                     <a th:href="@{/job/search(region='서울')}">서울</a>
-                    <a th:href="@{/job/list}">IT·개발</a>
+                    <a th:if="${quickJobCategory != null}"
+                       th:href="@{/job/search(parentCategoryId=${quickJobCategory.jobCategoryId})}"
+                       th:text="${quickJobCategory.categoryName}">IT·개발</a>
+                    <a th:unless="${quickJobCategory != null}" th:href="@{/job/list}">IT·개발</a>
                 </div>
             </div>
 
@@ -85,13 +91,14 @@
                 <p>새로운 시작을 함께할 기업을 만나보세요.</p>
             </div>
             <div class="company-collage"
-                 th:classappend="${#lists.size(popularCompanies) == 4} ? 'company-collage--four' : ''">
+                 th:classappend="|company-collage--count-${#lists.size(popularCompanies)}|">
                 <a th:each="company, stat : ${popularCompanies}"
                    th:if="${stat.index < 5}"
                    th:href="@{/company/detail(companyId=${company.companyId})}"
                    class="company-collage-card" th:classappend="|company-card-${stat.count}|">
                     <img class="company-card-image"
-                         th:src="@{|/images/main/company-card-${stat.count}.png|}"
+                         th:src="@{|/images/main/company-card-${stat.count}.webp|}"
+                         loading="lazy" decoding="async"
                          alt=""/>
                     <div class="company-card-content">
                         <strong th:text="${company.companyName}">기업명</strong>
@@ -99,6 +106,9 @@
                     </div>
                 </a>
             </div>
+            <p th:if="${#lists.isEmpty(popularCompanies)}" class="empty-message company-empty-message">
+                현재 채용 중인 기업이 없습니다.
+            </p>
             <a th:href="@{/company/list}" class="company-all-link">전체 기업 보기 <span>→</span></a>
         </div>
     </section>
@@ -136,9 +146,13 @@
                 </div>
             </div>
             <div class="ai-match-list" id="redesignAiList" th:attr="data-personal-member=${personalMember}">
-                <div class="ai-empty-state" th:unless="${personalMember}">
+                <div class="ai-empty-state" th:if="${!personalMember and !companyMember}">
                     <strong>로그인하면 나에게 맞는 공고를 추천해드려요.</strong>
                     <a th:href="@{/auth/login}">로그인하기 →</a>
+                </div>
+                <div class="ai-empty-state" th:if="${companyMember}">
+                    <strong>AI 맞춤 공고는 개인회원에게 제공되는 기능이에요.</strong>
+                    <a th:href="@{/corp}">기업 대시보드로 이동하기 →</a>
                 </div>
                 <div class="ai-loading-state" th:if="${personalMember}">
                     <span></span><span></span><span></span>
@@ -152,21 +166,40 @@
             <div class="section-heading-row">
                 <div>
                     <p class="section-eyebrow">FIRSTDAY TOOLS</p>
-                    <h2>첫출근 도구</h2>
+                    <h2 th:unless="${companyMember}">취업 준비, 첫출근에서 한 번에</h2>
+                    <h2 th:if="${companyMember}">채용 관리, 첫출근에서 한 번에</h2>
                 </div>
             </div>
             <div class="tool-cards">
-                <a th:href="@{/my/resume/list}" class="tool-card resume-tool">
-                    <img class="tool-card-image" th:src="@{/images/main/tool-resume.png}" alt="이력서를 검토하는 업무 책상"/>
+                <a th:unless="${companyMember}" th:href="@{/my/resume/list}" class="tool-card resume-tool">
+                    <img class="tool-card-image" th:src="@{/images/main/tool-resume.webp}"
+                         loading="lazy" decoding="async" alt="이력서를 검토하는 업무 책상"/>
                     <span>RESUME</span><h3>이력서 관리</h3><p>이력서를 등록하고 최신 상태로 관리하세요.</p><i>→</i>
                 </a>
-                <a th:href="@{/my/cover-letter/list}" class="tool-card cover-letter-tool">
-                    <img class="tool-card-image" th:src="@{/images/main/tool-cover-letter.png}" alt="자기소개서를 검토하는 업무 책상"/>
+                <a th:unless="${companyMember}" th:href="@{/my/cover-letter/list}" class="tool-card cover-letter-tool">
+                    <img class="tool-card-image" th:src="@{/images/main/tool-cover-letter.webp}"
+                         loading="lazy" decoding="async" alt="자기소개서를 검토하는 업무 책상"/>
                     <span>AI FEEDBACK</span><h3>AI 자기소개서 첨삭</h3><p>작성한 자기소개서를 더 설득력 있게 다듬어보세요.</p><i>→</i>
                 </a>
-                <a th:href="@{/my/applications}" class="tool-card application-tool">
-                    <img class="tool-card-image" th:src="@{/images/main/tool-application.png}" alt="지원 일정을 관리하는 업무 책상"/>
+                <a th:unless="${companyMember}" th:href="@{/my/applications}" class="tool-card application-tool">
+                    <img class="tool-card-image" th:src="@{/images/main/tool-application.webp}"
+                         loading="lazy" decoding="async" alt="지원 일정을 관리하는 업무 책상"/>
                     <span>APPLICATION</span><h3>지원 현황</h3><p>내 지원 현황을 한눈에 확인하세요.</p><i>→</i>
+                </a>
+                <a th:if="${companyMember}" th:href="@{/corp}" class="tool-card resume-tool">
+                    <img class="tool-card-image" th:src="@{/images/main/tool-resume.webp}"
+                         loading="lazy" decoding="async" alt="기업 채용 현황을 확인하는 업무 책상"/>
+                    <span>DASHBOARD</span><h3>채용 현황 관리</h3><p>공고와 지원자 현황을 한눈에 확인하세요.</p><i>→</i>
+                </a>
+                <a th:if="${companyMember}" th:href="@{/corp/job/list}" class="tool-card cover-letter-tool">
+                    <img class="tool-card-image" th:src="@{/images/main/tool-cover-letter.webp}"
+                         loading="lazy" decoding="async" alt="채용공고를 관리하는 업무 책상"/>
+                    <span>JOB POSTING</span><h3>채용공고 관리</h3><p>공고를 등록하고 모집 상태를 관리하세요.</p><i>→</i>
+                </a>
+                <a th:if="${companyMember}" th:href="@{/corp/applicant/list}" class="tool-card application-tool">
+                    <img class="tool-card-image" th:src="@{/images/main/tool-application.webp}"
+                         loading="lazy" decoding="async" alt="지원자 정보를 검토하는 업무 책상"/>
+                    <span>APPLICANTS</span><h3>지원자 관리</h3><p>지원자를 확인하고 전형 상태를 관리하세요.</p><i>→</i>
                 </a>
             </div>
         </div>
@@ -175,6 +208,6 @@
 
 <footer th:replace="~{common/footer :: footer}"></footer>
 <script th:src="@{/js/common.js}"></script>
-<script th:src="@{/js/main-redesign.js(v='20260819-6')}"></script>
+<script th:src="@{/js/main-redesign.js(v='20260820-6')}"></script>
 </body>
 </html>

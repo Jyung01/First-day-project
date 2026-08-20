@@ -1,7 +1,8 @@
 function initializeRedesignPage() {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const tabs = document.querySelectorAll(".today-tab");
     const lists = document.querySelectorAll("[data-job-list-content]");
+
+    initializeHeroCopyFade();
 
     tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
@@ -13,7 +14,8 @@ function initializeRedesignPage() {
         });
     });
 
-    prepareReveal(document.querySelectorAll(".tool-card"), reduceMotion);
+    prepareReveal(document.querySelectorAll(".tool-card"));
+    prepareReveal(document.querySelectorAll(".category-list > a"), 110);
     const aiList = document.getElementById("redesignAiList");
     if (!aiList || aiList.dataset.personalMember !== "true") return;
 
@@ -37,7 +39,7 @@ function initializeRedesignPage() {
                 data.matchScores?.[job.jobPostingId],
                 data.matchReasons?.[job.jobPostingId]
             )).join("");
-            prepareReveal(aiList.querySelectorAll(".ai-job-row"), reduceMotion);
+            prepareReveal(aiList.querySelectorAll(".ai-job-row"));
         })
         .catch((error) => {
             aiList.innerHTML = `
@@ -48,14 +50,51 @@ function initializeRedesignPage() {
         });
 }
 
+function initializeHeroCopyFade() {
+    const copy = document.querySelector(".hero-copy");
+    const copyContent = copy?.querySelector(".redesign-wrap");
+    const media = document.querySelector(".hero-media");
+    if (!copy || !copyContent || !media) return;
+
+    const mobileViewport = window.matchMedia("(max-width: 900px)");
+    let frameId = 0;
+    const updateOpacity = () => {
+        if (mobileViewport.matches) {
+            copyContent.style.removeProperty("opacity");
+            frameId = 0;
+            return;
+        }
+
+        const copyBottom = copyContent.getBoundingClientRect().bottom;
+        const mediaTop = media.getBoundingClientRect().top;
+        const distance = mediaTop - copyBottom;
+        const fadeStart = 40;
+        const fadeEnd = -80;
+        const opacity = Math.max(0, Math.min(1,
+            (distance - fadeEnd) / (fadeStart - fadeEnd)
+        ));
+        copyContent.style.opacity = opacity.toFixed(3);
+        frameId = 0;
+    };
+
+    const requestUpdate = () => {
+        if (!frameId) frameId = window.requestAnimationFrame(updateOpacity);
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    mobileViewport.addEventListener("change", requestUpdate);
+    requestUpdate();
+}
+
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initializeRedesignPage, { once: true });
 } else {
     initializeRedesignPage();
 }
 
-function prepareReveal(elements, reduceMotion) {
-    if (!elements.length || reduceMotion) return;
+function prepareReveal(elements, interval = 170) {
+    if (!elements.length) return;
 
     const observer = new IntersectionObserver((entries, currentObserver) => {
         entries.forEach((entry) => {
@@ -67,7 +106,7 @@ function prepareReveal(elements, reduceMotion) {
 
     elements.forEach((element, index) => {
         element.classList.add("reveal-item");
-        element.dataset.revealDelay = String(120 + index * 170);
+        element.dataset.revealDelay = String(120 + index * interval);
         window.requestAnimationFrame(() => {
             window.requestAnimationFrame(() => observer.observe(element));
         });
@@ -76,7 +115,7 @@ function prepareReveal(elements, reduceMotion) {
 
 function recommendationRow(job, score, reasons) {
     const companyLogo = job.logoUrl
-        ? `<img src="${escapeHtml(job.logoUrl)}" alt="${escapeHtml(job.companyName || "기업")} 로고">`
+        ? `<img src="${escapeHtml(job.logoUrl)}" loading="lazy" decoding="async" alt="${escapeHtml(job.companyName || "기업")} 로고">`
         : `<span class="ai-company-logo-fallback" aria-hidden="true">▦</span>`;
     const reason = Array.isArray(reasons) && reasons.length
         ? reasons[0]
