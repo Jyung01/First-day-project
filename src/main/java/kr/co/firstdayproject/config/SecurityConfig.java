@@ -12,6 +12,7 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -54,7 +55,13 @@ public class SecurityConfig {
          * 클라이언트 쪽은 static/js/common/csrf.js가 fetch를 감싸 헤더를 붙인다.
          */
         if (csrfEnabled) {
-            http.csrf(csrf -> csrf.spa());
+            http.csrf(csrf -> csrf.spa())
+                    /*
+                     * 조사용 필터는 CSRF를 켤 때만, 그리고 반드시 CsrfFilter 바로 앞에 넣는다.
+                     * 서블릿 필터로 자동 등록하면 CharacterEncodingFilter보다 먼저 돌면서
+                     * 요청 본문을 기본 인코딩으로 파싱해버려 한글 폼 입력이 깨진다.
+                     */
+                    .addFilterBefore(new CsrfAuditFilter(), CsrfFilter.class);
         } else {
             http.csrf(AbstractHttpConfigurer::disable);
         }
