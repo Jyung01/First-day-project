@@ -4,20 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import kr.co.firstdayproject.dto.admin.config.SiteSettingView;
 import kr.co.firstdayproject.entity.site.SiteSetting;
 import kr.co.firstdayproject.repository.site.SiteSettingRepository;
+import kr.co.firstdayproject.service.AwsS3.AwsS3Service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
  * site_settings(key-value/JSON) 테이블을 다루는 서비스.
  * row 3개를 고정 키로 사용한다: basic_info / footer / brand_image
  * 각 row의 setting_value는 Map<String, Object> 형태 그대로 JSON 직렬화한다.
+ *
+ * 브랜드 이미지(헤더/푸터 로고, 파비콘)는 공개적으로 노출되는 리소스이므로
+ * 로컬 디스크(src/main/resources/static 등)에 저장하지 않고 S3 공개 버킷에 업로드한다.
+ * 저장/조회 모두 AwsS3Service의 CloudFront URL을 그대로 사용한다.
  */
 @Service
 @Transactional(readOnly = true)
@@ -34,6 +33,9 @@ public class AdminSiteSettingService {
     private static final String KEY_BASIC_INFO = "basic_info";
     private static final String KEY_FOOTER = "footer";
     private static final String KEY_BRAND_IMAGE = "brand_image";
+
+    /** S3 내 브랜드 이미지 저장 디렉토리 (버킷 하위 prefix) */
+    private static final String S3_BRAND_IMAGE_DIR = "site/brand-images";
 
     private static final Map<String, String> BASIC_INFO_DEFAULTS = Map.of(
             "serviceName", "첫출근",
@@ -50,15 +52,6 @@ public class AdminSiteSettingService {
             "copyrightText", ""
     );
 
-    /**
-     * 개발 단계 로컬 저장 경로.
-     * 운영 배포(jar 실행/S3 전환) 시 이 경로와 업로드 로직만 교체하면 된다.
-     */
-    private static final String UPLOAD_DIR =
-            System.getProperty("user.dir") + "/src/main/resources/static/images/site";
-
-    private static final String PUBLIC_PATH_PREFIX = "/images/site/";
-
     private static final Set<String> ALLOWED_IMAGE_TYPES = Set.of(
             "image/png",
             "image/jpeg",
@@ -70,10 +63,15 @@ public class AdminSiteSettingService {
     private static final long MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
     private final SiteSettingRepository siteSettingRepository;
+    private final AwsS3Service awsS3Service;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AdminSiteSettingService(SiteSettingRepository siteSettingRepository) {
+    public AdminSiteSettingService(
+            SiteSettingRepository siteSettingRepository,
+            AwsS3Service awsS3Service
+    ) {
         this.siteSettingRepository = siteSettingRepository;
+        this.awsS3Service = awsS3Service;
     }
 
     public SiteSettingView getSiteSettingView() {
@@ -139,6 +137,10 @@ public class AdminSiteSettingService {
         saveSetting(KEY_FOOTER, value, adminUserId);
     }
 
+    /**
+     * 브랜드 이미지(헤더 로고/푸터 로고/파비콘)를 S3 공개 버킷에 업로드하고,
+     * 기존에 등록되어 있던 이미지가 있으면 교체 후 삭제한다.
+     */
     @Transactional
     public void updateImage(
             Long adminUserId,
@@ -146,10 +148,6 @@ public class AdminSiteSettingService {
             MultipartFile file
     ) {
         validateFile(file);
-
-        String publicPath = storeFile(file);
-        Map<String, Object> current = readSetting(KEY_BRAND_IMAGE, Map.of());
-        Map<String, Object> updated = new LinkedHashMap<>(current);
 
         String field = switch (imageType) {
             case "HEADER_LOGO" -> "headerLogoUrl";
@@ -159,9 +157,28 @@ public class AdminSiteSettingService {
                     "올바르지 않은 이미지 종류입니다."
             );
         };
-        updated.put(field, publicPath);
 
+        Map<String, Object> current = readSetting(KEY_BRAND_IMAGE, Map.of());
+        String previousUrl = asText(current, field);
+
+        String newUrl;
+        try {
+            newUrl = awsS3Service.upload(file, S3_BRAND_IMAGE_DIR);
+        } catch (IOException exception) {
+            throw new IllegalStateException(
+                    "이미지 저장 중 오류가 발생했습니다.",
+                    exception
+            );
+        }
+
+        Map<String, Object> updated = new LinkedHashMap<>(current);
+        updated.put(field, newUrl);
         saveSetting(KEY_BRAND_IMAGE, updated, adminUserId);
+
+        // 새 이미지 저장이 끝난 뒤 기존 이미지를 정리한다 (실패해도 저장 자체는 이미 완료된 상태 유지).
+        if (previousUrl != null && !previousUrl.isBlank()) {
+            awsS3Service.deletePublicByUrl(previousUrl);
+        }
     }
 
     private Map<String, Object> readSetting(
@@ -249,38 +266,5 @@ public class AdminSiteSettingService {
                     "PNG, JPG, SVG, ICO 형식의 이미지만 업로드할 수 있습니다."
             );
         }
-    }
-
-    private String storeFile(MultipartFile file) {
-        try {
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            Files.createDirectories(uploadPath);
-
-            String extension = extractExtension(file.getOriginalFilename());
-            String storedFileName = UUID.randomUUID() + extension;
-            Path targetPath = uploadPath.resolve(storedFileName);
-
-            try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(
-                        inputStream,
-                        targetPath,
-                        StandardCopyOption.REPLACE_EXISTING
-                );
-            }
-
-            return PUBLIC_PATH_PREFIX + storedFileName;
-        } catch (IOException exception) {
-            throw new IllegalStateException(
-                    "이미지 저장 중 오류가 발생했습니다.",
-                    exception
-            );
-        }
-    }
-
-    private String extractExtension(String originalFileName) {
-        if (originalFileName == null || !originalFileName.contains(".")) {
-            return "";
-        }
-        return originalFileName.substring(originalFileName.lastIndexOf("."));
     }
 }
