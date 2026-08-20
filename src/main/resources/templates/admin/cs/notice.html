@@ -6,6 +6,9 @@
     <title>공지사항 관리 | 첫출근 관리자</title>
     <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
     <link rel="stylesheet" th:href="@{/css/admin/section-common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/cs/notice-modal.css}" />
 </head>
 <body>
 <div class="wrapper">
@@ -76,130 +79,47 @@
 </div>
 
 <!-- 등록/수정 모달 -->
-<div id="notice-modal" class="modal-backdrop" style="display:none;">
-    <div class="modal-box">
-        <h2 id="notice-modal-title">공지사항 등록</h2>
-        <form id="notice-form">
+<div id="notice-modal" class="admin-modal">
+    <div class="admin-modal__backdrop" id="notice-modal-backdrop"></div>
+    <section class="admin-modal__dialog notice-modal" role="dialog" aria-modal="true" aria-labelledby="notice-modal-title">
+        <header class="admin-modal__header">
+            <h2 id="notice-modal-title">공지사항 등록</h2>
+            <button type="button" class="admin-modal__close" id="notice-modal-close" aria-label="닫기">×</button>
+        </header>
+        <form id="notice-form" class="admin-modal__body notice-modal__body">
             <input type="hidden" id="noticeId" name="noticeId" />
-            <div class="form-row">
+            <div class="notice-modal__field">
                 <label for="title">제목</label>
                 <input type="text" id="title" name="title" required />
             </div>
-            <div class="form-row">
-                <label for="content">내용</label>
+            <div class="notice-modal__field">
+                <label for="content">공지 내용</label>
                 <textarea id="content" name="content" rows="10" required></textarea>
             </div>
-            <div class="form-row form-row-inline">
-                <label><input type="checkbox" id="isPinned" name="isPinned" /> 상단 고정</label>
-                <label for="status">게시 상태</label>
-                <select id="status" name="status">
-                    <option value="임시저장">임시저장</option>
-                    <option value="공개">공개</option>
-                    <option value="비공개">비공개</option>
-                </select>
+            <div class="notice-modal__options">
+                <label class="notice-modal__check">
+                    <input type="checkbox" id="isPinned" name="isPinned" />
+                    <span>상단 고정</span>
+                </label>
+                <label class="notice-modal__status" for="status">
+                    <span>게시 상태</span>
+                    <select id="status" name="status">
+                        <option value="임시저장">임시저장</option>
+                        <option value="공개">공개</option>
+                        <option value="비공개">비공개</option>
+                    </select>
+                </label>
             </div>
-            <div class="form-actions">
-                <button type="button" class="btn" id="btn-cancel">취소</button>
-                <button type="submit" class="btn btn-primary" id="btn-submit">등록</button>
+            <div class="admin-modal__footer notice-modal__footer">
+                <button type="button" class="admin-modal-button admin-modal-button--outline" id="btn-cancel">취소</button>
+                <button type="submit" class="admin-modal-button admin-modal-button--primary" id="btn-submit">등록</button>
             </div>
         </form>
-    </div>
+    </section>
 </div>
 
-<style>
-    .modal-backdrop {
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,.6);
-        display:flex; align-items:center; justify-content:center;
-        z-index: 1000;
-    }
-    .modal-box {
-        background: #1b2436;
-        color: #e8ebf1;
-        padding: 28px;
-        border-radius: 12px;
-        width: 560px;
-        max-width: 92vw;
-        max-height: 88vh;
-        overflow-y: auto;
-        box-shadow: 0 20px 60px rgba(0,0,0,.5);
-        border: 1px solid #2c3750;
-    }
-    .modal-box h2 {
-        margin: 0 0 20px;
-        font-size: 20px;
-        font-weight: 700;
-        color: #fff;
-    }
-    .form-row { margin-bottom: 16px; display:flex; flex-direction:column; gap:8px; }
-    .form-row label { font-size: 13px; color: #a8b0c3; font-weight: 500; }
-    .form-row input[type=text],
-    .form-row textarea,
-    .form-row select {
-        background: #10182a;
-        border: 1px solid #2c3750;
-        color: #e8ebf1;
-        padding: 10px 12px;
-        border-radius: 6px;
-        font-size: 14px;
-        outline: none;
-    }
-    .form-row input[type=text]:focus,
-    .form-row textarea:focus,
-    .form-row select:focus {
-        border-color: #4c6fff;
-    }
-    .modal-box * { box-sizing: border-box; }
-    .form-row input[type=text],
-    .form-row textarea {
-        width: 100%;
-    }
-    .form-row textarea {
-        resize: vertical;
-        min-height: 160px;
-        line-height: 1.5;
-        font-family: inherit; /* 부모(상위) 폰트 상속 */
-    }
-    .form-row-inline {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-    }
-    .form-row-inline label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        color: #e8ebf1;
-        font-size: 14px;
-    }
-    .form-row-inline select { width: auto; min-width: 120px; }
-    .form-actions {
-        display:flex;
-        justify-content:flex-end;
-        gap:10px;
-        margin-top: 24px;
-        padding-top: 16px;
-        border-top: 1px solid #2c3750;
-    }
-    .form-actions .btn {
-        padding: 9px 20px;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 600;
-        border: 1px solid #2c3750;
-        background: transparent;
-        color: #a8b0c3;
-        cursor: pointer;
-    }
-    .form-actions .btn:hover { background: #232e47; }
-    .form-actions .btn-primary {
-        background: #4c6fff;
-        border-color: #4c6fff;
-        color: #fff;
-    }
-    .form-actions .btn-primary:hover { background: #3d5be0; }
-</style>
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<script th:src="@{/js/modal.js}"></script>
 
 <script th:inline="javascript">
     (function () {
@@ -213,14 +133,15 @@
         const noticeIdInput = document.getElementById('noticeId');
         const modalTitle = document.getElementById('notice-modal-title');
         const submitBtn = document.getElementById('btn-submit');
+        document.getElementById('confirmModal')?.classList.add('admin-common-modal');
 
         function openModal(mode) {
-            modal.style.display = 'flex';
+            modal.classList.add('is-open');
             modalTitle.textContent = mode === 'edit' ? '공지사항 수정' : '공지사항 등록';
             submitBtn.textContent = mode === 'edit' ? '수정 저장' : '등록';
         }
         function closeModal() {
-            modal.style.display = 'none';
+            modal.classList.remove('is-open');
             form.reset();
             noticeIdInput.value = '';
         }
@@ -237,6 +158,8 @@
             openModal('create');
         });
         document.getElementById('btn-cancel').addEventListener('click', closeModal);
+        document.getElementById('notice-modal-close').addEventListener('click', closeModal);
+        document.getElementById('notice-modal-backdrop').addEventListener('click', closeModal);
 
         document.querySelectorAll('.js-edit-link').forEach(function (el) {
             el.addEventListener('click', function (e) {
@@ -256,7 +179,7 @@
                         openModal('edit');
                     })
                     .catch(function () {
-                        alert('공지사항을 불러오지 못했습니다.');
+                        showNoticeMessage('공지사항을 불러오지 못했습니다.');
                     });
             });
         });
@@ -264,18 +187,30 @@
         document.querySelectorAll('.js-delete-link').forEach(function (el) {
             el.addEventListener('click', function (e) {
                 e.preventDefault();
-                if (!confirm('삭제하시겠습니까?')) return;
                 const id = this.getAttribute('data-id');
-                fetch(baseUrl + '/' + id + '/delete', { method: 'POST' })
-                    .then(function (res) {
-                        if (!res.ok) throw new Error('삭제 실패');
-                        location.reload();
-                    })
-                    .catch(function () {
-                        alert('삭제에 실패했습니다.');
-                    });
+                showConfirmModal({
+                    iconClass: 'danger',
+                    iconHtml: '<span aria-hidden="true">!</span>',
+                    title: '공지사항을 삭제할까요?',
+                    message: '삭제한 공지사항은 다시 복구할 수 없습니다.',
+                    leftText: '취소',
+                    rightText: '삭제',
+                    rightClass: 'btn-danger',
+                    onRight: function () { deleteNotice(id); }
+                });
             });
         });
+
+        function deleteNotice(id) {
+            fetch(baseUrl + '/' + id + '/delete', { method: 'POST' })
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('삭제 실패');
+                        showNoticeSuccess('공지사항이 삭제되었습니다.');
+                    })
+                    .catch(function () {
+                        showNoticeMessage('공지사항 삭제에 실패했습니다.');
+                    });
+        }
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -295,12 +230,38 @@
             })
                 .then(function (res) {
                     if (!res.ok) throw new Error('저장 실패');
-                    location.reload();
+                    closeModal();
+                    showNoticeSuccess(id
+                        ? '공지사항이 수정되었습니다.'
+                        : '공지사항이 등록되었습니다.');
                 })
                 .catch(function () {
-                    alert('저장에 실패했습니다.');
+                    showNoticeMessage('공지사항 저장에 실패했습니다.');
                 });
         });
+
+        function showNoticeMessage(message) {
+            showConfirmModal({
+                iconClass: 'info',
+                iconHtml: '<span aria-hidden="true">?</span>',
+                title: '안내',
+                message: message,
+                leftVisible: false,
+                rightText: '확인'
+            });
+        }
+
+        function showNoticeSuccess(title) {
+            showConfirmModal({
+                iconClass: 'success',
+                iconHtml: '<span aria-hidden="true">✓</span>',
+                title: title,
+                message: '변경된 내용을 공지사항 목록에 반영했습니다.',
+                leftVisible: false,
+                rightText: '확인',
+                onRight: function () { location.reload(); }
+            });
+        }
     })();
 </script>
 <script th:src="@{/js/admin/common.js}"></script>

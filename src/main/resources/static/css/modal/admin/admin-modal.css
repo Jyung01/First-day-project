@@ -547,6 +547,7 @@
 ========================================================= */
 
 .modal-overlay.admin-common-modal {
+    z-index: 1600;
     background-color: rgba(2, 6, 23, 0.78);
 }
 

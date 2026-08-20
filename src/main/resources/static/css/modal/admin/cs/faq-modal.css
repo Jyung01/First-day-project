@@ -1,0 +1,75 @@
+.faq-modal {
+    max-width: 720px;
+}
+
+.faq-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.faq-form-row + .faq-form-row {
+    margin-top: 23px;
+}
+
+.faq-form-row label {
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.faq-form-row select,
+.faq-form-row input,
+.faq-form-row textarea {
+    width: 100%;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background-color: #1e293b;
+    color: #e2e8f0;
+    font-family: inherit;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.faq-form-row select,
+.faq-form-row input {
+    height: 48px;
+    padding: 0 14px;
+}
+
+.faq-form-row textarea {
+    min-height: 120px;
+    padding: 13px 14px;
+    line-height: 1.7;
+    resize: vertical;
+}
+
+.faq-form-row select:focus,
+.faq-form-row input:focus,
+.faq-form-row textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.faq-form-row input::placeholder,
+.faq-form-row textarea::placeholder {
+    color: #64748b;
+}
+
+.faq-modal-hint {
+    margin: 18px 0 0;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.faq-modal-footer {
+    padding-top: 0;
+}
+
+.faq-empty-row {
+    padding: 24px;
+    color: #94a3b8;
+    text-align: center;
+}

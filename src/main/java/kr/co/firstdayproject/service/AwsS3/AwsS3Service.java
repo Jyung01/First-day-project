@@ -13,9 +13,11 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ContentDisposition;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -102,6 +104,30 @@ public class AwsS3Service {
                 .getObjectRequest(GetObjectRequest.builder()
                         .bucket(awsProperties.s3().privateBucket())
                         .key(objectKey)
+                        .build())
+                .build();
+
+        return s3Presigner.presignGetObject(presignRequest).url().toString();
+    }
+
+    /**
+     * 비공개 파일을 원본 파일명으로 내려받을 수 있는 임시 URL을 발급합니다.
+     */
+    public String getPresignedDownloadUrl(String objectKey, String originalName) {
+        if (objectKey == null || objectKey.isBlank()) {
+            return null;
+        }
+
+        String disposition = ContentDisposition.attachment()
+                .filename(originalName, StandardCharsets.UTF_8)
+                .build()
+                .toString();
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(PRESIGNED_URL_TTL)
+                .getObjectRequest(GetObjectRequest.builder()
+                        .bucket(awsProperties.s3().privateBucket())
+                        .key(objectKey)
+                        .responseContentDisposition(disposition)
                         .build())
                 .build();
 

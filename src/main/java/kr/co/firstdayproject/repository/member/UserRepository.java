@@ -74,6 +74,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     long countByUserType(String userType);
 
+    @Query("select u.userId from User u where u.userType = :userType")
+    List<Long> findUserIdsByUserType(@Param("userType") String userType);
+
     long countByUserTypeAndAccountStatus(String userType, String accountStatus);
 
     long countByUserTypeAndCreatedAtBetween(
