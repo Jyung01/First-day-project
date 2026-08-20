@@ -83,6 +83,23 @@
                         <!-- 수정 시 이력서 ID -->
                         <input type="hidden" name="resumeId" th:value="${resumeForm.resumeId}" />
 
+                        <!--
+                            서버 검증에서 걸린 내용.
+                            이 폼은 th:field 대신 동적 인덱스로 name을 만들어 필드별 에러 표시를 쓸 수 없어
+                            상단에 모아서 보여준다. 입력값은 그대로 남아 있으므로 해당 항목만 고치면 된다.
+                        -->
+                        <div
+                            class="resume-form-errors"
+                            role="alert"
+                            th:if="${validationErrors != null and !validationErrors.isEmpty()}"
+                        >
+                            <strong>입력한 내용을 확인해주세요</strong>
+
+                            <ul>
+                                <li th:each="message : ${validationErrors}" th:text="${message}"></li>
+                            </ul>
+                        </div>
+
                         <!-- =================================================
                              1. 기본정보
                         ================================================== -->
@@ -324,25 +341,41 @@
                                         <div class="resume-field">
                                             <label>입학일</label>
 
-                                            <input
-                                                type="month"
-                                                th:attr="name=|educations[${eduStat.index}].admissionDate|"
-                                                class="resume-input"
-                                                th:value="${education.admissionDate}"
-                                                data-education-field="admissionDate"
-                                            />
+                                            <div class="resume-date" data-date-group>
+                                                <select class="resume-input resume-select" data-date-year aria-label="입학 연도">
+                                                    <th:block th:replace="~{my/resume/date-options :: yearOptions}"></th:block>
+                                                </select>
+                                                <select class="resume-input resume-select" data-date-month aria-label="입학 월">
+                                                    <th:block th:replace="~{my/resume/date-options :: monthOptions}"></th:block>
+                                                </select>
+                                                <input
+                                                    type="hidden"
+                                                    data-date-value
+                                                    data-education-field="admissionDate"
+                                                    th:attr="name=|educations[${eduStat.index}].admissionDate|"
+                                                    th:value="${education.admissionDate}"
+                                                />
+                                            </div>
                                         </div>
 
                                         <div class="resume-field">
                                             <label>졸업(예정)일</label>
 
-                                            <input
-                                                type="month"
-                                                th:attr="name=|educations[${eduStat.index}].graduationDate|"
-                                                class="resume-input"
-                                                th:value="${education.graduationDate}"
-                                                data-education-field="graduationDate"
-                                            />
+                                            <div class="resume-date" data-date-group>
+                                                <select class="resume-input resume-select" data-date-year aria-label="졸업 연도">
+                                                    <th:block th:replace="~{my/resume/date-options :: yearOptions}"></th:block>
+                                                </select>
+                                                <select class="resume-input resume-select" data-date-month aria-label="졸업 월">
+                                                    <th:block th:replace="~{my/resume/date-options :: monthOptions}"></th:block>
+                                                </select>
+                                                <input
+                                                    type="hidden"
+                                                    data-date-value
+                                                    data-education-field="graduationDate"
+                                                    th:attr="name=|educations[${eduStat.index}].graduationDate|"
+                                                    th:value="${education.graduationDate}"
+                                                />
+                                            </div>
                                         </div>
 
                                         <div class="resume-field">
@@ -456,25 +489,41 @@
                                         <div class="resume-field">
                                             <label>입사일</label>
 
-                                            <input
-                                                type="month"
-                                                th:attr="name=|careers[${careerStat.index}].startDate|"
-                                                class="resume-input"
-                                                th:value="${career.startDate}"
-                                                data-career-field="startDate"
-                                            />
+                                            <div class="resume-date" data-date-group>
+                                                <select class="resume-input resume-select" data-date-year aria-label="입사 연도">
+                                                    <th:block th:replace="~{my/resume/date-options :: yearOptions}"></th:block>
+                                                </select>
+                                                <select class="resume-input resume-select" data-date-month aria-label="입사 월">
+                                                    <th:block th:replace="~{my/resume/date-options :: monthOptions}"></th:block>
+                                                </select>
+                                                <input
+                                                    type="hidden"
+                                                    data-date-value
+                                                    data-career-field="startDate"
+                                                    th:attr="name=|careers[${careerStat.index}].startDate|"
+                                                    th:value="${career.startDate}"
+                                                />
+                                            </div>
                                         </div>
 
                                         <div class="resume-field">
                                             <label>퇴사일</label>
 
-                                            <input
-                                                type="month"
-                                                th:attr="name=|careers[${careerStat.index}].endDate|"
-                                                class="resume-input"
-                                                th:value="${career.endDate}"
-                                                data-career-field="endDate"
-                                            />
+                                            <div class="resume-date" data-date-group>
+                                                <select class="resume-input resume-select" data-date-year aria-label="퇴사 연도">
+                                                    <th:block th:replace="~{my/resume/date-options :: yearOptions}"></th:block>
+                                                </select>
+                                                <select class="resume-input resume-select" data-date-month aria-label="퇴사 월">
+                                                    <th:block th:replace="~{my/resume/date-options :: monthOptions}"></th:block>
+                                                </select>
+                                                <input
+                                                    type="hidden"
+                                                    data-date-value
+                                                    data-career-field="endDate"
+                                                    th:attr="name=|careers[${careerStat.index}].endDate|"
+                                                    th:value="${career.endDate}"
+                                                />
+                                            </div>
                                         </div>
 
                                         <div class="resume-field">
@@ -740,13 +789,29 @@
                     <div class="resume-field">
                         <label>입학일</label>
 
-                        <input type="month" class="resume-input" data-education-field="admissionDate" />
+                        <div class="resume-date" data-date-group>
+                            <select class="resume-input resume-select" data-date-year aria-label="입학 연도">
+                                <th:block th:replace="~{my/resume/date-options :: yearOptions}"></th:block>
+                            </select>
+                            <select class="resume-input resume-select" data-date-month aria-label="입학 월">
+                                <th:block th:replace="~{my/resume/date-options :: monthOptions}"></th:block>
+                            </select>
+                            <input type="hidden" data-date-value data-education-field="admissionDate" />
+                        </div>
                     </div>
 
                     <div class="resume-field">
                         <label>졸업(예정)일</label>
 
-                        <input type="month" class="resume-input" data-education-field="graduationDate" />
+                        <div class="resume-date" data-date-group>
+                            <select class="resume-input resume-select" data-date-year aria-label="졸업 연도">
+                                <th:block th:replace="~{my/resume/date-options :: yearOptions}"></th:block>
+                            </select>
+                            <select class="resume-input resume-select" data-date-month aria-label="졸업 월">
+                                <th:block th:replace="~{my/resume/date-options :: monthOptions}"></th:block>
+                            </select>
+                            <input type="hidden" data-date-value data-education-field="graduationDate" />
+                        </div>
                     </div>
 
                     <div class="resume-field">
@@ -833,13 +898,29 @@
                     <div class="resume-field">
                         <label>입사일</label>
 
-                        <input type="month" class="resume-input" data-career-field="startDate" />
+                        <div class="resume-date" data-date-group>
+                            <select class="resume-input resume-select" data-date-year aria-label="입사 연도">
+                                <th:block th:replace="~{my/resume/date-options :: yearOptions}"></th:block>
+                            </select>
+                            <select class="resume-input resume-select" data-date-month aria-label="입사 월">
+                                <th:block th:replace="~{my/resume/date-options :: monthOptions}"></th:block>
+                            </select>
+                            <input type="hidden" data-date-value data-career-field="startDate" />
+                        </div>
                     </div>
 
                     <div class="resume-field">
                         <label>퇴사일</label>
 
-                        <input type="month" class="resume-input" data-career-field="endDate" />
+                        <div class="resume-date" data-date-group>
+                            <select class="resume-input resume-select" data-date-year aria-label="퇴사 연도">
+                                <th:block th:replace="~{my/resume/date-options :: yearOptions}"></th:block>
+                            </select>
+                            <select class="resume-input resume-select" data-date-month aria-label="퇴사 월">
+                                <th:block th:replace="~{my/resume/date-options :: monthOptions}"></th:block>
+                            </select>
+                            <input type="hidden" data-date-value data-career-field="endDate" />
+                        </div>
                     </div>
 
                     <div class="resume-field">
