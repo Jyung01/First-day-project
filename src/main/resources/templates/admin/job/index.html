@@ -133,7 +133,13 @@
               <tbody>
                 <tr th:each="job : ${jobPage.content}">
                   <td th:text="|J-${job.jobPostingId()}|">J-0</td>
-                  <td th:text="${job.companyName()}">기업명</td>
+                  <td>
+                    <span th:text="${job.companyName()}">기업명</span>
+                    <span class="company-restriction-badge"
+                          th:if="${job.suspendedCompany()}">
+                      이용정지
+                    </span>
+                  </td>
                   <td th:text="${job.title()}">공고 제목</td>
                   <td th:text="${job.categoryName() ?: '미설정'}">직무</td>
                   <td

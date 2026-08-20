@@ -113,6 +113,10 @@
   transition: 0.25s;
 }
 
+.review-tab .tab-btn { padding:11px 22px; border-radius:10px; background:#0f172a; color:#cbd5e1; font-size:14px; text-decoration:none; transition:.25s; }
+.review-tab .tab-btn:hover { background:#334155; }
+.review-tab .tab-btn.active { background:#2563eb; color:#fff; }
+
 .review-tab button:hover {
   background: #334155;
 }
@@ -253,6 +257,12 @@ tbody td:last-child a {
 
   transition: 0.2s;
 }
+
+tbody td:last-child .open-review-detail-modal { display:inline-block; padding:7px 16px; border:0; background:#2563eb; color:#fff; border-radius:8px; cursor:pointer; transition:.2s; }
+tbody td:last-child .open-review-detail-modal:hover { background:#1d4ed8; }
+.review-empty { padding:56px 20px !important; text-align:center !important; color:#94a3b8; }
+.report-count { color:#ef4444; font-weight:700; }
+.admin-review-box span { white-space:pre-wrap; line-height:1.6; }
 
 tbody td:last-child a:hover {
   background: #1d4ed8;

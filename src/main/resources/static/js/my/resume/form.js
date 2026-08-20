@@ -293,7 +293,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 iconHtml: "i",
                 title: options.minimumTitle,
                 message: options.minimumMessage,
-                leftText: "",
+                // 안내만 하는 모달이라 왼쪽 버튼을 숨긴다.
+                // leftText만 비우면 버튼은 그대로 남아 빈 입력창처럼 보인다.
+                leftVisible: false,
                 rightText: "확인",
                 rightClass: "btn-primary",
             });

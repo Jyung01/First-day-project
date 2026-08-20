@@ -523,6 +523,41 @@
     justify-content: flex-end;
 }
 
+/* 탭 패널 안의 단계 이동(이전/다음) */
+.resume-panel-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+/* 첫 탭처럼 '다음'만 있을 때 오른쪽으로 붙인다 */
+.resume-panel-nav-end {
+    justify-content: flex-end;
+}
+
+.resume-panel-nav .resume-secondary-button {
+    min-width: 120px;
+}
+
+/* 탭 바깥 공통 푸터: 취소 / 저장 */
+.resume-form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.resume-form-actions .resume-secondary-button {
+    min-width: 120px;
+}
+
+.resume-form-actions .resume-primary-button {
+    min-width: 200px;
+}
+
 .resume-secondary-button,
 .resume-primary-button {
     display: flex;
@@ -614,6 +649,22 @@
 
     .resume-panel-actions-end {
         display: block;
+    }
+
+    .resume-panel-nav,
+    .resume-form-actions {
+        flex-direction: column;
+    }
+
+    .resume-panel-nav .resume-secondary-button,
+    .resume-form-actions .resume-secondary-button,
+    .resume-form-actions .resume-primary-button {
+        min-width: 0;
+    }
+
+    /* 모바일에서는 주 동작(저장)을 위로 올린다 */
+    .resume-form-actions .resume-primary-button {
+        order: -1;
     }
 
     .resume-primary-button,

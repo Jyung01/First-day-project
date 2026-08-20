@@ -224,11 +224,10 @@
                                 </button>
                             </div>
 
-                            <div class="resume-panel-actions">
-                                <a th:href="@{/my/resume}" class="resume-secondary-button" data-resume-cancel> 취소 </a>
-
-                                <button type="submit" class="resume-primary-button" name="submitMode" value="preview">
-                                    저장 후 보기
+                            <!-- 단계 이동만 담당한다. 저장은 탭 바깥 공통 푸터에 있다. -->
+                            <div class="resume-panel-nav resume-panel-nav-end">
+                                <button type="button" class="resume-secondary-button" data-resume-tab-move="career">
+                                    다음 →
                                 </button>
                             </div>
                         </section>
@@ -526,9 +525,13 @@
                                 </article>
                             </div>
 
-                            <div class="resume-panel-actions resume-panel-actions-end">
-                                <button type="submit" class="resume-primary-button" name="submitMode" value="save">
-                                    저장
+                            <div class="resume-panel-nav">
+                                <button type="button" class="resume-secondary-button" data-resume-tab-move="basic">
+                                    ← 이전
+                                </button>
+
+                                <button type="button" class="resume-secondary-button" data-resume-tab-move="skill">
+                                    다음 →
                                 </button>
                             </div>
                         </section>
@@ -664,12 +667,21 @@
                                 </article>
                             </div>
 
-                            <div class="resume-panel-actions resume-panel-actions-end">
-                                <button type="submit" class="resume-primary-button" name="submitMode" value="preview">
-                                    저장 후 보기
+                            <div class="resume-panel-nav">
+                                <button type="button" class="resume-secondary-button" data-resume-tab-move="career">
+                                    ← 이전
                                 </button>
                             </div>
                         </section>
+
+                        <!-- 탭 바깥 공통 푸터: 어느 탭에서도 저장·취소할 수 있다. -->
+                        <div class="resume-form-actions">
+                            <a th:href="@{/my/resume}" class="resume-secondary-button" data-resume-cancel> 취소 </a>
+
+                            <button type="submit" class="resume-primary-button" name="submitMode" value="preview">
+                                저장 후 보기
+                            </button>
+                        </div>
                     </form>
                 </section>
             </div>

@@ -1,5 +1,10 @@
-<footer class="footer" xmlns:th="http://www.thymeleaf.org" th:fragment="adminFooter">
+<footer
+        class="footer"
+        xmlns:th="http://www.thymeleaf.org"
+        th:fragment="adminFooter"
+>
     <p>© 2026 첫출근 관리자</p>
-
-    <span>관리자 버전 v1.0.0</span>
+    <span>
+        운영 버전 <span th:text="${siteVersionName}">v1.0.0</span>
+    </span>
 </footer>

@@ -75,8 +75,8 @@
             color: var(--primary, #6c5ce7);
         }
 
-        /* ---------- 상태 라인 ---------- */
-        .cl-review-meta {
+        /* ---------- 결과 상태: 대상 공고 + 이전 이력 ---------- */
+        .cl-review-meta-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -85,12 +85,21 @@
             margin-bottom: 20px;
         }
 
-        .cl-review-meta__left {
+        .cl-review-meta-bar__target {
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 13px;
             color: var(--text-muted, #8a8b94);
+        }
+
+        .cl-history-select {
+            font-size: 13px;
+            color: var(--text-strong, #1c1c22);
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            padding: 8px 10px;
+            background: #fff;
         }
 
         .status-badge--ai-done {
@@ -101,6 +110,45 @@
             padding: 4px 10px;
             border-radius: 999px;
             white-space: nowrap;
+        }
+
+        .status-badge--pending {
+            background: #fff4e5;
+            color: #b5720d;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        /* 브라우저 기본값은 한글을 음절 단위로 끊어서 "4학년"이 "4 / 학년"으로 쪼개진다.
+           영어는 단어 단위로 끊으면서 한글만 글자 단위로 자르는 셈이라 읽을 때 시선이 걸린다.
+           keep-all 로 띄어쓰기(어절) 기준으로 바꾼다. 긴 URL 등이 컬럼을 밀지 않도록
+           overflow-wrap 은 남겨 둔다. */
+        .cl-review-question,
+        .cl-original__text,
+        .cl-original__extra-text,
+        .cl-suggestion__example-text,
+        .cl-suggestion__summary-text,
+        .cl-suggestion__points-hint,
+        .cl-suggestion__point,
+        .cl-suggestion__added-note,
+        .cl-suggestion__failed {
+            word-break: keep-all;
+            overflow-wrap: anywhere;
+        }
+
+        /* ---------- 문항 질문 (좌우 컬럼 공통) ---------- */
+        /* 배경도 보더도 주지 않는다. 화면에 이미 흰 카드·회색 박스·보라 선이 있어서
+           네 번째 상자를 더하면 애써 만든 위계가 다시 흐려진다. 카드 제목(14px/700)보다
+           한 단계 큰 크기만으로 상위 계층이라는 게 읽힌다. */
+        .cl-review-question {
+            margin: 0 0 16px;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text-strong, #1c1c22);
         }
 
         /* ---------- 원문 / AI 제안 2단 비교 ---------- */
@@ -117,6 +165,17 @@
             padding: 22px;
             display: flex;
             flex-direction: column;
+        }
+
+        /* 원문은 오른쪽 조언을 읽는 내내 대조 대상이라 화면에 붙여 둔다.
+           align-self: start 가 없으면 그리드가 두 열의 높이를 맞추려고 늘려서 sticky가 걸리지 않는다.
+           원문이 화면보다 길 수 있으므로 컬럼 안에서만 스크롤되게 한다. */
+        .cl-compare__col--original {
+            position: sticky;
+            top: 20px;
+            align-self: start;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
         }
 
         .cl-compare__title {
@@ -142,25 +201,49 @@
         }
 
         /* AI 제안 컬럼 */
+        /* 요약은 "무엇을 했는지" 설명이고, 사용자가 실제로 손댈 거리는 아래 개선 포인트에 있다.
+           그래서 강조색(보라)은 개선 포인트에만 주고 여기는 중립 배경으로 둔다.
+           단, 글자까지 회색으로 죽이지는 않는다 — 옅은 배경 + 회색 글씨는 "비활성"으로 읽혀서
+           사용자가 아예 안 읽고 넘어간다. 덜 중요한 게 아니라 손댈 거리가 아닐 뿐이다. */
         .cl-suggestion__summary-box {
-            background: #f4f2ff;
+            background: #f4f4f8;
             border-radius: 10px;
             padding: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .cl-suggestion__summary-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
-            color: #6c5ce7;
+            color: var(--text-strong, #1c1c22);
             margin: 0 0 6px;
         }
 
         .cl-suggestion__summary-text {
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.65;
             color: var(--text-strong, #1c1c22);
             margin: 0;
+        }
+
+        /* 요약 바로 뒤에 머리말 없이 목록이 나오면 요약의 연장선으로 읽힌다.
+           성격이 다른 블록이라는 신호를 준다. */
+        .cl-suggestion__points-head {
+            margin-bottom: 12px;
+        }
+
+        .cl-suggestion__points-title {
+            margin: 0 0 4px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-suggestion__points-hint {
+            margin: 0;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-muted, #8a8b94);
         }
 
         .cl-suggestion__points {
@@ -169,39 +252,51 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 14px;
         }
 
+        /* 4개가 같은 크기·색의 문단으로 붙어 있으면 벽처럼 보여 훑어지지 않는다.
+           항목마다 좌측 선을 그어 시작 지점을 만든다. */
         .cl-suggestion__point {
             font-size: 13px;
             line-height: 1.6;
             color: var(--text-strong, #1c1c22);
+            padding-left: 14px;
+            border-left: 3px solid #b9aef0;
         }
 
         .cl-suggestion__point-label {
             font-weight: 700;
             margin-right: 4px;
+            color: var(--primary, #6c5ce7);
         }
 
+        /* 수정 제안(고쳐 쓴 글)과 그 아래 조언(요약·개선 포인트)은 사용자가 할 일이 다른데,
+           이어 붙어 있으면 어디까지가 본문인지 경계가 사라진다. 본문만 카드로 떼어 낸다. */
         .cl-suggestion__example {
-            background: #fafafb;
+            margin-bottom: 20px;
+            padding: 16px 18px;
             border: 1px solid var(--border, #e7e7ec);
             border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 16px;
+            background: #fff;
         }
 
         .cl-suggestion__example-title {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--text-muted, #8a8b94);
-            margin: 0 0 8px;
+            margin: 0 0 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border, #f0f0f4);
+            /* 안쪽 개선 제안 개수가 float: right 라, BFC를 만들지 않으면 밑줄이 그 위를 지나간다. */
+            overflow: hidden;
         }
 
         .cl-suggestion__example-text {
-            font-size: 13px;
-            line-height: 1.6;
+            font-size: 15px;
+            line-height: 1.75;
             color: var(--text-strong, #1c1c22);
+            white-space: pre-line;
             margin: 0;
         }
 
@@ -214,6 +309,135 @@
         .cl-suggestion__actions .btn {
             flex: 1;
             text-align: center;
+        }
+
+        .cl-suggestion__actions .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .cl-suggestion__apply-status {
+            margin: 8px 0 0;
+            font-size: 12px;
+            line-height: 1.5;
+            min-height: 1em;
+        }
+
+        .cl-suggestion__apply-status.is-success {
+            color: #2f9e5c;
+        }
+
+        .cl-suggestion__apply-status.is-error {
+            color: #d64545;
+        }
+
+        /* ---------- 문항별 생성 로딩 상태 ---------- */
+        .cl-suggestion__loading {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .cl-suggestion__loading.is-active {
+            display: flex;
+        }
+
+        .cl-suggestion__spinner {
+            width: 26px;
+            height: 26px;
+            border: 3px solid var(--border, #e7e7ec);
+            border-top-color: var(--primary, #6c5ce7);
+            border-radius: 50%;
+            animation: cl-suggestion-spin .8s linear infinite;
+        }
+
+        .cl-suggestion__loading-text {
+            font-size: 13px;
+            color: var(--text-muted, #8a8b94);
+            margin: 0;
+        }
+
+        .cl-suggestion__content--hidden {
+            display: none;
+        }
+
+        @keyframes cl-suggestion-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ---------- 첨삭 요청 중 전체 화면 오버레이 ---------- */
+        .cl-generating-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            background: rgba(20, 20, 26, 0.55);
+        }
+
+        .cl-generating-overlay.is-active {
+            display: flex;
+        }
+
+        .cl-generating-overlay__box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            max-width: 320px;
+            padding: 32px 28px;
+            background: #fff;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+        }
+
+        .cl-generating-overlay__spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border, #e7e7ec);
+            border-top-color: var(--primary, #6c5ce7);
+            border-radius: 50%;
+            animation: cl-suggestion-spin .8s linear infinite;
+        }
+
+        .cl-generating-overlay__text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-strong, #1c1c22);
+            margin: 0;
+        }
+
+        .cl-generating-overlay__error {
+            display: none;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #d64545;
+            margin: 0;
+        }
+
+        .cl-generating-overlay__error.is-visible {
+            display: block;
+        }
+
+        .cl-generating-overlay__close {
+            display: none;
+        }
+
+        .cl-generating-overlay__error.is-visible ~ .cl-generating-overlay__close {
+            display: inline-block;
+        }
+
+        .cl-generating-overlay__box:has(.cl-generating-overlay__error.is-visible) .cl-generating-overlay__spinner {
+            display: none;
         }
 
         /* ---------- 하단 안내 문구 ---------- */
@@ -243,6 +467,13 @@
             .cl-compare {
                 grid-template-columns: 1fr;
             }
+
+            /* 1단으로 접히면 원문이 제안 위에 오므로 붙여 둘 이유가 없다. */
+            .cl-compare__col--original {
+                position: static;
+                max-height: none;
+                overflow-y: visible;
+            }
         }
 
         /* ---------- 문항 탭 전환 (JS로 표시/숨김) ---------- */
@@ -250,25 +481,313 @@
             display: none;
         }
 
-        /* ---------- AI 첨삭 준비 중 안내 ---------- */
-        .cl-ai-pending {
-            padding: 24px;
-            border: 1px dashed var(--border, #dcdde3);
+        /* ---------- 선택 상태: 대상 자기소개서 요약 ---------- */
+        .cl-target-summary {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            background: #f7f7fb;
             border-radius: 10px;
-            background: #fafafb;
-            text-align: center;
+            font-size: 13px;
+            margin-bottom: 20px;
         }
 
-        .cl-ai-pending__title {
+        .cl-target-summary__label {
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-target-summary__value {
+            color: var(--text-muted, #767781);
+        }
+
+        /* ---------- 선택 상태: 채용공고 선택 ---------- */
+        .cl-job-picker {
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .cl-job-picker__section-title {
             font-size: 14px;
             font-weight: 700;
             color: var(--text-strong, #1c1c22);
-            margin: 0 0 8px;
+            margin: 0 0 14px;
         }
 
-        .cl-ai-pending__desc {
+        .cl-job-picker__search {
+            margin-bottom: 14px;
+        }
+
+        .cl-search-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 10px;
+            padding: 4px 4px 4px 14px;
+            background: #fff;
+            transition: border-color .15s ease;
+        }
+
+        .cl-search-field:focus-within {
+            border-color: var(--primary, #6c5ce7);
+        }
+
+        .cl-search-field__icon {
+            flex-shrink: 0;
+            color: #b5b6c0;
+        }
+
+        .cl-search-field__input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            padding: 10px 0;
+            background: transparent;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-search-field__submit {
+            flex-shrink: 0;
+            border: none;
+            background: var(--primary, #6c5ce7);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .cl-search-field__submit:hover {
+            opacity: .9;
+        }
+
+        .cl-job-picker__list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cl-job-picker__item {
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 10px;
+            transition: border-color .15s ease, background .15s ease;
+        }
+
+        .cl-job-picker__item.is-selected {
+            border-color: var(--primary, #6c5ce7);
+            background: #f4f2ff;
+        }
+
+        .cl-job-picker__item label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+        }
+
+        .cl-job-picker__text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 14px;
+        }
+
+        .cl-job-picker__title {
+            font-weight: 600;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-job-picker__meta {
+            font-size: 12px;
+            color: var(--text-muted, #8a8b94);
+        }
+
+        .cl-job-picker__empty {
             font-size: 13px;
             color: var(--text-muted, #8a8b94);
-            line-height: 1.6;
+            text-align: center;
+            padding: 20px 0 4px;
             margin: 0;
+        }
+
+        /* ---------- 공고 검색 페이지네이션 ---------- */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            display: grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--text-muted, #767781);
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .pagination a.active {
+            background: var(--primary, #6c5ce7);
+            border-color: var(--primary, #6c5ce7);
+            color: #fff;
+        }
+
+        .pagination a.is-disabled {
+            color: #cbd5e1;
+            background: #f8fafc;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* ---------- 하단 액션 (선택/결과 상태 공용) ---------- */
+        .cl-page-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cl-page-actions .cl-submit {
+            flex: 1;
+            text-align: center;
+        }
+
+        /* ---------- 원문에 없던 문장 표시 ---------- */
+        /* box-decoration-break가 없으면 문장이 두 줄에 걸칠 때 배경과 모서리가 끊긴다. */
+        .cl-suggestion__example-text mark.cl-added {
+            background: #fff3cd;
+            color: inherit;
+            border-radius: 3px;
+            padding: 1px 2px;
+            -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
+        }
+
+        /* 왼쪽 .cl-original__count 와 같은 자리·같은 무게로 맞춘다. */
+        .cl-suggestion__count {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-muted, #a6a7b1);
+            margin: 12px 0 0;
+        }
+
+        .cl-suggestion__added-note {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border, #e7e7ec);
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-muted, #767781);
+        }
+
+        .cl-suggestion__added-note.is-visible {
+            display: block;
+        }
+
+        /* 수정 제안 제목 오른쪽에 개선 제안 개수를 붙여, 아래에 내용이 더 있음을 알린다. */
+        .cl-suggestion__points-count {
+            float: right;
+            font-weight: 600;
+            color: var(--primary, #6c5ce7);
+        }
+
+        /* 문항 하나가 실패했을 때 그 자리에만 표시 */
+        .cl-suggestion__failed {
+            margin: 0;
+            padding: 14px 16px;
+            border: 1px dashed var(--border, #e7e7ec);
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted, #767781);
+            background: #fafafb;
+        }
+
+        /* ---------- AI에게 더 알려주고 싶은 내용 ---------- */
+        .cl-extra-info {
+            margin-bottom: 16px;
+            padding: 16px 18px;
+            border: 1px solid var(--border, #e7e7ec);
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .cl-extra-info__label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        .cl-extra-info__hint {
+            margin: 4px 0 10px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-muted, #767781);
+        }
+
+        .cl-extra-info__input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border: 1px solid var(--border, #dcdde3);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 13px;
+            line-height: 1.7;
+            resize: vertical;
+        }
+
+        .cl-extra-info__input:focus {
+            outline: none;
+            border-color: var(--primary, #6c5ce7);
+        }
+
+        .cl-extra-info__item {
+            margin-top: 12px;
+        }
+
+        .cl-extra-info__question {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-strong, #1c1c22);
+        }
+
+        /* 결과 화면 원문 칸 아래 — 첨삭 요청 때 사용자가 알려준 내용 */
+        .cl-original__extra {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border, #e7e7ec);
+        }
+
+        .cl-original__extra-title {
+            margin: 0 0 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted, #8a8b94);
+        }
+
+        .cl-original__extra-text {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-muted, #767781);
         }

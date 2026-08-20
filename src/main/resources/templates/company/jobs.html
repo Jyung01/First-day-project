@@ -79,9 +79,10 @@
         <div class="profile-right">
 
             <button class="wish-btn"
-                    th:data-company-id="${company.companyId}">
+                    th:data-company-id="${company.companyId}"
+                    th:classappend="${isWished} ? ' active'">
 
-                <i class="fa-regular fa-heart"></i>
+                <i th:class="${isWished} ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
 
                 관심기업
 
@@ -137,7 +138,7 @@
 
             <h3>진행 중 채용공고</h3>
 
-            <span>총 18건</span>
+            <span th:text="|총 ${#lists.size(recruitList)}건|">총 0건</span>
 
         </div>
 
@@ -154,8 +155,14 @@
                         D-13
                     </span>
 
-                    <button class="bookmark-btn">
-                        <i class="fa-regular fa-heart"></i>
+                    <button class="bookmark-btn"
+                            type="button"
+                            th:data-job-posting-id="${recruit.jobPostingId}"
+                            th:data-logged-in="${personalMember}"
+                            th:classappend="${savedJobPostingIds.contains(recruit.jobPostingId)} ? ' active'"
+                            th:attr="aria-pressed=${savedJobPostingIds.contains(recruit.jobPostingId)}"
+                            aria-label="관심 공고 등록">
+                        <i th:class="${savedJobPostingIds.contains(recruit.jobPostingId)} ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
                     </button>
 
                 </div>
@@ -223,7 +230,7 @@
 
                 </ul>
 
-                <a href="#"
+                <a th:href="@{/job/detail(jobPostingId=${recruit.jobPostingId})}"
                    class="apply-btn">
 
                     지원하기

@@ -133,6 +133,10 @@ textarea {
 .corp-header__logout {
     color: #fff;
     background: var(--corp-blue);
+    /* 링크에서 POST 폼 버튼으로 바뀌었다. 버튼 기본 스타일을 지워 기존 모양을 유지한다. */
+    border: 0;
+    font: inherit;
+    cursor: pointer;
 }
 
 .corp-header__logout:hover {

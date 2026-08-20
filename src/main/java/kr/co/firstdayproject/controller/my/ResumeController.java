@@ -105,12 +105,14 @@ public class ResumeController {
             return "redirect:/auth/login";
         }
 
+        // 저장 후 화면이 바뀌므로 목적지에서 완료 안내를 띄울 수 있게 결과를 넘긴다.
+        String savedType = resumeForm.getResumeId() == null ? "created" : "updated";
         Long resumeId = resumeService.save(userDetails.getUserId(), resumeForm);
 
         if ("preview".equals(submitMode)) {
-            return "redirect:/my/resume/detail?id=" + resumeId;
+            return "redirect:/my/resume/detail?id=" + resumeId + "&saved=" + savedType;
         }
-        return "redirect:/my/resume/list";
+        return "redirect:/my/resume/list?saved=" + savedType;
     }
 
     @DeleteMapping("/{id}")

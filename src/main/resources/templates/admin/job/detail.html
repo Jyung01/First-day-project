@@ -41,10 +41,16 @@
             <article class="job-detail-card">
               <header class="job-detail-card__header">
                 <div>
-                  <span
-                    class="job-detail-company"
-                    th:text="${job.companyName()}"
-                  >코드웨이브</span>
+                  <div class="job-detail-company-line">
+                    <span
+                      class="job-detail-company"
+                      th:text="${job.companyName()}"
+                    >코드웨이브</span>
+                    <span class="company-restriction-badge"
+                          th:if="${job.suspendedCompany()}">
+                      이용정지 기업
+                    </span>
+                  </div>
                   <h2 th:text="${job.title()}">백엔드 개발자 채용</h2>
                   <p>
                     공고번호
@@ -89,7 +95,13 @@
                 <dl class="job-detail-grid">
                   <div>
                     <dt>기업명</dt>
-                    <dd th:text="${job.companyName()}">코드웨이브</dd>
+                    <dd>
+                      <span th:text="${job.companyName()}">코드웨이브</span>
+                      <span class="company-restriction-badge"
+                            th:if="${job.suspendedCompany()}">
+                        이용정지
+                      </span>
+                    </dd>
                   </div>
                   <div>
                     <dt>업종</dt>
@@ -317,6 +329,14 @@
               <div class="job-operation-group">
                 <h3>기업 담당자</h3>
                 <strong th:text="${job.contactName()}">담당자</strong>
+                <p th:if="${job.contactDepartment() != null}">
+                  <span class="job-contact-label">부서</span>
+                  <span th:text="${job.contactDepartment()}">개발팀</span>
+                </p>
+                <p th:if="${job.contactPositionTitle() != null}">
+                  <span class="job-contact-label">직급·직책</span>
+                  <span th:text="${job.contactPositionTitle()}">팀장</span>
+                </p>
                 <p th:text="${job.contactEmail()}">이메일</p>
                 <p th:text="${job.contactPhone()}">연락처</p>
               </div>

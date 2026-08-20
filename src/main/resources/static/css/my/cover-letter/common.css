@@ -1,1 +1,16 @@
-/* 공통 스타일 파일 */
+/* 자기소개서 화면 공통 피드백 */
+.cl-inline-feedback {
+    margin-top: 8px;
+    color: #dc3545;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.cl-inline-feedback[hidden] {
+    display: none;
+}
+
+.cl-field-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 3px rgb(220 53 69 / 10%);
+}

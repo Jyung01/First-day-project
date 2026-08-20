@@ -40,7 +40,9 @@ import kr.co.firstdayproject.repository.member.PersonalProfileRepository;
 import kr.co.firstdayproject.repository.member.UserRepository;
 import kr.co.firstdayproject.repository.resume.ResumeRepository;
 import kr.co.firstdayproject.service.AwsS3.AwsS3Service;
+import kr.co.firstdayproject.service.ai.UserProfileEmbeddingDeleteEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,6 +58,8 @@ public class MyPageService {
             "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[^A-Za-z\\d\\s])\\S{8,64}$"
     );
     private static final String WITHDRAWN_STATUS = "탈퇴";
+    /** 탈퇴 시 실명을 대체하는 값; name 컬럼이 NOT NULL이라 null 대신 치환한다 */
+    private static final String WITHDRAWN_NAME = "탈퇴한 회원";
     private static final Set<String> ALLOWED_IMAGE_TYPES = Set.of("image/jpeg", "image/png");
     private static final long MAXIMUM_IMAGE_SIZE = 5L * 1024 * 1024;
     private static final Set<String> IN_PROGRESS_APPLICATION_STATUSES =
@@ -76,6 +80,7 @@ public class MyPageService {
     private final AwsS3Service awsS3Service;
     private final PasswordEncoder passwordEncoder;
     private final MyPageDao myPageDao;
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<JobDTO> getSavedJobList(Long userId, String filter, int offset, int pageSize) {
         return myPageDao.selectSavedJobList(userId, normalizeSavedJobFilter(filter), offset, pageSize);
@@ -222,7 +227,7 @@ public class MyPageService {
         long applicationInProgressCount = applicationRepository
                 .countByApplicantUserIdAndCurrentStatusIn(userId, IN_PROGRESS_APPLICATION_STATUSES);
 
-        long likedJobCount = savedJobRepository.countByIdUserId(userId);
+        long likedJobCount = savedJobRepository.countVisibleByUserId(userId);
         long likedJobDeadlineSoonCount = savedJobRepository.countDeadlineSoon(
                 userId, now, now.plusDays(DEADLINE_SOON_DAYS));
 
@@ -338,17 +343,23 @@ public class MyPageService {
         if (profileImage != null && !profileImage.isEmpty()) {
             validateProfileImage(profileImage);
             String previousImageKey = profile.getProfileImageUrl();
+            String uploadedImageKey;
             try {
-                profile.setProfileImageUrl(
-                        awsS3Service.uploadPrivate(profileImage, "personal_profile")
+                uploadedImageKey = awsS3Service.uploadPrivate(
+                        profileImage,
+                        "personal_profile"
                 );
+                profile.setProfileImageUrl(uploadedImageKey);
             } catch (IOException | RuntimeException exception) {
                 throw new MyPageException(
                         "profileImage",
                         "프로필 이미지를 업로드하지 못했습니다. 다시 시도해주세요."
                 );
             }
-            awsS3Service.deletePrivate(previousImageKey);
+            awsS3Service.synchronizePrivateReplacement(
+                    previousImageKey,
+                    uploadedImageKey
+            );
         }
         profile.setUpdatedAt(now);
         personalProfileRepository.save(profile);
@@ -445,9 +456,53 @@ public class MyPageService {
         }
 
         LocalDateTime now = LocalDateTime.now();
+        // 진행 중인 전형을 먼저 종료한다. 이력을 남긴 뒤 상태를 바꿔야
+        // from_status에 종료 직전 단계가 기록된다.
+        applicationRepository.recordMemberWithdrawalStatusHistory(
+                userId,
+                IN_PROGRESS_APPLICATION_STATUSES,
+                now
+        );
+        applicationRepository.terminateActiveApplicationsForMemberWithdrawal(
+                userId,
+                IN_PROGRESS_APPLICATION_STATUSES,
+                now
+        );
+
         user.setAccountStatus(WITHDRAWN_STATUS);
         user.setWithdrawnAt(now);
         user.setUpdatedAt(now);
+        // 개인 식별정보 마스킹. loginId·email은 재가입 중복 방지(UNIQUE)를 위해 남긴다.
+        user.setName(WITHDRAWN_NAME);
+        user.setPhone(null);
+
+        purgePersonalDocuments(userId);
+        purgePersonalProfile(userId);
+    }
+
+    /**
+     * 이력서·자기소개서 원본을 실제로 삭제한다. 평소의 소프트 삭제와 달리
+     * 탈퇴에서는 실명·연락처·경력이 남으면 안 되므로 행 자체를 지운다.
+     * 지원 시점 스냅샷(resume_snapshot_json)은 문서 규칙에 따라 보존한다.
+     */
+    private void purgePersonalDocuments(Long userId) {
+        resumeRepository.deleteAllByUserId(userId);
+        coverLetterRepository.deleteAllByUserId(userId);
+        // pgvector에도 이력서·자소서 본문 사본이 있다. 커밋 후에 지운다.
+        eventPublisher.publishEvent(new UserProfileEmbeddingDeleteEvent(userId));
+    }
+
+    /** 주소를 비우고 프로필 이미지를 S3에서 제거한다. */
+    private void purgePersonalProfile(Long userId) {
+        personalProfileRepository.findById(userId).ifPresent(profile -> {
+            String imageKey = profile.getProfileImageUrl();
+            profile.setPostalCode(null);
+            profile.setAddressLine1(null);
+            profile.setAddressLine2(null);
+            profile.setProfileImageUrl(null);
+            // 커밋되면 실제 파일을 지우고, 롤백되면 아무것도 하지 않는다.
+            awsS3Service.synchronizePrivateReplacement(imageKey, null);
+        });
     }
 
     private void validateProfileImage(MultipartFile profileImage) {

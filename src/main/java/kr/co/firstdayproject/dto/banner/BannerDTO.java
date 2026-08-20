@@ -27,6 +27,8 @@ public class BannerDTO {
 
     private Boolean isActive;
 
+    private String displayStatus;
+
     private Long createdBy;
 
     private LocalDateTime createdAt;

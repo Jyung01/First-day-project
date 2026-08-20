@@ -43,4 +43,5 @@ public class CompanyDTO {
     private Integer hasJobPosting; // 채용중인 공고가 있는지 확인
     private Integer jobPostingCount; // 채용중인 공고 갯수
     private List<String> benefitList;
+    private Long savedCompanyId;
 }
