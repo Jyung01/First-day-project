@@ -8,6 +8,7 @@ import lombok.Getter;
 public class InquiryListItemDto {
     private Long inquiryId;
     private String categoryName;
+    private String memberType;
     private String title;
     private String writerLabel;
     private String status;      // PENDING / ANSWERED

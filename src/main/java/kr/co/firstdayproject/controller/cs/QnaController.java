@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -123,6 +124,12 @@ public class QnaController {
         }
 
         InquiryAttachment attachment = qnaService.getMyAttachment(attachmentId, userId);
+        String downloadUrl = qnaService.getAttachmentDownloadUrl(attachment);
+        if (downloadUrl != null) {
+            return ResponseEntity.status(302)
+                    .location(URI.create(downloadUrl))
+                    .build();
+        }
 
         Resource resource = new FileSystemResource(attachment.getStorageKey());
         ContentDisposition disposition = ContentDisposition.attachment()

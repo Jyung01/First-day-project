@@ -6,83 +6,9 @@
     <title>FAQ 관리 | 첫출근 관리자</title>
     <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
     <link rel="stylesheet" th:href="@{/css/admin/section-common.css}" />
-    <style>
-        /* 공지사항 등록 모달과 동일한 다크 테마로 통일 */
-        .faq-modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(8, 11, 20, 0.6);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-        }
-        .faq-modal-overlay.open { display: flex; }
-        .faq-modal {
-            background: #1b2135;
-            color: #e7e9ee;
-            width: 520px;
-            max-width: 92vw;
-            max-height: 88vh;
-            overflow-y: auto;
-            border-radius: 12px;
-            border: 1px solid #2b3350;
-            box-shadow: 0 20px 60px rgba(0,0,0,.45);
-        }
-        .faq-modal-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 22px 24px 4px;
-        }
-        .faq-modal-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: #fff; }
-        .faq-modal-close {
-            border: none; background: none; font-size: 22px; line-height: 1; cursor: pointer; color: #8b92aa;
-        }
-        .faq-modal-close:hover { color: #fff; }
-        .faq-modal-body { padding: 18px 24px 4px; }
-        .faq-form-row { margin-bottom: 18px; display: flex; flex-direction: column; gap: 8px; }
-        .faq-form-row label { font-size: 13px; font-weight: 600; color: #cbd0e0; }
-        .faq-form-row select,
-        .faq-form-row input[type="text"],
-        .faq-form-row textarea {
-            width: 100%; box-sizing: border-box; padding: 11px 12px;
-            background: #12172a; color: #e7e9ee;
-            border: 1px solid #323a58; border-radius: 8px; font-size: 14px;
-            font-family: inherit;
-        }
-        .faq-form-row select:focus,
-        .faq-form-row input[type="text"]:focus,
-        .faq-form-row textarea:focus {
-            outline: none; border-color: #5b6bff;
-        }
-        .faq-form-row input::placeholder,
-        .faq-form-row textarea::placeholder { color: #6b7290; }
-        .faq-form-row select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238b92aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 32px;
-        }
-        .faq-modal-hint { font-size: 12px; color: #8b92aa; margin: 0 0 4px; }
-        .faq-modal-footer {
-            display: flex; justify-content: flex-end; gap: 8px;
-            padding: 18px 24px 24px;
-        }
-        .faq-modal-footer .btn-outline {
-            background: transparent; color: #cbd0e0; border: 1px solid #323a58;
-            padding: 9px 18px; border-radius: 7px; font-size: 14px; cursor: pointer;
-            font-family: inherit;
-        }
-        .faq-modal-footer .btn-outline:hover { background: #242b42; }
-        .faq-modal-footer .btn-primary {
-            background: #5b6bff; color: #fff; border: none;
-            padding: 9px 20px; border-radius: 7px; font-size: 14px; font-weight: 600; cursor: pointer;
-            font-family: inherit;
-        }
-        .faq-modal-footer .btn-primary:hover { background: #4a58e0; }
-        .faq-empty-row { padding: 24px; text-align: center; color: #94a3b8; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/cs/faq-modal.css}" />
 </head>
 <body>
 <div class="wrapper">
@@ -125,13 +51,14 @@
 </div>
 
 <!-- FAQ 등록/수정 모달 -->
-<div class="faq-modal-overlay" id="faqModal">
-    <div class="faq-modal">
-        <div class="faq-modal-header">
-            <h3 id="faqModalTitle">FAQ 등록</h3>
-            <button type="button" class="faq-modal-close" id="btnModalClose" aria-label="닫기">&times;</button>
-        </div>
-        <div class="faq-modal-body">
+<div class="admin-modal" id="faqModal">
+    <div class="admin-modal__backdrop" id="faqModalBackdrop"></div>
+    <section class="admin-modal__dialog faq-modal" role="dialog" aria-modal="true" aria-labelledby="faqModalTitle">
+        <header class="admin-modal__header">
+            <h2 id="faqModalTitle">FAQ 등록</h2>
+            <button type="button" class="admin-modal__close" id="btnModalClose" aria-label="닫기">&times;</button>
+        </header>
+        <div class="admin-modal__body faq-modal-body">
             <input type="hidden" id="faqId" />
             <div class="faq-form-row">
                 <label for="faqCategorySelect">카테고리</label>
@@ -147,13 +74,15 @@
             </div>
             <p class="faq-modal-hint">등록하면 사용자 FAQ 목록에 즉시 노출되며, 수정 내용도 바로 반영됩니다.</p>
         </div>
-        <div class="faq-modal-footer">
-            <button type="button" class="btn btn-outline" id="btnModalCancel">취소</button>
-            <button type="button" class="btn btn-primary" id="btnModalSave">저장</button>
+        <div class="admin-modal__footer faq-modal-footer">
+            <button type="button" class="admin-modal-button admin-modal-button--outline" id="btnModalCancel">취소</button>
+            <button type="button" class="admin-modal-button admin-modal-button--primary" id="btnModalSave">저장</button>
         </div>
-    </div>
+    </section>
 </div>
 
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<script th:src="@{/js/modal.js}"></script>
 <script th:src="@{/js/common.js}"></script>
 <script th:inline="javascript">
     (function () {
@@ -161,6 +90,7 @@
 
         let currentPage = 1;
         let categories = [];
+        document.getElementById('confirmModal')?.classList.add('admin-common-modal');
 
         const el = {
             filterCategory: document.getElementById('filterCategory'),
@@ -243,7 +173,7 @@
         }
 
         function openModal(mode, detail) {
-            el.modal.classList.add('open');
+            el.modal.classList.add('is-open');
             if (mode === 'edit' && detail) {
                 el.modalTitle.textContent = 'FAQ 수정';
                 el.faqId.value = detail.faqId;
@@ -260,7 +190,7 @@
         }
 
         function closeModal() {
-            el.modal.classList.remove('open');
+            el.modal.classList.remove('is-open');
         }
 
         async function saveFaq() {
@@ -268,9 +198,9 @@
             const answer = el.faqAnswer.value.trim();
             const faqCategoryId = el.faqCategorySelect.value;
 
-            if (!faqCategoryId) { alert('카테고리를 선택해주세요.'); return; }
-            if (!question) { alert('질문을 입력해주세요.'); return; }
-            if (!answer) { alert('답변을 입력해주세요.'); return; }
+            if (!faqCategoryId) { showFaqMessage('카테고리를 선택해주세요.'); return; }
+            if (!question) { showFaqMessage('질문을 입력해주세요.'); return; }
+            if (!answer) { showFaqMessage('답변을 입력해주세요.'); return; }
 
             const body = JSON.stringify({ faqCategoryId: Number(faqCategoryId), question, answer });
             const id = el.faqId.value;
@@ -284,34 +214,76 @@
 
                 if (!res.ok) {
                     const text = await res.text().catch(() => '');
-                    alert(`저장 중 오류가 발생했습니다. (HTTP ${res.status})\n${text}`);
+                    showFaqMessage(`저장 중 오류가 발생했습니다. (HTTP ${res.status})\n${text}`);
                     return;
                 }
 
                 closeModal();
-                loadList(id ? currentPage : 1);
+                showFaqSuccess(
+                    id ? 'FAQ가 수정되었습니다.' : 'FAQ가 등록되었습니다.',
+                    () => loadList(id ? currentPage : 1)
+                );
             } catch (err) {
                 console.error(err);
-                alert('저장 요청 중 네트워크 오류가 발생했습니다. 콘솔을 확인해주세요.');
+                showFaqMessage('저장 요청 중 네트워크 오류가 발생했습니다.');
             }
         }
 
-        async function deleteFaq(id) {
-            if (!confirm('해당 FAQ를 삭제하시겠습니까? 삭제 즉시 사용자 화면에서도 사라집니다.')) return;
+        function deleteFaq(id) {
+            showConfirmModal({
+                iconClass: 'danger',
+                iconHtml: '<span aria-hidden="true">!</span>',
+                title: 'FAQ를 삭제할까요?',
+                message: '삭제하면 사용자 FAQ 화면에서도 즉시 사라집니다.',
+                leftText: '취소',
+                rightText: '삭제',
+                rightClass: 'btn-danger',
+                onRight: () => deleteFaqConfirmed(id)
+            });
+        }
+
+        async function deleteFaqConfirmed(id) {
             try {
                 const res = await fetch(`${API_BASE}/api/${id}`, { method: 'DELETE' });
-                if (!res.ok) { alert(`삭제 중 오류가 발생했습니다. (HTTP ${res.status})`); return; }
-                loadList(currentPage);
+                if (!res.ok) {
+                    showFaqMessage(`삭제 중 오류가 발생했습니다. (HTTP ${res.status})`);
+                    return;
+                }
+                showFaqSuccess('FAQ가 삭제되었습니다.', () => loadList(currentPage));
             } catch (err) {
                 console.error(err);
-                alert('삭제 요청 중 네트워크 오류가 발생했습니다. 콘솔을 확인해주세요.');
+                showFaqMessage('삭제 요청 중 네트워크 오류가 발생했습니다.');
             }
+        }
+
+        function showFaqMessage(message) {
+            showConfirmModal({
+                iconClass: 'info',
+                iconHtml: '<span aria-hidden="true">?</span>',
+                title: '안내',
+                message,
+                leftVisible: false,
+                rightText: '확인'
+            });
+        }
+
+        function showFaqSuccess(title, onConfirm) {
+            showConfirmModal({
+                iconClass: 'success',
+                iconHtml: '<span aria-hidden="true">✓</span>',
+                title,
+                message: '변경된 내용을 FAQ 목록에 반영했습니다.',
+                leftVisible: false,
+                rightText: '확인',
+                onRight: onConfirm
+            });
         }
 
         // 이벤트 바인딩
         document.getElementById('btnOpenCreate').addEventListener('click', () => openModal('create'));
         document.getElementById('btnModalClose').addEventListener('click', closeModal);
         document.getElementById('btnModalCancel').addEventListener('click', closeModal);
+        document.getElementById('faqModalBackdrop').addEventListener('click', closeModal);
         document.getElementById('btnModalSave').addEventListener('click', saveFaq);
         el.btnSearch.addEventListener('click', () => loadList(1));
         el.filterCategory.addEventListener('change', () => loadList(1));
@@ -325,12 +297,12 @@
                 const id = editBtn.dataset.id;
                 try {
                     const res = await fetch(`${API_BASE}/api/${id}`);
-                    if (!res.ok) { alert(`상세 조회 실패 (HTTP ${res.status})`); return; }
+                    if (!res.ok) { showFaqMessage(`상세 조회 실패 (HTTP ${res.status})`); return; }
                     const detail = await res.json();
                     openModal('edit', detail);
                 } catch (err) {
                     console.error(err);
-                    alert('상세 조회 중 네트워크 오류가 발생했습니다. 콘솔을 확인해주세요.');
+                    showFaqMessage('상세 조회 중 네트워크 오류가 발생했습니다.');
                 }
             } else if (delBtn) {
                 e.preventDefault();

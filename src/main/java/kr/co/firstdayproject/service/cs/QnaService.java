@@ -6,13 +6,19 @@ import kr.co.firstdayproject.dto.admin.InquiryListItemDto;
 import kr.co.firstdayproject.entity.cs.Inquiry;
 import kr.co.firstdayproject.entity.cs.InquiryAttachment;
 import kr.co.firstdayproject.entity.cs.InquiryCategory;
+import kr.co.firstdayproject.entity.company.Company;
+import kr.co.firstdayproject.entity.member.User;
 import kr.co.firstdayproject.repository.cs.InquiryAttachmentRepository;
 import kr.co.firstdayproject.repository.cs.InquiryCategoryRepository;
 import kr.co.firstdayproject.repository.cs.InquiryRepository;
+import kr.co.firstdayproject.repository.company.CompanyRepository;
+import kr.co.firstdayproject.repository.member.UserRepository;
+import kr.co.firstdayproject.service.AwsS3.AwsS3Service;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +26,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,17 +58,12 @@ public class QnaService {
     private static final long MAX_FILE_SIZE = 10L * 1024 * 1024; // 10MB
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "pdf");
 
-    /**
-     * 첨부파일 저장 루트 경로.
-     * application.yml/properties에 cs.qna.upload-dir 설정이 없으면 기본값(./uploads/qna)을 사용합니다.
-     * 운영 환경(예: S3, 별도 스토리지 서버)을 쓰는 경우 이 부분을 해당 스토리지 클라이언트 호출로 교체하면 됩니다.
-     */
-    @Value("${cs.qna.upload-dir:uploads/qna}")
-    private String uploadDir;
-
     private final InquiryRepository inquiryRepository;
     private final InquiryCategoryRepository inquiryCategoryRepository;
     private final InquiryAttachmentRepository inquiryAttachmentRepository;
+    private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
+    private final AwsS3Service awsS3Service;
 
     /** 노출용 활성 카테고리 목록 (등록순) */
     public List<InquiryCategory> getActiveCategories() {
@@ -98,9 +95,16 @@ public class QnaService {
         Specification<Inquiry> spec = Specification.where(userIdEquals(userId))
                 .and(statusFilter(status));
 
-        Page<Inquiry> inquiries = inquiryRepository.findAll(spec, pageable);
+        Page<Inquiry> inquiries = inquiryRepository.findAll(spec, latestFirst(pageable));
 
-        return inquiries.map(inquiry -> toListItem(inquiry, categoryNameMap));
+        Map<Long, User> userMap = getUserMap(inquiries);
+        Map<Long, Company> companyMap = getCompanyMap(userMap);
+        return inquiries.map(inquiry -> toListItem(
+                inquiry,
+                categoryNameMap,
+                userMap,
+                companyMap
+        ));
     }
 
     /** 사용자 - 문의 상세가 본인 것인지 검증 후 조회 */
@@ -182,42 +186,25 @@ public class QnaService {
         return validFiles;
     }
 
-    /**
-     * 첨부파일을 디스크에 저장하고 InquiryAttachment 레코드를 생성합니다.
-     * NOTE: InquiryAttachment/InquiryAttachmentRepository 소스를 확인하지 못해
-     *       필드명(originalName, fileSize 등 기존 코드에서 쓰던 것 기준)을 추정해 작성했습니다.
-     *       실제 엔티티의 빌더 필드명이 다르면 이 메서드만 맞춰 수정해주세요.
-     */
+    /** 첨부파일을 비공개 S3 버킷에 저장하고 메타데이터를 생성합니다. */
     private void saveAttachments(Long inquiryId, List<MultipartFile> files) {
-        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-        try {
-            Files.createDirectories(uploadPath);
-        } catch (IOException e) {
-            throw new UncheckedIOException("첨부파일 저장 폴더 생성에 실패했습니다.", e);
-        }
-
         List<InquiryAttachment> attachments = new ArrayList<>();
 
         for (MultipartFile file : files) {
             String originalName = file.getOriginalFilename();
-            String ext = extractExtension(originalName);
-            String storedName = UUID.randomUUID() + (ext.isEmpty() ? "" : "." + ext);
-            Path targetPath = uploadPath.resolve(storedName);
+            String storageKey;
 
             try {
-                file.transferTo(targetPath.toFile());
+                storageKey = awsS3Service.uploadPrivate(file, "qna/" + inquiryId);
             } catch (IOException e) {
-                throw new UncheckedIOException("첨부파일 저장에 실패했습니다: " + originalName, e);
+                throw new IllegalStateException("첨부파일 저장에 실패했습니다: " + originalName, e);
             }
+            awsS3Service.synchronizePrivateReplacement(null, storageKey);
 
-            // NOTE: storageKey는 엔티티 설명상 "객체 스토리지" 키를 의도한 필드입니다.
-            //       현재는 별도 스토리지 연동 전이라 로컬 디스크 절대경로를 그대로 저장합니다.
-            //       추후 S3 등으로 전환 시 이 값을 버킷 키(예: "qna/{storedName}")로 바꾸고
-            //       업로드 로직도 해당 SDK 호출로 교체하면 됩니다.
             InquiryAttachment attachment = InquiryAttachment.builder()
                     .inquiryId(inquiryId)
                     .originalName(originalName)
-                    .storageKey(targetPath.toString())
+                    .storageKey(storageKey)
                     .mimeType(file.getContentType() != null ? file.getContentType() : "application/octet-stream")
                     .fileSize(file.getSize())
                     .createdAt(LocalDateTime.now())
@@ -249,6 +236,26 @@ public class QnaService {
         return attachment;
     }
 
+    /** 관리자 - 문의 첨부파일 조회 (다운로드용) */
+    @Transactional(readOnly = true)
+    public InquiryAttachment getAttachmentForAdmin(Long attachmentId) {
+        return inquiryAttachmentRepository.findById(attachmentId)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "첨부파일을 찾을 수 없습니다. id=" + attachmentId
+                ));
+    }
+
+    /** S3에 저장된 첨부파일의 임시 다운로드 URL을 발급합니다. */
+    public String getAttachmentDownloadUrl(InquiryAttachment attachment) {
+        if (isLegacyLocalFile(attachment.getStorageKey())) {
+            return null;
+        }
+        return awsS3Service.getPresignedDownloadUrl(
+                attachment.getStorageKey(),
+                attachment.getOriginalName()
+        );
+    }
+
     /** 사용자 - 문의 삭제 (본인 문의 + 답변대기 상태만 가능) */
     @Transactional
     public void deleteMyInquiry(Long inquiryId, Long userId) {
@@ -264,11 +271,7 @@ public class QnaService {
         List<InquiryAttachment> attachments = inquiryAttachmentRepository.findByInquiryId(inquiryId);
         if (!attachments.isEmpty()) {
             for (InquiryAttachment attachment : attachments) {
-                try {
-                    Files.deleteIfExists(Path.of(attachment.getStorageKey()));
-                } catch (IOException e) {
-                    // 파일 삭제 실패는 문의 삭제 자체를 막지 않고 무시합니다. 필요 시 로깅 추가.
-                }
+                deleteAttachmentFile(attachment);
             }
             inquiryAttachmentRepository.deleteAll(attachments);
         }
@@ -276,18 +279,61 @@ public class QnaService {
         inquiryRepository.delete(inquiry);
     }
 
+    private void deleteAttachmentFile(InquiryAttachment attachment) {
+        String storageKey = attachment.getStorageKey();
+        if (isLegacyLocalFile(storageKey)) {
+            try {
+                Files.deleteIfExists(Path.of(storageKey));
+            } catch (IOException ignored) {
+                // 레거시 로컬 파일 삭제 실패가 문의 삭제를 막지 않게 합니다.
+            }
+            return;
+        }
+        awsS3Service.deletePrivate(storageKey);
+    }
+
+    private boolean isLegacyLocalFile(String storageKey) {
+        if (!StringUtils.hasText(storageKey)) {
+            return false;
+        }
+        try {
+            return Path.of(storageKey).isAbsolute();
+        } catch (RuntimeException exception) {
+            return false;
+        }
+    }
+
     /** 관리자 - 1:1 문의 목록 검색/페이징 */
-    public Page<InquiryListItemDto> getInquiryList(Long categoryId, String status, String keyword, Pageable pageable) {
+    public Page<InquiryListItemDto> getInquiryList(
+            Long categoryId,
+            String memberType,
+            String status,
+            String keyword,
+            Pageable pageable
+    ) {
         Map<Long, String> categoryNameMap = getActiveCategories().stream()
                 .collect(Collectors.toMap(InquiryCategory::getInquiryCategoryId, InquiryCategory::getCategoryName));
 
         Specification<Inquiry> spec = Specification.where(categoryEquals(categoryId))
+                .and(userTypeEquals(memberType))
                 .and(statusFilter(status))
                 .and(keywordContains(keyword));
 
-        Page<Inquiry> inquiries = inquiryRepository.findAll(spec, pageable);
+        Page<Inquiry> inquiries = inquiryRepository.findAll(spec, latestFirst(pageable));
 
-        return inquiries.map(inquiry -> toListItem(inquiry, categoryNameMap));
+        Map<Long, User> userMap = getUserMap(inquiries);
+        Map<Long, Company> companyMap = getCompanyMap(userMap);
+        return inquiries.map(inquiry -> toListItem(
+                inquiry,
+                categoryNameMap,
+                userMap,
+                companyMap
+        ));
+    }
+
+    private Pageable latestFirst(Pageable pageable) {
+        Sort sort = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("inquiryId"));
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
     }
 
     /** 관리자 - 문의 상세 (답변 모달 데이터) */
@@ -299,13 +345,17 @@ public class QnaService {
                 .orElse("-");
 
         List<InquiryAttachment> attachments = inquiryAttachmentRepository.findByInquiryId(inquiryId);
+        User writer = userRepository.findById(inquiry.getUserId()).orElse(null);
+        Company company = writer != null && writer.getCompanyId() != null
+                ? companyRepository.findById(writer.getCompanyId()).orElse(null)
+                : null;
 
         return InquiryDetailDto.builder()
                 .inquiryId(inquiry.getInquiryId())
                 .categoryName(categoryName)
                 .title(inquiry.getTitle())
                 .content(inquiry.getContent())
-                .writerLabel("회원 #" + inquiry.getUserId()) // TODO: User 엔티티 연동 시 실제 이름/유형으로 교체
+                .writerLabel(toWriterLabel(inquiry.getUserId(), writer, company))
                 .createdAt(inquiry.getCreatedAt().format(DATETIME_FORMAT))
                 .status(inquiry.getStatus())
                 .statusLabel(toStatusLabel(inquiry.getStatus()))
@@ -376,16 +426,82 @@ public class QnaService {
         }
     }
 
-    private InquiryListItemDto toListItem(Inquiry inquiry, Map<Long, String> categoryNameMap) {
+    private InquiryListItemDto toListItem(
+            Inquiry inquiry,
+            Map<Long, String> categoryNameMap,
+            Map<Long, User> userMap,
+            Map<Long, Company> companyMap
+    ) {
+        User writer = userMap.get(inquiry.getUserId());
         return InquiryListItemDto.builder()
                 .inquiryId(inquiry.getInquiryId())
                 .categoryName(categoryNameMap.getOrDefault(inquiry.getInquiryCategoryId(), "-"))
+                .memberType(toMemberTypeLabel(writer))
                 .title(inquiry.getTitle())
-                .writerLabel("회원 #" + inquiry.getUserId())
+                .writerLabel(toWriterName(inquiry.getUserId(), writer, companyMap))
                 .status(inquiry.getStatus())
                 .statusLabel(toStatusLabel(inquiry.getStatus()))
                 .createdAt(inquiry.getCreatedAt().format(DATE_FORMAT))
                 .build();
+    }
+
+    private Map<Long, User> getUserMap(Page<Inquiry> inquiries) {
+        List<Long> userIds = inquiries.getContent().stream()
+                .map(Inquiry::getUserId)
+                .distinct()
+                .toList();
+        return userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getUserId, user -> user));
+    }
+
+    private Map<Long, Company> getCompanyMap(Map<Long, User> userMap) {
+        List<Long> companyIds = userMap.values().stream()
+                .map(User::getCompanyId)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .toList();
+        return companyRepository.findAllById(companyIds).stream()
+                .collect(Collectors.toMap(Company::getCompanyId, company -> company));
+    }
+
+    private String toMemberTypeLabel(User user) {
+        if (user == null) {
+            return "-";
+        }
+        return switch (user.getUserType()) {
+            case "개인" -> "개인회원";
+            case "기업" -> "기업회원";
+            default -> user.getUserType();
+        };
+    }
+
+    private String toWriterName(
+            Long userId,
+            User writer,
+            Map<Long, Company> companyMap
+    ) {
+        if (writer == null) {
+            return "회원 #" + userId;
+        }
+        if ("기업".equals(writer.getUserType()) && writer.getCompanyId() != null) {
+            Company company = companyMap.get(writer.getCompanyId());
+            if (company != null) {
+                return company.getCompanyName();
+            }
+        }
+        return writer.getName();
+    }
+
+    private String toWriterLabel(Long userId, User writer, Company company) {
+        if (writer == null) {
+            return "회원 #" + userId;
+        }
+        if ("기업".equals(writer.getUserType()) && company != null) {
+            return company.getCompanyName()
+                    + " · 담당자 " + writer.getName()
+                    + " · 기업회원";
+        }
+        return writer.getName() + " · " + toMemberTypeLabel(writer);
     }
 
     private String toStatusLabel(String status) {
@@ -394,6 +510,16 @@ public class QnaService {
 
     private Specification<Inquiry> userIdEquals(Long userId) {
         return (root, query, cb) -> cb.equal(root.get("userId"), userId);
+    }
+
+    private Specification<Inquiry> userTypeEquals(String memberType) {
+        if (!StringUtils.hasText(memberType)) {
+            return (root, query, cb) -> cb.conjunction();
+        }
+        List<Long> userIds = userRepository.findUserIdsByUserType(memberType);
+        return (root, query, cb) -> userIds.isEmpty()
+                ? cb.disjunction()
+                : root.get("userId").in(userIds);
     }
 
     private Specification<Inquiry> categoryEquals(Long categoryId) {

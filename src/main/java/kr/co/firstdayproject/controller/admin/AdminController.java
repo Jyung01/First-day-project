@@ -76,9 +76,4 @@ public class AdminController {
         return "admin/cs/faq";
     }
 
-    @GetMapping("/cs/qna")
-    public String qna(Model model) {
-        model.addAttribute("activeMenu", "cs");
-        return "admin/cs/qna";
-    }
 }

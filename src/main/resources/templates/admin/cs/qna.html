@@ -6,40 +6,9 @@
     <title>1:1 문의 관리 | 첫출근 관리자</title>
     <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
     <link rel="stylesheet" th:href="@{/css/admin/section-common.css}" />
-    <style>
-        /* 답변 모달 전용 스타일 - FAQ 수정 모달과 동일한 다크 테마 */
-        .qna-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;z-index:200;}
-        .qna-modal-overlay.open{display:flex;}
-        .qna-modal{background:#1c2436;border:1px solid #2a3348;border-radius:14px;width:560px;max-width:92vw;max-height:86vh;overflow-y:auto;padding:26px 28px;color:#e8ecf5;}
-        .qna-modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
-        .qna-modal-head h2{font-size:17px;margin:6px 0 8px;color:#e8ecf5;font-weight:700;}
-        .qna-modal-meta{color:#9aa5bd;font-size:12.5px;display:flex;gap:8px;}
-        .qna-modal-close{background:none;border:none;font-size:20px;cursor:pointer;line-height:1;color:#9aa5bd;}
-        .qna-modal-close:hover{color:#fff;}
-        .qna-modal-body p{font-size:14px;line-height:1.6;white-space:pre-wrap;color:#c7cede;}
-        .qna-attach-list{margin:10px 0 16px;display:flex;flex-direction:column;gap:6px;}
-        .qna-attach-chip{font-size:12.5px;color:#9aa5bd;background:#161d2c;border:1px solid #2a3348;padding:6px 10px;border-radius:6px;display:flex;justify-content:space-between;}
-        .qna-answer-section{border-top:1px solid #2a3348;padding-top:16px;margin-top:8px;}
-        .qna-answer-section .section-title{font-size:14px;font-weight:700;color:#e8ecf5;margin-bottom:10px;}
-        .qna-answer-view{background:#161d2c;border:1px solid #2a3348;border-radius:8px;padding:12px 14px;font-size:13.5px;line-height:1.6;white-space:pre-wrap;color:#c7cede;}
-        .qna-answer-view-meta{color:#9aa5bd;font-size:12px;margin-top:8px;}
-        .qna-answer-actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-end;}
-        .qna-answer-input{width:100%;min-height:120px;background:#161d2c;border:1px solid #2a3348;color:#e8ecf5;border-radius:8px;padding:12px 14px;font-size:13.5px;resize:vertical;font-family:inherit;}
-        .qna-answer-input::placeholder{color:#6b7488;}
-        .qna-answer-input:focus{outline:none;border-color:#5b6ef5;}
-        .qna-form-error{color:#ef5b6c;font-size:12.5px;margin-top:6px;display:none;}
-        .btn-sm{padding:8px 18px;font-size:13px;border-radius:8px;cursor:pointer;font-weight:600;}
-        .btn-sm.primary{background:#5b6ef5;color:#fff;border:none;}
-        .btn-sm.primary:hover{background:#4657e0;}
-        .btn-sm.outline{background:transparent;border:1px solid #3a4360;color:#c7cede;}
-        .btn-sm.outline:hover{border-color:#5b6ef5;color:#fff;}
-        .btn-sm.danger{background:transparent;border:1px solid #ef5b6c;color:#ef5b6c;}
-        .btn-sm.danger:hover{background:#ef5b6c;color:#fff;}
-        .row-actions a{cursor:pointer;}
-        #qnaStatusBadge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;}
-        #qnaStatusBadge.red{background:rgba(239,91,108,0.15);color:#ef5b6c;}
-        #qnaStatusBadge.green{background:rgba(62,207,142,0.15);color:#3ecf8e;}
-    </style>
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/admin-modal.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/admin/cs/qna-modal.css}" />
 </head>
 <body>
 <div class="wrapper">
@@ -61,8 +30,11 @@
                                 th:text="${c.categoryName}"
                                 th:selected="${categoryId != null and categoryId == c.inquiryCategoryId}"></option>
                     </select>
-                    <!-- TODO: 회원 유형(개인/기업) 필드가 아직 없어 UI만 유지, 실제 필터링 미연동 -->
-                    <select aria-label="회원 유형"><option>회원 유형 전체</option><option>개인</option><option>기업</option></select>
+                    <select name="memberType" aria-label="회원 유형" onchange="this.form.submit()">
+                        <option value="">회원 유형 전체</option>
+                        <option value="개인" th:selected="${memberType == '개인'}">개인회원</option>
+                        <option value="기업" th:selected="${memberType == '기업'}">기업회원</option>
+                    </select>
                     <select name="status" aria-label="답변 상태" onchange="this.form.submit()">
                         <option value="">답변 상태 전체</option>
                         <option value="PENDING" th:selected="${status == 'PENDING'}">미답변</option>
@@ -81,8 +53,7 @@
                         </tr>
                         <tr th:each="inq : ${inquiries}">
                             <td th:text="'Q-' + ${inq.inquiryId}">Q-128</td>
-                            <!-- TODO: User 엔티티 연동 후 실제 회원 유형(개인/기업)으로 교체 -->
-                            <td><span class="tag">-</span></td>
+                            <td><span class="tag" th:text="${inq.memberType}">개인회원</span></td>
                             <td th:text="${inq.categoryName}">회원·계정</td>
                             <td th:text="${inq.title}">제목</td>
                             <td th:text="${inq.writerLabel}">회원 #1</td>
@@ -101,7 +72,7 @@
                 </div>
                 <nav class="pagination" aria-label="문의 페이지" th:if="${totalPages > 1}">
                     <a th:each="p : ${#numbers.sequence(0, totalPages - 1)}"
-                       th:href="@{/admin/cs/qna(page=${p}, categoryId=${categoryId}, status=${status}, keyword=${keyword})}"
+                       th:href="@{/admin/cs/qna(page=${p}, categoryId=${categoryId}, memberType=${memberType}, status=${status}, keyword=${keyword})}"
                        th:text="${p + 1}"
                        th:classappend="${p == currentPage} ? 'active' : ''"></a>
                 </nav>
@@ -112,9 +83,10 @@
 </div>
 
 <!-- 답변/상세 모달 -->
-<div class="qna-modal-overlay" id="qnaModalOverlay">
-    <div class="qna-modal">
-        <div class="qna-modal-head">
+<div class="admin-modal" id="qnaModalOverlay">
+    <div class="admin-modal__backdrop" onclick="closeQnaModal()"></div>
+    <section class="admin-modal__dialog qna-modal" role="dialog" aria-modal="true" aria-labelledby="qnaTitle">
+        <header class="admin-modal__header qna-modal-head">
             <div>
                 <span id="qnaStatusBadge" class="tag red">미답변</span>
                 <h2 id="qnaTitle">제목</h2>
@@ -126,24 +98,24 @@
                     <span id="qnaCreatedAt"></span>
                 </div>
             </div>
-            <button type="button" class="qna-modal-close" onclick="closeQnaModal()">×</button>
-        </div>
+            <button type="button" class="admin-modal__close" onclick="closeQnaModal()" aria-label="닫기">×</button>
+        </header>
 
-        <div class="qna-modal-body">
-            <p id="qnaContent"></p>
+        <div class="admin-modal__body qna-modal-body">
+            <p class="qna-question-label">문의 내용</p>
+            <p id="qnaContent" class="qna-question-content"></p>
             <div id="qnaAttachments" class="qna-attach-list"></div>
-        </div>
 
-        <div class="qna-answer-section">
-            <p class="section-title">관리자 답변</p>
+            <div class="qna-answer-section">
+                <p class="section-title">관리자 답변</p>
 
             <!-- 답변완료: 조회 모드 -->
             <div id="answerViewBlock" style="display:none;">
                 <div class="qna-answer-view" id="answerViewText"></div>
                 <div class="qna-answer-view-meta" id="answerViewMeta"></div>
-                <div class="qna-answer-actions">
-                    <button type="button" class="btn-sm danger" onclick="deleteAnswer()">삭제</button>
-                    <button type="button" class="btn-sm outline" onclick="enterEditMode()">수정</button>
+                <div class="admin-modal__footer qna-answer-actions">
+                    <button type="button" class="admin-modal-button admin-modal-button--danger" onclick="deleteAnswer()">삭제</button>
+                    <button type="button" class="admin-modal-button admin-modal-button--outline" onclick="enterEditMode()">수정</button>
                 </div>
             </div>
 
@@ -151,17 +123,22 @@
             <div id="answerFormBlock" style="display:none;">
                 <textarea id="answerInput" class="qna-answer-input" maxlength="2000" placeholder="답변 내용을 입력해주세요."></textarea>
                 <p class="qna-form-error" id="answerError"></p>
-                <div class="qna-answer-actions">
-                    <button type="button" class="btn-sm outline" id="answerCancelBtn" onclick="cancelAnswerForm()">취소</button>
-                    <button type="button" class="btn-sm primary" id="answerSubmitBtn" onclick="submitAnswer()">저장</button>
+                <div class="admin-modal__footer qna-answer-actions">
+                    <button type="button" class="admin-modal-button admin-modal-button--outline" id="answerCancelBtn" onclick="cancelAnswerForm()">취소</button>
+                    <button type="button" class="admin-modal-button admin-modal-button--primary" id="answerSubmitBtn" onclick="submitAnswer()">저장</button>
                 </div>
             </div>
         </div>
-    </div>
+        </div>
+    </section>
 </div>
+
+<div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
+<script th:src="@{/js/modal.js}"></script>
 
 <script th:inline="javascript">
     const API_BASE = /*[[@{/admin/cs/qna}]]*/ '/admin/cs/qna';
+    document.getElementById('confirmModal')?.classList.add('admin-common-modal');
 
     let currentInquiryId = null;
     let currentHasAnswer = false;
@@ -177,7 +154,7 @@
         currentInquiryId = inquiryId;
         const res = await fetch(`${API_BASE}/${inquiryId}`);
         if (!res.ok) {
-            alert('문의 정보를 불러오지 못했습니다.');
+            showQnaNotice('문의 정보를 불러오지 못했습니다.');
             return;
         }
         const data = await res.json();
@@ -197,7 +174,17 @@
         (data.attachments || []).forEach(a => {
             const chip = document.createElement('div');
             chip.className = 'qna-attach-chip';
-            chip.innerHTML = `<span>${a.originalName}</span><span>${formatSize(a.fileSize)}</span>`;
+
+            const link = document.createElement('a');
+            link.className = 'qna-attach-link';
+            link.href = `${API_BASE}/attachment/${a.attachmentId}`;
+            link.textContent = a.originalName;
+            link.setAttribute('download', '');
+
+            const size = document.createElement('span');
+            size.textContent = formatSize(a.fileSize);
+
+            chip.append(link, size);
             attachWrap.appendChild(chip);
         });
 
@@ -213,11 +200,11 @@
         }
 
         clearError();
-        document.getElementById('qnaModalOverlay').classList.add('open');
+        document.getElementById('qnaModalOverlay').classList.add('is-open');
     }
 
     function closeQnaModal() {
-        document.getElementById('qnaModalOverlay').classList.remove('open');
+        document.getElementById('qnaModalOverlay').classList.remove('is-open');
         currentInquiryId = null;
     }
 
@@ -281,25 +268,61 @@
             return;
         }
 
+        const successTitle = mode === 'edit'
+            ? '답변이 수정되었습니다.'
+            : '답변이 등록되었습니다.';
         closeQnaModal();
-        location.reload();
+        showQnaSuccess(successTitle);
     }
 
-    async function deleteAnswer() {
-        if (!confirm('등록된 답변을 삭제하시겠습니까? 삭제 시 문의는 다시 미답변 상태가 됩니다.')) return;
+    function deleteAnswer() {
+        const inquiryId = currentInquiryId;
+        closeQnaModal();
 
-        const res = await fetch(`${API_BASE}/${currentInquiryId}/answer`, { method: 'DELETE' });
+        showConfirmModal({
+            iconClass: 'danger',
+            iconHtml: '<span aria-hidden="true">!</span>',
+            title: '답변을 삭제할까요?',
+            message: '삭제하면 해당 문의는 다시 미답변 상태로 변경됩니다.',
+            leftText: '취소',
+            rightText: '삭제',
+            rightClass: 'btn-danger',
+            onRight: () => deleteAnswerConfirmed(inquiryId)
+        });
+    }
+
+    async function deleteAnswerConfirmed(inquiryId) {
+        const res = await fetch(`${API_BASE}/${inquiryId}/answer`, { method: 'DELETE' });
         if (!res.ok) {
-            alert('답변 삭제 중 오류가 발생했습니다.');
+            showQnaNotice('답변 삭제 중 오류가 발생했습니다.');
             return;
         }
-        closeQnaModal();
-        location.reload();
+
+        showQnaSuccess('답변이 삭제되었습니다.');
     }
 
-    document.getElementById('qnaModalOverlay').addEventListener('click', (e) => {
-        if (e.target.id === 'qnaModalOverlay') closeQnaModal();
-    });
+    function showQnaNotice(message) {
+        showConfirmModal({
+            iconClass: 'info',
+            iconHtml: '<span aria-hidden="true">?</span>',
+            title: '안내',
+            message,
+            leftVisible: false,
+            rightText: '확인'
+        });
+    }
+
+    function showQnaSuccess(title) {
+        showConfirmModal({
+            iconClass: 'success',
+            iconHtml: '<span aria-hidden="true">✓</span>',
+            title,
+            message: '변경된 내용을 문의 목록에 반영했습니다.',
+            leftVisible: false,
+            rightText: '확인',
+            onRight: () => location.reload()
+        });
+    }
 </script>
 </body>
 </html>
