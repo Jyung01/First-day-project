@@ -1,9 +1,12 @@
-<footer th:fragment="footer" xmlns:th="http://www.thymeleaf.org" class="site-footer">
+<footer th:fragment="footer" xmlns:th="http://www.thymeleaf.org" class="site-footer"
+        th:with="footerSiteSetting=${@adminSiteSettingService.getSiteSettingView()}">
   <div class="wrap footer-inner">
     <div class="footer-brand">
       <a th:href="@{/}" class="footer-logo" aria-label="첫출근 메인으로 이동">
         <img
-                th:src="@{/images/footer-logo.svg}"
+                th:src="@{${footerSiteSetting.footerLogoUrl != null && !#strings.isEmpty(footerSiteSetting.footerLogoUrl)}
+                            ? ${footerSiteSetting.footerLogoUrl}
+                            : '/images/footer-logo.svg'}"
                 width="190"
                 height="56"
                 alt="첫출근"
