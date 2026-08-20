@@ -58,7 +58,7 @@ public class AuthService {
     private List<Policy> getSignupPolicies(String audience) {
         return policyRepository.findActiveSignupPolicies(
                 audience,
-                LocalDateTime.now()
+                LocalDateTime.now().toLocalDate()
         );
     }
 
@@ -69,7 +69,7 @@ public class AuthService {
         LocalDateTime now = LocalDateTime.now();
         List<Policy> policies = policyRepository.findActiveSignupPolicies(
                 audience,
-                now
+                now.toLocalDate()
         );
 
         if (policies.isEmpty()) {

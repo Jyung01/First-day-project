@@ -2,7 +2,10 @@ package kr.co.firstdayproject.service.corp;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import kr.co.firstdayproject.dto.corp.job.JobPostingCreateRequest;
 import kr.co.firstdayproject.entity.company.Company;
@@ -11,7 +14,9 @@ import kr.co.firstdayproject.entity.job.JobPostingSkill;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
 import kr.co.firstdayproject.repository.job.JobPostingSkillRepository;
+import kr.co.firstdayproject.service.ai.JobPostingEmbeddingSyncEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +28,16 @@ public class CorpJobService {
     private static final String DRAFT = "DRAFT";
     private static final String PUBLISH = "PUBLISH";
     private static final String REVIEW = "REVIEW";
+    private static final Set<String> EMBEDDABLE_STATUSES = Set.of(
+        "모집예정",
+        "모집중"
+    );
 
     private final CompanyRepository companyRepository;
     private final JobPostingRepository jobPostingRepository;
     private final JobPostingSkillRepository jobPostingSkillRepository;
     private final CorpJobRequestValidator requestValidator;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long createJobPosting(
@@ -111,6 +121,12 @@ public class CorpJobService {
             .toList();
 
         jobPostingSkillRepository.saveAll(postingSkills);
+
+        eventPublisher.publishEvent(new JobPostingEmbeddingSyncEvent(
+            savedJobPosting.getJobPostingId(),
+            EMBEDDABLE_STATUSES.contains(publishingStatus)
+        ));
+
         return savedJobPosting.getJobPostingId();
     }
 
@@ -185,6 +201,12 @@ public class CorpJobService {
         LocalDate originalStartDate = toLocalDate(posting.getApplyStartAt());
         LocalDateTime now = LocalDateTime.now();
 
+        if (review && !hasReviewableChanges(posting, request, skillIds)) {
+            throw new IllegalArgumentException(
+                "숨김 사유에 맞게 공고 내용을 수정한 후 재검토를 요청해 주세요."
+            );
+        }
+
         if ("모집중".equals(originalStatus)
             && !request.getApplyStartDate().equals(originalStartDate)) {
             throw new IllegalArgumentException(
@@ -244,6 +266,126 @@ public class CorpJobService {
                 ))
                 .toList()
         );
+
+        eventPublisher.publishEvent(new JobPostingEmbeddingSyncEvent(
+            jobPostingId,
+            EMBEDDABLE_STATUSES.contains(nextStatus)
+        ));
+    }
+
+    private boolean hasReviewableChanges(
+        JobPosting posting,
+        JobPostingCreateRequest request,
+        List<Long> requestedSkillIds
+    ) {
+        Set<Long> savedSkillIds = jobPostingSkillRepository
+            .findAllByIdJobPostingId(posting.getJobPostingId())
+            .stream()
+            .map(postingSkill -> postingSkill.getId().getSkillId())
+            .collect(java.util.stream.Collectors.toSet());
+
+        Set<String> savedBenefits = new HashSet<>(
+            parseBenefits(posting.getBenefitsJson())
+        );
+        Set<String> requestedBenefits = request.getBenefits() == null
+            ? Set.of()
+            : request.getBenefits().stream()
+                .map(this::blankToNull)
+                .filter(Objects::nonNull)
+                .collect(java.util.stream.Collectors.toSet());
+
+        return changed(
+                posting.getJobCategoryId(),
+                request.getJobCategoryId()
+            )
+            || changed(posting.getTitle(), blankToNull(request.getTitle()))
+            || changed(
+                posting.getEmploymentType(),
+                blankToNull(request.getEmploymentType())
+            )
+            || changed(
+                posting.getCareerType(),
+                blankToNull(request.getCareerType())
+            )
+            || changed(
+                posting.getMinExperienceYears(),
+                request.getMinExperienceYears()
+            )
+            || changed(
+                posting.getMaxExperienceYears(),
+                request.getMaxExperienceYears()
+            )
+            || changed(
+                posting.getEducationLevel(),
+                blankToNull(request.getEducationLevel())
+            )
+            || changed(
+                posting.getWorkRegion(),
+                blankToNull(request.getWorkRegion())
+            )
+            || changed(
+                posting.getWorkAddress(),
+                joinNullableAddress(
+                    request.getAddress(),
+                    request.getAddressDetail()
+                )
+            )
+            || changed(
+                posting.getSalaryText(),
+                blankToNull(request.getSalaryText())
+            )
+            || changed(posting.getSalaryMin(), request.getSalaryMin())
+            || changed(posting.getSalaryMax(), request.getSalaryMax())
+            || changed(posting.getHeadcount(), request.getHeadcount())
+            || changed(
+                toLocalDate(posting.getApplyStartAt()),
+                request.getApplyStartDate()
+            )
+            || changed(
+                toLocalDate(posting.getApplyEndAt()),
+                request.getApplyEndDate()
+            )
+            || changed(
+                posting.getIntroduction(),
+                blankToNull(request.getIntroduction())
+            )
+            || changed(
+                posting.getMainTasks(),
+                blankToNull(request.getMainTasks())
+            )
+            || changed(
+                posting.getQualifications(),
+                blankToNull(request.getQualifications())
+            )
+            || changed(
+                posting.getPreferredConditions(),
+                blankToNull(request.getPreferredConditions())
+            )
+            || !savedBenefits.equals(requestedBenefits)
+            || !savedSkillIds.equals(new HashSet<>(requestedSkillIds));
+    }
+
+    private boolean changed(Object savedValue, Object requestedValue) {
+        return !Objects.equals(savedValue, requestedValue);
+    }
+
+    private List<String> parseBenefits(String benefitsJson) {
+        if (benefitsJson == null || benefitsJson.isBlank()) {
+            return List.of();
+        }
+
+        String content = benefitsJson.trim();
+        if (content.length() < 2) {
+            return List.of();
+        }
+
+        return Arrays.stream(
+                content.substring(1, content.length() - 1).split(",")
+            )
+            .map(String::trim)
+            .map(value -> value.replaceAll("^\"|\"$", ""))
+            .filter(value -> !value.isBlank())
+            .toList();
     }
 
     private String resolveNextStatus(

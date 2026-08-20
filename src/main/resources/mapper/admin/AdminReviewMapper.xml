@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.firstdayproject.dao.admin.AdminReviewDao">
+    <sql id="reviewUnion">
+        SELECT '기업리뷰' AS reviewType, cr.company_review_id AS reviewId, cr.company_id AS companyId,
+               cr.author_user_id AS authorUserId, c.company_name AS companyName,
+               CONCAT(LEFT(u.name, 1), '**') AS authorName, cr.summary AS title,
+               cr.pros AS content, cr.cons AS secondaryContent, cr.overall_rating AS rating,
+               NULL AS interviewType, NULL AS interviewResult, NULL AS difficulty,
+               cr.status, cr.hidden_reason AS hiddenReason, cr.admin_memo AS adminMemo, cr.created_at AS createdAt, cr.updated_at AS updatedAt,
+               (SELECT COUNT(*) FROM reports r WHERE r.target_type='기업리뷰' AND r.target_id=cr.company_review_id) AS reportCount
+        FROM company_reviews cr JOIN companies c ON c.company_id=cr.company_id JOIN users u ON u.user_id=cr.author_user_id
+        UNION ALL
+        SELECT '면접후기', ir.interview_review_id, ir.company_id, ir.author_user_id, c.company_name,
+               CONCAT(LEFT(u.name, 1), '**'), COALESCE(jp.title, '면접후기'), ir.content, ir.tips, NULL,
+               ir.interview_type, ir.interview_result, ir.difficulty,
+               ir.status, ir.hidden_reason, ir.admin_memo, ir.created_at, ir.updated_at,
+               (SELECT COUNT(*) FROM reports r WHERE r.target_type='면접후기' AND r.target_id=ir.interview_review_id)
+        FROM interview_reviews ir JOIN companies c ON c.company_id=ir.company_id
+        JOIN users u ON u.user_id=ir.author_user_id LEFT JOIN job_postings jp ON jp.job_posting_id=ir.job_posting_id
+    </sql>
+
+    <sql id="adminReviewFilters">
+        status != '삭제'
+        <choose>
+            <when test="tab == 'company'">AND reviewType = '기업리뷰' AND status = '정상'</when>
+            <when test="tab == 'interview'">AND reviewType = '면접후기' AND status = '정상'</when>
+            <when test="tab == 'hidden'">AND status = '숨김'</when>
+        </choose>
+        <if test="keyword != null and keyword != ''">
+            AND (companyName LIKE CONCAT('%', #{keyword}, '%')
+                 OR title LIKE CONCAT('%', #{keyword}, '%')
+                 OR content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </sql>
+
+    <select id="selectAdminReviewList" resultType="kr.co.firstdayproject.dto.admin.AdminReviewDTO">
+        SELECT reviews.* FROM (<include refid="reviewUnion"/>) reviews
+        WHERE <include refid="adminReviewFilters"/>
+        <choose>
+            <when test="sort == 'reports'">ORDER BY reportCount DESC, createdAt DESC</when>
+            <when test="sort == 'oldest'">ORDER BY createdAt ASC</when>
+            <otherwise>ORDER BY createdAt DESC</otherwise>
+        </choose>
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectAdminReviewCount" resultType="int">
+        SELECT COUNT(*) FROM (<include refid="reviewUnion"/>) reviews
+        WHERE <include refid="adminReviewFilters"/>
+    </select>
+
+    <select id="selectAdminReviewSummary" resultType="map">
+        SELECT
+          (SELECT COUNT(*) FROM company_reviews WHERE status != '삭제') AS companyCount,
+          (SELECT COUNT(*) FROM interview_reviews WHERE status != '삭제') AS interviewCount,
+          (SELECT COUNT(*) FROM reports WHERE target_type IN ('기업리뷰','면접후기') AND status='미처리') AS pendingReportCount
+    </select>
+
+    <select id="selectCompanyReviewDetail" resultType="kr.co.firstdayproject.dto.admin.AdminReviewDTO">
+        SELECT '기업리뷰' AS reviewType, cr.company_review_id AS reviewId, cr.company_id AS companyId,
+               cr.author_user_id AS authorUserId, c.company_name AS companyName,
+               CONCAT(LEFT(u.name,1),'**') AS authorName, cr.summary AS title, cr.pros AS content,
+               cr.cons AS secondaryContent, cr.overall_rating AS rating, cr.status,
+               cr.hidden_reason AS hiddenReason, cr.admin_memo AS adminMemo, cr.created_at AS createdAt, cr.updated_at AS updatedAt,
+               (SELECT COUNT(*) FROM reports r WHERE r.target_type='기업리뷰' AND r.target_id=cr.company_review_id) AS reportCount
+        FROM company_reviews cr JOIN companies c ON c.company_id=cr.company_id JOIN users u ON u.user_id=cr.author_user_id
+        WHERE cr.company_review_id=#{reviewId} AND cr.status != '삭제'
+    </select>
+
+    <select id="selectInterviewReviewDetail" resultType="kr.co.firstdayproject.dto.admin.AdminReviewDTO">
+        SELECT '면접후기' AS reviewType, ir.interview_review_id AS reviewId, ir.company_id AS companyId,
+               ir.author_user_id AS authorUserId, c.company_name AS companyName,
+               CONCAT(LEFT(u.name,1),'**') AS authorName, COALESCE(jp.title,'면접후기') AS title,
+               ir.content, ir.tips AS secondaryContent, ir.interview_type AS interviewType,
+               ir.interview_result AS interviewResult, ir.difficulty, ir.status,
+               ir.hidden_reason AS hiddenReason, ir.admin_memo AS adminMemo, ir.created_at AS createdAt, ir.updated_at AS updatedAt,
+               (SELECT COUNT(*) FROM reports r WHERE r.target_type='면접후기' AND r.target_id=ir.interview_review_id) AS reportCount
+        FROM interview_reviews ir JOIN companies c ON c.company_id=ir.company_id JOIN users u ON u.user_id=ir.author_user_id
+        LEFT JOIN job_postings jp ON jp.job_posting_id=ir.job_posting_id
+        WHERE ir.interview_review_id=#{reviewId} AND ir.status != '삭제'
+    </select>
+
+    <update id="updateCompanyReviewStatus">
+        UPDATE company_reviews SET status=#{status}, admin_memo=#{memo},
+          hidden_reason=CASE WHEN #{status}='숨김' THEN #{hiddenReason} ELSE NULL END,
+          hidden_by=CASE WHEN #{status}='숨김' THEN #{adminId} ELSE NULL END,
+          updated_at=CURRENT_TIMESTAMP(6)
+        WHERE company_review_id=#{reviewId} AND status != '삭제'
+    </update>
+    <update id="updateInterviewReviewStatus">
+        UPDATE interview_reviews SET status=#{status}, admin_memo=#{memo},
+          hidden_reason=CASE WHEN #{status}='숨김' THEN #{hiddenReason} ELSE NULL END,
+          hidden_by=CASE WHEN #{status}='숨김' THEN #{adminId} ELSE NULL END,
+          updated_at=CURRENT_TIMESTAMP(6)
+        WHERE interview_review_id=#{reviewId} AND status != '삭제'
+    </update>
+    <update id="resolveReviewReports">
+        UPDATE reports SET status='처리완료', resolution_action='숨김', resolution_note=#{memo},
+          handled_by=#{adminId}, handled_at=CURRENT_TIMESTAMP(6)
+        WHERE target_type=#{reviewType} AND target_id=#{reviewId} AND status='미처리'
+    </update>
+</mapper>

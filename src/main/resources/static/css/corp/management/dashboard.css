@@ -134,6 +134,30 @@
   color: var(--corp-blue);
 }
 
+.dashboard-empty {
+  padding: 42px 20px;
+  color: #7b8799;
+  font-size: 13px;
+  text-align: center;
+}
+
+.corp-badge--gray {
+  background: #edf0f5;
+  color: #68758a;
+}
+
+.job-status-list em.is-scheduled {
+  color: #b56e00;
+}
+
+.job-status-list em.is-hidden {
+  color: #d94a4a;
+}
+
+.job-status-list em.is-review {
+  color: #7a65d1;
+}
+
 @media (max-width: 1050px) {
   .summary-grid {
       grid-template-columns: 1fr 1fr;

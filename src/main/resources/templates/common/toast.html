@@ -1,0 +1,13 @@
+<!--
+  저장·삭제 등 완료 안내를 잠깐 띄우는 토스트.
+  사용법: 화면에 <div th:replace="~{common/toast :: toast}"></div>를 넣고
+  toast.css / toast.js를 로드한 뒤 showToast("메시지") 또는 showToast("메시지", "error") 호출.
+  서버 리다이렉트로 알릴 때는 ?saved=true 같은 파라미터를 읽어 호출한다.
+-->
+<div
+  id="toastContainer"
+  class="toast-container"
+  role="status"
+  aria-live="polite"
+  th:fragment="toast"
+></div>

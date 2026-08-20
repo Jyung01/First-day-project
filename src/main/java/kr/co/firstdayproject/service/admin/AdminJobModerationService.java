@@ -8,7 +8,9 @@ import kr.co.firstdayproject.entity.member.User;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
 import kr.co.firstdayproject.repository.member.UserRepository;
+import kr.co.firstdayproject.service.ai.JobPostingEmbeddingSyncEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +19,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AdminJobModerationService {
 
+    private static final Set<String> EMBEDDABLE_STATUSES = Set.of(
+        "모집예정",
+        "모집중"
+    );
+
     private final JobPostingRepository jobPostingRepository;
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void hideJobPosting(
@@ -88,6 +96,11 @@ public class AdminJobModerationService {
             posting.setClosedAt(null);
         }
 
+        eventPublisher.publishEvent(new JobPostingEmbeddingSyncEvent(
+            posting.getJobPostingId(),
+            EMBEDDABLE_STATUSES.contains(posting.getStatus())
+        ));
+
         return posting.getStatus();
     }
 
@@ -100,6 +113,11 @@ public class AdminJobModerationService {
         posting.setHiddenReason(reason);
         posting.setHiddenBy(adminUserId);
         posting.setHiddenAt(LocalDateTime.now());
+
+        eventPublisher.publishEvent(new JobPostingEmbeddingSyncEvent(
+            posting.getJobPostingId(),
+            false
+        ));
     }
 
     private String normalizeHideReason(String reason) {

@@ -4,7 +4,9 @@
     <title>첫출근 — 자기소개서 보기</title>
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <link rel="stylesheet" th:href="@{/css/my/common.css}" />
+    <link rel="stylesheet" th:href="@{/css/my/cover-letter/common.css}" />
     <link rel="stylesheet" th:href="@{/css/my/cover-letter/detail.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
 </head><body>
 <header th:replace="~{common/header :: header}"></header>
 <main class="mypage">
@@ -38,6 +40,7 @@
                     <p class="cl-doc-section__text" th:text="${item.answer}">문항 답변</p>
                 </div>
             </div>
+            <p id="cl-detail-feedback" class="cl-inline-feedback" role="alert" hidden></p>
         </section>
     </div>
 </main>
@@ -49,25 +52,33 @@
         const deleteBtn = document.getElementById('btn-delete');
         deleteBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            if (!confirm('정말 삭제하시겠습니까?')) return;
-
             const id = deleteBtn.dataset.id;
-            try {
-                const res = await fetch(`/my/cover-letter/${id}`, { method: 'DELETE' });
-                if (!res.ok) throw new Error('삭제 실패');
-                alert('삭제되었습니다.');
-                location.href = '/my/cover-letter/list';
-            } catch (err) {
-                alert('삭제 중 오류가 발생했습니다.');
-            }
+            showConfirmModal({
+                iconClass: 'danger',
+                iconHtml: '!',
+                title: '삭제할까요?',
+                message: '삭제한 내용은 복구할 수 없습니다.\n자기소개서 삭제 시 제출 완료된 지원 문서는 유지됩니다.',
+                leftText: '취소',
+                rightText: '삭제',
+                rightClass: 'btn-danger',
+                onRight: async () => {
+                    const feedback = document.getElementById('cl-detail-feedback');
+                    try {
+                        const res = await fetch(`/my/cover-letter/${id}`, { method: 'DELETE' });
+                        if (!res.ok) throw new Error('삭제 실패');
+                        location.href = '/my/cover-letter/list?deleted=true';
+                    } catch (err) {
+                        feedback.textContent = '삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
+                        feedback.hidden = false;
+                    }
+                }
+            });
         });
     });
 </script>
 
 <!-- 공통 확인 모달 -->
 <div th:replace="~{modal/common/confirm-modal :: confirmModal}"></div>
-
-<script th:src="@{/js/common.js}"></script>
 
 <!-- 공통 모달 -->
 <script th:src="@{/js/modal.js}"></script>

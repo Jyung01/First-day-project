@@ -17,9 +17,11 @@ import kr.co.firstdayproject.dto.auth.PersonalTermsAgreement;
 import kr.co.firstdayproject.dto.auth.VerifiedEmail;
 import kr.co.firstdayproject.dto.job.JobCategoryGroup;
 import kr.co.firstdayproject.dto.job.JobCategoryOption;
+import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.auth.*;
 import kr.co.firstdayproject.service.job.JobService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,8 +45,25 @@ public class AuthController {
     private final PersonalSignupService personalSignupService;
     private final CorporateSignupService corporateSignupService;
 
+    /**
+     * 이미 로그인한 사용자에게는 로그인 폼 대신 각자의 첫 화면을 보여준다.
+     * 이동 경로는 로그인 성공 후 이동 규칙(LoginSuccessHandler)과 맞춘다.
+     */
     @GetMapping("/login")
-    public String login() { return "auth/login"; }
+    public String login(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return "auth/login";
+        }
+        return "redirect:" + resolveLandingPage(userDetails.getUserType());
+    }
+
+    private String resolveLandingPage(String userType) {
+        return switch (userType) {
+            case "관리자" -> "/admin";
+            case "기업" -> "/corp";
+            default -> "/";
+        };
+    }
 
     @GetMapping("/member-type")
     public String memberType() { return "auth/member-type"; }

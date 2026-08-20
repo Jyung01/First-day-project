@@ -14,6 +14,8 @@
 
         <!-- 이력서 상세 -->
         <link rel="stylesheet" th:href="@{/css/my/resume/detail.css}" />
+
+        <link rel="stylesheet" th:href="@{/css/common/toast.css}" />
     </head>
 
     <body>
@@ -249,6 +251,19 @@
         <!-- 공통 푸터 -->
         <footer th:replace="~{common/footer :: footer}"></footer>
 
+        <!-- 저장 완료 안내 토스트 -->
+        <div th:replace="~{common/toast :: toast}"></div>
+
         <script th:src="@{/js/common.js}"></script>
+
+        <script th:src="@{/js/common/toast.js}"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                showToastFromQuery("saved", {
+                    created: "이력서가 등록되었습니다.",
+                    updated: "이력서가 수정되었습니다."
+                });
+            });
+        </script>
     </body>
 </html>

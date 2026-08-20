@@ -1,4 +1,8 @@
 /* 공통 스타일 파일 */
+.summary.report-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .waiting {
   color: #f59e0b;
   font-weight: 600;
@@ -12,4 +16,16 @@
 .reject {
   color: #ef4444;
   font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  .summary.report-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .summary.report-summary {
+    grid-template-columns: 1fr;
+  }
 }

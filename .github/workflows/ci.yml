@@ -1,0 +1,50 @@
+name: CI
+
+# PR 단계에서 빌드·테스트만 검증한다. 배포는 deploy.yml이 main push에서 담당한다.
+# GitHub은 PR 브랜치를 그대로 쓰지 않고 base(main)에 합친 임시 커밋을 검사하므로,
+# 로컬에서 `git merge origin/main` 후 빌드하는 것과 같은 결과를 얻는다.
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+# 같은 PR에 새 커밋이 올라오면 진행 중이던 검사를 취소한다.
+# deploy.yml의 firstday-production 그룹과 겹치지 않아야 배포를 방해하지 않는다.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
+      - name: Test and build
+        run: ./gradlew clean build
+
+      # 실패했을 때 어느 테스트가 왜 깨졌는지 로그만으로 알기 어려운 경우가 있다.
+      - name: Upload test report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test
+          retention-days: 7

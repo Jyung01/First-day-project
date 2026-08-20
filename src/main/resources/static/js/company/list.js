@@ -4,9 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", (e) => {
             e.preventDefault();
 
-            // TODO
-            // fetch('/company/wish')
-
             btn.classList.toggle("active");
 
             const icon = btn.querySelector("i");
@@ -14,36 +11,50 @@ document.addEventListener("DOMContentLoaded", () => {
             icon.classList.toggle("fa-regular");
             icon.classList.toggle("fa-solid");
 
-            /*
-           ================================
-           Spring Controller 연동 예정
-           ================================
+            const companyId = btn.dataset.companyId;
 
-           fetch(`/company/bookmark/${companyId}`, {
-               method: "POST"
-           })
-           .then(response => response.json())
-           .then(data => {
-               console.log(data);
-           })
-           .catch(error => {
+            fetch(`/company/wish/${companyId}`, {
+                method: "POST"
+            })
+                .then(response => {
 
-               console.error(error);
+                    if (!response.ok) {
+                        throw new Error("관심기업 처리 실패");
+                    }
 
-               // 실패 시 원상복구
-               button.classList.toggle("active");
+                    return response.json();
+                })
+                .then(data => {
 
-               if (button.classList.contains("active")) {
-                   icon.classList.remove("fa-regular");
-                   icon.classList.add("fa-solid");
-               } else {
-                   icon.classList.remove("fa-solid");
-                   icon.classList.add("fa-regular");
-               }
+                    console.log(data);
 
-           });
+                    // 로그인 안 된 경우
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
 
-           */
+                    if (data.wished) {
+
+                        btn.classList.add("active");
+
+                        icon.classList.remove("fa-regular");
+                        icon.classList.add("fa-solid");
+
+                    } else {
+
+                        btn.classList.remove("active");
+
+                        icon.classList.remove("fa-solid");
+                        icon.classList.add("fa-regular");
+                    }
+
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+
         });
 
     });

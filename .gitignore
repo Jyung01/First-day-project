@@ -1,5 +1,6 @@
 HELP.md
 .gradle
+.gradle-user-home/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -36,6 +37,9 @@ out/
 ### VS Code ###
 .vscode/
 
+### Claude local settings ###
+.claude/settings.local.json
+
 ### OS ###
 .DS_Store
 Thumbs.db
@@ -53,6 +57,9 @@ src/main/resources/application-secret.properties
 ### Uploads ###
 uploads/
 src/main/resources/static/uploads/
+
+# 사이트 설정 이미지 업로드 (개발 단계 로컬 저장 경로)
+/src/main/resources/static/images/site/
 
 ### Temporary files ###
 *.tmp

@@ -24,12 +24,16 @@
         <div class="admin-modal__body">
             <p class="admin-modal__meta">
                 회원번호
-                <strong data-member-number>12842</strong>
-                <span aria-hidden="true">·</span>
-                <span data-member-type>개인회원</span>
+                <strong data-member-number>1003</strong>
             </p>
 
             <div class="admin-modal__grid">
+                <div class="admin-modal__field">
+                    <span class="admin-modal__label"> 로그인 아이디 </span>
+
+                    <div class="admin-modal__value" data-member-login-id>jobseeker03</div>
+                </div>
+
                 <div class="admin-modal__field">
                     <span class="admin-modal__label"> 이름 </span>
 
@@ -43,6 +47,12 @@
                 </div>
 
                 <div class="admin-modal__field">
+                    <span class="admin-modal__label"> 전화번호 </span>
+
+                    <div class="admin-modal__value" data-member-phone>010-2345-6789</div>
+                </div>
+
+                <div class="admin-modal__field">
                     <span class="admin-modal__label"> 가입일 </span>
 
                     <div class="admin-modal__value" data-member-created-at>2026.07.22</div>
@@ -51,7 +61,13 @@
                 <div class="admin-modal__field">
                     <span class="admin-modal__label"> 최근 로그인 </span>
 
-                    <div class="admin-modal__value" data-member-last-login>2026.07.22 11:20</div>
+                    <div class="admin-modal__value" data-member-last-login>2026.08.10 09:20</div>
+                </div>
+
+                <div class="admin-modal__field" data-member-withdrawn-field hidden>
+                    <span class="admin-modal__label"> 탈퇴일 </span>
+
+                    <div class="admin-modal__value" data-member-withdrawn-at>-</div>
                 </div>
             </div>
 
@@ -64,7 +80,9 @@
                 </strong>
             </div>
 
-            <div class="admin-modal__guide">지원·후기 이력은 보존하므로 삭제 대신 이용정지를 사용합니다.</div>
+            <div class="admin-modal__guide" data-member-guide>
+                이용정지하면 로그인이 제한되며 기존 지원·후기 이력은 보존됩니다.
+            </div>
         </div>
 
         <footer class="admin-modal__footer">

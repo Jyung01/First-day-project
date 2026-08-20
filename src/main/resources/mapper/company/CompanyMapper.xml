@@ -14,7 +14,8 @@
         c.short_description,
 
         ROUND(AVG(cr.overall_rating), 1) AS averageRating,
-        COUNT(cr.company_review_id) AS reviewCount,
+        COUNT(DISTINCT cr.company_review_id) AS reviewCount,
+        COUNT(DISTINCT jp.job_posting_id) AS jobPostingCount,
         MAX(cr.summary) AS summary,
 
         <!-- 채용 중인 공고 존재 여부 -->
@@ -35,6 +36,9 @@
         ON c.company_id = jp.company_id
         AND jp.status = '모집중'
 
+        WHERE c.approval_status = '승인'
+          AND c.company_status = '정상'
+
         GROUP BY
         c.company_id,
         c.company_name,
@@ -46,7 +50,7 @@
         averageRating DESC,
         reviewCount DESC
 
-        LIMIT 4;
+        LIMIT 5;
 
     </select>
 
@@ -55,10 +59,12 @@
             resultType="int">
         SELECT COUNT(*) FROM companies c
         <where>
+            c.approval_status = '승인'
+            AND c.company_status = '정상'
 
             <!-- 키워드 검색 (기업명, 한 줄 소개, 업종명) -->
             <if test="keyword != null and keyword != ''">
-                (
+                AND (
                 c.company_name LIKE CONCAT('%', #{keyword}, '%')
                 OR c.short_description LIKE CONCAT('%', #{keyword}, '%')
                 OR c.industry_name LIKE CONCAT('%', #{keyword}, '%')
@@ -82,7 +88,14 @@
 
             <!-- 직무 필터 -->
             <if test="jobCategory != null and jobCategory != ''">
-                AND jc.category_name = #{jobCategory}
+                AND EXISTS (
+                    SELECT 1
+                    FROM job_postings jp
+                    JOIN job_categories jc ON jc.job_category_id = jp.job_category_id
+                    WHERE jp.company_id = c.company_id
+                      AND jp.status = '모집중'
+                      AND jc.category_name = #{jobCategory}
+                )
             </if>
         </where>
     </select>
@@ -100,8 +113,11 @@
         c.address_line1,
         c.short_description,
 
+        <!-- 관심기업이면 company_id, 아니면 null -->
+        MAX(sc.company_id) AS savedCompanyId,
+
         ROUND(AVG(cr.overall_rating), 1) AS averageRating,
-        COUNT(cr.company_review_id) AS reviewCount,
+        COUNT(DISTINCT cr.company_review_id) AS reviewCount,
         MAX(cr.summary) AS summary,
 
         <!--  공고가 하나라도 있으면 1, 없으면 0 반환 -->
@@ -111,6 +127,11 @@
         END AS hasJobPosting
 
         FROM companies c
+
+        <!-- 관심기업 -->
+        LEFT JOIN saved_companies sc
+        ON c.company_id = sc.company_id
+        AND sc.user_id = #{userId}
 
         LEFT JOIN company_reviews cr
         ON c.company_id = cr.company_id
@@ -124,10 +145,12 @@
         ON jp.job_category_id = jc.job_category_id
 
         <where>
+            c.approval_status = '승인'
+            AND c.company_status = '정상'
 
             <!-- 키워드 검색 (기업명, 한 줄 소개, 업종명) -->
             <if test="keyword != null and keyword != ''">
-                (
+                AND (
                 c.company_name LIKE CONCAT('%', #{keyword}, '%')
                 OR c.short_description LIKE CONCAT('%', #{keyword}, '%')
                 OR c.industry_name LIKE CONCAT('%', #{keyword}, '%')
@@ -248,6 +271,8 @@
         AND jp.status='모집중'
 
         WHERE c.company_id = #{companyId}
+          AND c.approval_status = '승인'
+          AND c.company_status = '정상'
 
         GROUP BY
         c.company_id,
@@ -276,12 +301,15 @@
         work_region,
         apply_end_at,
         DATEDIFF(apply_end_at, CURDATE()) AS dday
-        FROM job_postings
+        FROM job_postings jp
+        JOIN companies c ON c.company_id = jp.company_id
 
-        WHERE company_id = #{companyId}
-        AND status = '모집중'
+        WHERE jp.company_id = #{companyId}
+        AND jp.status = '모집중'
+        AND c.approval_status = '승인'
+        AND c.company_status = '정상'
 
-        ORDER BY apply_end_at ASC
+        ORDER BY jp.apply_end_at ASC
 
         LIMIT 5
 
@@ -316,6 +344,8 @@
 
         WHERE jp.company_id = #{companyId}
         AND jp.status = '모집중'
+        AND c.approval_status = '승인'
+        AND c.company_status = '정상'
 
         ORDER BY jp.apply_end_at ASC
 
@@ -366,6 +396,34 @@
         LIMIT #{limit}
 
     </select>
+    <!-- 기업 정보 : 관심기업 조회 -->
+    <select id="countWish" resultType="int">
+        SELECT COUNT(*)
+        FROM saved_companies
+        WHERE user_id = #{userId}
+        AND company_id = #{companyId}
+    </select>
+
+    <!-- 기업 정보 : 관심기업 등록 -->
+    <insert id="insertWish">
+        INSERT INTO saved_companies (
+        user_id,
+        company_id,
+        created_at
+        )
+        VALUES (
+        #{userId},
+        #{companyId},
+        NOW()
+        )
+    </insert>
+
+    <!-- 기업 정보 : 관심기업 삭제 -->
+    <delete id="deleteWish">
+        DELETE FROM saved_companies
+        WHERE user_id = #{userId}
+        AND company_id = #{companyId}
+    </delete>
 
     <!-- 관리자 대시보드 : 오늘 신규 기업 신청 수 -->
     <select id="selectTodayApplicationCount" resultType="int">
