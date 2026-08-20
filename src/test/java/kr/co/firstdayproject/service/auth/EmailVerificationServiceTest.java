@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.time.Duration;
 import kr.co.firstdayproject.config.properties.EmailVerificationProperties;
 import kr.co.firstdayproject.dto.auth.VerifiedEmail;
+import kr.co.firstdayproject.repository.member.UserRepository;
 import kr.co.firstdayproject.service.common.EmailSenderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class EmailVerificationServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private UserRepository userRepository;
+
     private EmailVerificationService emailVerificationService;
 
     @BeforeEach
@@ -43,10 +47,18 @@ class EmailVerificationServiceTest {
         emailVerificationService = new EmailVerificationService(
                 emailSenderService,
                 passwordEncoder,
-                properties
+                properties,
+                userRepository
         );
 
-        when(passwordEncoder.encode(anyString()))
+        // 기본값은 "가입되지 않은 이메일". 중복을 확인하는 테스트에서만 따로 바꾼다.
+        org.mockito.Mockito.lenient()
+                .when(userRepository.existsByEmailIgnoreCase(anyString()))
+                .thenReturn(false);
+
+        // 중복 이메일로 발송이 거절되는 테스트는 코드 생성까지 가지 않으므로 lenient로 둔다.
+        org.mockito.Mockito.lenient()
+                .when(passwordEncoder.encode(anyString()))
                 .thenAnswer(invocation -> "encoded:" + invocation.getArgument(0));
         org.mockito.Mockito.lenient()
                 .when(passwordEncoder.matches(anyString(), anyString()))
@@ -104,6 +116,51 @@ class EmailVerificationServiceTest {
         verify(emailSenderService, times(1))
                 .sendVerificationCode(anyString(), anyString(),
                         org.mockito.ArgumentMatchers.anyLong());
+    }
+
+    /**
+     * 예전에는 최종 제출 시점에만 중복을 확인해서, 인증번호를 다 받고 폼을 채운 뒤에야
+     * "이미 가입된 이메일"이라는 안내가 나왔다. 발송 자체를 막아 그 시점을 앞당긴다.
+     */
+    @Test
+    void rejectsSignupCodeForAlreadyRegisteredEmail() {
+        MockHttpSession session = new MockHttpSession();
+        when(userRepository.existsByEmailIgnoreCase("user@example.com")).thenReturn(true);
+
+        assertThatThrownBy(() ->
+                emailVerificationService.sendVerificationCode(" USER@Example.com ", session)
+        )
+                .isInstanceOfSatisfying(
+                        EmailVerificationException.class,
+                        exception -> assertThat(exception.getStatus())
+                                .isEqualTo(HttpStatus.CONFLICT)
+                )
+                .hasMessage("이미 가입된 이메일입니다.");
+
+        // 이미 회원인 사람에게 가입 인증 메일이 나가면 안 된다.
+        verify(emailSenderService, org.mockito.Mockito.never())
+                .sendVerificationCode(anyString(), anyString(),
+                        org.mockito.ArgumentMatchers.anyLong());
+    }
+
+    /**
+     * 비밀번호 재설정은 반대로 가입된 이메일이어야 정상이다.
+     * 가입 쪽 검사가 이 경로까지 막지 않는지 고정한다.
+     */
+    @Test
+    void allowsPasswordResetCodeForRegisteredEmail() {
+        MockHttpSession session = new MockHttpSession();
+
+        emailVerificationService.sendPasswordResetCode("user@example.com", session);
+
+        verify(emailSenderService).sendPasswordResetCode(
+                org.mockito.ArgumentMatchers.eq("user@example.com"),
+                anyString(),
+                org.mockito.ArgumentMatchers.eq(5L)
+        );
+        // 가입 여부를 아예 묻지 않아야 한다. 물으면 가입된 사용자의 재설정이 막힌다.
+        verify(userRepository, org.mockito.Mockito.never())
+                .existsByEmailIgnoreCase(anyString());
     }
 
     @Test

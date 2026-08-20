@@ -7,6 +7,7 @@ import java.util.Locale;
 import kr.co.firstdayproject.config.properties.EmailVerificationProperties;
 import kr.co.firstdayproject.dto.auth.EmailVerificationChallenge;
 import kr.co.firstdayproject.dto.auth.VerifiedEmail;
+import kr.co.firstdayproject.repository.member.UserRepository;
 import kr.co.firstdayproject.service.common.EmailSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,19 +27,39 @@ public class EmailVerificationService {
     private final EmailSenderService emailSenderService;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationProperties properties;
+    private final UserRepository userRepository;
     private final SecureRandom secureRandom = new SecureRandom();
 
     public EmailVerificationService(
             EmailSenderService emailSenderService,
             PasswordEncoder passwordEncoder,
-            EmailVerificationProperties properties
+            EmailVerificationProperties properties,
+            UserRepository userRepository
     ) {
         this.emailSenderService = emailSenderService;
         this.passwordEncoder = passwordEncoder;
         this.properties = properties;
+        this.userRepository = userRepository;
     }
 
+    /**
+     * 회원가입용 인증번호 발송.
+     *
+     * <p>이미 가입된 이메일이면 발송하지 않고 거절한다. 예전에는 최종 제출 시점에만 검사해서,
+     * 사용자가 인증번호를 받고 폼을 다 채운 뒤에야 "이미 가입된 이메일"이라는 안내를 받았다.
+     * 이미 회원인 사람에게 가입 인증 메일이 나가는 문제도 있었다.
+     *
+     * <p>비밀번호 재설정({@link #sendPasswordResetCode})은 반대로 가입된 이메일이어야 하므로
+     * 이 검사를 적용하지 않는다.
+     */
     public void sendVerificationCode(String email, HttpSession session) {
+        if (userRepository.existsByEmailIgnoreCase(normalizeEmail(email))) {
+            throw new EmailVerificationException(
+                    HttpStatus.CONFLICT,
+                    "이미 가입된 이메일입니다."
+            );
+        }
+
         sendVerificationCode(email, session, false);
     }
 
