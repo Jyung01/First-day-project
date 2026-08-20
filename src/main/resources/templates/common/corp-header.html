@@ -7,7 +7,16 @@
         </a>
         <nav class="corp-header__actions" aria-label="기업관리 바로가기">
             <a class="corp-header__home" th:href="@{/}">서비스 홈</a>
-            <a class="corp-header__logout" th:href="@{/logout}">로그아웃</a>
+            <!--
+                CSRF를 켜면 Spring Security가 로그아웃을 POST로만 받는다.
+                (CSRF 비활성일 때만 GET 로그아웃이 허용된다)
+                개인·관리자 헤더와 동일하게 POST 폼으로 맞춘다.
+            -->
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="corp-header__logout">로그아웃</button>
+            </form>
         </nav>
     </div>
+    <!-- CSRF 토큰을 fetch에 자동으로 붙인다. 화면별 스크립트보다 먼저 로드되어야 한다. -->
+    <script th:src="@{/js/common/csrf.js}"></script>
 </header>
