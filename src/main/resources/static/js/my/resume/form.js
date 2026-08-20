@@ -421,19 +421,240 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    /**
+     * 필드에 딸린 안내 문구 자리를 찾는다.
+     *
+     * 기본정보처럼 id가 있는 필드는 미리 만들어 둔 자리를 쓰고,
+     * 학력·경력처럼 행이 늘어나는 입력은 id가 없어 자리가 없으므로 그때 만들어 붙인다.
+     * 예전에는 후자에 문구가 아예 안 떠서 테두리만 붉어졌다.
+     */
+    function resolveMessageElement(field) {
+        if (field.id) {
+            const existing = form.querySelector(`[data-field-message="${field.id}"]`);
+
+            if (existing) {
+                return existing;
+            }
+        }
+
+        const wrapper = field.closest(".resume-field") || field.parentElement;
+
+        if (!wrapper) {
+            return null;
+        }
+
+        let created = wrapper.querySelector(".resume-field-message");
+
+        if (!created) {
+            created = document.createElement("p");
+            created.className = "resume-field-message";
+            wrapper.appendChild(created);
+        }
+
+        return created;
+    }
+
     function showFieldError(field, message) {
         field.classList.add("is-error");
 
-        const fieldId = field.id;
+        const messageElement = resolveMessageElement(field);
 
-        if (fieldId) {
-            const messageElement = form.querySelector(`[data-field-message="${fieldId}"]`);
+        if (messageElement) {
+            messageElement.textContent = message;
+            messageElement.classList.add("is-visible");
+        }
+    }
 
-            if (messageElement) {
-                messageElement.textContent = message;
-                messageElement.classList.add("is-visible");
+    function clearFieldError(field) {
+        field.classList.remove("is-error");
+
+        const messageElement = resolveMessageElement(field);
+
+        if (messageElement && !messageElement.matches("[data-skill-message]")) {
+            messageElement.textContent = "";
+            messageElement.classList.remove("is-visible");
+        }
+    }
+
+    /* =====================================================
+       연/월 선택
+
+       날짜는 <input type="month"> 대신 연도·월 선택 상자를 쓴다.
+       HTML 규격상 month 입력의 연도는 "4자리 이상"이라 131212년도 유효한 값이고,
+       maxlength·pattern이 적용되지 않아 자릿수를 막을 방법이 없기 때문이다.
+
+       서버로 보내는 값은 그대로 "YYYY-MM"이다. 두 상자는 화면용이고,
+       실제로 제출되는 것은 같은 그룹 안의 hidden input이다.
+       이름(name)도 hidden이 그대로 들고 있어 reindex와 서버 바인딩이 바뀌지 않는다.
+    ===================================================== */
+
+    /** 두 상자의 선택을 hidden input의 "YYYY-MM"으로 합친다. */
+    function syncDateGroup(group) {
+        const year = group.querySelector("[data-date-year]");
+        const month = group.querySelector("[data-date-month]");
+        const target = group.querySelector("[data-date-value]");
+
+        if (!year || !month || !target) {
+            return;
+        }
+
+        // 한쪽만 고른 상태는 날짜로 볼 수 없다. 비워서 "입력 안 함"으로 둔다.
+        target.value = year.value && month.value ? `${year.value}-${month.value}` : "";
+    }
+
+    /** hidden input에 들어 있는 값으로 두 상자를 맞춘다 (수정 화면·검증 실패 후 재표시). */
+    function fillDateGroup(group) {
+        const year = group.querySelector("[data-date-year]");
+        const month = group.querySelector("[data-date-month]");
+        const source = group.querySelector("[data-date-value]");
+
+        if (!year || !month || !source || !source.value) {
+            return;
+        }
+
+        const [yearPart, monthPart] = String(source.value).split("-");
+
+        year.value = yearPart || "";
+        month.value = monthPart || "";
+
+        // 목록에 없는 연도(예전에 저장된 이상값)면 선택이 안 된다. 그때는 값을 비워 다시 고르게 한다.
+        if (!year.value || !month.value) {
+            year.value = "";
+            month.value = "";
+            syncDateGroup(group);
+        }
+    }
+
+    form.querySelectorAll("[data-date-group]").forEach(fillDateGroup);
+
+    form.addEventListener("change", function (event) {
+        if (!event.target.matches?.("[data-date-year], [data-date-month]")) {
+            return;
+        }
+
+        syncDateGroup(event.target.closest("[data-date-group]"));
+    });
+
+    /* =====================================================
+       숫자 범위 제한
+
+       폼에 novalidate가 걸려 있어 min/max 속성이 브라우저에서 동작하지 않는다.
+       같은 규칙을 직접 구현해 칸을 벗어날 때 경계값으로 되돌린다.
+       어디까지나 편의 기능이다. 실제 방어는 서버(ResumeDto의 Bean Validation)가 한다.
+    ===================================================== */
+
+    const RANGE_SELECTOR = 'input[type="number"]';
+
+    /** 필드의 min/max 속성에서 허용 범위를 읽는다. */
+    function resolveLimits(field) {
+        const min = field.getAttribute("min");
+        const max = field.getAttribute("max");
+
+        return {
+            min: min === null ? -Infinity : Number(min),
+            max: max === null ? Infinity : Number(max),
+            value: Number(field.value),
+            minText: min,
+            maxText: max,
+            message: min !== null && max !== null
+                ? `${min}에서 ${max} 사이로 입력해주세요.`
+                : "값을 다시 확인해주세요.",
+        };
+    }
+
+    /** 범위를 벗어났으면 사유를, 아니면 null을 돌려준다. */
+    function checkRange(field) {
+        if (!String(field.value).trim()) {
+            return null;
+        }
+
+        const limits = resolveLimits(field);
+
+        if (!Number.isFinite(limits.value)) {
+            return { field: field, message: "형식에 맞게 입력해주세요.", limits: limits };
+        }
+
+        if (limits.value < limits.min || limits.value > limits.max) {
+            return { field: field, message: limits.message, limits: limits };
+        }
+
+        return null;
+    }
+
+    /** 범위를 벗어난 값을 가까운 경계값으로 되돌린다. */
+    function clampField(field) {
+        const problem = checkRange(field);
+
+        if (!problem) {
+            return false;
+        }
+
+        const limits = problem.limits;
+
+        if (!Number.isFinite(limits.value)) {
+            field.value = "";
+            return true;
+        }
+
+        field.value = limits.value < limits.min ? limits.minText : limits.maxText;
+        return true;
+    }
+
+    function findOutOfRangeField() {
+        for (const field of form.querySelectorAll(RANGE_SELECTOR)) {
+            const problem = checkRange(field);
+
+            if (problem) {
+                return problem;
             }
         }
+
+        return null;
+    }
+
+    /*
+     * 행이 동적으로 늘어나므로 폼에 위임해서 듣는다.
+     *
+     * 검사 시점은 focusout(칸을 완전히 벗어날 때) 하나뿐이다.
+     * 입력 도중에 값을 고치면 "12"를 치려는데 "9.99"로 바뀌는 식으로 사용자와 싸우게 된다.
+     */
+    form.addEventListener("focusout", function (event) {
+        const field = event.target;
+
+        if (!field.matches?.(RANGE_SELECTOR)) {
+            return;
+        }
+
+        if (clampField(field)) {
+            showFieldError(field, "입력할 수 있는 범위로 조정했습니다.");
+        } else {
+            clearFieldError(field);
+        }
+    });
+
+    /** 필드가 속한 탭을 찾는다. 없으면 기본정보 탭으로 본다. */
+    function resolveTab(field) {
+        if (field.dataset.requiredTab) {
+            return field.dataset.requiredTab;
+        }
+
+        const panel = field.closest("[data-resume-panel]");
+
+        return panel ? panel.dataset.resumePanel : "basic";
+    }
+
+    /** 문제가 된 필드로 화면을 이동시키고 사유를 알린다. */
+    function focusInvalidField(field, message) {
+        activateTab(resolveTab(field));
+        showFieldError(field, message);
+
+        window.setTimeout(function () {
+            field.focus();
+            field.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        }, 0);
     }
 
     function validateForm() {
@@ -441,29 +662,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const requiredFields = Array.from(form.querySelectorAll("[data-required-field]"));
 
-        const invalidField = requiredFields.find(function (field) {
+        const emptyField = requiredFields.find(function (field) {
             return !String(field.value).trim();
         });
 
-        if (!invalidField) {
-            return true;
+        if (emptyField) {
+            focusInvalidField(emptyField, "필수 항목을 입력해주세요.");
+            return false;
         }
 
-        const targetTab = invalidField.dataset.requiredTab || "basic";
+        const outOfRange = findOutOfRangeField();
 
-        activateTab(targetTab);
+        if (outOfRange) {
+            focusInvalidField(outOfRange.field, outOfRange.message);
+            return false;
+        }
 
-        showFieldError(invalidField, "필수 항목을 입력해주세요.");
-
-        window.setTimeout(function () {
-            invalidField.focus();
-            invalidField.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-            });
-        }, 0);
-
-        return false;
+        return true;
     }
 
     /* =====================================================

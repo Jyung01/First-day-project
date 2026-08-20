@@ -256,6 +256,35 @@
     line-height: 1.5;
 }
 
+/* 연/월 선택 (기존 <input type="month"> 대체) */
+.resume-date {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 6px;
+}
+
+.resume-date > select {
+    min-width: 0;
+}
+
+/* 서버 검증 실패 시 폼 상단에 뜨는 요약 */
+.resume-form-errors {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    color: #b91c1c;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.resume-form-errors ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    list-style: disc;
+}
+
 .resume-field-message.is-visible {
     display: block;
 }

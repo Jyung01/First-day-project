@@ -132,6 +132,31 @@ public class ResumeService {
         return result;
     }
 
+    /**
+     * 전달받은 id 목록으로 기술 칩을 만든다 (전달된 순서 유지).
+     *
+     * <p>검증에 걸려 폼을 다시 보여줄 때 쓴다. 이때 DB를 조회하면 저장되어 있던 이전 기술이
+     * 나와서, 사용자가 방금 고른 선택이 사라진다. 제출된 값 그대로를 되돌려주기 위한 경로다.
+     */
+    public List<ResumeDto.SkillChip> getSkillChipsByIds(List<Long> skillIds) {
+        if (skillIds == null || skillIds.isEmpty()) {
+            return List.of();
+        }
+
+        Map<Long, String> nameBySkillId = skillRepository.findAllById(skillIds).stream()
+                .collect(Collectors.toMap(Skill::getSkillId, Skill::getSkillName));
+
+        List<ResumeDto.SkillChip> result = new ArrayList<>();
+        for (Long skillId : skillIds) {
+            String name = nameBySkillId.get(skillId);
+            // 존재하지 않거나 비활성화된 id는 조용히 버린다. 저장 로직도 같은 기준으로 거른다.
+            if (name != null) {
+                result.add(ResumeDto.SkillChip.builder().id(skillId).name(name).build());
+            }
+        }
+        return result;
+    }
+
     /** 기술 선택 모달에 표시할 활성 기술 전체 목록 (그룹·기술 depth 순서 유지) */
     public List<Skill> getActiveSkills() {
         return skillRepository.findByIsActiveTrue(Sort.by(
@@ -270,6 +295,18 @@ public class ResumeService {
         return resume.getResumeId();
     }
 
+    /**
+     * 빈 문자열을 null로 바꾼다.
+     *
+     * <p>"학위 선택" 같은 select의 기본 옵션은 {@code value=""}라 선택하지 않으면 빈 문자열이 온다.
+     * 그런데 graduation_status·employment_type은 {@code NULL 또는 정해진 값}만 허용하는 CHECK 제약이
+     * 걸려 있어, 빈 문자열이 그대로 들어가면 저장 시점에 제약 위반으로 터진다.
+     * 선택하지 않았다는 뜻은 null이므로 여기서 맞춰준다.
+     */
+    private String blankToNull(String value) {
+        return (value == null || value.isBlank()) ? null : value;
+    }
+
     private void saveEducations(Long resumeId, List<ResumeDto.FormRequest.EducationItem> items) {
         if (items == null) {
             return;
@@ -284,11 +321,11 @@ public class ResumeService {
             ResumeEducation education = ResumeEducation.builder()
                     .resumeId(resumeId)
                     .schoolName(item.getSchoolName())
-                    .major(item.getMajor())
-                    .degree(item.getDegree())
+                    .major(blankToNull(item.getMajor()))
+                    .degree(blankToNull(item.getDegree()))
                     .admissionDate(item.getAdmissionDate() != null ? item.getAdmissionDate().atDay(1) : null)
                     .graduationDate(item.getGraduationDate() != null ? item.getGraduationDate().atDay(1) : null)
-                    .graduationStatus(item.getGraduationStatus())
+                    .graduationStatus(blankToNull(item.getGraduationStatus()))
                     .gpaScore(item.getGpaScore())
                     .gpaScale(item.getGpaScale())
                     .displayOrder(order++)
@@ -313,8 +350,8 @@ public class ResumeService {
             ResumeCareer career = ResumeCareer.builder()
                     .resumeId(resumeId)
                     .companyName(item.getCompanyName())
-                    .positionTitle(item.getPositionTitle())
-                    .employmentType(item.getEmploymentType())
+                    .positionTitle(blankToNull(item.getPositionTitle()))
+                    .employmentType(blankToNull(item.getEmploymentType()))
                     .startDate(item.getStartDate().atDay(1))
                     .endDate(current || item.getEndDate() == null ? null : item.getEndDate().atDay(1))
                     .isCurrent(current)
@@ -339,7 +376,7 @@ public class ResumeService {
             ResumeProject project = ResumeProject.builder()
                     .resumeId(resumeId)
                     .projectName(item.getProjectName())
-                    .roleText(item.getRoleText())
+                    .roleText(blankToNull(item.getRoleText()))
                     .description(item.getDescription())
                     .displayOrder(order++)
                     .build();
