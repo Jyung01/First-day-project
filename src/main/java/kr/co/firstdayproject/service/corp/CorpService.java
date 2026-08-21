@@ -282,6 +282,45 @@ public class CorpService {
         company.setBenefits(toBenefitsJson(request.getBenefits()));
         company.setApprovalStatus(PENDING_APPROVAL);
         company.setReapplyRequestedAt(now);
+        // 심사 큐 노출 기준은 reviewRequestedAt 하나로 통일한다.
+        // reapplyRequestedAt은 신규심사(NEW)·재심사(REVIEW) 구분용으로만 계속 쓴다.
+        company.setReviewRequestedAt(now);
+        company.setUpdatedAt(now);
+    }
+
+    /**
+     * 가입 후 기업정보를 작성 중이던 기업이 최초 심사를 요청한다.
+     *
+     * <p>가입 단계에서는 사업자번호·기업명·업종·규모·주소만 받으므로,
+     * 나머지 항목을 채운 뒤 이 메서드로 심사 큐에 올린다.
+     * 심사를 요청한 뒤에는 결과가 나올 때까지 기업정보를 수정할 수 없다.
+     *
+     * @throws IllegalStateException 작성 중인 승인대기 기업이 아닐 때
+     */
+    @Transactional
+    public void requestInitialReview(Long companyId) {
+        Company company = getCompany(companyId);
+
+        if (!PENDING_APPROVAL.equals(company.getApprovalStatus())
+                || company.getReviewRequestedAt() != null) {
+            throw new IllegalStateException(
+                    "기업정보를 작성 중인 기업만 심사를 요청할 수 있습니다."
+            );
+        }
+
+        /*
+         * 가입 단계에서는 채워지지 않는 항목이다. 기업정보를 한 번이라도 저장하면
+         * CompanyProfileRequest의 @NotBlank 검증을 거치므로 값이 들어간다.
+         * 즉 이 검사는 "기업정보를 저장한 적이 있는가"를 확인하는 것과 같다.
+         */
+        if (trimToNull(company.getRepresentativeName()) == null) {
+            throw new IllegalStateException(
+                    "기업정보를 먼저 입력하고 저장한 뒤 심사를 요청해주세요."
+            );
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        company.setReviewRequestedAt(now);
         company.setUpdatedAt(now);
     }
 

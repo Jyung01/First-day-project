@@ -42,7 +42,12 @@ public record AdminCompanyListItem(
         return switch (company.getApprovalStatus()) {
             case "승인" -> "APPROVED";
             case "반려" -> "REJECTED";
-            default -> "PENDING";
+            /*
+             * 같은 '승인대기'라도 아직 심사를 요청하지 않았으면 심사할 수 없다.
+             * 심사 큐(PENDING 탭)에는 안 나오지만 '전체' 탭에는 보이므로,
+             * 관리자가 심사 가능한 건과 구분할 수 있도록 상태를 나눠준다.
+             */
+            default -> company.getReviewRequestedAt() == null ? "DRAFT" : "PENDING";
         };
     }
 
@@ -52,6 +57,7 @@ public record AdminCompanyListItem(
             case "REJECTED" -> "반려";
             case "SUSPENDED" -> "이용정지";
             case "WITHDRAWN" -> "탈퇴";
+            case "DRAFT" -> "작성 중";
             default -> "승인 대기";
         };
     }

@@ -57,6 +57,15 @@ document.addEventListener("DOMContentLoaded", function () {
             className: "is-pending",
             guide: "승인 또는 반려 처리 전 기업정보를 다시 확인해주세요.",
         },
+        /*
+         * 가입 후 기업정보를 작성 중인 기업. 심사 요청 전이라 승인·반려 버튼을 노출하지 않는다.
+         * 이 항목이 없으면 renderStatus가 PENDING으로 되돌려 심사 버튼이 보이게 된다.
+         */
+        DRAFT: {
+            label: "작성 중",
+            className: "is-draft",
+            guide: "아직 심사를 요청하지 않은 기업입니다. 기업이 기업정보 작성을 마치고 심사를 요청하면 승인 대기 목록에 표시됩니다.",
+        },
         APPROVED: {
             label: "승인",
             className: "is-approved",
@@ -204,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         fields.status.classList.remove(
             "is-pending",
+            "is-draft",
             "is-approved",
             "is-rejected",
             "is-suspended",
@@ -216,7 +226,9 @@ document.addEventListener("DOMContentLoaded", function () {
         reviewControls.hidden = selectedCompanyStatus !== "PENDING";
         reviewResult.hidden = selectedCompanyStatus !== "REJECTED";
         fields.withdrawnField.hidden = selectedCompanyStatus !== "WITHDRAWN";
-        submitButton.hidden = ["REJECTED", "WITHDRAWN"].includes(selectedCompanyStatus);
+        // 작성 중인 기업은 심사도, 이용정지 같은 상태 변경도 할 수 없다.
+        submitButton.hidden =
+            ["REJECTED", "WITHDRAWN", "DRAFT"].includes(selectedCompanyStatus);
         submitButton.classList.remove("admin-modal-button--danger", "admin-modal-button--primary");
 
         if (selectedCompanyStatus === "PENDING") {

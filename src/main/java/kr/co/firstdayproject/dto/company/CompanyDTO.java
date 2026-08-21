@@ -30,6 +30,8 @@ public class CompanyDTO {
     private Long reviewedBy;
     private LocalDateTime reviewedAt;
     private LocalDateTime reapplyRequestedAt;
+    /** 심사 요청 시각. NULL이면 가입 후 기업정보를 작성 중이라 심사 대상이 아니다. */
+    private LocalDateTime reviewRequestedAt;
     private Long rowVersion;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

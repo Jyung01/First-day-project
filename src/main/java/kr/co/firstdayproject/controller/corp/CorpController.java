@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import kr.co.firstdayproject.config.CompanyReviewGateInterceptor;
 import kr.co.firstdayproject.dto.corp.CompanyAccountActionResponse;
 import kr.co.firstdayproject.dto.corp.CompanyAccountRequest;
 import kr.co.firstdayproject.dto.corp.CompanyPasswordChangeRequest;
@@ -93,6 +94,14 @@ public class CorpController {
         return "corp/company-info";
     }
 
+    /**
+     * 기업정보 저장. {@code requestReview=true}면 저장한 내용으로 곧바로 심사까지 요청한다.
+     *
+     * <p>심사 요청을 별도 요청으로 두면, 화면에서 값을 고치고 저장을 누르지 않은 채
+     * 심사를 요청했을 때 <b>고친 내용이 버려지고 예전에 저장된 내용이 심사에 올라간다.</b>
+     * 심사 요청 직후에는 로그인이 막혀 되돌릴 수도 없다.
+     * 그래서 저장과 심사 요청을 한 요청에서 순서대로 처리한다.
+     */
     @PostMapping("/company-info")
     public String updateCompanyInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -100,6 +109,9 @@ public class CorpController {
             BindingResult bindingResult,
             @RequestParam(name = "companyLogo", required = false)
             MultipartFile companyLogo,
+            @RequestParam(name = "requestReview", defaultValue = "false")
+            boolean requestReview,
+            HttpServletRequest httpRequest,
             Model model
     ) {
         if (userDetails == null || userDetails.getCompanyId() == null) {
@@ -128,7 +140,33 @@ public class CorpController {
             return "corp/company-info";
         }
 
-        return "redirect:/corp/company-info?saved=true";
+        if (!requestReview) {
+            return "redirect:/corp/company-info?saved=true";
+        }
+
+        try {
+            corpService.requestInitialReview(userDetails.getCompanyId());
+        } catch (IllegalStateException exception) {
+            // 저장은 이미 끝났으므로 되돌리지 않고, 심사 요청만 실패했음을 알린다.
+            bindingResult.reject("company.reviewRequest", exception.getMessage());
+            addCompanyProfileModel(
+                    model,
+                    corpService.getCompany(userDetails.getCompanyId()),
+                    userDetails
+            );
+            return "corp/company-info";
+        }
+
+        /*
+         * 심사 요청 직후부터 LoginSuccessHandler가 로그인을 막는다.
+         * 세션을 남겨두면 인증된 채로 인터셉터에 계속 막히는 상태가 되므로 정리한다.
+         */
+        SecurityContextHolder.clearContext();
+        HttpSession session = httpRequest.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/auth/login?companyApproval=requested";
     }
 
     private void addCompanyProfileModel(
@@ -136,8 +174,15 @@ public class CorpController {
             Company company,
             CustomUserDetails userDetails
     ) {
+        /*
+         * 가입 후 아직 심사를 요청하지 않은 상태. 화면에서 안내 문구와
+         * "심사 요청" 버튼을 노출할지, 사이드바 메뉴를 잠글지 판단하는 데 쓴다.
+         */
+        boolean draft = CompanyReviewGateInterceptor.isDraft(company);
+
         model.addAttribute("activeMenu", "company");
-        model.addAttribute("companyStatus", "APPROVED");
+        model.addAttribute("companyStatus", draft ? "DRAFT" : "APPROVED");
+        model.addAttribute("reviewDraft", draft);
         model.addAttribute("companyLogoUrl", company.getLogoUrl());
         model.addAttribute("managerName", userDetails.getDisplayName());
         model.addAttribute(

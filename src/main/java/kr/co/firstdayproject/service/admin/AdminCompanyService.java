@@ -198,18 +198,24 @@ public class AdminCompanyService {
     }
 
     private AdminCompanyStatistics getStatistics() {
+        // 심사를 요청한 기업만 센다. 가입 후 기업정보를 작성 중인 기업은 심사 대상이 아니다.
         long pendingCount = companyRepository
-                .countByApprovalStatusAndCompanyStatus(
+                .countByApprovalStatusAndCompanyStatusAndReviewRequestedAtIsNotNull(
                         PENDING_APPROVAL,
                         NORMAL_STATUS
                 );
         long newReviewCount = companyRepository
-                .countByApprovalStatusAndCompanyStatusAndReapplyRequestedAtIsNull(
+                .countByApprovalStatusAndCompanyStatusAndReviewRequestedAtIsNotNullAndReapplyRequestedAtIsNull(
                         PENDING_APPROVAL,
                         NORMAL_STATUS
                 );
         long reReviewCount = companyRepository
-                .countByApprovalStatusAndCompanyStatusAndReapplyRequestedAtIsNotNull(
+                .countByApprovalStatusAndCompanyStatusAndReviewRequestedAtIsNotNullAndReapplyRequestedAtIsNotNull(
+                        PENDING_APPROVAL,
+                        NORMAL_STATUS
+                );
+        long draftCount = companyRepository
+                .countByApprovalStatusAndCompanyStatusAndReviewRequestedAtIsNull(
                         PENDING_APPROVAL,
                         NORMAL_STATUS
                 );
@@ -228,6 +234,7 @@ public class AdminCompanyService {
                 pendingCount,
                 newReviewCount,
                 reReviewCount,
+                draftCount,
                 approvedCount,
                 rejectedCount
         );
@@ -294,6 +301,15 @@ public class AdminCompanyService {
                     "승인 대기 중인 정상 기업만 심사할 수 있습니다."
             );
         }
+        /*
+         * 목록의 'ALL' 필터에는 작성 중인 기업도 보인다. 거기서 상세로 들어가 심사하는 것을 막는다.
+         * 기업이 직접 심사를 요청하기 전에는 대표자명·기업소개 등이 비어 있어 심사할 내용이 없다.
+         */
+        if (company.getReviewRequestedAt() == null) {
+            throw new IllegalStateException(
+                    "아직 심사를 요청하지 않은 기업입니다. 기업이 기업정보 작성을 마치면 심사할 수 있습니다."
+            );
+        }
     }
 
     private CompanyRejectionType validateReviewRequest(
@@ -329,7 +345,8 @@ public class AdminCompanyService {
 
         String normalized = status.trim().toUpperCase(Locale.ROOT);
         return switch (normalized) {
-            case "ALL", "PENDING", "APPROVED", "REJECTED", "SUSPENDED", "WITHDRAWN" -> normalized;
+            case "ALL", "DRAFT", "PENDING", "APPROVED", "REJECTED", "SUSPENDED", "WITHDRAWN" ->
+                    normalized;
             default -> "PENDING";
         };
     }

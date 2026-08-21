@@ -34,6 +34,12 @@
                         </article>
 
                         <article class="management-stat-card">
+                            <span>작성 중</span>
+                            <strong th:text="|${statistics.draftCount}건|">0건</strong>
+                            <small>가입 후 심사 요청 전</small>
+                        </article>
+
+                        <article class="management-stat-card">
                             <span>승인 기업</span>
                             <strong th:text="|${statistics.approvedCount}개|">0개</strong>
                             <small>현재 정상 이용 중</small>
@@ -62,6 +68,17 @@
                                 th:attr="aria-selected=${selectedStatus == 'PENDING'}"
                                 th:href="@{/admin/company(status='PENDING',keyword=${keyword},page=1)}"
                             >승인 대기</a>
+                            <!--
+                              가입 후 기업정보를 작성 중이라 아직 심사를 요청하지 않은 기업.
+                              승인 대기 탭에는 나오지 않으므로 방치된 가입 건을 여기서 확인한다.
+                            -->
+                            <a
+                                class="management-tab"
+                                role="tab"
+                                th:classappend="${selectedStatus == 'DRAFT'} ? ' is-active'"
+                                th:attr="aria-selected=${selectedStatus == 'DRAFT'}"
+                                th:href="@{/admin/company(status='DRAFT',keyword=${keyword},page=1)}"
+                            >작성 중</a>
                             <a
                                 class="management-tab"
                                 role="tab"

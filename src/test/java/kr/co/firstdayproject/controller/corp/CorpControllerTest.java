@@ -1,7 +1,10 @@
 package kr.co.firstdayproject.controller.corp;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +25,7 @@ import kr.co.firstdayproject.service.corp.CorpService;
 import kr.co.firstdayproject.service.corp.CorpDashboardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.springframework.ui.Model;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -140,11 +144,47 @@ class CorpControllerTest {
                 request,
                 bindingResult,
                 null,
+                false,
+                mock(HttpServletRequest.class),
                 model
         );
 
         assertThat(view).isEqualTo("redirect:/corp/company-info?saved=true");
         verify(corpService).updateCompanyProfile(10L, request, null);
+        // 저장만 눌렀을 때는 심사 요청이 일어나지 않아야 한다.
+        verify(corpService, never()).requestInitialReview(anyLong());
+    }
+
+    @Test
+    void savesCompanyInformationBeforeRequestingReview() {
+        CustomUserDetails userDetails = companyUserDetails(10L);
+        Company company = Company.builder()
+                .companyId(10L)
+                .approvalStatus("승인대기")
+                .build();
+        CompanyProfileRequest request = new CompanyProfileRequest();
+        BeanPropertyBindingResult bindingResult =
+                new BeanPropertyBindingResult(request, "companyForm");
+        when(corpService.getCompany(10L)).thenReturn(company);
+
+        String view = controller.updateCompanyInfo(
+                userDetails,
+                request,
+                bindingResult,
+                null,
+                true,
+                mock(HttpServletRequest.class),
+                model
+        );
+
+        /*
+         * 화면에 보이는 내용이 그대로 심사에 올라가야 하므로 저장이 먼저 일어나야 한다.
+         * 심사를 요청하면 로그인이 막히므로 로그인 화면으로 보낸다.
+         */
+        InOrder inOrder = inOrder(corpService);
+        inOrder.verify(corpService).updateCompanyProfile(10L, request, null);
+        inOrder.verify(corpService).requestInitialReview(10L);
+        assertThat(view).isEqualTo("redirect:/auth/login?companyApproval=requested");
     }
 
     @Test

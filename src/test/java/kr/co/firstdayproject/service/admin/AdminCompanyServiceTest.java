@@ -76,6 +76,7 @@ class AdminCompanyServiceTest {
         assertThat(result.statistics().pendingCount()).isEqualTo(6L);
         assertThat(result.statistics().newReviewCount()).isEqualTo(4L);
         assertThat(result.statistics().reReviewCount()).isEqualTo(2L);
+        assertThat(result.statistics().draftCount()).isEqualTo(3L);
 
         ArgumentCaptor<Pageable> pageableCaptor =
                 ArgumentCaptor.forClass(Pageable.class);
@@ -149,6 +150,30 @@ class AdminCompanyServiceTest {
         assertThat(result.statusLabel()).isEqualTo("탈퇴");
         assertThat(result.reviewTypeLabel()).isEqualTo("-");
         assertThat(result.managerName()).isEqualTo("미등록");
+    }
+
+    @Test
+    void marksPendingCompanyThatHasNotRequestedReviewAsDraft() {
+        CompanyRepository companyRepository = mock(CompanyRepository.class);
+        UserRepository userRepository = mock(UserRepository.class);
+        AdminCompanyService service = new AdminCompanyService(
+                companyRepository,
+                userRepository
+        );
+        Company company = company(12L, "승인대기", "정상");
+        company.setReviewRequestedAt(null);
+        when(companyRepository.findById(12L)).thenReturn(Optional.of(company));
+        when(userRepository.findFirstByCompanyIdAndUserTypeOrderByUserIdAsc(
+                12L,
+                "기업"
+        )).thenReturn(Optional.empty());
+
+        AdminCompanyDetail result = service.getCompanyDetail(12L);
+
+        assertThat(result.statusCode()).isEqualTo("DRAFT");
+        assertThat(result.statusLabel()).isEqualTo("작성 중");
+        // 심사 대상이 아니므로 신규/재심사 구분도 표시하지 않는다.
+        assertThat(result.reviewTypeLabel()).isEqualTo("-");
     }
 
     @Test
@@ -249,6 +274,32 @@ class AdminCompanyServiceTest {
     }
 
     @Test
+    void refusesToReviewCompanyThatHasNotRequestedReview() {
+        CompanyRepository companyRepository = mock(CompanyRepository.class);
+        UserRepository userRepository = mock(UserRepository.class);
+        AdminCompanyService service = new AdminCompanyService(
+                companyRepository,
+                userRepository
+        );
+        // 가입만 하고 기업정보를 작성 중인 기업. 심사 큐에는 없지만 목록의 '전체'에는 보인다.
+        Company company = company(12L, "승인대기", "정상");
+        company.setReviewRequestedAt(null);
+        when(companyRepository.findById(12L)).thenReturn(Optional.of(company));
+
+        assertThatThrownBy(() -> service.approveCompany(99L, 12L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("아직 심사를 요청하지 않은");
+
+        assertThatThrownBy(() -> service.rejectCompany(
+                99L,
+                12L,
+                new AdminCompanyReviewRequest("FORMAT_ERROR", "확인이 필요합니다.")
+        )).isInstanceOf(IllegalStateException.class);
+
+        assertThat(company.getApprovalStatus()).isEqualTo("승인대기");
+    }
+
+    @Test
     void refusesUnknownRejectionCode() {
         CompanyRepository companyRepository = mock(CompanyRepository.class);
         UserRepository userRepository = mock(UserRepository.class);
@@ -340,6 +391,8 @@ class AdminCompanyServiceTest {
                 .businessNumber("1234567890")
                 .approvalStatus(approvalStatus)
                 .companyStatus(companyStatus)
+                // 심사를 요청한 기업. 요청하지 않은 기업은 심사할 수 없으므로 기본값으로 채워둔다.
+                .reviewRequestedAt(LocalDateTime.of(2026, 8, 1, 10, 0))
                 .createdAt(LocalDateTime.of(2026, 8, 1, 10, 0))
                 .updatedAt(LocalDateTime.of(2026, 8, 1, 10, 0))
                 .build();
@@ -358,20 +411,28 @@ class AdminCompanyServiceTest {
     }
 
     private void stubStatistics(CompanyRepository companyRepository) {
-        when(companyRepository.countByApprovalStatusAndCompanyStatus(
-                "승인대기",
-                "정상"
-        )).thenReturn(6L);
+        // 심사 큐 집계는 심사를 요청한 기업만 센다. 작성 중인 기업은 제외된다.
         when(companyRepository
-                .countByApprovalStatusAndCompanyStatusAndReapplyRequestedAtIsNull(
+                .countByApprovalStatusAndCompanyStatusAndReviewRequestedAtIsNotNull(
+                        "승인대기",
+                        "정상"
+                )).thenReturn(6L);
+        when(companyRepository
+                .countByApprovalStatusAndCompanyStatusAndReviewRequestedAtIsNotNullAndReapplyRequestedAtIsNull(
                         "승인대기",
                         "정상"
                 )).thenReturn(4L);
         when(companyRepository
-                .countByApprovalStatusAndCompanyStatusAndReapplyRequestedAtIsNotNull(
+                .countByApprovalStatusAndCompanyStatusAndReviewRequestedAtIsNotNullAndReapplyRequestedAtIsNotNull(
                         "승인대기",
                         "정상"
                 )).thenReturn(2L);
+        // 가입 후 기업정보를 작성 중이라 심사 큐에는 없는 기업
+        when(companyRepository
+                .countByApprovalStatusAndCompanyStatusAndReviewRequestedAtIsNull(
+                        "승인대기",
+                        "정상"
+                )).thenReturn(3L);
         when(companyRepository.countByApprovalStatusAndCompanyStatus(
                 "승인",
                 "정상"
