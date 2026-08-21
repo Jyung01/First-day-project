@@ -42,6 +42,9 @@ public interface CompanyDao {
 
     // 관리자 대시보드 : 승인 대기 기업 수
     int selectPendingApprovalCount();
+
+    // 관리자 대시보드 : 심사 요청 후 기준일수 이상 처리되지 않은 기업 수
+    int selectLongPendingApprovalCount(@Param("days") int days);
     // 기업 정보 - 관심기업 조회
     int countWish(
             @Param("userId") Long userId,

@@ -29,25 +29,44 @@
                 <article class="dashboard-stat-card is-blue">
                     <span class="dashboard-stat-label">승인 대기 기업</span>
                     <strong class="dashboard-stat-value" th:text="${pendingCompanyCount} + '건'">6건</strong>
-                    <small class="dashboard-stat-description">평균 심사 2일</small>
+                    <!-- 총량보다 "얼마나 밀렸는지"가 관리자에게 필요한 정보다. -->
+                    <small
+                        class="dashboard-stat-description"
+                        th:text="${longPendingCompanyCount > 0}
+                            ? ${longPendingDays} + '일 이상 대기 ' + ${longPendingCompanyCount} + '건'
+                            : '지연된 심사 없음'"
+                    >3일 이상 대기 0건</small>
                 </article>
 
                 <article class="dashboard-stat-card is-orange">
                     <span class="dashboard-stat-label">오늘 등록 공고</span>
                     <strong class="dashboard-stat-value" th:text="${todayJobPostCount} + '건'">21건</strong>
-                    <small class="dashboard-stat-description">전일 대비 +5건</small>
+                    <small
+                        class="dashboard-stat-description"
+                        th:text="${jobPostCountChange == 0}
+                            ? '전일과 동일'
+                            : '전일 대비 ' + (${jobPostCountChange > 0} ? '+' : '') + ${jobPostCountChange} + '건'"
+                    >전일과 동일</small>
                 </article>
 
                 <article class="dashboard-stat-card is-red">
                     <span class="dashboard-stat-label">미처리 신고</span>
                     <strong class="dashboard-stat-value" th:text="${unresolvedReportCount} + '건'">9건</strong>
-                    <small class="dashboard-stat-description">오늘 접수 5건</small>
+                    <small
+                        class="dashboard-stat-description"
+                        th:text="'오늘 접수 ' + ${todayReportCount} + '건'"
+                    >오늘 접수 0건</small>
                 </article>
 
                 <article class="dashboard-stat-card is-green">
                     <span class="dashboard-stat-label">미답변 문의</span>
                     <strong class="dashboard-stat-value" th:text="${pendingQnaCount} + '건'">7건</strong>
-                    <small class="dashboard-stat-description">24시간 경과 3건</small>
+                    <small
+                        class="dashboard-stat-description"
+                        th:text="${pendingQnaOverDayCount > 0}
+                            ? '24시간 경과 ' + ${pendingQnaOverDayCount} + '건'
+                            : '24시간 경과 없음'"
+                    >24시간 경과 없음</small>
                 </article>
             </section>
 
@@ -75,8 +94,9 @@
                             <tr th:each="req : ${recentCompanyReviews}">
                                 <td><span class="dashboard-tag is-blue">기업</span></td>
                                 <td th:text="${req.companyName}">코드웨이브 주식회사</td>
+                                <!-- 가입일이 아니라 심사를 요청한 날짜를 보여준다. -->
                                 <td th:text="${#temporals.format(
-                                                    req.reapplyRequestedAt != null ? req.reapplyRequestedAt : req.createdAt,
+                                                    req.reviewRequestedAt != null ? req.reviewRequestedAt : req.createdAt,
                                                     'MM.dd')}">07.22</td>
                                 <td>
                                     <span class="dashboard-tag is-green" th:if="${req.reapplyRequestedAt != null}">재심사</span>
