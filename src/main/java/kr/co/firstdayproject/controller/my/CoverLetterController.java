@@ -143,7 +143,7 @@ public class CoverLetterController {
     }
 
     /**
-     * fetch()로 호출되는 AJAX 엔드포인트. 문항 수만큼 OpenAI를 순차 호출해 응답까지
+     * fetch()로 호출되는 AJAX 엔드포인트. 문항 수만큼 OpenAI를 병렬 호출해 응답까지
      * 몇 초~몇십 초 걸릴 수 있어, 프런트는 이 응답을 기다리는 동안 로딩 오버레이를 보여준다.
      */
     @PostMapping("/{id}/ai-reviews")

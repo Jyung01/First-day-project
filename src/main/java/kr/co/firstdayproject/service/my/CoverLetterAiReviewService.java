@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewDetail;
 import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewHistoryItem;
 import kr.co.firstdayproject.dto.ai.CoverLetterAiReviewItemView;
@@ -91,7 +92,7 @@ public class CoverLetterAiReviewService {
      * 사이트 전체가 멈춘다. 앞쪽 조회들은 각자 짧게 커넥션을 쓰고 반납하며, 마지막 save()는
      * 리포지토리가 자체 트랜잭션으로 처리하는 단일 INSERT라 원자성도 유지된다.
      *
-     * 참고로 트랜잭션은 호출 스레드에 묶이므로 parallelStream이 갈라낸 스레드는 어차피
+     * 참고로 트랜잭션은 호출 스레드에 묶이므로 병렬 스트림이 갈라낸 스레드는 어차피
      * 트랜잭션 밖이다. 저 람다 안에서는 DB를 건드리지 말 것.
      */
     public Long requestReview(
@@ -134,18 +135,29 @@ public class CoverLetterAiReviewService {
             ))
             .toList();
 
-        // parallelStream이어도 List 소스의 순서(문항 순서)는 그대로 유지된다.
+        // 문항 목록 전체를 각 호출에 함께 넘긴다. 문항 하나만 보여주면 모델은 어떤 주제가 다른
+        // 문항의 몫인지 판단할 수 없어, 협업 방식이나 테스트 코드처럼 어디에나 붙는 보완 제안이
+        // 문항마다 중복해서 나왔다. 넘기는 것은 다른 호출의 '결과'가 아니라 '문항 구성'이므로
+        // 병렬 실행 순서에 의존하지 않는다.
+        List<String> questions = items.stream()
+            .map(CoverLetterItem::getQuestion)
+            .toList();
+
+        // 병렬로 돌려도 IntStream.range의 순서(문항 순서)는 그대로 유지된다.
         // 리스트에 add하는 방식으로 바꾸면 병렬 실행에서 순서가 깨져 toDetail()의 인덱스 매칭이
         // 어긋나므로, 아래 세 리스트 모두 map().toList() 형태를 유지해야 한다.
         //
         // 문항 하나가 실패해도 나머지는 살린다. 예외를 그대로 올리면 이미 응답을 받아온 다른
         // 문항까지 버려지고, 사용자는 수십 초를 기다린 끝에 아무것도 받지 못한다.
         // 실패한 자리는 null로 남기며, toDetail()이 이미 null을 다루고 있어 조회는 그대로 동작한다.
-        List<CoverLetterItemReviewOutcome> outcomes = items.parallelStream()
-            .map(item -> {
+        List<CoverLetterItemReviewOutcome> outcomes = IntStream.range(0, items.size())
+            .parallel()
+            .mapToObj(index -> {
+                CoverLetterItem item = items.get(index);
                 try {
                     return coverLetterItemReviewService.review(
-                        item.getQuestion(),
+                        questions,
+                        index,
                         item.getAnswer(),
                         targetPosting,
                         applicantResume,
