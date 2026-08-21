@@ -105,6 +105,9 @@ public class CoverLetterItemReviewService {
         - improvementPoints는 이 문항이 묻는 것에 답하는 데 도움이 되는 보완만 쓰세요.
           문항이 지원 동기를 물었다면 배포 방식이나 데이터 모델링을 적으라고 하지 마세요.
           그 내용이 값어치 있더라도 이 문항에서 할 얘기가 아닙니다.
+        - 이 자소서의 전체 문항 구성이 함께 주어집니다. 다른 문항이 맡는 것이 자연스러운 주제는
+          그쪽에 넘기고, 지금 첨삭하는 문항이 맡은 범위만 제안하세요. 협업 방식, 기술 구현 세부,
+          성과 수치처럼 어느 문항에나 붙일 수 있는 주제일수록 어느 문항의 몫인지 먼저 판단하세요.
         - 다 쓴 뒤 방금 작성한 revisedAnswer와 하나씩 대조해, 이미 본문에 반영한 내용을 다시
           제안하는 항목은 지우세요. 지원자는 본문과 개선 포인트를 나란히 읽기 때문에, 본문에
           있는 문장을 "이렇게 고치세요"라고 또 말하면 첨삭을 신뢰하지 않게 됩니다.
@@ -128,14 +131,22 @@ public class CoverLetterItemReviewService {
     /**
      * 검색된 근거 문단은 프롬프트에만 쓰고 버리지 않고, 첨삭 결과와 함께 돌려준다.
      * 상위 서비스가 이를 첨삭 이력 행에 같이 저장해 나중에 근거를 되짚을 수 있게 한다(REQ-903).
+     *
+     * 첨삭할 문항 하나가 아니라 문항 목록 전체와 그 안에서의 위치를 받는다. 문항 하나만
+     * 보여주면 모델은 어떤 주제가 다른 문항의 몫인지 판단할 수 없어, 협업 방식이나 테스트
+     * 코드처럼 어디에나 붙는 보완 제안이 문항마다 중복해서 나왔다. 질문 문자열을 따로 받지
+     * 않고 목록에서 꺼내 쓰므로, 넘긴 질문과 위치가 어긋날 여지도 없다.
      */
     public CoverLetterItemReviewOutcome review(
-        String question,
+        List<String> allQuestions,
+        int questionIndex,
         String answer,
         JobPosting targetPosting,
         String applicantResume,
         String additionalInfo
     ) {
+        String question = allQuestions.get(questionIndex);
+
         List<Document> similarPostings = similarJobPostingSearchService.findSimilarPostings(
             answer,
             targetPosting.getJobCategoryId(),
@@ -144,7 +155,8 @@ public class CoverLetterItemReviewService {
         );
 
         String userPrompt = buildUserPrompt(
-            question, answer, targetPosting, similarPostings, applicantResume, additionalInfo
+            allQuestions, questionIndex, question, answer,
+            targetPosting, similarPostings, applicantResume, additionalInfo
         );
 
         CoverLetterItemReviewResult result = chatClient.prompt()
@@ -175,6 +187,8 @@ public class CoverLetterItemReviewService {
     }
 
     private String buildUserPrompt(
+        List<String> allQuestions,
+        int questionIndex,
         String question,
         String answer,
         JobPosting targetPosting,
@@ -183,6 +197,20 @@ public class CoverLetterItemReviewService {
         String additionalInfo
     ) {
         StringBuilder builder = new StringBuilder();
+
+        // 문항이 하나뿐이면 나눌 상대가 없어 이 섹션은 판단 재료가 되지 못한다. 넣어봐야
+        // 프롬프트만 길어지므로 생략한다.
+        if (allQuestions.size() > 1) {
+            builder.append("[이 자소서의 전체 문항 구성 — 보완 제안의 범위를 나눌 때만 사용]\n");
+            for (int i = 0; i < allQuestions.size(); i++) {
+                builder.append(i + 1).append(". ").append(allQuestions.get(i));
+                if (i == questionIndex) {
+                    builder.append("  ← 지금 첨삭할 문항");
+                }
+                builder.append('\n');
+            }
+            builder.append('\n');
+        }
 
         builder.append("[대상 채용공고]\n");
         appendSection(builder, "제목", targetPosting.getTitle());
