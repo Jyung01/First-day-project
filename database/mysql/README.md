@@ -10,8 +10,8 @@
 
 ## 현재 버전
 
-- 최신 변경 버전: V13
+- 최신 변경 버전: V14
 - 신규 DB 생성: `ddl/firstday_mysql_current.sql` 실행
-- V12 DB 업데이트: `migration/V13__add_member_withdrawal_to_termination_reason.sql` 실행
+- V13 DB 업데이트: `migration/V14__add_review_requested_at_to_companies.sql` 실행
 
 버전별 변경사항 상세는 `migration/README.md`에서 관리한다.

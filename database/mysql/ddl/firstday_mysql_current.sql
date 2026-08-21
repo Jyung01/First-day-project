@@ -137,6 +137,8 @@ CREATE TABLE companies (
   reviewed_by           BIGINT UNSIGNED NULL,
   reviewed_at           DATETIME(6) NULL,
   reapply_requested_at  DATETIME(6) NULL,
+  review_requested_at   DATETIME(6) NULL
+                         COMMENT '가장 최근 심사 요청 시각; NULL이면 기업정보 작성 중이라 심사 큐에 노출하지 않음',
   row_version           BIGINT UNSIGNED NOT NULL DEFAULT 0,
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
@@ -146,6 +148,7 @@ CREATE TABLE companies (
   UNIQUE KEY uk_companies_business_number (business_number),
   KEY idx_companies_name (company_name),
   KEY idx_companies_approval (approval_status, company_status, created_at),
+  KEY idx_companies_review_queue (approval_status, company_status, review_requested_at),
   CONSTRAINT chk_companies_approval_status
     CHECK (approval_status IN ('승인대기','승인','반려')),
   CONSTRAINT chk_companies_company_status
