@@ -113,6 +113,11 @@ public class CompanyService {
         return companyDao.selectPendingApprovalCount();
     }
 
+    // 관리자 대시보드 : 심사 요청 후 days일 이상 처리되지 않은 기업 수
+    public int getLongPendingApprovalCount(int days) {
+        return companyDao.selectLongPendingApprovalCount(days);
+    }
+
     // 관리자 대시보드 : 최근 기업 심사 요청 (최대 limit건)
     public List<CompanyDTO> getRecentApprovalRequests(int limit) {
         return companyDao.selectRecentApprovalRequests(limit);

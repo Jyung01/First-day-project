@@ -372,10 +372,27 @@
     </select>
 
     <!-- 관리자 대시보드 : 승인 대기 기업 수 -->
+    <!--
+      심사를 요청한 기업만 센다. review_requested_at이 NULL이면 가입 후 기업정보를
+      작성 중인 상태라 관리자가 심사할 수 없다.
+    -->
     <select id="selectPendingApprovalCount" resultType="int">
         SELECT COUNT(*)
         FROM companies
         WHERE approval_status = '승인대기'
+          AND review_requested_at IS NOT NULL
+    </select>
+
+    <!--
+      관리자 대시보드 : 심사 요청 후 기준일수 이상 처리되지 않은 기업 수.
+      전체 대기 건수만으로는 방금 요청된 건과 오래 밀린 건을 구분할 수 없다.
+    -->
+    <select id="selectLongPendingApprovalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM companies
+        WHERE approval_status = '승인대기'
+          AND review_requested_at IS NOT NULL
+          AND review_requested_at &lt; DATE_SUB(NOW(), INTERVAL #{days} DAY)
     </select>
 
     <!-- 관리자 대시보드 : 최근 기업 심사 요청 (승인 대기, 재신청 우선 최신순) -->
@@ -387,13 +404,15 @@
         company_name,
         approval_status,
         reapply_requested_at,
+        review_requested_at,
         created_at
 
         FROM companies
 
         WHERE approval_status = '승인대기'
+          AND review_requested_at IS NOT NULL
 
-        ORDER BY COALESCE(reapply_requested_at, created_at) DESC
+        ORDER BY review_requested_at DESC
 
         LIMIT #{limit}
 

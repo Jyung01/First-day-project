@@ -1,9 +1,12 @@
-package kr.co.firstdayproject.controller.admin.policy;
+package kr.co.firstdayproject.controller.admin;
 
 import kr.co.firstdayproject.dto.policy.PolicyDto;
+import kr.co.firstdayproject.security.AdminPrincipal;
+import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.policy.PolicyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,11 +43,11 @@ public class AdminPolicyController {
     @PutMapping("/{policyCode}")
     @ResponseBody
     public ResponseEntity<Void> update(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable String policyCode,
             @RequestBody Map<String, String> body
     ) {
-        // TODO: 관리자 로그인/세션 연동 후 실제 로그인한 관리자 ID로 교체
-        Long adminId = 1L;
+        Long adminId = AdminPrincipal.requireAdminId(userDetails);
         // "consentType"은 공개 정책(PUBLIC) 행에서는 전송되지 않으므로 null일 수 있음 -> 기존 값 유지
         policyService.updatePolicy(policyCode, body.get("title"), body.get("content"), body.get("consentType"), adminId);
         return ResponseEntity.ok().build();

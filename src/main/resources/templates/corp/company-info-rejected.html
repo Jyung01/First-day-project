@@ -20,6 +20,9 @@
 
         <!-- 공통 모달 -->
         <link rel="stylesheet" th:href="@{/css/modal/common.css}" />
+
+        <!-- 공통 토스트 -->
+        <link rel="stylesheet" th:href="@{/css/common/toast.css}" />
     </head>
 
     <body class="corp-page">
@@ -412,8 +415,13 @@
             th:attr="data-rejection-reason=${rejectionReason}"
         ></div>
 
+        <!-- 공통 토스트 -->
+        <div th:replace="~{common/toast :: toast}"></div>
+
         <script th:src="@{/js/modal.js}"></script>
         <script th:src="@{/js/modal/benefit-select-modal.js}"></script>
+        <!-- company-info-rejected.js가 showToast를 쓰므로 먼저 불러온다. -->
+        <script th:src="@{/js/common/toast.js}"></script>
         <script th:src="@{/js/corp/company-info-rejected.js}"></script>
     </body>
 </html>

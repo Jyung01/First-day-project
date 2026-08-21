@@ -468,3 +468,51 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* 가입 후 아직 심사를 요청하지 않은 기업에게만 보이는 안내 */
+.company-review-draft {
+    margin-bottom: 20px;
+    padding: 20px 24px;
+    border: 1px solid #fcd9b6;
+    border-radius: 12px;
+    background: #fff8f0;
+}
+
+.company-review-draft h2 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #9a5b12;
+}
+
+.company-review-draft p {
+    margin: 0 0 6px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #7c5423;
+}
+
+.company-review-draft-error {
+    margin-top: 10px;
+    font-weight: 600;
+    color: #d33a3a;
+}
+
+.company-review-draft form {
+    margin-top: 14px;
+}
+
+.company-review-draft-button {
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.company-review-draft-button:hover {
+    background: #1d4ed8;
+}

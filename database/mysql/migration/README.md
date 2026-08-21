@@ -19,6 +19,7 @@
 | V11 | `V11__add_job_posting_to_cover_letter_ai_reviews.sql` | `cover_letter_ai_reviews.job_posting_id` 추가 |
 | V12 | `V12__add_rag_context_to_cover_letter_ai_reviews.sql` | `cover_letter_ai_reviews.rag_context` 추가 |
 | V13 | `V13__add_member_withdrawal_to_termination_reason.sql` | `applications.termination_reason` CHECK 허용값에 `회원탈퇴` 추가 |
+| V14 | `V14__add_review_requested_at_to_companies.sql` | `companies.review_requested_at` 추가, 심사 큐 인덱스 및 기존 승인대기 기업 백필 |
 
 ## 적용 규칙
 
@@ -94,3 +95,12 @@
 - `applications.termination_reason` CHECK 제약(`chk_applications_termination`) 허용값에 `회원탈퇴`를 추가한다. 기존에는 `기업탈퇴`만 허용했다.
 - 회원(지원자) 탈퇴로 진행 중이던 지원이 채용종료되는 경우를 기업탈퇴와 구분해서 저장할 수 있게 한다.
 - 기존 V12 DB에는 `V13__add_member_withdrawal_to_termination_reason.sql`을 한 번 실행한다.
+
+## V14 반영 내용
+
+- `companies.review_requested_at`(DATETIME(6) NULL)에 가장 최근 심사 요청 시각을 저장한다. `reapply_requested_at` 다음 위치에 추가한다.
+- NULL이면 가입은 했으나 아직 심사를 요청하지 않은(기업정보 작성 중) 상태이고, NOT NULL이면 심사를 요청해 관리자 심사 큐 노출 대상이라는 뜻이다.
+- 인덱스 `idx_companies_review_queue (approval_status, company_status, review_requested_at)`를 추가한다.
+- `reapply_requested_at`은 의미를 바꾸지 않는다. 그 컬럼은 신규심사(NEW)와 재심사(REVIEW) 구분에 계속 사용한다.
+- 기존 승인대기 기업이 심사 큐에서 사라지지 않도록 백필한다. 재심사 요청분은 그 시각을, 신규 가입분은 가입 시각을 심사 요청 시각으로 본다.
+- 기존 V13 DB에는 `V14__add_review_requested_at_to_companies.sql`을 한 번 실행한다.

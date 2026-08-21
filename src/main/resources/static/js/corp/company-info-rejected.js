@@ -29,6 +29,42 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    /**
+     * 검증에 걸린 입력에 강조를 붙이고, 값을 고치면 스스로 지워지도록 리스너를 함께 단다.
+     *
+     * 위 initiallyRejectedFields는 페이지가 그려진 시점에 관리자가 반려한 항목만 담는다.
+     * 검증에 걸리는 항목은 거기 없을 수 있고(예: 대표자명), 그러면 강조를 지워 줄 리스너가
+     * 없어 값을 채워도 붉은 테두리가 그대로 남는다. 그래서 붙일 때 같이 등록한다.
+     */
+    function markInvalid(field) {
+        if (!field) {
+            return;
+        }
+
+        field.classList.add("is-rejected");
+
+        const eventName = field.matches("select") ? "change" : "input";
+
+        field.addEventListener(
+            eventName,
+            function () {
+                field.classList.remove("is-rejected");
+            },
+            { once: true }
+        );
+    }
+
+    /*
+     * 서버 검증에 걸려 화면이 다시 그려진 경우에도 같은 통로로 알린다.
+     * 이때 문구는 이미 폼 하단에 그려져 있지만 그대로 두고 토스트만 덧붙인다.
+     * 토스트는 3초 뒤 사라지므로, 남아 있는 문구가 나중에 다시 확인할 수단이 된다.
+     */
+    const serverMessage = formMessage?.textContent.trim();
+
+    if (serverMessage && typeof window.showToast === "function") {
+        window.showToast(serverMessage, "error");
+    }
+
     const rejectedBenefitBox = form.querySelector(
         ".company-benefit-selection-box.is-rejected"
     );
@@ -150,7 +186,19 @@ document.addEventListener("DOMContentLoaded", function () {
         businessNumberInput.value = number.slice(0, 3) + "-" + number.slice(3, 5) + "-" + number.slice(5);
     });
 
+    /**
+     * 검증 결과를 알린다.
+     *
+     * 폼 하단의 문구는 화면 맨 아래(복지 아래)에 있어, 검증에 걸린 입력으로 focus가 이동하면
+     * 화면 밖으로 밀려나 보이지 않는다. 그래서 고정 위치 토스트를 기본 통로로 쓰고,
+     * toast.js를 불러오지 못한 경우에만 기존 문구로 대체한다.
+     */
     function showFormMessage(message) {
+        if (typeof window.showToast === "function") {
+            window.showToast(message, "error");
+            return;
+        }
+
         if (!formMessage) {
             return;
         }
@@ -180,7 +228,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (invalidField) {
             showFormMessage("반려 사유와 관련된 필수 정보를 모두 입력해주세요.");
 
-            invalidField.classList.add("is-rejected");
+            markInvalid(invalidField);
             invalidField.focus();
             return false;
         }
@@ -188,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const businessNumber = businessNumberInput?.value.replace(/[^0-9]/g, "") ?? "";
 
         if (businessNumber.length !== 10) {
-            businessNumberInput?.classList.add("is-rejected");
+            markInvalid(businessNumberInput);
 
             if (businessNumberError) {
                 businessNumberError.textContent =

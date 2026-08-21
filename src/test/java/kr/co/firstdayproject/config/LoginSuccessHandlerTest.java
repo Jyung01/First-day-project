@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import kr.co.firstdayproject.entity.company.Company;
@@ -88,6 +89,8 @@ class LoginSuccessHandlerTest {
                 Company.builder()
                         .companyId(10L)
                         .approvalStatus("승인대기")
+                        // 이미 심사를 요청한 기업. 결과가 나올 때까지 로그인할 수 없다.
+                        .reviewRequestedAt(LocalDateTime.of(2026, 8, 20, 10, 0))
                         .build()
         ));
 
@@ -96,6 +99,30 @@ class LoginSuccessHandlerTest {
         verify(session).invalidate();
         verify(loginAuditService, never()).recordSuccessfulLogin(100L);
         verify(response).sendRedirect("/auth/login?companyApproval=pending");
+    }
+
+    @Test
+    void allowsDraftCompanyLoginAndSendsItToCompanyInfo() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        Authentication authentication = companyAuthentication(10L);
+
+        when(request.getSession(false)).thenReturn(session);
+        when(request.getContextPath()).thenReturn("");
+        when(companyRepository.findById(10L)).thenReturn(Optional.of(
+                Company.builder()
+                        .companyId(10L)
+                        .approvalStatus("승인대기")
+                        // 아직 심사를 요청하지 않은 기업. 기업정보를 채우러 들어와야 한다.
+                        .reviewRequestedAt(null)
+                        .build()
+        ));
+
+        handler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(session, never()).invalidate();
+        verify(response).sendRedirect("/corp/company-info?reviewDraft=true");
     }
 
     @Test

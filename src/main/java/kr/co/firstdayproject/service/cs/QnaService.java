@@ -75,6 +75,20 @@ public class QnaService {
         return inquiryRepository.count(statusIn(PENDING_STATUSES));
     }
 
+    /**
+     * 관리자 대시보드 - 접수된 지 24시간이 지나도록 답변되지 않은 문의 건수.
+     * 미답변 건수만으로는 방금 들어온 문의와 오래 밀린 문의를 구분할 수 없어 따로 센다.
+     */
+    public long getPendingOverDayCount() {
+        LocalDateTime deadline = LocalDateTime.now().minusHours(24);
+
+        Specification<Inquiry> spec = Specification
+                .where(statusIn(PENDING_STATUSES))
+                .and((root, query, cb) -> cb.lessThan(root.get("createdAt"), deadline));
+
+        return inquiryRepository.count(spec);
+    }
+
     /** 관리자 대시보드 - 오늘 답변 완료된 문의 건수 */
     public long getTodayAnsweredCount() {
         LocalDateTime start = LocalDate.now().atStartOfDay();

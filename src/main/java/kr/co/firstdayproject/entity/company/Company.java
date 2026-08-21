@@ -73,6 +73,12 @@ public class Company {
     private LocalDateTime reviewedAt;
     @Column(name = "reapply_requested_at")
     private LocalDateTime reapplyRequestedAt;
+    /**
+     * 가장 최근 심사 요청 시각. NULL이면 가입만 하고 아직 기업정보를 작성 중인 상태로,
+     * 관리자 심사 큐에 노출하지 않는다. 신규심사·재심사 구분은 reapplyRequestedAt이 담당한다.
+     */
+    @Column(name = "review_requested_at")
+    private LocalDateTime reviewRequestedAt;
     @Version
     @Column(name = "row_version", nullable = false)
     private Long rowVersion;

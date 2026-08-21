@@ -256,6 +256,12 @@
     color: #60a5fa;
 }
 
+/* 가입 후 기업정보를 작성 중이라 아직 심사할 수 없는 상태 */
+.admin-company-status.is-draft {
+    background-color: rgba(245, 158, 11, 0.14);
+    color: #fbbf24;
+}
+
 .admin-company-status.is-rejected,
 .admin-company-status.is-suspended {
     background-color: rgba(239, 68, 68, 0.13);

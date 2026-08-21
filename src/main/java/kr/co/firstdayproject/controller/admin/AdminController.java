@@ -26,6 +26,9 @@ import java.util.Map;
 @RequestMapping("/admin")
 public class AdminController {
 
+    /** 이 일수 이상 심사가 처리되지 않은 기업을 "지연"으로 본다. */
+    private static final int LONG_PENDING_DAYS = 3;
+
     private final AwsS3Service s3UploadService;
     private final BannerService bannerService;
     private final QnaService qnaService;
@@ -48,6 +51,21 @@ public class AdminController {
         model.addAttribute("todayJobPostCount", todayJobPostCount);
         model.addAttribute("unresolvedReportCount", adminService.getUnresolvedReportCount());
         model.addAttribute("pendingQnaCount", qnaService.getPendingCount());
+
+        /*
+         * 카드 아래 보조 문구. 총량만으로는 "밀려 있는지"를 알 수 없어
+         * 지연된 건수와 전일 대비 증감을 함께 보여준다.
+         */
+        model.addAttribute(
+                "longPendingCompanyCount",
+                companyService.getLongPendingApprovalCount(LONG_PENDING_DAYS)
+        );
+        model.addAttribute("longPendingDays", LONG_PENDING_DAYS);
+        model.addAttribute(
+                "jobPostCountChange",
+                todayJobPostCount - jobStats.get("yesterdayCreated")
+        );
+        model.addAttribute("pendingQnaOverDayCount", qnaService.getPendingOverDayCount());
 
         // 최근 기업 심사 요청 (최대 5건)
         List<CompanyDTO> recentCompanyReviews = companyService.getRecentApprovalRequests(5);

@@ -3,6 +3,8 @@ package kr.co.firstdayproject.controller.admin;
 import kr.co.firstdayproject.dto.admin.InquiryDetailDto;
 import kr.co.firstdayproject.dto.admin.InquiryListItemDto;
 import kr.co.firstdayproject.entity.cs.InquiryAttachment;
+import kr.co.firstdayproject.security.AdminPrincipal;
+import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.cs.FaqService;
 import kr.co.firstdayproject.service.cs.NoticeService;
 import kr.co.firstdayproject.service.cs.QnaService;
@@ -15,6 +17,7 @@ import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -105,11 +108,11 @@ public class AdminQnaController {
     @PostMapping("/{inquiryId}/answer")
     @ResponseBody
     public ResponseEntity<Void> registerAnswer(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long inquiryId,
             @RequestBody Map<String, String> body
     ) {
-        // TODO: 관리자 로그인/세션 연동 후 실제 로그인한 관리자 ID로 교체
-        Long adminId = 1L;
+        Long adminId = AdminPrincipal.requireAdminId(userDetails);
         qnaService.answerInquiry(inquiryId, body.get("answerContent"), adminId);
         return ResponseEntity.ok().build();
     }

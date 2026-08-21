@@ -1,4 +1,19 @@
-<aside xmlns:th="http://www.thymeleaf.org" class="corp-sidebar" aria-label="기업관리 메뉴" th:fragment="corpAside">
+<!--
+  companyStatus는 세 값을 가진다.
+    APPROVED - 승인 완료. 모든 메뉴 이용 가능
+    DRAFT    - 가입 후 기업정보 작성 중(심사 요청 전)
+    REJECTED - 승인 반려
+  DRAFT와 REJECTED는 아직 승인 전이라 기업정보 화면 외 메뉴를 쓸 수 없어 isLocked로 묶는다.
+  다만 기업정보 메뉴가 향하는 화면은 서로 달라 isRejected로 따로 구분한다.
+-->
+<aside xmlns:th="http://www.thymeleaf.org" class="corp-sidebar" aria-label="기업관리 메뉴"
+       th:fragment="corpAside"
+       th:with="isDraft=${companyStatus == 'DRAFT'},
+                isRejected=${companyStatus == 'REJECTED'},
+                isLocked=${companyStatus == 'DRAFT' or companyStatus == 'REJECTED'},
+                lockedTitle=${companyStatus == 'DRAFT'}
+                    ? '기업정보를 입력하고 심사를 요청해주세요.'
+                    : '기업 승인 후 이용할 수 있습니다.'">
     <!-- 기업 프로필 -->
     <div class="company-profile">
         <div class="company-profile__logo" aria-hidden="true">
@@ -34,26 +49,26 @@
     <nav class="corp-nav">
         <a
             class="corp-nav__item"
-            th:classappend="${companyStatus == 'REJECTED'}
+            th:classappend="${isLocked}
                 ? ' is-disabled'
                 : (${activeMenu == 'dashboard'} ? ' is-active' : '')"
-            th:href="${companyStatus == 'REJECTED'} ? null : @{/corp}"
+            th:href="${isLocked} ? null : @{/corp}"
             th:attr="aria-current=${activeMenu == 'dashboard'} ? 'page' : null,
-                aria-disabled=${companyStatus == 'REJECTED'} ? 'true' : null,
-                tabindex=${companyStatus == 'REJECTED'} ? '-1' : null,
-                title=${companyStatus == 'REJECTED'} ? '기업 승인 후 이용할 수 있습니다.' : null"
+                aria-disabled=${isLocked} ? 'true' : null,
+                tabindex=${isLocked} ? '-1' : null,
+                title=${isLocked} ? ${lockedTitle} : null"
         >
             대시보드
         </a>
 
         <!--
-            메뉴는 하나만 유지하고,
-            승인 반려 상태일 때만 반려 수정 페이지로 이동
+            메뉴는 하나만 유지하고, 승인 반려 상태일 때만 반려 수정 페이지로 이동.
+            작성 중(DRAFT)은 반려가 아니므로 일반 기업정보 화면으로 간다.
         -->
         <a
             class="corp-nav__item"
             th:classappend="${activeMenu == 'company'} ? ' is-active'"
-            th:href="${companyStatus == 'REJECTED'}
+            th:href="${isRejected}
                 ? @{/corp/company-info-rejected}
                 : @{/corp/company-info}"
             th:attr="aria-current=${activeMenu == 'company'} ? 'page' : null"
@@ -63,79 +78,87 @@
 
         <a
             class="corp-nav__item"
-            th:classappend="${companyStatus == 'REJECTED'}
+            th:classappend="${isLocked}
                 ? ' is-disabled'
                 : (${activeMenu == 'jobs'} ? ' is-active' : '')"
-            th:href="${companyStatus == 'REJECTED'} ? null : @{/corp/job}"
+            th:href="${isLocked} ? null : @{/corp/job}"
             th:attr="aria-current=${activeMenu == 'jobs'} ? 'page' : null,
-                aria-disabled=${companyStatus == 'REJECTED'} ? 'true' : null,
-                tabindex=${companyStatus == 'REJECTED'} ? '-1' : null,
-                title=${companyStatus == 'REJECTED'} ? '기업 승인 후 이용할 수 있습니다.' : null"
+                aria-disabled=${isLocked} ? 'true' : null,
+                tabindex=${isLocked} ? '-1' : null,
+                title=${isLocked} ? ${lockedTitle} : null"
         >
             채용공고 관리
         </a>
 
         <a
             class="corp-nav__item"
-            th:classappend="${companyStatus == 'REJECTED'}
+            th:classappend="${isLocked}
                 ? ' is-disabled'
                 : (${activeMenu == 'applicants'} ? ' is-active' : '')"
-            th:href="${companyStatus == 'REJECTED'} ? null : @{/corp/applicant}"
+            th:href="${isLocked} ? null : @{/corp/applicant}"
             th:attr="aria-current=${activeMenu == 'applicants'} ? 'page' : null,
-                aria-disabled=${companyStatus == 'REJECTED'} ? 'true' : null,
-                tabindex=${companyStatus == 'REJECTED'} ? '-1' : null,
-                title=${companyStatus == 'REJECTED'} ? '기업 승인 후 이용할 수 있습니다.' : null"
+                aria-disabled=${isLocked} ? 'true' : null,
+                tabindex=${isLocked} ? '-1' : null,
+                title=${isLocked} ? ${lockedTitle} : null"
         >
             지원자 관리
         </a>
 
         <a
             class="corp-nav__item"
-            th:classappend="${companyStatus == 'REJECTED'}
+            th:classappend="${isLocked}
                 ? ' is-disabled'
                 : (${activeMenu == 'account'} ? ' is-active' : '')"
-            th:href="${companyStatus == 'REJECTED'} ? null : @{/corp/account}"
+            th:href="${isLocked} ? null : @{/corp/account}"
             th:attr="aria-current=${activeMenu == 'account'} ? 'page' : null,
-                aria-disabled=${companyStatus == 'REJECTED'} ? 'true' : null,
-                tabindex=${companyStatus == 'REJECTED'} ? '-1' : null,
-                title=${companyStatus == 'REJECTED'} ? '기업 승인 후 이용할 수 있습니다.' : null"
+                aria-disabled=${isLocked} ? 'true' : null,
+                tabindex=${isLocked} ? '-1' : null,
+                title=${isLocked} ? ${lockedTitle} : null"
         >
             계정관리
         </a>
     </nav>
 
-    <!-- 기업 상태 -->
+    <!--
+      기업 상태.
+      승인 전(작성 중·반려)에는 기업정보가 서비스에 노출되지 않으므로
+      '공개 상태'가 아니라 '승인 상태'를 보여준다.
+    -->
     <div
         class="company-visibility"
-        th:classappend="${companyStatus == 'REJECTED'}
-            ? ' company-visibility--rejected'
-            : ''"
+        th:classappend="${isLocked} ? ' company-visibility--rejected' : ''"
     >
         <span
             class="company-visibility__label"
-            th:text="${companyStatus == 'REJECTED'}
-                ? '기업 승인 상태'
-                : '기업정보 공개 상태'"
+            th:text="${isLocked} ? '기업 승인 상태' : '기업정보 공개 상태'"
         >
             기업정보 공개 상태
         </span>
 
         <strong
             class="company-visibility__status"
-            th:text="${companyStatus == 'REJECTED'}
-                ? '승인 반려'
-                : '정상 노출 중'"
+            th:text="${isDraft}
+                ? '심사 요청 전'
+                : (${isRejected} ? '승인 반려' : '정상 노출 중')"
         >
             정상 노출 중
         </strong>
 
+        <!--
+          승인 상태에서는 실제 기업정보 수정 시각을 보여준다.
+          값이 없으면(수정 이력이 없거나 속성이 없는 화면) 공개 중임을 알리는 문구로 대체한다.
+        -->
         <span
             class="company-visibility__date"
-            th:text="${companyStatus == 'REJECTED'}
-                ? '정보 수정·재심사 필요'
-                : '마지막 수정 2026.07.21'"
+            th:text="${isDraft}
+                ? '기업정보 입력 후 심사 요청'
+                : (${isRejected}
+                    ? '정보 수정·재심사 필요'
+                    : (${companySidebarUpdatedAt != null}
+                        ? '마지막 수정 ' + ${#temporals.format(companySidebarUpdatedAt, 'yyyy.MM.dd')}
+                        : '구직자에게 공개 중'))"
         >
-            마지막 수정 2026.07.21
+            구직자에게 공개 중
         </span>
     </div>
 </aside>

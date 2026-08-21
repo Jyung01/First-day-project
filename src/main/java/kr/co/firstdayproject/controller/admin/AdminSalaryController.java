@@ -2,6 +2,7 @@ package kr.co.firstdayproject.controller.admin;
 
 import java.util.Map;
 import kr.co.firstdayproject.dto.salary.SalaryRecordsDTO;
+import kr.co.firstdayproject.security.AdminPrincipal;
 import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.admin.AdminSalaryService;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +55,7 @@ public class AdminSalaryController {
                                     @RequestParam String status,
                                     @RequestParam(required = false) String hiddenReason) {
         try {
-            Long adminId = userDetails == null ? 1L : userDetails.getUserId();
+            Long adminId = AdminPrincipal.requireAdminId(userDetails);
             adminSalaryService.review(adminId, salaryRecordId, status, hiddenReason);
             return ResponseEntity.ok(Map.of("success", true, "message", "연봉정보 검토 결과가 저장되었습니다."));
         } catch (RuntimeException e) {

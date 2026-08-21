@@ -95,6 +95,13 @@
     line-height: 1.6;
 }
 
+/* 안내가 두 줄 이상일 때 보조 설명은 간격을 두고 조금 흐리게 둔다. */
+.complete-guide-description + .complete-guide-description {
+    margin-top: 8px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
 /* 하단 버튼 */
 
 .complete-actions {

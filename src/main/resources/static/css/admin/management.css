@@ -42,9 +42,14 @@
    통계 카드
 ========================================================= */
 
+/*
+ * 카드 개수가 화면마다 다르다(회원 관리 3개, 기업 관리 4개).
+ * 열 수를 고정하면 개수가 늘 때마다 줄이 어색하게 끊기므로,
+ * 폭이 허용하는 만큼 한 줄에 채우고 모자라면 자연스럽게 접히도록 둔다.
+ */
 .management-stats {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
 }
@@ -356,6 +361,11 @@
 
 .status-text.is-withdrawn {
     color: #94a3b8;
+}
+
+/* 가입 후 기업정보를 작성 중이라 아직 심사할 수 없는 상태 */
+.status-text.is-draft {
+    color: #f59e0b;
 }
 
 /* 상세 링크 */

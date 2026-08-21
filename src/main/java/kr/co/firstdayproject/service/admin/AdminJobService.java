@@ -200,6 +200,15 @@ public class AdminJobService {
                 startOfTomorrow
             )
         );
+        // 대시보드에서 "전일 대비" 증감을 계산하는 데 쓴다.
+        statistics.put(
+            "yesterdayCreated",
+            jobPostingRepository.countByStatusInAndCreatedAtBetween(
+                MANAGED_STATUSES,
+                startOfToday.minusDays(1),
+                startOfToday
+            )
+        );
         statistics.put(
             "open",
             jobPostingRepository.countByStatus("모집중")

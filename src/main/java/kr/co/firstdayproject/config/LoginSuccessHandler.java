@@ -28,6 +28,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             "/auth/login?companyApproval=pending";
     private static final String REJECTED_COMPANY_URL =
             "/corp/company-info-rejected?showRejectionModal=true";
+    /** 가입 후 기업정보를 아직 작성 중인 기업이 로그인하면 보내는 곳. */
+    private static final String DRAFT_COMPANY_URL =
+            "/corp/company-info?reviewDraft=true";
 
     private final CompanyRepository companyRepository;
     private final LoginAuditService loginAuditService;
@@ -38,10 +41,31 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             HttpServletResponse response,
             Authentication authentication
     ) throws IOException, ServletException {
-        Optional<String> companyApprovalStatus =
-                findCompanyApprovalStatus(authentication);
+        Optional<Company> company = findCompany(authentication);
+        Optional<String> companyApprovalStatus = company.map(Company::getApprovalStatus);
 
+        /*
+         * 승인대기라도 아직 심사를 요청하지 않았다면(reviewRequestedAt == null) 로그인시킨다.
+         * 가입 단계에서는 대표자명·설립일·기업소개 등이 비어 있어, 로그인해서 채운 뒤
+         * 직접 심사를 요청해야 하기 때문이다. 이때 갈 곳은 기업정보 화면뿐이며,
+         * 나머지 기업 화면은 CompanyReviewGateInterceptor가 막는다.
+         *
+         * 이미 심사를 요청한 기업은 종전대로 로그인을 막는다. 심사 중에는 할 수 있는 일이 없고,
+         * 정보가 바뀌면 관리자가 심사한 내용과 승인된 내용이 달라지기 때문이다.
+         */
         if (companyApprovalStatus.filter(PENDING_APPROVAL::equals).isPresent()) {
+            boolean draft = company
+                    .map(Company::getReviewRequestedAt)
+                    .isEmpty();
+
+            if (draft) {
+                recordLastLogin(authentication);
+                response.sendRedirect(
+                        request.getContextPath() + DRAFT_COMPANY_URL
+                );
+                return;
+            }
+
             SecurityContextHolder.clearContext();
             HttpSession session = request.getSession(false);
             if (session != null) {
@@ -73,14 +97,17 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     }
 
     Optional<String> findCompanyApprovalStatus(Authentication authentication) {
+        return findCompany(authentication).map(Company::getApprovalStatus);
+    }
+
+    private Optional<Company> findCompany(Authentication authentication) {
         if (!hasRole(authentication, "ROLE_COMPANY")
                 || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)
                 || userDetails.getCompanyId() == null) {
             return Optional.empty();
         }
 
-        return companyRepository.findById(userDetails.getCompanyId())
-                .map(Company::getApprovalStatus);
+        return companyRepository.findById(userDetails.getCompanyId());
     }
 
     String resolveDestination(HttpServletRequest request,

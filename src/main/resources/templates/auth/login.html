@@ -205,6 +205,19 @@
                     });
                 }
 
+                function showCompanyReviewRequestedModal() {
+                    showConfirmModal({
+                        iconClass: "success",
+                        iconHtml: "✓",
+                        title: "심사 요청이 완료되었습니다",
+                        message:
+                            "입력한 기업정보가 관리자에게 제출되었습니다.\n심사가 완료될 때까지 기업회원 로그인이 제한됩니다.",
+                        leftVisible: false,
+                        rightText: "확인",
+                        rightClass: "btn-primary"
+                    });
+                }
+
                 function showCompanyReapplyCompletedModal() {
                     showConfirmModal({
                         iconClass: "success",
@@ -241,6 +254,15 @@
                     );
                 } else if (companyApproval === "reapplied") {
                     showCompanyReapplyCompletedModal();
+                    queryParameters.delete("companyApproval");
+                    const queryString = queryParameters.toString();
+                    history.replaceState(
+                        null,
+                        "",
+                        window.location.pathname + (queryString ? "?" + queryString : "")
+                    );
+                } else if (companyApproval === "requested") {
+                    showCompanyReviewRequestedModal();
                     queryParameters.delete("companyApproval");
                     const queryString = queryParameters.toString();
                     history.replaceState(
