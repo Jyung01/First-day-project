@@ -58,4 +58,21 @@ public class AdminBannerController {
             return ResponseEntity.ok(Map.of("success", true, "active", active, "message", active ? "배너가 노출됩니다." : "배너가 숨김 처리되었습니다."));
         } catch (RuntimeException e) { return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage())); }
     }
+
+    @DeleteMapping("/{bannerId}")
+    @ResponseBody
+    public ResponseEntity<?> delete(@PathVariable Long bannerId) {
+        try {
+            bannerService.delete(bannerId);
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "배너가 삭제되었습니다."
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        }
+    }
 }

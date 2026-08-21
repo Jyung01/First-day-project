@@ -24,4 +24,6 @@ public interface  BannerDao {
     int updateBanner(BannerDTO dto);
 
     int updateBannerActive(@Param("bannerId") Long bannerId, @Param("isActive") boolean isActive);
+
+    int deleteBanner(@Param("bannerId") Long bannerId);
 }

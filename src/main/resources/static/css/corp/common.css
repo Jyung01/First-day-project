@@ -81,34 +81,25 @@ textarea {
 .corp-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 6px;
 }
 
 .corp-brand__logo {
     display: block;
-    width: 40px;
+    width: 160px;
     height: 40px;
-    flex: 0 0 40px;
+    flex: 0 0 160px;
     object-fit: contain;
-    object-position: center;
-}
-
-.corp-brand__name {
-    color: var(--corp-ink);
-    font-size: 21px;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    white-space: nowrap;
+    object-position: left center;
 }
 
 .corp-brand__tag {
-    padding: 6px 10px;
-    color: var(--corp-blue-dark);
-    background: var(--corp-blue-soft);
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 700;
+    padding: 6px 12px;
+    color: #fff;
+    background: #2563eb;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .corp-header__actions {
@@ -356,12 +347,8 @@ textarea {
     }
 
     .corp-brand__logo {
-        width: 40px;
+        width: 160px;
         height: 40px;
-    }
-
-    .corp-brand__name {
-        font-size: 19px;
     }
 
     .corp-main {

@@ -148,6 +148,10 @@
   text-decoration: underline;
 }
 
+.banner-action .delete-banner-btn {
+  color: #fb7185;
+}
+
 
 #fileName {
   flex: 1;
