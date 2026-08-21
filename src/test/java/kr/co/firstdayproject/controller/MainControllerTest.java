@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import kr.co.firstdayproject.dto.job.JobCategoryGroup;
 import kr.co.firstdayproject.security.CustomUserDetails;
+import kr.co.firstdayproject.service.banner.BannerService;
 import kr.co.firstdayproject.service.company.CompanyService;
 import kr.co.firstdayproject.service.job.JobService;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,9 @@ class MainControllerTest {
     @Mock
     private CompanyService companyService;
 
+    @Mock
+    private BannerService bannerService;
+
     @InjectMocks
     private MainController mainController;
 
@@ -34,6 +38,7 @@ class MainControllerTest {
         when(jobService.getLatestJobPostingList()).thenReturn(List.of());
         when(jobService.getPopularJobPostingList()).thenReturn(List.of());
         when(companyService.getPopularCompanyList()).thenReturn(List.of());
+        when(bannerService.getActiveBanners("main")).thenReturn(List.of());
         when(jobService.getActiveJobCategoryGroups()).thenReturn(List.of(
                 new JobCategoryGroup(1L, "개발", List.of()),
                 new JobCategoryGroup(2L, "디자인", List.of())

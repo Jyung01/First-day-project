@@ -2,6 +2,7 @@ package kr.co.firstdayproject.controller;
 
 import java.util.List;
 import kr.co.firstdayproject.dto.job.JobCategoryGroup;
+import kr.co.firstdayproject.service.banner.BannerService;
 import kr.co.firstdayproject.service.company.CompanyService;
 import kr.co.firstdayproject.service.job.JobService;
 import kr.co.firstdayproject.security.CustomUserDetails;
@@ -18,6 +19,7 @@ public class MainController {
 
     private final JobService jobService;
     private final CompanyService companyService;
+    private final BannerService bannerService;
 
     @GetMapping({"/", "/main/redesign"})
     public String index(
@@ -30,6 +32,8 @@ public class MainController {
                 jobService.getPopularJobPostingList());
         model.addAttribute("popularCompanies",
                 companyService.getPopularCompanyList());
+        model.addAttribute("banners",
+                bannerService.getActiveBanners("main"));
 
         List<JobCategoryGroup> jobCategoryGroups = jobService.getActiveJobCategoryGroups();
         model.addAttribute("jobCategoryGroups", jobCategoryGroups);
