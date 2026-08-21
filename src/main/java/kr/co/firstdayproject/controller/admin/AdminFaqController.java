@@ -1,10 +1,12 @@
-package kr.co.firstdayproject.controller.cs;
+package kr.co.firstdayproject.controller.admin;
 
-import jakarta.servlet.http.HttpSession;
 import kr.co.firstdayproject.dto.cs.FaqDto;
+import kr.co.firstdayproject.security.AdminPrincipal;
+import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.cs.FaqService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 // 참고: 관리자 FAQ 화면(/admin/cs/faq) 자체는 기존 AdminController.faq()가 매핑하고 있으므로
@@ -39,9 +41,9 @@ public class AdminFaqController {
 
     // FAQ 등록 -> 저장 즉시 사용자 고객센터에 노출
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody FaqDto.SaveRequest request, HttpSession session) {
-        Long adminId = currentAdminId(session);
-        Long faqId = faqService.create(request, adminId);
+    public ResponseEntity<?> create(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                    @RequestBody FaqDto.SaveRequest request) {
+        Long faqId = faqService.create(request, AdminPrincipal.requireAdminId(userDetails));
         return ResponseEntity.ok(java.util.Map.of("faqId", faqId));
     }
 
@@ -57,11 +59,5 @@ public class AdminFaqController {
     public ResponseEntity<?> delete(@PathVariable Long faqId) {
         faqService.delete(faqId);
         return ResponseEntity.ok().build();
-    }
-
-    // TODO: 프로젝트의 실제 관리자 인증/세션 키 규칙에 맞춰 교체 필요
-    private Long currentAdminId(HttpSession session) {
-        Object adminId = session.getAttribute("ADMIN_ID");
-        return (adminId != null) ? Long.valueOf(adminId.toString()) : 1L;
     }
 }

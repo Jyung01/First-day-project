@@ -1,6 +1,8 @@
 package kr.co.firstdayproject.controller.admin;
 
 import kr.co.firstdayproject.dto.cs.NoticeDto;
+import kr.co.firstdayproject.security.AdminPrincipal;
+import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.cs.FaqService;
 import kr.co.firstdayproject.service.cs.NoticeService;
 import kr.co.firstdayproject.service.cs.QnaService;
@@ -8,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -60,9 +63,9 @@ public class AdminNoticeController {
     // 등록 (JSON)
     @PostMapping
     @ResponseBody
-    public Long create(@RequestBody NoticeDto.SaveRequest req) {
-        Long adminId = 1L; // TODO: 로그인 관리자 ID로 교체
-        return noticeService.create(req, adminId);
+    public Long create(@AuthenticationPrincipal CustomUserDetails userDetails,
+                       @RequestBody NoticeDto.SaveRequest req) {
+        return noticeService.create(req, AdminPrincipal.requireAdminId(userDetails));
     }
 
     // 수정 (JSON)

@@ -2,6 +2,7 @@ package kr.co.firstdayproject.controller.admin;
 
 import java.util.Map;
 import kr.co.firstdayproject.dto.admin.AdminReviewDTO;
+import kr.co.firstdayproject.security.AdminPrincipal;
 import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.admin.AdminReviewService;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ public class AdminReviewController {
                                           @RequestParam(required=false) String hiddenReason,
                                           @RequestParam(required=false) String memo) {
         try {
-            Long adminId = userDetails == null ? 1L : userDetails.getUserId();
+            Long adminId = AdminPrincipal.requireAdminId(userDetails);
             adminReviewService.updateStatus(adminId, reviewType, reviewId, status, hiddenReason, memo);
             return ResponseEntity.ok(Map.of("success", true, "message", "후기 상태가 변경되었습니다."));
         } catch (RuntimeException e) {

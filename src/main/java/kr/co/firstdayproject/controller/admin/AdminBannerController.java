@@ -3,6 +3,7 @@ package kr.co.firstdayproject.controller.admin;
 import java.io.IOException;
 import java.util.Map;
 import kr.co.firstdayproject.dto.banner.BannerDTO;
+import kr.co.firstdayproject.security.AdminPrincipal;
 import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.banner.BannerService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class AdminBannerController {
     public ResponseEntity<?> register(@AuthenticationPrincipal CustomUserDetails userDetails,
                                       @ModelAttribute BannerDTO banner, @RequestParam MultipartFile bannerFile) {
         try {
-            bannerService.register(banner, bannerFile, userDetails == null ? 1L : userDetails.getUserId());
+            bannerService.register(banner, bannerFile, AdminPrincipal.requireAdminId(userDetails));
             return ResponseEntity.ok(Map.of("success", true, "message", "배너가 등록되었습니다."));
         } catch (IOException | RuntimeException e) { return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage())); }
     }

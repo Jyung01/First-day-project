@@ -2,6 +2,7 @@ package kr.co.firstdayproject.controller.admin;
 
 import java.util.Map;
 import kr.co.firstdayproject.dto.admin.AdminReportDTO;
+import kr.co.firstdayproject.security.AdminPrincipal;
 import kr.co.firstdayproject.security.CustomUserDetails;
 import kr.co.firstdayproject.service.admin.AdminReportService;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class AdminReportController {
     public ResponseEntity<?> process(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long reportId,
                                      @RequestParam String action, @RequestParam(required = false) String memo) {
         try {
-            adminReportService.process(userDetails == null ? 1L : userDetails.getUserId(), reportId, action, memo);
+            adminReportService.process(AdminPrincipal.requireAdminId(userDetails), reportId, action, memo);
             return ResponseEntity.ok(Map.of("success", true, "message", "신고 처리가 완료되었습니다."));
         } catch (RuntimeException e) { return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage())); }
     }
