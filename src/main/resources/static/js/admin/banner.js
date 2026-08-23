@@ -106,6 +106,35 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }));
+
+    document.querySelectorAll(".delete-banner-btn").forEach((button) => button.addEventListener("click", (event) => {
+        event.preventDefault();
+        const bannerName = button.dataset.bannerName || "선택한 배너";
+
+        showConfirmModal({
+            iconClass: "danger",
+            title: "배너를 삭제할까요?",
+            message: `‘${bannerName}’ 배너가 사용자 화면과 관리 목록에서 삭제됩니다. 삭제한 배너는 복구할 수 없습니다.`,
+            leftText: "취소",
+            rightText: "삭제",
+            leftClass: "btn-outline",
+            rightClass: "btn-danger",
+            onRight: async () => {
+                try {
+                    const response = await fetch(`/admin/banner/${button.dataset.bannerId}`, {
+                        method: "DELETE"
+                    });
+                    const result = await response.json();
+                    if (!response.ok) {
+                        throw new Error(result.message || "배너를 삭제하지 못했습니다.");
+                    }
+                    showBannerResult(true, result.message, true);
+                } catch (error) {
+                    showBannerResult(false, error.message);
+                }
+            }
+        });
+    }));
 });
 
 function showBannerResult(success, message, reload = false) {

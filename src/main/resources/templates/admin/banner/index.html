@@ -57,6 +57,9 @@
                             <div class="banner-action">
                                 <a href="#" class="edit-banner-btn" th:attr="data-banner-id=${banner.bannerId}">수정</a>
                                 <a href="#" class="hide-banner-btn" th:attr="data-banner-id=${banner.bannerId},data-active=${banner.isActive}" th:text="${banner.isActive} ? '숨김' : '노출'">숨김</a>
+                                <a href="#"
+                                   class="delete-banner-btn"
+                                   th:attr="data-banner-id=${banner.bannerId},data-banner-name=${banner.bannerName}">삭제</a>
                             </div>
                         </div>
                     </article>

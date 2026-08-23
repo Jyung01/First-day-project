@@ -91,6 +91,20 @@ public class BannerService {
         return nextActive;
     }
 
+    @Transactional
+    public void delete(Long bannerId) {
+        BannerDTO banner = getBanner(bannerId);
+
+        if (bannerDao.deleteBanner(bannerId) != 1) {
+            throw new IllegalStateException("배너를 삭제하지 못했습니다.");
+        }
+
+        awsS3Service.synchronizePublicReplacement(
+                banner.getImageUrl(),
+                null
+        );
+    }
+
     private void validate(BannerDTO dto, MultipartFile file, boolean fileRequired) {
         if (dto.getBannerName() == null || dto.getBannerName().isBlank()) throw new IllegalArgumentException("배너 제목을 입력해주세요.");
         if (!List.of("main", "job", "companies").contains(dto.getPlacement())) throw new IllegalArgumentException("올바른 노출 위치를 선택해주세요.");

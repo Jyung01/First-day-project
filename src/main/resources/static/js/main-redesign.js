@@ -3,6 +3,7 @@ function initializeRedesignPage() {
     const lists = document.querySelectorAll("[data-job-list-content]");
 
     initializeHeroCopyFade();
+    initializeMainBanner();
 
     tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
@@ -48,6 +49,84 @@ function initializeRedesignPage() {
                     <a href="/job/list">전체 공고 보기 →</a>
                 </div>`;
         });
+}
+
+function initializeMainBanner() {
+    const banner = document.querySelector("[data-main-banner]");
+    if (!banner) return;
+
+    const slides = Array.from(banner.querySelectorAll(".main-banner__slide"));
+    const dots = Array.from(banner.querySelectorAll("[data-banner-dot]"));
+    const previousButton = banner.querySelector(".main-banner__arrow--prev");
+    const nextButton = banner.querySelector(".main-banner__arrow--next");
+    if (slides.length < 2) return;
+
+    const previewClones = slides.length === 2
+        ? slides.map((slide) => {
+            const clone = slide.cloneNode(true);
+            clone.className = "main-banner__slide";
+            clone.removeAttribute("data-banner-index");
+            clone.setAttribute("aria-hidden", "true");
+            clone.tabIndex = -1;
+            banner.querySelector(".main-banner__viewport")?.appendChild(clone);
+            return clone;
+        })
+        : [];
+
+    let currentIndex = 0;
+    let timerId;
+
+    const show = (nextIndex) => {
+        currentIndex = (nextIndex + slides.length) % slides.length;
+        slides.forEach((slide, index) => {
+            const active = index === currentIndex;
+            const previous = slides.length > 2
+                && index === (currentIndex - 1 + slides.length) % slides.length;
+            const next = index === (currentIndex + 1) % slides.length;
+            slide.classList.toggle("is-active", active);
+            slide.classList.toggle("is-prev", previous);
+            slide.classList.toggle("is-next", next);
+            slide.setAttribute("aria-hidden", String(!active && !previous && !next));
+            slide.tabIndex = active ? 0 : -1;
+        });
+        previewClones.forEach((clone, index) => {
+            clone.classList.toggle(
+                "is-prev",
+                index === (currentIndex - 1 + slides.length) % slides.length
+            );
+        });
+        dots.forEach((dot, index) => {
+            const active = index === currentIndex;
+            dot.classList.toggle("is-active", active);
+            dot.setAttribute("aria-current", String(active));
+        });
+    };
+
+    const stop = () => window.clearInterval(timerId);
+    const start = () => {
+        stop();
+        timerId = window.setInterval(() => show(currentIndex + 1), 5000);
+    };
+
+    previousButton?.addEventListener("click", () => {
+        show(currentIndex - 1);
+        start();
+    });
+    nextButton?.addEventListener("click", () => {
+        show(currentIndex + 1);
+        start();
+    });
+    dots.forEach((dot) => dot.addEventListener("click", () => {
+        show(Number(dot.dataset.bannerDot));
+        start();
+    }));
+    banner.addEventListener("mouseenter", stop);
+    banner.addEventListener("mouseleave", start);
+    banner.addEventListener("focusin", stop);
+    banner.addEventListener("focusout", start);
+
+    show(0);
+    start();
 }
 
 function initializeHeroCopyFade() {
@@ -131,7 +210,7 @@ function recommendationRow(job, score, reasons) {
             </span>
             <em class="ai-score">${match}</em>
             <span class="ai-reason">${escapeHtml(reason)}</span>
-            <span class="ai-arrow">→</span>
+            <span class="ai-arrow main-arrow" aria-hidden="true"></span>
         </a>`;
 }
 

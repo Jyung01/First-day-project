@@ -95,4 +95,9 @@
         WHERE banner_id=#{bannerId}
     </update>
 
+    <delete id="deleteBanner">
+        DELETE FROM banners
+        WHERE banner_id = #{bannerId}
+    </delete>
+
 </mapper>
