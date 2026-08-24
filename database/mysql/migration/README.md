@@ -20,6 +20,7 @@
 | V12 | `V12__add_rag_context_to_cover_letter_ai_reviews.sql` | `cover_letter_ai_reviews.rag_context` 추가 |
 | V13 | `V13__add_member_withdrawal_to_termination_reason.sql` | `applications.termination_reason` CHECK 허용값에 `회원탈퇴` 추가 |
 | V14 | `V14__add_review_requested_at_to_companies.sql` | `companies.review_requested_at` 추가, 심사 큐 인덱스 및 기존 승인대기 기업 백필 |
+| V15 | `V15__add_offer_declined_to_application_status.sql` | `applications.current_status` CHECK 허용값에 `입사포기` 추가 |
 
 ## 적용 규칙
 
@@ -104,3 +105,9 @@
 - `reapply_requested_at`은 의미를 바꾸지 않는다. 그 컬럼은 신규심사(NEW)와 재심사(REVIEW) 구분에 계속 사용한다.
 - 기존 승인대기 기업이 심사 큐에서 사라지지 않도록 백필한다. 재심사 요청분은 그 시각을, 신규 가입분은 가입 시각을 심사 요청 시각으로 본다.
 - 기존 V13 DB에는 `V14__add_review_requested_at_to_companies.sql`을 한 번 실행한다.
+
+## V15 반영 내용
+
+- `applications.current_status` CHECK 제약(`chk_applications_status`)에 `입사포기`를 추가한다. 기존 허용값에 이어 총 11개 상태를 허용한다.
+- 최종합격 후 입사를 포기하는 경우를 입사완료·불합격과 구분해서 표현할 수 있게 한다.
+- 기존 V14 DB에는 `V15__add_offer_declined_to_application_status.sql`을 한 번 실행한다.

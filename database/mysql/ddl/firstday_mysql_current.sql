@@ -544,7 +544,7 @@ CREATE TABLE applications (
   CONSTRAINT chk_applications_status
     CHECK (current_status IN
       ('지원완료','서류검토중','서류합격','면접예정','면접완료',
-       '최종합격','입사완료','불합격','지원취소','채용종료')),
+       '최종합격','입사완료','입사포기','불합격','지원취소','채용종료')),
   CONSTRAINT chk_applications_termination
     CHECK (termination_reason IS NULL OR termination_reason IN ('기업탈퇴','회원탈퇴')),
   CONSTRAINT fk_applications_posting
