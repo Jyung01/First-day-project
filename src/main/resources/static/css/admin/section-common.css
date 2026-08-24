@@ -238,7 +238,9 @@
     gap: 16px;
 }
 
-.admin-section .field { display: flex; flex-direction: column; gap: 6px; }
+/* min-width:0이 없으면 그리드 칸이 input의 기본 너비(약 200px) 아래로
+   줄어들지 못해, 패널이 좁아질 때 내용이 밖으로 삐져나간다. */
+.admin-section .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .admin-section .field.full { grid-column: 1 / -1; }
 
 .admin-section .field label,
@@ -250,6 +252,7 @@
 
 .admin-section .field input,
 .admin-section .field textarea {
+    min-width: 0;
     padding: 10px 13px;
     border: 1px solid #334155;
     border-radius: 7px;
@@ -284,6 +287,7 @@
 
 .admin-section .upload-box {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
@@ -294,10 +298,21 @@
     background: #172033;
 }
 
-.admin-section .preview { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.admin-section .preview {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.admin-section .upload-box .btn { flex-shrink: 0; }
 
 .admin-section .preview .mark {
     display: inline-flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
     width: 30px;
@@ -319,7 +334,12 @@
 
 .admin-section .version-item.head { color: #94a3b8; font-weight: 700; }
 
-@media (max-width: 1000px) {
+/*
+ * 미디어쿼리는 뷰포트 기준인데 실제 본문 폭은
+ * 뷰포트 - 사이드바(260px) - 본문 좌우 패딩(72px)이다.
+ * 1000px 기준으로는 두 칸 배치가 너무 늦게 풀려서 내용이 넘쳤다.
+ */
+@media (max-width: 1180px) {
     .admin-section .two-col { grid-template-columns: 1fr; }
     .admin-section .version-list { overflow-x: auto; }
     .admin-section .version-item { min-width: 760px; }
