@@ -67,8 +67,21 @@ public class SecurityConfig {
         }
 
         http
+                /*
+                 * 역할 기반 접근 제어는 아래 세 접두사에만 걸려 있다.
+                 * 그 밖의 경로(/job, /company, /cs, /reports, /salary, /api/** 등)는
+                 * permitAll이며, 로그인·본인 확인은 각 컨트롤러와 서비스가 직접 한다.
+                 * 예) SavedJobService.getPersonalUserId, QnaController의 @AuthenticationPrincipal
+                 *
+                 * 따라서 이 영역에 쓰기 엔드포인트를 새로 추가할 때는
+                 * 여기서 막아주지 않는다는 점을 전제로 방어 코드를 함께 넣어야 한다.
+                 *
+                 * /actuator/**는 여기서 막지 말 것.
+                 * EC2의 deploy.sh가 배포 직후 127.0.0.1:8080/actuator/health로 헬스체크를 하고,
+                 * 실패하면 이전 버전으로 롤백한다. 앱에서 차단하면 정상 배포까지 전부 롤백된다.
+                 * 외부 노출 차단은 Apache에서 처리한다(docs/operations/domain-https-handoff.md 5-1).
+                 */
                 .authorizeHttpRequests(auth -> auth
-                        // TODO 권한 정책 확정 후 아래 규칙부터 순서대로 활성화
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/corp/**").hasRole("COMPANY")
                         .requestMatchers("/my/**").hasRole("PERSONAL")
