@@ -11,7 +11,7 @@ public final class ApplicationStatusTransitionPolicy {
             "서류합격", List.of("면접예정", "불합격"),
             "면접예정", List.of("면접완료", "불합격"),
             "면접완료", List.of("최종합격", "불합격"),
-            "최종합격", List.of("입사완료", "불합격")
+            "최종합격", List.of("입사완료", "입사포기")
     );
 
     private ApplicationStatusTransitionPolicy() {

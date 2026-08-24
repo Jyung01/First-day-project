@@ -34,6 +34,7 @@ public class MyApplicationQueryService {
     private static final Set<String> RESULT_STATUSES = Set.of(
             "최종합격",
             "입사완료",
+            "입사포기",
             "불합격",
             "지원취소",
             "채용종료"
@@ -46,6 +47,7 @@ public class MyApplicationQueryService {
             "면접완료",
             "최종합격",
             "입사완료",
+            "입사포기",
             "불합격",
             "지원취소",
             "채용종료"
@@ -164,6 +166,7 @@ public class MyApplicationQueryService {
             case "면접완료" -> "면접 완료";
             case "최종합격" -> "최종 합격";
             case "입사완료" -> "입사 완료";
+            case "입사포기" -> "입사 포기";
             case "지원취소" -> "지원 취소";
             case "채용종료" -> "채용 종료";
             default -> status;
@@ -179,6 +182,7 @@ public class MyApplicationQueryService {
             case "면접완료" -> "interviewed";
             case "최종합격" -> "passed";
             case "입사완료" -> "joined";
+            case "입사포기" -> "canceled";
             case "불합격" -> "rejected";
             case "지원취소", "채용종료" -> "canceled";
             default -> "applied";

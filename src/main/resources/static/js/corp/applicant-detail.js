@@ -64,12 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
       iconHtml: "✓",
       title: "지원 상태 변경",
       message:
-        "현재 단계의 다음 상태 또는 불합격만 선택할 수 있습니다. 지원취소는 지원자만 가능합니다.",
+        "현재 상태에서 변경 가능한 단계만 선택할 수 있습니다. 지원취소는 지원자만 가능합니다.",
       extraHtml: `
         <div class="modal-status-summary">
           <strong>현재 상태&nbsp;&nbsp;${escapeHtml(currentStatus)}</strong>
           <p>
-            변경 가능&nbsp;&nbsp;현재 단계의 다음 상태 · 불합격<br>
+            변경 가능&nbsp;&nbsp;아래 선택 항목에서 확인<br>
             단계 건너뛰기 · 역방향 변경 불가
           </p>
         </div>
@@ -94,17 +94,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const showFinalStatusConfirm = (selectedStatus) => {
     const applicantName = statusData?.dataset.applicantName || "지원자";
     const rejected = selectedStatus === "불합격";
+    const declined = selectedStatus === "입사포기";
+    const terminal = rejected || declined;
 
     showConfirmModal({
-      iconClass: rejected ? "danger" : "info",
-      iconHtml: rejected ? "!" : "✓",
-      title: rejected ? "불합격 처리" : "지원 상태 변경 확인",
+      iconClass: terminal ? "danger" : "info",
+      iconHtml: terminal ? "!" : "✓",
+      title: rejected
+        ? "불합격 처리"
+        : declined
+          ? "입사 포기 처리"
+          : "지원 상태 변경 확인",
       message: rejected
         ? `${applicantName} 지원자를 불합격 처리할까요?\n변경한 상태는 이전 단계로 되돌릴 수 없습니다.`
+        : declined
+          ? `${applicantName} 지원자를 입사 포기로 처리할까요?\n처리 후에는 상태를 되돌릴 수 없습니다.`
         : `${applicantName} 지원자의 상태를 ${selectedStatus}(으)로 변경할까요?`,
       leftText: "취소",
-      rightText: rejected ? "불합격 처리" : "변경하기",
-      rightClass: rejected ? "btn-danger" : "btn-primary",
+      rightText: rejected
+        ? "불합격 처리"
+        : declined
+          ? "입사 포기 처리"
+          : "변경하기",
+      rightClass: terminal ? "btn-danger" : "btn-primary",
       onRight: () => {
         if (!nextStatusInput || !statusForm) return;
         nextStatusInput.value = selectedStatus;

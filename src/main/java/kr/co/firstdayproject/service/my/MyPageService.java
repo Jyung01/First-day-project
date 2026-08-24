@@ -281,6 +281,7 @@ public class MyPageService {
             case "면접완료" -> "면접 완료";
             case "최종합격" -> "최종 합격";
             case "입사완료" -> "입사 완료";
+            case "입사포기" -> "입사 포기";
             case "불합격" -> "불합격";
             case "지원취소" -> "지원 취소";
             case "채용종료" -> "채용 종료";
@@ -293,7 +294,7 @@ public class MyPageService {
             case "서류검토중" -> "review";
             case "면접예정", "면접완료" -> "interview";
             case "서류합격", "최종합격", "입사완료" -> "success";
-            case "불합격", "지원취소", "채용종료" -> "closed";
+            case "불합격", "지원취소", "입사포기", "채용종료" -> "closed";
             default -> "done";
         };
     }
