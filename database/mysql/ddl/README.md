@@ -1,6 +1,6 @@
 # MySQL 최신 전체 DDL
 
-`firstday_mysql_current.sql`은 V1부터 V14까지의 모든 변경사항을 반영한 최신 전체 스키마다.
+`firstday_mysql_current.sql`은 V1부터 V15까지의 모든 변경사항을 반영한 최신 전체 스키마다.
 
 ## 사용 방법
 
