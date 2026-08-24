@@ -31,6 +31,7 @@ public class CorpService {
     private static final String REJECTED_APPROVAL = "반려";
     private static final String PENDING_APPROVAL = "승인대기";
     private static final String WITHDRAWN_STATUS = "탈퇴";
+    private static final String WITHDRAWN_MANAGER_NAME = "탈퇴한 담당자";
     private static final List<String> ACTIVE_APPLICATION_STATUSES = List.of(
             "지원완료", "서류검토중", "서류합격", "면접예정", "면접완료"
     );
@@ -165,6 +166,13 @@ public class CorpService {
         manager.setAccountStatus(WITHDRAWN_STATUS);
         manager.setWithdrawnAt(now);
         manager.setUpdatedAt(now);
+        // 담당자 개인식별정보 마스킹. 기업 정보(상호·사업자번호 등)는 법인 정보이고
+        // 지원자의 지원 이력이 참조하므로 남긴다.
+        // loginId·email은 재가입 중복 방지(UNIQUE)를 위해 남긴다.
+        manager.setName(WITHDRAWN_MANAGER_NAME);
+        manager.setPhone(null);
+        manager.setDepartment(null);
+        manager.setPositionTitle(null);
         company.setCompanyStatus(WITHDRAWN_STATUS);
         company.setWithdrawnAt(now);
         company.setUpdatedAt(now);
