@@ -12,12 +12,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import kr.co.firstdayproject.dto.job.JobApplicationDocuments;
 import kr.co.firstdayproject.entity.application.Application;
+import kr.co.firstdayproject.entity.application.ApplicationStatusHistory;
 import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.entity.coverletter.CoverLetter;
 import kr.co.firstdayproject.entity.job.JobPosting;
 import kr.co.firstdayproject.entity.resume.Resume;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterRepository;
 import kr.co.firstdayproject.repository.application.ApplicationRepository;
+import kr.co.firstdayproject.repository.application.ApplicationStatusHistoryRepository;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
 import kr.co.firstdayproject.repository.resume.ResumeRepository;
@@ -45,6 +47,9 @@ class JobApplicationServiceTest {
 
     @Mock
     private ApplicationRepository applicationRepository;
+
+    @Mock
+    private ApplicationStatusHistoryRepository statusHistoryRepository;
 
     @Mock
     private JobPostingRepository jobPostingRepository;
@@ -239,6 +244,19 @@ class JobApplicationServiceTest {
         assertThat(savedApplication.getCurrentStatus())
                 .isEqualTo("지원완료");
         assertThat(savedApplication.getAppliedAt()).isNotNull();
+
+        ArgumentCaptor<ApplicationStatusHistory> historyCaptor =
+                ArgumentCaptor.forClass(ApplicationStatusHistory.class);
+        verify(statusHistoryRepository).save(historyCaptor.capture());
+
+        ApplicationStatusHistory savedHistory = historyCaptor.getValue();
+        assertThat(savedHistory.getApplicationId()).isEqualTo(100L);
+        assertThat(savedHistory.getFromStatus()).isNull();
+        assertThat(savedHistory.getToStatus()).isEqualTo("지원완료");
+        assertThat(savedHistory.getChangedBy()).isEqualTo(7L);
+        assertThat(savedHistory.getActorType()).isEqualTo("지원자");
+        assertThat(savedHistory.getChangedAt())
+                .isEqualTo(savedApplication.getAppliedAt());
     }
 
     private Authentication personalAuthentication(Long userId) {

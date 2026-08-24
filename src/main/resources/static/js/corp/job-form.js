@@ -123,6 +123,8 @@ document.addEventListener("DOMContentLoaded", function () {
   restoreSelectedSkills();
 
   const form = document.querySelector("#jobForm");
+  let publishConfirmed = false;
+  let editConfirmed = false;
   let reviewFormChanged = true;
   const primaryJobCategory = document.querySelector("#primaryJobCategory");
   const jobCategory = document.querySelector("#category");
@@ -395,6 +397,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!experienceValid || !salaryValid || !applicationPeriodValid) {
       event.preventDefault();
+      return;
+    }
+
+    if (
+      form.dataset.edit !== "true"
+      && event.submitter?.value === "PUBLISH"
+      && !publishConfirmed
+    ) {
+      event.preventDefault();
+
+      const submitter = event.submitter;
+      const startsInFuture = applyStartDate?.value
+        && applyStartDate.value > getTodayValue();
+
+      showConfirmModal({
+        iconClass: "success",
+        iconHtml: "✓",
+        title: "채용공고를 등록할까요?",
+        message: startsInFuture
+          ? "설정한 게시 예정일에 채용공고가 공개됩니다."
+          : "등록 즉시 채용공고가 공개됩니다.",
+        leftText: "취소",
+        rightText: "등록",
+        leftClass: "btn-outline",
+        rightClass: "btn-primary",
+        onRight: function () {
+          publishConfirmed = true;
+          form.requestSubmit(submitter);
+        },
+      });
+      return;
+    }
+
+    if (
+      form.dataset.edit === "true"
+      && event.submitter?.value === "PUBLISH"
+      && !editConfirmed
+    ) {
+      event.preventDefault();
+
+      const submitter = event.submitter;
+
+      showConfirmModal({
+        iconClass: "success",
+        iconHtml: "✓",
+        title: "수정한 내용을 저장할까요?",
+        message: "저장한 내용이 채용공고에 반영됩니다.",
+        leftText: "취소",
+        rightText: "수정 저장",
+        leftClass: "btn-outline",
+        rightClass: "btn-primary",
+        onRight: function () {
+          editConfirmed = true;
+          form.requestSubmit(submitter);
+        },
+      });
     }
   });
 

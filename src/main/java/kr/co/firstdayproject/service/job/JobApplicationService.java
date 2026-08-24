@@ -8,6 +8,7 @@ import kr.co.firstdayproject.dto.job.JobApplicationConfirmView;
 import kr.co.firstdayproject.dto.job.JobApplicationDocuments;
 import kr.co.firstdayproject.dto.job.JobApplicationDocuments.DocumentItem;
 import kr.co.firstdayproject.entity.application.Application;
+import kr.co.firstdayproject.entity.application.ApplicationStatusHistory;
 import kr.co.firstdayproject.entity.company.Company;
 import kr.co.firstdayproject.entity.coverletter.CoverLetter;
 import kr.co.firstdayproject.entity.job.JobPosting;
@@ -15,6 +16,7 @@ import kr.co.firstdayproject.entity.resume.Resume;
 import kr.co.firstdayproject.exception.DuplicateApplicationException;
 import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.repository.application.ApplicationRepository;
+import kr.co.firstdayproject.repository.application.ApplicationStatusHistoryRepository;
 import kr.co.firstdayproject.repository.company.CompanyRepository;
 import kr.co.firstdayproject.repository.coverletter.CoverLetterRepository;
 import kr.co.firstdayproject.repository.job.JobPostingRepository;
@@ -42,6 +44,7 @@ public class JobApplicationService {
     private final ResumeRepository resumeRepository;
     private final CoverLetterRepository coverLetterRepository;
     private final ApplicationRepository applicationRepository;
+    private final ApplicationStatusHistoryRepository statusHistoryRepository;
     private final JobPostingRepository jobPostingRepository;
     private final CompanyRepository companyRepository;
     private final ResumeService resumeService;
@@ -171,15 +174,24 @@ public class JobApplicationService {
                 .updatedAt(now)
                 .build();
 
+        Application savedApplication;
         try {
-            return applicationRepository
-                    .saveAndFlush(application)
-                    .getApplicationId();
+            savedApplication = applicationRepository.saveAndFlush(application);
         } catch (DataIntegrityViolationException exception) {
             throw new DuplicateApplicationException(
                     "이미 지원한 채용공고입니다."
             );
         }
+
+        statusHistoryRepository.save(ApplicationStatusHistory.builder()
+                .applicationId(savedApplication.getApplicationId())
+                .fromStatus(null)
+                .toStatus(APPLIED_STATUS)
+                .changedBy(userId)
+                .actorType("지원자")
+                .changedAt(now)
+                .build());
+        return savedApplication.getApplicationId();
     }
 
     public JobApplicationCompleteView getCompleteView(

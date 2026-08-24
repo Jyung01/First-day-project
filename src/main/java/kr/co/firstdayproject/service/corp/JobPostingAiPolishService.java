@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class JobPostingAiPolishService {
 
     private static final int MAX_CONTENT_LENGTH = 5000;
-    private static final int MAX_GENERATION_ATTEMPTS = 3;
+    private static final int MAX_GENERATION_ATTEMPTS = 2;
 
     private static final Map<String, String> FIELD_LABELS = Map.of(
             "INTRODUCTION", "공고 소개",

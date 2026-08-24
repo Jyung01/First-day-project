@@ -57,7 +57,9 @@ public record MyApplicationDetailView(
                 terminal
         );
         addProgressStage(stages, "최종합격", "최종 합격", terminal);
-        addProgressStage(stages, "입사완료", "입사 완료", terminal);
+        if (!"입사포기".equals(currentStatus)) {
+            addProgressStage(stages, "입사완료", "입사 완료", terminal);
+        }
 
         if (terminal) {
             MyApplicationHistoryItem history = findHistory(currentStatus);
@@ -189,7 +191,12 @@ public record MyApplicationDetailView(
     }
 
     private boolean isTerminalStatus(String status) {
-        return List.of("불합격", "지원취소", "채용종료").contains(status);
+        return List.of(
+                "불합격",
+                "지원취소",
+                "입사포기",
+                "채용종료"
+        ).contains(status);
     }
 
     private String statusLabel(String status) {
@@ -201,6 +208,7 @@ public record MyApplicationDetailView(
             case "면접완료" -> "면접 완료";
             case "최종합격" -> "최종 합격";
             case "입사완료" -> "입사 완료";
+            case "입사포기" -> "입사 포기";
             case "지원취소" -> "지원 취소";
             case "채용종료" -> "채용 종료";
             default -> status;

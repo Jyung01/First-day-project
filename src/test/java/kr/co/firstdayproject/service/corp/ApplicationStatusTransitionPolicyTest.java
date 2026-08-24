@@ -23,6 +23,9 @@ class ApplicationStatusTransitionPolicyTest {
                 .getAllowedNextStatuses("입사완료"))
                 .isEmpty();
         assertThat(ApplicationStatusTransitionPolicy
+                .getAllowedNextStatuses("입사포기"))
+                .isEmpty();
+        assertThat(ApplicationStatusTransitionPolicy
                 .getAllowedNextStatuses("불합격"))
                 .isEmpty();
         assertThat(ApplicationStatusTransitionPolicy
@@ -31,5 +34,12 @@ class ApplicationStatusTransitionPolicyTest {
         assertThat(ApplicationStatusTransitionPolicy
                 .getAllowedNextStatuses("채용종료"))
                 .isEmpty();
+    }
+
+    @Test
+    void 최종합격에서는_입사완료나_입사포기로_변경할_수_있다() {
+        assertThat(ApplicationStatusTransitionPolicy
+                .getAllowedNextStatuses("최종합격"))
+                .containsExactly("입사완료", "입사포기");
     }
 }

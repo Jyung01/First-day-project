@@ -40,6 +40,7 @@ public class CorpApplicantQueryService {
             "면접완료",
             "최종합격",
             "입사완료",
+            "입사포기",
             "불합격",
             "지원취소",
             "채용종료"
@@ -302,7 +303,7 @@ public class CorpApplicantQueryService {
         return switch (status) {
             case "서류합격", "면접예정", "면접완료",
                  "최종합격", "입사완료" -> "green";
-            case "불합격", "지원취소", "채용종료" -> "red";
+            case "불합격", "지원취소", "입사포기", "채용종료" -> "red";
             case "서류검토중" -> "orange";
             default -> "default";
         };
