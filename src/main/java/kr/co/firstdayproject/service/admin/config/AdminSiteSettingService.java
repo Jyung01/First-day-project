@@ -139,7 +139,7 @@ public class AdminSiteSettingService {
 
     /**
      * 브랜드 이미지(헤더 로고/푸터 로고/파비콘)를 S3 공개 버킷에 업로드하고,
-     * 기존에 등록되어 있던 이미지가 있으면 교체 후 삭제한다.
+     * 기존에 등록되어 있던 이미지가 있으면 트랜잭션 커밋 후 삭제한다.
      */
     @Transactional
     public void updateImage(
@@ -177,10 +177,11 @@ public class AdminSiteSettingService {
         updated.put(field, newUrl);
         saveSetting(KEY_BRAND_IMAGE, updated, adminUserId);
 
-        // 새 이미지 저장이 끝난 뒤 기존 이미지를 정리한다 (실패해도 저장 자체는 이미 완료된 상태 유지).
-        if (previousUrl != null && !previousUrl.isBlank()) {
-            awsS3Service.deletePublicByUrl(previousUrl);
-        }
+        // 파일 정리는 트랜잭션 결과에 맡긴다. 커밋되면 이전 이미지를,
+        // 롤백되면 방금 올린 이미지를 지운다. 여기서 바로 지우면
+        // 이후 롤백 시 DB는 이전 URL로 되돌아가는데 파일은 이미 없어져
+        // 복구할 수 없는 깨진 이미지가 된다.
+        awsS3Service.synchronizePublicReplacement(previousUrl, newUrl);
     }
 
     private Map<String, Object> readSetting(
