@@ -20,9 +20,15 @@
 
 ## 미수집
 
-- `mod_remoteip` 설정 (`RemoteIPHeader` / `RemoteIPTrustedProxy`)
-- 리버스 프록시 설정 (`ProxyPass` → `127.0.0.1:8080`)
-- `/opt/firstday/firstday.env`의 변수 **이름** 목록
+- `httpd-firstday-ssl.conf` — `/etc/httpd/conf.d/firstday-ssl.conf` (:443 vhost, 리버스 프록시)
+- `httpd-firstday-cloudflare.conf` — `/etc/httpd/conf.d/firstday-cloudflare.conf` (`mod_remoteip`)
 
-위 두 가지는 위 파일들에 없으므로 `conf.d`의 다른 파일이나 `httpd.conf`에 있다.
-[../deployment.md](../deployment.md) 4장의 명령으로 찾아 채울 것.
+[../deployment.md](../deployment.md) 4장 참고.
+
+## conf.d 백업 파일 주의
+
+서버 `conf.d/`에 아래 백업이 남아 있다. 확장자가 `.conf`가 아니라 로드되지 않지만,
+`.conf`로 되돌리면 중복 vhost가 활성화된다. `conf.d/` 밖으로 옮길 것.
+
+- `firstday.conf.before-https-redirect`
+- `ssl.conf.before-firstday`

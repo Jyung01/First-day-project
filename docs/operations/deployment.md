@@ -118,45 +118,67 @@ EC2에만 존재하는 파일의 사본을 [`ec2/`](ec2/) 에 두었다.
 > `set -u`는 켜져 있으나 `set -e`는 없다. 명령 실패가 스크립트를 중단시키지 않으므로
 > 각 단계의 실패는 명시적 `if` 검사에만 의존한다 — 단계를 추가할 때 주의할 것.
 
-### 3-2. 환경변수
+### 3-2. Apache `conf.d` 인벤토리
 
-앱이 참조하는 변수는 `application.properties`의 `${...}`로 확인한다.
-운영에서 반드시 설정돼야 하는 것:
+수집일 2026-08-24 기준. Apache는 `conf.d/*.conf`만 로드한다.
 
-| 변수 | 값 | 비고 |
+| 파일 | 로드됨 | 역할 |
 |---|---|---|
-| `APP_SESSION_COOKIE_SECURE` | `true` | 미설정 시 세션 쿠키에 `Secure`가 붙지 않는다 |
-| `APP_SECURITY_CSRF_ENABLED` | (미설정 = `false`) | CSRF 검증 완료 후 `true` |
+| `firstday.conf` | ✅ | :80 → HTTPS 리다이렉트 |
+| `firstday-ssl.conf` | ✅ | :443 vhost, `127.0.0.1:8080` 리버스 프록시 |
+| `firstday-cloudflare.conf` | ✅ | `mod_remoteip` — 실제 사용자 IP 복원 |
+| `ssl.conf` | ✅ | SSL 전역 설정 + 인증서 경로 |
+| `firstday.conf.before-https-redirect` | ❌ | **HTTPS 전환 전 백업** |
+| `ssl.conf.before-firstday` | ❌ | **패키지 기본값 백업** |
+| `README` `autoindex.conf` `userdir.conf` `welcome.conf` | — | 배포판 기본 |
 
-나머지(DB 접속정보, OpenAI 키, AWS 자격증명)는 **이름만** 기록한다.
-실제 값은 `/opt/firstday/firstday.env`에만 둔다.
+> **백업 파일 2개를 `conf.d/` 밖으로 옮길 것.**
+> 확장자가 `.conf`가 아니라 지금은 로드되지 않지만,
+> `firstday.conf.before-https-redirect`에는 `ProxyPass`를 포함한 vhost가 통째로 들어 있다.
+> 누군가 정리하다 `.conf`로 되돌리면 중복 vhost가 조용히 활성화된다.
+
+### 3-3. 환경변수
+
+실제 값은 EC2의 `/opt/firstday/firstday.env`에만 있다. **이름만 기록한다.**
+`deploy.sh`가 `set -a; source`로 읽으며, 이 파일이 없으면 배포가 즉시 실패한다.
+
+| 변수 | 비고 |
+|---|---|
+| `MYSQL_URL` `MYSQL_USERNAME` `MYSQL_PASSWORD` | 업무 데이터 원본 |
+| `POSTGRES_URL` `POSTGRES_USERNAME` `POSTGRES_PASSWORD` | pgvector 임베딩 전용 |
+| `OPENAI_API_KEY` | 자소서 첨삭·공고 다듬기·임베딩 |
+| `AWS_REGION` `AWS_S3_PUBLIC_BUCKET` `AWS_S3_PRIVATE_BUCKET` `AWS_CLOUDFRONT_DOMAIN` | 파일 업로드 |
+| `MAIL_USERNAME` `MAIL_APP_PASSWORD` | 이메일 인증 발송 |
+| `MANAGEMENT_HEALTH_MAIL_ENABLED` | 메일 헬스 인디케이터 스위치 |
+| `APP_SESSION_COOKIE_SECURE` | 운영 `true`. 미설정 시 세션 쿠키에 `Secure`가 안 붙는다 |
+
+`APP_SECURITY_CSRF_ENABLED`는 **아직 이 파일에 없다**(미설정 = `false`).
+CSRF 검증이 끝나면 여기에 `true`로 추가한다.
+
+> AWS 액세스 키·시크릿이 목록에 없다. IAM 인스턴스 역할로 자격증명을 받는 구조로 보인다.
+> 인스턴스를 새로 만들 때 **같은 IAM 역할을 붙여야** S3 업로드가 동작한다.
 
 ---
 
-## 4. 미수집 항목 채우는 방법
+## 4. 남은 수집 항목
 
-### 4-1. 리버스 프록시 · `mod_remoteip` 설정 위치 찾기
-
-수집한 두 Apache 파일에는 `ProxyPass`도 `RemoteIPHeader`도 없다.
-`conf.d`의 다른 파일이나 `httpd.conf`에 있다.
+아래 두 파일의 내용을 [`ec2/`](ec2/)에 추가하면 사본이 완성된다.
 
 ```bash
-sudo grep -rn "ProxyPass\|ProxyPreserveHost\|RemoteIP" /etc/httpd/
+sudo cat /etc/httpd/conf.d/firstday-ssl.conf
+sudo cat /etc/httpd/conf.d/firstday-cloudflare.conf
 ```
+
+`firstday-cloudflare.conf`가 참조하는 Cloudflare IP 목록은 사본을 두지 않는다.
+대역이 바뀌므로 재구축 시 공식 목록에서 새로 받는다.
 
 ```bash
-ls -la /etc/httpd/conf.d/
+curl -fsS https://www.cloudflare.com/ips-v4 -o /etc/httpd/conf/cloudflare-ips-v4.txt
 ```
 
-찾은 파일을 `ec2/`에 같은 방식으로 추가한다.
-
-### 4-2. 환경변수 이름 목록
-
-**값은 출력하지 않는다.** 이름만 뽑는다:
-
-```bash
-sudo grep -oE '^[[:space:]]*(export[[:space:]]+)?[A-Z_][A-Z0-9_]*=' /opt/firstday/firstday.env | tr -d ' ' | sed 's/export//; s/=$//' | sort -u
-```
+> 이 목록은 AWS 보안 그룹의 `cloudflare-origin-ipv4` 접두사 목록과 **함께** 갱신해야 한다.
+> 한쪽만 갱신하면 새 대역의 Cloudflare 트래픽이 차단되거나, IP 복원이 안 돼
+> 약관 동의 IP에 엣지 IP가 기록된다.
 
 > `.key` 파일(`/etc/pki/tls/private/firstdayproject-origin.key`)은 어떤 경우에도 출력·복사하지 않는다.
 
