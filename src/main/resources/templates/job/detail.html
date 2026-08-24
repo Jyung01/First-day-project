@@ -249,11 +249,12 @@
               <span th:each="skill : ${job.skills}" th:text="${skill}">기술</span>
             </div>
           </section>
-          <section th:if="${!#lists.isEmpty(job.benefits)}">
+          <section class="detail-benefits"
+                   th:if="${!#lists.isEmpty(job.benefits)}">
             <h2>복리후생</h2>
             <ul><li th:each="benefit : ${job.benefits}" th:text="${benefit}"></li></ul>
           </section>
-          <section>
+          <section class="detail-work-info">
             <h2>근무 정보</h2>
             <p>근무지 · <span th:text="${job.workAddress}"></span></p>
             <p>급여 · <span th:text="${job.salary}"></span></p>
