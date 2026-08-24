@@ -219,10 +219,20 @@ async function toggleBookmark(button) {
         );
 
         if (!response.ok) {
-            console.error(
-                '관심공고 처리 실패:',
-                response.status
-            );
+            const result = await response.json().catch(() => ({}));
+
+            if (response.status === 401) {
+                openLoginRequiredModal(button);
+                return;
+            }
+
+            showConfirmModal({
+                iconClass: 'danger',
+                title: '처리할 수 없습니다',
+                message: result.message || '관심공고를 처리하지 못했습니다. 잠시 후 다시 시도해주세요.',
+                leftVisible: false,
+                rightText: '확인'
+            });
             return;
         }
 
@@ -234,9 +244,12 @@ async function toggleBookmark(button) {
         );
 
     } catch (error) {
-        console.error(
-            '관심공고 요청 오류:',
-            error
-        );
+        showConfirmModal({
+            iconClass: 'danger',
+            title: '요청할 수 없습니다',
+            message: '네트워크 연결을 확인한 후 다시 시도해주세요.',
+            leftVisible: false,
+            rightText: '확인'
+        });
     }
 }

@@ -26,12 +26,22 @@ document.addEventListener("DOMContentLoaded", () => {
             button.disabled = true;
             try {
                 const response = await fetch(`/company/wish/${button.dataset.companyId}`, { method: "POST" });
-                const result = await response.json();
+                const result = await response.json().catch(() => ({}));
+                if (response.status === 401) {
+                    showConfirmModal({
+                        iconClass: "info",
+                        title: "로그인이 필요합니다",
+                        message: "관심기업은 로그인 후 등록할 수 있습니다.",
+                        leftText: "취소",
+                        rightText: "로그인",
+                        onRight: () => {
+                            const returnUrl = location.pathname + location.search;
+                            location.href = `/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`;
+                        }
+                    });
+                    return;
+                }
                 if (!response.ok || !result.success) {
-                    if (result.message?.includes("로그인")) {
-                        location.href = `/auth/login?redirect=${encodeURIComponent(location.pathname + location.search)}`;
-                        return;
-                    }
                     throw new Error(result.message || "관심기업 처리에 실패했습니다.");
                 }
                 button.classList.toggle("active", result.wished);
@@ -40,7 +50,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 icon.classList.toggle("fa-regular", !result.wished);
                 button.setAttribute("aria-pressed", String(result.wished));
             } catch (error) {
-                alert(error.message);
+                showConfirmModal({
+                    iconClass: "danger",
+                    title: "처리할 수 없습니다",
+                    message: error.message || "관심기업을 처리하지 못했습니다.",
+                    leftVisible: false,
+                    rightText: "확인"
+                });
             } finally {
                 button.disabled = false;
             }
