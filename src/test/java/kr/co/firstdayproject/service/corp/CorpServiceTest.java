@@ -163,11 +163,20 @@ class CorpServiceTest {
         User manager = User.builder()
                 .userId(100L)
                 .companyId(10L)
+                .loginId("corp-manager")
+                .email("manager@example.com")
+                .name("김철수")
+                .phone("010-1234-5678")
+                .department("인사팀")
+                .positionTitle("과장")
                 .passwordHash("password-hash")
                 .accountStatus("정상")
                 .build();
         Company company = Company.builder()
                 .companyId(10L)
+                .businessNumber("1112233333")
+                .companyName("첫출근 주식회사")
+                .representativeName("이대표")
                 .companyStatus("정상")
                 .build();
         when(userRepository.findById(100L)).thenReturn(Optional.of(manager));
@@ -181,6 +190,17 @@ class CorpServiceTest {
         assertThat(manager.getWithdrawnAt()).isNotNull();
         assertThat(company.getCompanyStatus()).isEqualTo("탈퇴");
         assertThat(company.getWithdrawnAt()).isNotNull();
+        // 담당자 개인식별정보는 마스킹된다.
+        assertThat(manager.getName()).isEqualTo("탈퇴한 담당자");
+        assertThat(manager.getPhone()).isNull();
+        assertThat(manager.getDepartment()).isNull();
+        assertThat(manager.getPositionTitle()).isNull();
+        // 재가입 중복 방지 키와 법인 정보는 남는다.
+        assertThat(manager.getLoginId()).isEqualTo("corp-manager");
+        assertThat(manager.getEmail()).isEqualTo("manager@example.com");
+        assertThat(company.getCompanyName()).isEqualTo("첫출근 주식회사");
+        assertThat(company.getBusinessNumber()).isEqualTo("1112233333");
+        assertThat(company.getRepresentativeName()).isEqualTo("이대표");
         verify(applicationRepository)
                 .recordCompanyWithdrawalStatusHistory(
                         org.mockito.ArgumentMatchers.eq(10L),

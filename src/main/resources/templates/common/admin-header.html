@@ -2,6 +2,12 @@
         th:with="adminHeaderSiteSetting=${@adminSiteSettingService.getSiteSettingView()}">
     <div class="logo-box">
         <a th:href="@{/admin}" class="admin-logo">
+            <!--
+                headerLogoUrl이 아니라 footerLogoUrl을 쓰는 것이 의도된 설계다.
+                헤더 로고는 밝은 배경용이라 어두운 관리자 헤더에서는 보이지 않는다.
+                관리자 헤더는 공통 푸터와 같은 다크 배경이므로 푸터 로고를 공유한다.
+                (관리자 > 사이트 설정 > 브랜드 이미지 관리의 "푸터 로고 이미지")
+            -->
             <img
                     th:src="@{${adminHeaderSiteSetting.footerLogoUrl != null && !#strings.isEmpty(adminHeaderSiteSetting.footerLogoUrl)}
                             ? ${adminHeaderSiteSetting.footerLogoUrl}
