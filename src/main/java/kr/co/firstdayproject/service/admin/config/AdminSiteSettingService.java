@@ -151,6 +151,8 @@ public class AdminSiteSettingService {
 
         String field = switch (imageType) {
             case "HEADER_LOGO" -> "headerLogoUrl";
+            // 푸터 로고는 다크 배경 전용이라 공통 푸터와 관리자 헤더가 함께 사용한다.
+            // 이 값을 바꾸면 두 화면이 동시에 바뀐다.
             case "FOOTER_LOGO" -> "footerLogoUrl";
             case "FAVICON" -> "faviconUrl";
             default -> throw new IllegalArgumentException(

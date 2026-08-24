@@ -267,6 +267,21 @@
     font-size: 11px;
 }
 
+/*
+ * 이미지 한 장이 두 화면에 함께 쓰이는 경우처럼,
+ * 놓치면 안 되는 적용 범위를 알리는 문구. upload-box 바로 아래에 붙인다.
+ */
+.admin-section .upload-note {
+    margin: -12px 0 18px;
+    padding: 8px 11px;
+    border-left: 3px solid #5e76f2;
+    border-radius: 0 6px 6px 0;
+    background: #172033;
+    color: #94a3b8;
+    font-size: 11.5px;
+    line-height: 1.5;
+}
+
 .admin-section .upload-box {
     display: flex;
     align-items: center;
