@@ -3,7 +3,7 @@
 - 최초 작성: 2026-08-21 (착수 전 인수인계용)
 - 전환 완료: 2026-08-24
 - 담당: 양지웅
-- 운영 주소: **https://firstdayproject.site** (`www`도 정상)
+- 운영 주소: **https://firstdayproject.site** (`www`는 301로 정규화됨)
 
 이 문서는 전환이 끝난 뒤 **완료 기록 + 운영 가이드**로 다시 썼다.
 착수 전 계획 문서(Nginx 전제)는 이 문서로 대체되었다 — 실제 구성은 **Apache**다.
@@ -53,6 +53,7 @@ Cloudflare 대역만 허용하고 있으므로 사이트가 아예 열리지 않
 - 암호화 모드: **Full (strict)** — Flexible로 내리면 리다이렉트 루프가 난다
 - Universal Edge Certificate: Active (Cloudflare 자동 갱신)
 - 최소 TLS 버전: **1.2** / TLS 1.3 지원
+- Redirect Rule: `www` → apex `301` (쿼리스트링 보존)
 - Always Use HTTPS: 켬
 - HSTS: `max-age=31536000; includeSubDomains`
 
@@ -129,7 +130,7 @@ Apache `mod_remoteip` + Cloudflare `CF-Connecting-IP`로 복원한다.
 | 항목 | 결과 |
 |---|---|
 | `https://firstdayproject.site` | `200 OK` (`Server: cloudflare`) |
-| `https://www.firstdayproject.site` | `200 OK` |
+| `https://www.firstdayproject.site` | `301` → apex (2026-08-24 정규화) |
 | `http://.../test` | `301` → `https://.../test` (경로 보존) |
 | TLS 1.1 | 핸드셰이크 거부 |
 | TLS 1.2 / 1.3 | 정상 (`TLS_AES_256_GCM_SHA384`, 인증서 검증 통과) |

@@ -204,19 +204,40 @@ Spring Boot                server.forward-headers-strategy=NATIVE
 `firstday-ssl.conf`를 지우거나 이름을 바꾸면 443 요청이 그쪽으로 떨어져
 **앱 대신 `/var/www/html`이 서비스된다.** 프록시 설정을 `ssl.conf`에서 찾지 말 것.
 
-### 4-2. `www`와 apex가 모두 서비스된다
+### 4-2. `www` 정규화 (Cloudflare Redirect Rule)
 
 `firstday-ssl.conf`의 `ServerAlias www.firstdayproject.site` 때문에
-`https://www.firstdayproject.site`와 `https://firstdayproject.site`가
-**각각 리다이렉트 없이 200을 반환한다.**
+Apache는 `www`와 apex를 **둘 다 받아 서비스한다.** 오리진 설정만 보면 두 주소가 살아 있다.
 
-`JSESSIONID`는 발급한 호스트에만 묶이므로 두 주소의 세션이 분리된다.
-`www`로 로그인한 뒤 apex로 이동하면 로그아웃된 것처럼 보인다.
+정규화는 Cloudflare Redirect Rule(`Redirect from WWW to root` 템플릿)로 처리한다.
+**엣지에서 끊기므로 Apache 설정에는 흔적이 없다** — 오리진만 보고 "www가 그대로 뚫려 있다"고
+판단하지 말 것.
 
-`firstday.conf`의 `:80` 리다이렉트는 apex로 보내지만 **HTTP 요청에만 걸린다.**
-HTTPS로 직접 들어오면 그대로 서비스된다.
+- 조건: Wildcard pattern `https://www.*`
+- 대상: `https://${1}` / `301` / **Preserve query string 켬**
 
-→ Cloudflare Redirect Rule로 `www` → apex 301을 걸어 정규화할 것. (미적용)
+적용 전에는 `www`와 apex가 각각 리다이렉트 없이 `200`을 반환해
+`JSESSIONID`가 호스트별로 분리됐다 (www로 로그인 후 apex로 이동하면 로그아웃 상태).
+2026-08-24 적용으로 해소됨.
+
+검증 (2026-08-24):
+
+```
+https://www/                    301 → https://firstdayproject.site/
+https://www/cs/faq              301 → .../cs/faq                  (경로 보존)
+https://www/job?page=2&category=3  301 → ...?page=2&category=3     (쿼리 보존)
+https://firstdayproject.site/   200, 리다이렉트 없음               (루프 없음)
+http://www/cs/faq?page=2        2홉 → https://firstdayproject.site/cs/faq?page=2
+```
+
+```bash
+curl -sS -L -o /dev/null -w "%{num_redirects} %{url_effective} %{http_code}\n" \
+  "http://www.firstdayproject.site/cs/faq?page=2"
+```
+
+> Redirect Rule 생성 시 Cloudflare가 "www가 프록시되지 않는 것 같다"는 경고를 띄울 수 있다.
+> `www`는 apex를 가리키는 **CNAME**이라 생기는 오탐이다. `Ignore and deploy` 를 고른다.
+> `Create a new proxied DNS record` 를 고르면 기존 CNAME과 충돌하는 레코드가 생긴다.
 
 ---
 
