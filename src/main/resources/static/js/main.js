@@ -1,121 +1,225 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // 배너 스와이퍼
-    const bannerElement = document.querySelector(".bannerSwiper");
-    if (bannerElement && typeof Swiper !== "undefined") {
-      const slideCount = Number(bannerElement.dataset.slideCount || 0);
-      new Swiper(bannerElement, {
-        loop: slideCount > 1,
+function initializeRedesignPage() {
+    const tabs = document.querySelectorAll(".today-tab");
+    const lists = document.querySelectorAll("[data-job-list-content]");
 
-        autoplay: slideCount > 1 ? {
-            delay: 3000,
-            disableOnInteraction: false,
-        } : false,
+    initializeHeroCopyFade();
+    initializeMainBanner();
 
-        pagination: {
-            el: ".swiper-pagination",
-            clickable: true,
-        },
-
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-        },
-      });
-    }
-
-    // AI 추천은 메인 로딩을 막지 않고 개인회원이 탭을 누를 때만 가져온다.
-    const personalizedGrid = document.querySelector(".personalized-grid");
-    const popularGrid = document.querySelector(".popular-grid");
-    const latestGrid = document.querySelector(".latest-grid");
-
-    let recommendationsLoaded = false;
-    let recommendationsLoading = false;
-    let selectedTab = "popular";
-    let recommendationMarkup = "";
-
-    document.querySelectorAll(".tab").forEach(tab => {
+    tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
-            selectedTab = tab.dataset.tab;
-            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-            tab.classList.add("active");
-
-            if (selectedTab === "personalized") {
-                if (recommendationsLoaded) {
-                    showRecommendations();
-                } else {
-                    loadRecommendations(tab);
-                }
-                return;
-            }
-
-            hideAllJobGrids();
-            (selectedTab === "popular" ? popularGrid : latestGrid).style.display = "grid";
+            const target = tab.dataset.jobList;
+            tabs.forEach((item) => item.classList.toggle("active", item === tab));
+            lists.forEach((list) => {
+                list.hidden = list.dataset.jobListContent !== target;
+            });
         });
     });
 
-    async function loadRecommendations() {
-        if (recommendationsLoaded || recommendationsLoading || !personalizedGrid) return;
-        recommendationsLoading = true;
-        const recommendationTab = document.querySelector('.ai-recommendation-tab');
-        recommendationTab?.classList.add('is-loading');
-        const skeletonTimer = window.setTimeout(() => {
-            if (selectedTab === "personalized" && !recommendationsLoaded) {
-                hideAllJobGrids();
-                personalizedGrid.innerHTML = skeletonCards();
-                personalizedGrid.style.display = "grid";
-            }
-        }, 300);
-        try {
-            const response = await fetch('/api/main/recommendations');
+    prepareReveal(document.querySelectorAll(".tool-card"));
+    prepareReveal(document.querySelectorAll(".category-list > a"), 110);
+    const aiList = document.getElementById("redesignAiList");
+    if (!aiList || aiList.dataset.personalMember !== "true") return;
+
+    fetch("/api/main/recommendations")
+        .then(async (response) => {
             const data = await response.json();
-            if (!response.ok) throw new Error(data.message || '추천을 불러오지 못했습니다.');
-            recommendationsLoaded = true;
-            recommendationMarkup = data.jobs.length
-                ? data.jobs.map(job => recommendationCard(job, data.matchScores, data.matchReasons)).join('')
-                : '<div class="recommendation-empty"><strong>희망 직무와 일치하는 모집 중 공고가 아직 없어요.</strong><p>희망 직무를 수정하면 더 다양한 공고를 추천해 드립니다.</p><a class="recommendation-link" href="/my/profile-edit">희망 직무 설정하기 →</a></div>';
-            if (selectedTab === "personalized") showRecommendations();
-        } catch (error) {
-            if (selectedTab === "personalized") {
-                hideAllJobGrids();
-                personalizedGrid.innerHTML = `<div class="recommendation-empty"><strong>${escapeHtml(error.message)}</strong><p>잠시 후 다시 시도해주세요.</p></div>`;
-                personalizedGrid.style.display = "grid";
+            if (!response.ok) throw new Error(data.message || "추천 공고를 불러오지 못했습니다.");
+            return data;
+        })
+        .then((data) => {
+            if (!data.jobs?.length) {
+                aiList.innerHTML = `
+                    <div class="ai-empty-state">
+                        <strong>추천할 공고가 아직 없어요.</strong>
+                        <a href="/my/profile-edit">희망 직무 설정하기 →</a>
+                    </div>`;
+                return;
             }
-        } finally {
-            window.clearTimeout(skeletonTimer);
-            recommendationsLoading = false;
-            recommendationTab?.classList.remove('is-loading');
+            aiList.innerHTML = data.jobs.slice(0, 3).map((job) => recommendationRow(
+                job,
+                data.matchScores?.[job.jobPostingId],
+                data.matchReasons?.[job.jobPostingId]
+            )).join("");
+            prepareReveal(aiList.querySelectorAll(".ai-job-row"));
+        })
+        .catch((error) => {
+            aiList.innerHTML = `
+                <div class="ai-empty-state">
+                    <strong>${escapeHtml(error.message)}</strong>
+                    <a href="/job/list">전체 공고 보기 →</a>
+                </div>`;
+        });
+}
+
+function initializeMainBanner() {
+    const banner = document.querySelector("[data-main-banner]");
+    if (!banner) return;
+
+    const slides = Array.from(banner.querySelectorAll(".main-banner__slide"));
+    const dots = Array.from(banner.querySelectorAll("[data-banner-dot]"));
+    const previousButton = banner.querySelector(".main-banner__arrow--prev");
+    const nextButton = banner.querySelector(".main-banner__arrow--next");
+    if (slides.length < 2) return;
+
+    const previewClones = slides.length === 2
+        ? slides.map((slide) => {
+            const clone = slide.cloneNode(true);
+            clone.className = "main-banner__slide";
+            clone.removeAttribute("data-banner-index");
+            clone.setAttribute("aria-hidden", "true");
+            clone.tabIndex = -1;
+            banner.querySelector(".main-banner__viewport")?.appendChild(clone);
+            return clone;
+        })
+        : [];
+
+    let currentIndex = 0;
+    let timerId;
+
+    const show = (nextIndex) => {
+        currentIndex = (nextIndex + slides.length) % slides.length;
+        slides.forEach((slide, index) => {
+            const active = index === currentIndex;
+            const previous = slides.length > 2
+                && index === (currentIndex - 1 + slides.length) % slides.length;
+            const next = index === (currentIndex + 1) % slides.length;
+            slide.classList.toggle("is-active", active);
+            slide.classList.toggle("is-prev", previous);
+            slide.classList.toggle("is-next", next);
+            slide.setAttribute("aria-hidden", String(!active && !previous && !next));
+            slide.tabIndex = active ? 0 : -1;
+        });
+        previewClones.forEach((clone, index) => {
+            clone.classList.toggle(
+                "is-prev",
+                index === (currentIndex - 1 + slides.length) % slides.length
+            );
+        });
+        dots.forEach((dot, index) => {
+            const active = index === currentIndex;
+            dot.classList.toggle("is-active", active);
+            dot.setAttribute("aria-current", String(active));
+        });
+    };
+
+    const stop = () => window.clearInterval(timerId);
+    const start = () => {
+        stop();
+        timerId = window.setInterval(() => show(currentIndex + 1), 5000);
+    };
+
+    previousButton?.addEventListener("click", () => {
+        show(currentIndex - 1);
+        start();
+    });
+    nextButton?.addEventListener("click", () => {
+        show(currentIndex + 1);
+        start();
+    });
+    dots.forEach((dot) => dot.addEventListener("click", () => {
+        show(Number(dot.dataset.bannerDot));
+        start();
+    }));
+    banner.addEventListener("mouseenter", stop);
+    banner.addEventListener("mouseleave", start);
+    banner.addEventListener("focusin", stop);
+    banner.addEventListener("focusout", start);
+
+    show(0);
+    start();
+}
+
+function initializeHeroCopyFade() {
+    const copy = document.querySelector(".hero-copy");
+    const copyContent = copy?.querySelector(".redesign-wrap");
+    const media = document.querySelector(".hero-media");
+    if (!copy || !copyContent || !media) return;
+
+    const mobileViewport = window.matchMedia("(max-width: 900px)");
+    let frameId = 0;
+    const updateOpacity = () => {
+        if (mobileViewport.matches) {
+            copyContent.style.removeProperty("opacity");
+            frameId = 0;
+            return;
         }
-    }
 
-    function showRecommendations() {
-        hideAllJobGrids();
-        personalizedGrid.innerHTML = recommendationMarkup;
-        personalizedGrid.style.display = "grid";
-    }
+        const copyBottom = copyContent.getBoundingClientRect().bottom;
+        const mediaTop = media.getBoundingClientRect().top;
+        const distance = mediaTop - copyBottom;
+        const fadeStart = 40;
+        const fadeEnd = -80;
+        const opacity = Math.max(0, Math.min(1,
+            (distance - fadeEnd) / (fadeStart - fadeEnd)
+        ));
+        copyContent.style.opacity = opacity.toFixed(3);
+        frameId = 0;
+    };
 
-    function hideAllJobGrids() {
-        personalizedGrid.style.display = "none";
-        popularGrid.style.display = "none";
-        latestGrid.style.display = "none";
-    }
+    const requestUpdate = () => {
+        if (!frameId) frameId = window.requestAnimationFrame(updateOpacity);
+    };
 
-    function skeletonCards() {
-        return Array.from({ length: 3 }, () => '<div class="job-card recommendation-skeleton" aria-hidden="true"><div class="skeleton-logo"></div><div class="skeleton-line skeleton-company"></div><div class="skeleton-line skeleton-title"></div><div class="skeleton-line skeleton-title short"></div><div class="skeleton-line skeleton-detail"></div><div class="skeleton-tags"><span></span><span></span></div></div>').join('');
-    }
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    mobileViewport.addEventListener("change", requestUpdate);
+    requestUpdate();
+}
 
-    function recommendationCard(job, scores, reasons) {
-        const score = scores[String(job.jobPostingId)];
-        const points = (reasons[String(job.jobPostingId)] || []).map(escapeHtml).join(' · ');
-        return `<a href="/job/detail?jobPostingId=${encodeURIComponent(job.jobPostingId)}" class="job-card">
-            <div class="co-row"><img class="co-logo" src="${escapeHtml(job.logoUrl || '')}" alt="회사 로고"><div class="co-name">${escapeHtml(job.companyName)}</div></div>
-            <div class="job-title">${escapeHtml(job.title)}</div>
-            ${score == null ? '' : `<div class="ai-match"><span class="ai-match-mark">AI</span><span>추천 매칭</span><strong>${score}%</strong></div>`}
-            ${points ? `<div class="ai-reasons"><div class="ai-reasons-title">매칭 포인트</div><div class="ai-reason-list"><span class="ai-reason">${points}</span></div></div>` : ''}
-            <div class="job-loc">${escapeHtml(job.workRegion)} · ${escapeHtml(job.careerType)}</div>
-            <div class="tag-row"><span class="tag">${escapeHtml(job.employmentType)}</span><span class="tag">${escapeHtml(job.categoryName)}</span></div></a>`;
-    }
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeRedesignPage, { once: true });
+} else {
+    initializeRedesignPage();
+}
 
-    function escapeHtml(value) {
-        return String(value == null ? '' : value).replace(/[&<>'"]/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[character]));
-    }
-})
+function prepareReveal(elements, interval = 170) {
+    if (!elements.length) return;
+
+    const observer = new IntersectionObserver((entries, currentObserver) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            currentObserver.unobserve(entry.target);
+            window.setTimeout(() => entry.target.classList.add("is-visible"), Number(entry.target.dataset.revealDelay));
+        });
+    }, { threshold: .16 });
+
+    elements.forEach((element, index) => {
+        element.classList.add("reveal-item");
+        element.dataset.revealDelay = String(120 + index * interval);
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => observer.observe(element));
+        });
+    });
+}
+
+function recommendationRow(job, score, reasons) {
+    const companyLogo = job.logoUrl
+        ? `<img src="${escapeHtml(job.logoUrl)}" loading="lazy" decoding="async" alt="${escapeHtml(job.companyName || "기업")} 로고">`
+        : `<span class="ai-company-logo-fallback" aria-hidden="true">▦</span>`;
+    const reason = Array.isArray(reasons) && reasons.length
+        ? reasons[0]
+        : "희망 직무와 관련 있는 공고예요.";
+    const match = score ? `AI ${Math.min(99, Math.max(70, score))}%` : "AI 추천";
+
+    return `
+        <a class="ai-job-row" href="/job/detail?jobPostingId=${encodeURIComponent(job.jobPostingId)}">
+            <span class="ai-company-mark">${companyLogo}</span>
+            <span class="ai-job-info">
+                <strong>${escapeHtml(job.title || "채용공고")}</strong>
+                <span>${escapeHtml(job.companyName || "기업") } · ${escapeHtml(job.workRegion || "지역 미정")}</span>
+            </span>
+            <em class="ai-score">${match}</em>
+            <span class="ai-reason">${escapeHtml(reason)}</span>
+            <span class="ai-arrow main-arrow" aria-hidden="true"></span>
+        </a>`;
+}
+
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>'"]/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        "\"": "&quot;"
+    })[character]);
+}

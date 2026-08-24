@@ -10,6 +10,8 @@ import kr.co.firstdayproject.service.job.SavedJobService;
 import kr.co.firstdayproject.util.PageHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/company")
 public class CompanyController {
+
+    private static final int COMPANY_PAGE_SIZE = 6;
 
     private final CompanyService companyService;
     private final BannerService bannerService;
@@ -43,8 +47,12 @@ public class CompanyController {
         // 검색 결과 전체 개수
         int total = companyService.getCompanyCount(search);
 
+        // 검색 결과가 없거나 범위를 벗어난 page 값이 들어와도 offset이 잘못되지 않도록 보정
+        int lastPage = Math.max(1, (int) Math.ceil((double) total / COMPANY_PAGE_SIZE));
+        int safePage = Math.min(Math.max(page, 1), lastPage);
+
         // 페이지 계산
-        PageHandler ph = new PageHandler(page, total, 6);
+        PageHandler ph = new PageHandler(safePage, total, COMPANY_PAGE_SIZE);
 
         // 검색 DTO에 페이징 정보 저장
         search.setOffset(ph.getOffset());
@@ -130,7 +138,7 @@ public class CompanyController {
     // 기업 정보 : 관심기업 등록 및 해제
     @PostMapping("/wish/{companyId}")
     @ResponseBody
-    public Map<String, Object> toggleWish(
+    public ResponseEntity<Map<String, Object>> toggleWish(
             @PathVariable Long companyId,
             Authentication authentication) {
 
@@ -141,7 +149,7 @@ public class CompanyController {
 
             response.put("success", false);
             response.put("message", "로그인이 필요합니다.");
-            return response;
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
         Long userId = userDetails.getUserId();
@@ -151,7 +159,7 @@ public class CompanyController {
         response.put("success", true);
         response.put("wished", wished);
 
-        return response;
+        return ResponseEntity.ok(response);
     }
 
 
