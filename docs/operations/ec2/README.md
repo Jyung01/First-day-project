@@ -8,6 +8,8 @@
 | `deploy.sh` | `/home/ec2-user/firstday/deploy.sh` |
 | `httpd-firstday.conf` | `/etc/httpd/conf.d/firstday.conf` |
 | `httpd-ssl.conf` | `/etc/httpd/conf.d/ssl.conf` (주석 제거본) |
+| `httpd-firstday-ssl.conf` | `/etc/httpd/conf.d/firstday-ssl.conf` |
+| `httpd-firstday-cloudflare.conf` | `/etc/httpd/conf.d/firstday-cloudflare.conf` |
 
 수집일: 2026-08-24
 
@@ -18,17 +20,12 @@
   배포 자격증명은 GitHub Secrets에만 둔다.
 - 인증서 개인키(`/etc/pki/tls/private/firstdayproject-origin.key`)는 어떤 경우에도 복사하지 않는다.
 
-## 미수집
-
-- `httpd-firstday-ssl.conf` — `/etc/httpd/conf.d/firstday-ssl.conf` (:443 vhost, 리버스 프록시)
-- `httpd-firstday-cloudflare.conf` — `/etc/httpd/conf.d/firstday-cloudflare.conf` (`mod_remoteip`)
-
-[../deployment.md](../deployment.md) 4장 참고.
-
 ## conf.d 백업 파일 주의
 
-서버 `conf.d/`에 아래 백업이 남아 있다. 확장자가 `.conf`가 아니라 로드되지 않지만,
-`.conf`로 되돌리면 중복 vhost가 활성화된다. `conf.d/` 밖으로 옮길 것.
+서버 `conf.d/`에 아래 백업이 남아 있다. `httpd.conf`가 `IncludeOptional conf.d/*.conf`로
+읽으므로 확장자가 `.conf`가 아닌 이 파일들은 로드되지 않는다.
+다만 `.conf`로 되돌리면 `ProxyPass`를 포함한 중복 vhost가 활성화된다.
+`conf.d/` 밖으로 옮길 것.
 
 - `firstday.conf.before-https-redirect`
 - `ssl.conf.before-firstday`

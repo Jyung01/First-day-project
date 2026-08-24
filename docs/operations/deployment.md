@@ -82,9 +82,9 @@ EC2에만 존재하는 파일의 사본을 [`ec2/`](ec2/) 에 두었다.
 | [`ec2/deploy.sh`](ec2/deploy.sh) | `/home/ec2-user/firstday/deploy.sh` | 수집 완료 |
 | [`ec2/httpd-firstday.conf`](ec2/httpd-firstday.conf) | `/etc/httpd/conf.d/firstday.conf` | 수집 완료 |
 | [`ec2/httpd-ssl.conf`](ec2/httpd-ssl.conf) | `/etc/httpd/conf.d/ssl.conf` | 수집 완료 (주석 제거본) |
-| 리버스 프록시 설정 | 미확인 | **미수집** |
-| `mod_remoteip` 설정 | 미확인 | **미수집** |
-| `/opt/firstday/firstday.env` 변수 이름 | `/opt/firstday/firstday.env` | **미수집** |
+| [`ec2/httpd-firstday-ssl.conf`](ec2/httpd-firstday-ssl.conf) | `/etc/httpd/conf.d/firstday-ssl.conf` | 수집 완료 |
+| [`ec2/httpd-firstday-cloudflare.conf`](ec2/httpd-firstday-cloudflare.conf) | `/etc/httpd/conf.d/firstday-cloudflare.conf` | 수집 완료 |
+| 환경변수 (이름만) | `/opt/firstday/firstday.env` | 아래 3-3 |
 
 ### 3-1. `deploy.sh` 동작 요약
 
@@ -160,27 +160,63 @@ CSRF 검증이 끝나면 여기에 `true`로 추가한다.
 
 ---
 
-## 4. 남은 수집 항목
+## 4. 요청이 앱까지 닿는 경로
 
-아래 두 파일의 내용을 [`ec2/`](ec2/)에 추가하면 사본이 완성된다.
+수집한 파일들이 어떻게 맞물리는지 정리한다. 장애 시 어느 파일을 볼지 판단하는 기준이다.
 
-```bash
-sudo cat /etc/httpd/conf.d/firstday-ssl.conf
-sudo cat /etc/httpd/conf.d/firstday-cloudflare.conf
+```
+HTTPS 요청 (Host: firstdayproject.site 또는 www)
+  ↓
+firstday-cloudflare.conf   RemoteIPHeader CF-Connecting-IP
+                           → 커넥션의 remote IP를 실제 사용자 IP로 치환
+                             (전역 설정이라 모든 vhost에 적용)
+  ↓
+firstday-ssl.conf          ServerName/ServerAlias로 매칭되는 *:443 vhost
+                           RequestHeader set X-Forwarded-Proto "https"
+                           ProxyAddHeaders On → X-Forwarded-For에 위 실제 IP를 실어 전달
+                           ProxyPass / → http://127.0.0.1:8080/
+  ↓
+Spring Boot                server.forward-headers-strategy=NATIVE
+                           → 톰캣 RemoteIpValve가 X-Forwarded-* 해석
+                           → request.getRemoteAddr()가 실제 사용자 IP를 반환
+                           → 요청을 HTTPS로 인식하므로 세션 쿠키에 Secure가 붙는다
 ```
 
-`firstday-cloudflare.conf`가 참조하는 Cloudflare IP 목록은 사본을 두지 않는다.
-대역이 바뀌므로 재구축 시 공식 목록에서 새로 받는다.
+**IP 복원 사슬이 3단계다.** 약관 동의 IP에 Cloudflare 엣지 IP가 찍히기 시작하면
+이 중 어디가 끊긴 것이다. 확인 순서:
 
-```bash
-curl -fsS https://www.cloudflare.com/ips-v4 -o /etc/httpd/conf/cloudflare-ips-v4.txt
-```
+1. `/etc/httpd/conf/cloudflare-ips-v4.txt`가 공식 목록과 같은지
+   (대역이 추가됐는데 갱신 안 하면 그 대역에서 온 요청만 조용히 틀어진다)
+2. `firstday-cloudflare.conf`가 로드되는지 (`.conf` 확장자 유지)
+3. `application.properties`의 `server.forward-headers-strategy=NATIVE`가 살아 있는지
 
-> 이 목록은 AWS 보안 그룹의 `cloudflare-origin-ipv4` 접두사 목록과 **함께** 갱신해야 한다.
-> 한쪽만 갱신하면 새 대역의 Cloudflare 트래픽이 차단되거나, IP 복원이 안 돼
-> 약관 동의 IP에 엣지 IP가 기록된다.
+> Cloudflare IP 목록은 AWS 보안 그룹의 `cloudflare-origin-ipv4` 접두사 목록과
+> **항상 같이** 갱신한다. 한쪽만 갱신하면 — 보안 그룹만 하면 IP 복원이 깨지고,
+> Apache만 하면 새 대역 트래픽이 방화벽에서 막힌다. 둘 다 증상이 늦게 드러난다.
 
-> `.key` 파일(`/etc/pki/tls/private/firstdayproject-origin.key`)은 어떤 경우에도 출력·복사하지 않는다.
+### 4-1. `:443` vhost가 두 개인 점
+
+`firstday-ssl.conf`의 `*:443`과 `ssl.conf`의 `_default_:443`이 공존한다.
+`firstday-ssl.conf`에 `ServerName`/`ServerAlias`가 명시돼 있어
+정상 요청은 이름으로 매칭되므로 **로드 순서에 의존하지 않는다.**
+
+다만 `ssl.conf`의 `_default_:443`에는 `ProxyPass`가 없다.
+`firstday-ssl.conf`를 지우거나 이름을 바꾸면 443 요청이 그쪽으로 떨어져
+**앱 대신 `/var/www/html`이 서비스된다.** 프록시 설정을 `ssl.conf`에서 찾지 말 것.
+
+### 4-2. `www`와 apex가 모두 서비스된다
+
+`firstday-ssl.conf`의 `ServerAlias www.firstdayproject.site` 때문에
+`https://www.firstdayproject.site`와 `https://firstdayproject.site`가
+**각각 리다이렉트 없이 200을 반환한다.**
+
+`JSESSIONID`는 발급한 호스트에만 묶이므로 두 주소의 세션이 분리된다.
+`www`로 로그인한 뒤 apex로 이동하면 로그아웃된 것처럼 보인다.
+
+`firstday.conf`의 `:80` 리다이렉트는 apex로 보내지만 **HTTP 요청에만 걸린다.**
+HTTPS로 직접 들어오면 그대로 서비스된다.
+
+→ Cloudflare Redirect Rule로 `www` → apex 301을 걸어 정규화할 것. (미적용)
 
 ---
 
