@@ -52,8 +52,8 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
       <p class="modal-notice">
-        회원 희망 직무·채용공고에서 사용 중인 직무는 삭제할 수 없습니다.
-        미사용 항목만 삭제할 수 있습니다.
+        등록한 직무는 이력서·채용공고의 직무 선택 목록에 바로 노출됩니다.
+        사용 중인 직무는 이름만 수정할 수 있습니다.
       </p>
     </div>
   `;
