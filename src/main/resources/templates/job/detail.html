@@ -65,21 +65,23 @@
               <span class="company-mark"
                     th:unless="${!#strings.isEmpty(item.logoUrl)}"
                     th:text="${#strings.substring(item.companyName, 0, 1)}">기</span>
-              <span class="company-name" th:text="${item.companyName}">기업명</span>
-            </div>
-            <div class="job-card-actions">
-              <div class="job-badges">
-                <span class="job-badge hot" th:if="${item.hotPosting}">HOT</span>
-                <span class="job-badge new" th:if="${item.newPosting}">NEW</span>
+              <div class="job-list-company-line">
+                <span class="company-name" th:text="${item.companyName}">기업명</span>
+                <div class="job-card-actions">
+                  <div class="job-badges">
+                    <span class="job-badge hot" th:if="${item.hotPosting}">HOT</span>
+                    <span class="job-badge new" th:if="${item.newPosting}">NEW</span>
+                  </div>
+                  <button class="bookmark"
+                          type="button"
+                          th:data-job-posting-id="${item.jobPostingId}"
+                          th:data-job-title="${item.title}"
+                          th:data-logged-in="${personalMember}"
+                          th:classappend="${item.bookmarked} ? ' active'"
+                          th:text="${item.bookmarked} ? '♥' : '♡'"
+                          th:attr="aria-pressed=${item.bookmarked}">♡</button>
+                </div>
               </div>
-              <button class="bookmark"
-                      type="button"
-                      th:data-job-posting-id="${item.jobPostingId}"
-                      th:data-job-title="${item.title}"
-                      th:data-logged-in="${personalMember}"
-                      th:classappend="${item.bookmarked} ? ' active'"
-                      th:text="${item.bookmarked} ? '♥' : '♡'"
-                      th:attr="aria-pressed=${item.bookmarked}">♡</button>
             </div>
             <h3 th:text="${item.title}">공고 제목</h3>
             <p class="job-meta">
@@ -169,15 +171,19 @@
       <article class="job-detail-panel">
         <div class="detail-main">
           <div class="job-card-head">
-            <img class="company-logo"
-                 th:if="${!#strings.isEmpty(job.companyLogoUrl)}"
-                 th:src="${job.companyLogoUrl}"
-                 th:alt="|${job.companyName} 로고|">
-            <span class="company-mark"
-                  th:unless="${!#strings.isEmpty(job.companyLogoUrl)}"
-                  th:text="${#strings.substring(job.companyName, 0, 1)}">기</span>
-            <div>
-              <strong th:text="${job.companyName}">기업명</strong>
+            <div class="detail-company-logo-stage">
+              <img class="company-logo"
+                   th:if="${!#strings.isEmpty(job.companyLogoUrl)}"
+                   th:src="${job.companyLogoUrl}"
+                   th:alt="|${job.companyName} 로고|">
+              <span class="company-mark"
+                    th:unless="${!#strings.isEmpty(job.companyLogoUrl)}"
+                    th:text="${#strings.substring(job.companyName, 0, 1)}">기</span>
+            </div>
+            <div class="detail-company-info">
+              <div class="detail-company-name-row">
+                <strong th:text="${job.companyName}">기업명</strong>
+              </div>
               <p class="job-meta">
                 <span th:text="${job.workRegion}">근무 지역</span>
                 ·
@@ -187,27 +193,22 @@
           </div>
 
           <div class="detail-top-actions">
-            <div class="job-badges">
-              <span class="job-badge hot" th:if="${job.hotPosting}">HOT</span>
-              <span class="job-badge new" th:if="${job.newPosting}">NEW</span>
-            </div>
-            <button class="bookmark"
-                    type="button"
-                    th:data-job-posting-id="${job.jobPostingId}"
-                    th:data-job-title="${job.title}"
-                    th:data-logged-in="${personalMember}"
-                    th:classappend="${job.bookmarked} ? ' active'"
-                    th:text="${job.bookmarked} ? '♥' : '♡'"
-                    th:attr="aria-pressed=${job.bookmarked}"
-                    th:aria-label="${job.bookmarked}
-                        ? '관심 공고 해제'
-                        : '관심 공고 등록'">♡</button>
-          </div>
-
-          <div class="detail-title-row">
-            <div>
-              <p class="detail-category" th:text="${job.category}">직무</p>
-              <h1 th:text="${job.title}">채용공고 제목</h1>
+            <div class="detail-status-actions">
+              <div class="job-badges">
+                <span class="job-badge hot" th:if="${job.hotPosting}">HOT</span>
+                <span class="job-badge new" th:if="${job.newPosting}">NEW</span>
+              </div>
+              <button class="bookmark"
+                      type="button"
+                      th:data-job-posting-id="${job.jobPostingId}"
+                      th:data-job-title="${job.title}"
+                      th:data-logged-in="${personalMember}"
+                      th:classappend="${job.bookmarked} ? ' active'"
+                      th:text="${job.bookmarked} ? '♥' : '♡'"
+                      th:attr="aria-pressed=${job.bookmarked}"
+                      th:aria-label="${job.bookmarked}
+                          ? '관심 공고 해제'
+                          : '관심 공고 등록'">♡</button>
             </div>
             <button class="report-button report-btn"
                     type="button"
@@ -217,20 +218,50 @@
                     th:data-target-name="|채용공고 · ${job.title}|">신고</button>
           </div>
 
-          <div class="detail-summary">
-            <div><small>경력</small><strong th:text="${job.career}">경력</strong></div>
-            <div><small>학력</small><strong th:text="${job.educationLevel}">학력</strong></div>
-            <div><small>고용형태</small><strong th:text="${job.employmentType}">고용형태</strong></div>
+          <div class="detail-title-row">
             <div>
-              <small
-                th:text="${job.status == '마감'} ? '상태' : '마감일'"
-              >마감일</small>
-              <strong
-                class="job-deadline"
-                th:text="${job.deadline}"
-              >마감일</strong>
+              <p class="detail-category" th:text="${job.category}">직무</p>
+              <h1 th:text="${job.title}">채용공고 제목</h1>
+            </div>
+            <div class="detail-title-actions">
+              <button class="detail-header-apply job-primary-button"
+                      type="button"
+                      data-resume-modal-open
+                      th:data-personal-member="${personalMember}"
+                      th:data-already-applied="${alreadyApplied}"
+                      th:data-accepting-applications="${job.acceptingApplications}"
+                      th:data-application-unavailable-message="${job.applicationUnavailableMessage}"
+                      th:data-job-posting-id="${job.jobPostingId}">지원하기</button>
             </div>
           </div>
+
+          <div class="detail-summary">
+            <div class="detail-summary-item detail-summary-career">
+              <span class="detail-summary-icon" aria-hidden="true">↗</span>
+              <span><small>경력</small><strong th:text="${job.career}">경력</strong></span>
+            </div>
+            <div class="detail-summary-item detail-summary-education">
+              <span class="detail-summary-icon" aria-hidden="true">◇</span>
+              <span><small>학력</small><strong th:text="${job.educationLevel}">학력</strong></span>
+            </div>
+            <div class="detail-summary-item detail-summary-employment">
+              <span class="detail-summary-icon" aria-hidden="true">▣</span>
+              <span><small>고용형태</small><strong th:text="${job.employmentType}">고용형태</strong></span>
+            </div>
+            <div class="detail-summary-item detail-summary-deadline">
+              <span class="detail-summary-icon" aria-hidden="true">◷</span>
+              <span>
+                <small
+                  th:text="${job.status == '마감'} ? '상태' : '마감일'"
+                >마감일</small>
+                <strong
+                  class="job-deadline"
+                  th:text="${job.deadline}"
+                >마감일</strong>
+              </span>
+            </div>
+          </div>
+
         </div>
 
         <div class="detail-tabs">
@@ -249,15 +280,16 @@
               <span th:each="skill : ${job.skills}" th:text="${skill}">기술</span>
             </div>
           </section>
-          <section th:if="${!#lists.isEmpty(job.benefits)}">
+          <section class="detail-benefits"
+                   th:if="${!#lists.isEmpty(job.benefits)}">
             <h2>복리후생</h2>
             <ul><li th:each="benefit : ${job.benefits}" th:text="${benefit}"></li></ul>
           </section>
-          <section>
+          <section class="detail-work-info">
             <h2>근무 정보</h2>
-            <p>근무지 · <span th:text="${job.workAddress}"></span></p>
-            <p>급여 · <span th:text="${job.salary}"></span></p>
-            <p>모집 인원 · <span th:text="|${job.headcount}명|"></span></p>
+            <p><span class="detail-work-label">근무지</span><span th:text="${job.workAddress}"></span></p>
+            <p><span class="detail-work-label">급여</span><span th:text="${job.salary}"></span></p>
+            <p><span class="detail-work-label">모집 인원</span><span th:text="|${job.headcount}명|"></span></p>
           </section>
         </div>
 

@@ -111,7 +111,7 @@
 .company-logo-preview {
     display: flex;
     width: 96px;
-    height: 96px;
+    height: 48px;
     align-items: center;
     justify-content: center;
     overflow: hidden;
@@ -147,6 +147,26 @@
 .company-logo-change-button:hover {
     border-color: var(--corp-blue);
     color: var(--corp-blue);
+}
+
+.company-logo-guide {
+    width: 96px;
+    margin: 9px 0 0;
+    color: #8a94a6;
+    font-size: 11px;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+    text-align: center;
+}
+
+.company-logo-guide span,
+.company-logo-guide strong {
+    display: block;
+}
+
+.company-logo-guide strong {
+    color: inherit;
+    font-weight: 400;
 }
 
 /* =========================================================

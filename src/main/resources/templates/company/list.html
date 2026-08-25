@@ -132,52 +132,62 @@
                class="company-card">
 
                 <div class="card-top">
-
                     <img class="company-logo"
+                         th:if="${!#strings.isEmpty(company.logoUrl)}"
                          th:src="${company.logoUrl}"
-                         alt="기업 로고">
+                         th:alt="|${company.companyName} 로고|">
 
-                    <button type="button"
-                            class="wish-btn"
-                            th:data-company-id="${company.companyId}"
-                            th:classappend="${company.savedCompanyId != null} ? 'active' : ''">
-
-                        <i th:class="${company.savedCompanyId != null}
-                            ? 'fa-solid fa-heart'
-                            : 'fa-regular fa-heart'">
-
-                        </i>
-                    </button>
-
+                    <span class="company-logo-placeholder"
+                          th:unless="${!#strings.isEmpty(company.logoUrl)}"
+                          th:text="${#strings.isEmpty(company.companyName)
+                              ? '회'
+                              : #strings.substring(company.companyName, 0, 1)}">
+                        회
+                    </span>
                 </div>
 
-                <h4 th:text="${company.companyName}"></h4>
+                <div class="company-card-body">
+                    <div class="company-title-row">
+                        <h4 th:text="${company.companyName}"></h4>
+                        <button type="button"
+                                class="wish-btn"
+                                th:data-company-id="${company.companyId}"
+                                th:classappend="${company.savedCompanyId != null} ? 'active' : ''">
 
-                <p class="company-info">
-                    <span th:text="${company.industryName}"></span>
-                    ·
-                    <span th:text="${company.addressLine1}"></span>
-                </p>
+                            <i th:class="${company.savedCompanyId != null}
+                                ? 'fa-solid fa-heart'
+                                : 'fa-regular fa-heart'">
 
-                <span class="recruit-badge"
-                      th:if="${company.hasJobPosting == 1}">
-            채용중
-        </span>
+                            </i>
+                        </button>
+                    </div>
 
-                <div class="company-score"
-                     th:if="${company.averageRating != null}">
-                    ⭐
-                    <span th:text="${company.averageRating}"></span>
-                    · 리뷰
-                    <span th:text="${company.reviewCount}"></span>개
+                    <p class="company-info">
+                        <span th:text="${company.industryName}"></span>
+                        ·
+                        <span th:text="${company.addressLine1}"></span>
+                    </p>
+
+                    <span class="recruit-badge"
+                          th:if="${company.hasJobPosting == 1}">
+                        채용중
+                    </span>
+
+                    <div class="company-score"
+                         th:if="${company.averageRating != null}">
+                        ⭐
+                        <span th:text="${company.averageRating}"></span>
+                        · 리뷰
+                        <span th:text="${company.reviewCount}"></span>개
+                    </div>
+
+                    <div class="card-line" th:if="${company.averageRating != null}"></div>
+
+                    <p class="company-review"
+                       th:if="${!#strings.isEmpty(company.summary)}"
+                       th:text="${company.summary}">
+                    </p>
                 </div>
-
-                <div class="card-line" th:if="${company.averageRating != null}"></div>
-
-                <p class="company-review"
-                   th:if="${!#strings.isEmpty(company.summary)}"
-                   th:text="${company.summary}">
-                </p>
 
             </a>
 
