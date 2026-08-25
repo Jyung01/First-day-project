@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import kr.co.firstdayproject.dto.admin.config.SiteSettingView;
-import kr.co.firstdayproject.service.admin.config.AdminSiteSettingService;
+import kr.co.firstdayproject.service.site.SiteSettingQueryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -13,13 +13,13 @@ import org.springframework.http.ResponseEntity;
 
 class FaviconControllerTest {
 
-    private AdminSiteSettingService adminSiteSettingService;
+    private SiteSettingQueryService siteSettingQueryService;
     private FaviconController faviconController;
 
     @BeforeEach
     void setUp() {
-        adminSiteSettingService = mock(AdminSiteSettingService.class);
-        faviconController = new FaviconController(adminSiteSettingService);
+        siteSettingQueryService = mock(SiteSettingQueryService.class);
+        faviconController = new FaviconController(siteSettingQueryService);
     }
 
     @Test
@@ -58,7 +58,7 @@ class FaviconControllerTest {
     }
 
     private void givenFaviconUrl(String faviconUrl) {
-        when(adminSiteSettingService.getSiteSettingView()).thenReturn(
+        when(siteSettingQueryService.getSiteSettingView()).thenReturn(
                 new SiteSettingView(
                         "첫출근", "help@firstwork.co.kr", "02-1234-5678",
                         "평일 09:00 ~ 18:00", "설레는 첫 출근을 함께 준비합니다.",

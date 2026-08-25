@@ -1,5 +1,4 @@
-<header class="header" xmlns:th="http://www.thymeleaf.org" th:fragment="adminHeader"
-        th:with="adminHeaderSiteSetting=${@adminSiteSettingService.getSiteSettingView()}">
+<header class="header" xmlns:th="http://www.thymeleaf.org" th:fragment="adminHeader">
     <div class="logo-box">
         <a th:href="@{/admin}" class="admin-logo">
             <!--
@@ -9,8 +8,8 @@
                 (관리자 > 사이트 설정 > 브랜드 이미지 관리의 "푸터 로고 이미지")
             -->
             <img
-                    th:src="@{${adminHeaderSiteSetting.footerLogoUrl != null && !#strings.isEmpty(adminHeaderSiteSetting.footerLogoUrl)}
-                            ? ${adminHeaderSiteSetting.footerLogoUrl}
+                    th:src="@{${siteSetting.footerLogoUrl != null && !#strings.isEmpty(siteSetting.footerLogoUrl)}
+                            ? ${siteSetting.footerLogoUrl}
                             : '/images/common/logo-footer.png'}"
                     alt="첫출근 관리자"
                     class="admin-logo__image"

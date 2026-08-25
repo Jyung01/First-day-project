@@ -6,6 +6,7 @@
     <title>사이트 설정 | 첫출근 관리자</title>
     <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
     <link rel="stylesheet" th:href="@{/css/admin/section-common.css}" />
+    <link rel="stylesheet" th:href="@{/css/common/toast.css}" />
 </head>
 <body>
 <div class="wrapper">
@@ -15,8 +16,6 @@
         <main class="admin-section">
             <div class="page-header"><h1>사이트 설정</h1><p>서비스 기본정보, 브랜드 이미지와 공통 푸터 정보를 관리합니다.</p></div>
 
-            <div th:if="${configMessage}" class="config-alert config-alert-success" th:text="${configMessage}"></div>
-            <div th:if="${configError}" class="config-alert config-alert-error" th:text="${configError}"></div>
             <div class="two-col">
                 <div>
                     <section class="panel">
@@ -133,6 +132,27 @@
     </div>
     <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
 </div>
+
+<div th:replace="~{common/toast :: toast}"></div>
+
+<script th:src="@{/js/common/toast.js}"></script>
+<!--
+    저장 결과는 리다이렉트 + flash attribute로 전달된다.
+    th:inline="javascript"가 값을 JS 문자열 리터럴로 이스케이프해주므로
+    문구에 따옴표가 들어가도 스크립트가 깨지지 않는다.
+-->
+<script th:inline="javascript">
+    (function () {
+        var message = /*[[${configMessage}]]*/ null;
+        var error = /*[[${configError}]]*/ null;
+
+        if (error) {
+            showToast(error, "error");
+        } else if (message) {
+            showToast(message);
+        }
+    })();
+</script>
 
 <script>
     function uploadSiteImage(inputElement, imageType) {

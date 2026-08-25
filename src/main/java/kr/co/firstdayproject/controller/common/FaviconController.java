@@ -2,7 +2,7 @@ package kr.co.firstdayproject.controller.common;
 
 import java.net.URI;
 import java.time.Duration;
-import kr.co.firstdayproject.service.admin.config.AdminSiteSettingService;
+import kr.co.firstdayproject.service.site.SiteSettingQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
@@ -29,11 +29,11 @@ public class FaviconController {
      */
     private static final Duration REDIRECT_CACHE_TTL = Duration.ofHours(1);
 
-    private final AdminSiteSettingService adminSiteSettingService;
+    private final SiteSettingQueryService siteSettingQueryService;
 
     @GetMapping("/favicon.ico")
     public ResponseEntity<Void> favicon() {
-        String faviconUrl = adminSiteSettingService.getSiteSettingView().faviconUrl();
+        String faviconUrl = siteSettingQueryService.getSiteSettingView().faviconUrl();
 
         // 아직 등록 전이면 404를 그대로 돌려준다. 빈 값으로 리다이렉트하면
         // 브라우저가 같은 경로를 다시 요청해 무한 루프가 된다.
