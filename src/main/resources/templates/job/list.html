@@ -185,22 +185,22 @@
                             </div>
                         </div>
 
-                        <div class="job-condition-list">
-                            <div class="job-condition"
+                        <div class="job-card-meta-line">
+                            <span class="job-card-meta-item"
                                  th:if="${!#strings.isEmpty(job.workRegion)}">
-                                <small>근무지역</small>
+                                <small>지역</small>
                                 <strong th:text="${job.workRegion}">
                                     근무 지역
                                 </strong>
-                            </div>
+                            </span>
 
-                            <div class="job-condition"
+                            <span class="job-card-meta-item"
                                  th:if="${!#strings.isEmpty(job.careerType)}">
                                 <small>경력</small>
                                 <strong th:text="${job.careerType}">
                                     경력 조건
                                 </strong>
-                            </div>
+                            </span>
                         </div>
 
                         <div class="job-tags">
@@ -247,11 +247,20 @@
 
                     <div class="job-card-foot">
 
-                        <span class="job-view-count">
-                            <small>조회수</small>
-                            <strong th:text="${#numbers.formatInteger(job.viewCount, 1, 'COMMA')}">
-                                0
-                            </strong>
+                        <span class="job-card-stats">
+                            <span class="job-view-count">
+                                <small>조회</small>
+                                <strong th:text="${#numbers.formatInteger(job.viewCount, 1, 'COMMA')}">
+                                    0
+                                </strong>
+                            </span>
+
+                            <span class="job-applicant-count">
+                                <small>지원</small>
+                                <strong th:text="${#numbers.formatInteger(job.applicantCount, 1, 'COMMA')}">
+                                    0
+                                </strong>
+                            </span>
                         </span>
 
                         <span class="job-deadline-wrap">

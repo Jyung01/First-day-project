@@ -299,6 +299,7 @@ public class MyPageController {
         model.addAttribute("savedJobCount", total);
         model.addAttribute("filter", filter);
         model.addAttribute("pageHandler", pageHandler);
+        model.addAttribute("activeMenu", "interestJobs");
         return "my/saved-jobs";
     }
 
@@ -337,6 +338,7 @@ public class MyPageController {
         model.addAttribute("savedCompanyCount", total);
         model.addAttribute("sort", sort);
         model.addAttribute("pageHandler", pageHandler);
+        model.addAttribute("activeMenu", "interestCompanies");
         return "my/saved-companies";
     }
 
@@ -370,6 +372,7 @@ public class MyPageController {
         model.addAttribute("companyReviewCount", myPageService.getMyCompanyReviewCount(userId));
         model.addAttribute("interviewReviewCount", myPageService.getMyInterviewReviewCount(userId));
         model.addAttribute("type", type);
+        model.addAttribute("activeMenu", "reviews");
         return "my/reviews";
     }
 

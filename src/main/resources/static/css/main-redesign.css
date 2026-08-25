@@ -566,7 +566,8 @@ button:hover > .main-arrow,
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: 166px 166px 166px;
     gap: 12px;
-    max-width: 900px;
+    width: 100%;
+    max-width: none;
     margin: 0 auto;
 }
 
