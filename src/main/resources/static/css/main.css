@@ -14,8 +14,10 @@
 }
 
 .redesign-wrap {
-    width: min(1180px, calc(100% - 48px));
+    width: 100%;
+    max-width: 1280px;
     margin: 0 auto;
+    padding: 0 24px;
 }
 
 .redesign-main a {
@@ -328,20 +330,27 @@
 }
 
 .today-job-row .row-arrow {
-    display: block;
+    display: grid;
+    place-items: center;
     width: 28px;
     height: 28px;
     border-radius: 50%;
     background: #f5f2fb;
-    color: var(--redesign-ink);
+    color: var(--redesign-purple);
+    font-size: 0;
     transition: background .2s ease, color .2s ease, transform .2s ease;
 }
 
+.today-job-row .row-arrow::before {
+    color: currentColor;
+    font-size: 14px;
+    line-height: 1;
+    content: "→";
+    transform: translateY(1px);
+}
+
 .today-job-row .row-arrow::after {
-    top: 10px;
-    left: 9px;
-    width: 6px;
-    height: 6px;
+    content: none;
 }
 
 .today-job-row:hover .row-arrow {
@@ -770,20 +779,17 @@ button:hover > .main-arrow,
 }
 
 .category-list i {
+    display: grid;
+    place-items: center;
     width: 34px;
     height: 34px;
     border: 1px solid #ddd7e8;
     border-radius: 50%;
     background: #fff;
+    font-size: 15px;
     font-style: normal;
+    line-height: 1;
     transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease;
-}
-
-.category-list i::after {
-    top: 12px;
-    left: 11px;
-    width: 7px;
-    height: 7px;
 }
 
 .category-list a:hover i {
@@ -834,7 +840,6 @@ button:hover > .main-arrow,
 .ai-flow {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     gap: 9px;
     margin: 36px 0 30px;
 }
@@ -1125,7 +1130,20 @@ button:hover > .main-arrow,
     border: 1px solid rgba(255, 255, 255, .85);
     border-radius: 50%;
     color: #fff;
+    font-size: 0;
     font-style: normal;
+}
+
+.tool-card i::before {
+    color: currentColor;
+    font-size: 14px;
+    line-height: 1;
+    content: "→";
+    transform: translateY(1px);
+}
+
+.tool-card i::after {
+    content: none;
 }
 
 .ai-empty-state a .main-arrow {
@@ -1142,14 +1160,6 @@ button:hover > .main-arrow,
 
 .category-all-link .main-arrow {
     color: var(--redesign-purple);
-}
-
-.tool-card i.main-arrow::after {
-    top: 11px;
-    left: 10px;
-    width: 6px;
-    height: 6px;
-    border-width: 2px;
 }
 
 .reveal-item {
@@ -1254,7 +1264,7 @@ button:hover > .main-arrow,
 
 @media (max-width: 560px) {
     .redesign-wrap {
-        width: min(100% - 32px, 1180px);
+        padding: 0 16px;
     }
 
     .redesign-main .section-eyebrow {
