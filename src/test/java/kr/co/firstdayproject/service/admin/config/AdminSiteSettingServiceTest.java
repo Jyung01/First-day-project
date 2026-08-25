@@ -12,6 +12,7 @@ import java.util.Optional;
 import kr.co.firstdayproject.entity.site.SiteSetting;
 import kr.co.firstdayproject.repository.site.SiteSettingRepository;
 import kr.co.firstdayproject.service.AwsS3.AwsS3Service;
+import kr.co.firstdayproject.service.site.SiteSettingQueryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
@@ -33,7 +34,13 @@ class AdminSiteSettingServiceTest {
         siteSettingRepository = mock(SiteSettingRepository.class);
         awsS3Service = mock(AwsS3Service.class);
         adminSiteSettingService =
-                new AdminSiteSettingService(siteSettingRepository, awsS3Service);
+                new AdminSiteSettingService(
+                        siteSettingRepository,
+                        // 조회는 진짜 구현을 쓴다. mock으로 바꾸면 이 테스트가 검증하려는
+                        // "기존 URL을 읽어 교체한다"는 흐름이 통째로 스텁이 되어 의미가 없어진다.
+                        new SiteSettingQueryService(siteSettingRepository),
+                        awsS3Service
+                );
 
         when(awsS3Service.upload(any(), anyString())).thenReturn(NEW_URL);
         brandImageSetting = SiteSetting.builder()

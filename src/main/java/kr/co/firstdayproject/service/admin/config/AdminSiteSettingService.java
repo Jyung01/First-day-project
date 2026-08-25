@@ -1,26 +1,28 @@
 package kr.co.firstdayproject.service.admin.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import kr.co.firstdayproject.dto.admin.config.SiteSettingView;
 import kr.co.firstdayproject.entity.site.SiteSetting;
 import kr.co.firstdayproject.repository.site.SiteSettingRepository;
 import kr.co.firstdayproject.service.AwsS3.AwsS3Service;
+import kr.co.firstdayproject.service.site.SiteSettingQueryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * site_settings(key-value/JSON) 테이블을 다루는 서비스.
+ * site_settings(key-value/JSON) 테이블을 수정하는 관리자 전용 서비스.
  * row 3개를 고정 키로 사용한다: basic_info / footer / brand_image
  * 각 row의 setting_value는 Map<String, Object> 형태 그대로 JSON 직렬화한다.
+ *
+ * 조회는 SiteSettingQueryService가 담당한다. 공통 헤더·푸터가 모든 화면에서
+ * 설정값을 읽어야 하는데, 일반 사용자 화면이 Admin~ 서비스를 호출하는 것은
+ * 계층상 어색하기 때문에 읽기와 쓰기를 나눴다.
  *
  * 브랜드 이미지(헤더/푸터 로고, 파비콘)는 공개적으로 노출되는 리소스이므로
  * 로컬 디스크(src/main/resources/static 등)에 저장하지 않고 S3 공개 버킷에 업로드한다.
@@ -30,27 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional(readOnly = true)
 public class AdminSiteSettingService {
 
-    private static final String KEY_BASIC_INFO = "basic_info";
-    private static final String KEY_FOOTER = "footer";
-    private static final String KEY_BRAND_IMAGE = "brand_image";
-
     /** S3 내 브랜드 이미지 저장 디렉토리 (버킷 하위 prefix) */
     private static final String S3_BRAND_IMAGE_DIR = "site/brand-images";
-
-    private static final Map<String, String> BASIC_INFO_DEFAULTS = Map.of(
-            "serviceName", "첫출근",
-            "supportEmail", "help@firstwork.co.kr",
-            "supportPhone", "02-1234-5678",
-            "serviceHours", "평일 09:00 ~ 18:00",
-            "serviceDescription", "설레는 첫 출근을 함께 준비합니다."
-    );
-
-    private static final Map<String, String> FOOTER_DEFAULTS = Map.of(
-            "companyName", "첫출근",
-            "businessNumber", "",
-            "companyAddress", "",
-            "copyrightText", ""
-    );
 
     private static final Set<String> ALLOWED_IMAGE_TYPES = Set.of(
             "image/png",
@@ -63,36 +46,18 @@ public class AdminSiteSettingService {
     private static final long MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
     private final SiteSettingRepository siteSettingRepository;
+    private final SiteSettingQueryService siteSettingQueryService;
     private final AwsS3Service awsS3Service;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AdminSiteSettingService(
             SiteSettingRepository siteSettingRepository,
+            SiteSettingQueryService siteSettingQueryService,
             AwsS3Service awsS3Service
     ) {
         this.siteSettingRepository = siteSettingRepository;
+        this.siteSettingQueryService = siteSettingQueryService;
         this.awsS3Service = awsS3Service;
-    }
-
-    public SiteSettingView getSiteSettingView() {
-        Map<String, Object> basicInfo = readSetting(KEY_BASIC_INFO, BASIC_INFO_DEFAULTS);
-        Map<String, Object> footer = readSetting(KEY_FOOTER, FOOTER_DEFAULTS);
-        Map<String, Object> brandImage = readSetting(KEY_BRAND_IMAGE, Map.of());
-
-        return new SiteSettingView(
-                asText(basicInfo, "serviceName"),
-                asText(basicInfo, "supportEmail"),
-                asText(basicInfo, "supportPhone"),
-                asText(basicInfo, "serviceHours"),
-                asText(basicInfo, "serviceDescription"),
-                asText(footer, "companyName"),
-                asText(footer, "businessNumber"),
-                asText(footer, "companyAddress"),
-                asText(footer, "copyrightText"),
-                asText(brandImage, "headerLogoUrl"),
-                asText(brandImage, "footerLogoUrl"),
-                asText(brandImage, "faviconUrl")
-        );
     }
 
     @Transactional
@@ -114,7 +79,7 @@ public class AdminSiteSettingService {
                 serviceDescription == null ? "" : serviceDescription.strip()
         );
 
-        saveSetting(KEY_BASIC_INFO, value, adminUserId);
+        saveSetting(SiteSettingQueryService.KEY_BASIC_INFO, value, adminUserId);
     }
 
     @Transactional
@@ -134,7 +99,7 @@ public class AdminSiteSettingService {
                 copyrightText == null ? "" : copyrightText.strip()
         );
 
-        saveSetting(KEY_FOOTER, value, adminUserId);
+        saveSetting(SiteSettingQueryService.KEY_FOOTER, value, adminUserId);
     }
 
     /**
@@ -160,8 +125,11 @@ public class AdminSiteSettingService {
             );
         };
 
-        Map<String, Object> current = readSetting(KEY_BRAND_IMAGE, Map.of());
-        String previousUrl = asText(current, field);
+        Map<String, Object> current = siteSettingQueryService.readSetting(
+                SiteSettingQueryService.KEY_BRAND_IMAGE,
+                Map.of()
+        );
+        String previousUrl = siteSettingQueryService.asText(current, field);
 
         String newUrl;
         try {
@@ -175,36 +143,13 @@ public class AdminSiteSettingService {
 
         Map<String, Object> updated = new LinkedHashMap<>(current);
         updated.put(field, newUrl);
-        saveSetting(KEY_BRAND_IMAGE, updated, adminUserId);
+        saveSetting(SiteSettingQueryService.KEY_BRAND_IMAGE, updated, adminUserId);
 
         // 파일 정리는 트랜잭션 결과에 맡긴다. 커밋되면 이전 이미지를,
         // 롤백되면 방금 올린 이미지를 지운다. 여기서 바로 지우면
         // 이후 롤백 시 DB는 이전 URL로 되돌아가는데 파일은 이미 없어져
         // 복구할 수 없는 깨진 이미지가 된다.
         awsS3Service.synchronizePublicReplacement(previousUrl, newUrl);
-    }
-
-    private Map<String, Object> readSetting(
-            String key,
-            Map<String, String> defaults
-    ) {
-        Optional<SiteSetting> setting = siteSettingRepository.findById(key);
-
-        if (setting.isEmpty()) {
-            return new LinkedHashMap<>(defaults);
-        }
-
-        try {
-            return objectMapper.readValue(
-                    setting.get().getSettingValue(),
-                    new TypeReference<Map<String, Object>>() {}
-            );
-        } catch (IOException exception) {
-            throw new IllegalStateException(
-                    "설정 값을 읽는 중 오류가 발생했습니다. (key=" + key + ")",
-                    exception
-            );
-        }
     }
 
     private void saveSetting(String key, Map<String, Object> value, Long adminUserId) {
@@ -238,11 +183,6 @@ public class AdminSiteSettingService {
             setting.setUpdatedBy(adminUserId);
             setting.setUpdatedAt(LocalDateTime.now());
         }
-    }
-
-    private String asText(Map<String, Object> map, String field) {
-        Object value = map.get(field);
-        return value == null ? null : value.toString();
     }
 
     private String requireText(String value, String errorMessage) {
