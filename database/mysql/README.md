@@ -10,8 +10,9 @@
 
 ## 현재 버전
 
-- 최신 변경 버전: V15
+- 최신 변경 버전: V16
 - 신규 DB 생성: `ddl/firstday_mysql_current.sql` 실행
-- V14 DB 업데이트: `migration/V15__add_offer_declined_to_application_status.sql` 실행
+- V15 DB 업데이트: `migration/V16__add_updated_by_to_notices_and_faqs.sql` 실행
+  - 팀 공용 DB는 `notices.updated_by`가 이미 추가되어 있어 실행 블록이 다르다. `migration/README.md`의 "V16 적용 시 주의"를 먼저 읽을 것
 
 버전별 변경사항 상세는 `migration/README.md`에서 관리한다.

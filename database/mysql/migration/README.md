@@ -122,3 +122,11 @@
 - `applications.current_status` CHECK 제약(`chk_applications_status`)에 `입사포기`를 추가한다. 기존 허용값에 이어 총 11개 상태를 허용한다.
 - 최종합격 후 입사를 포기하는 경우를 입사완료·불합격과 구분해서 표현할 수 있게 한다.
 - 기존 V14 DB에는 `V15__add_offer_declined_to_application_status.sql`을 한 번 실행한다.
+
+## V16 반영 내용
+
+- `notices.updated_by`, `faqs.updated_by`(BIGINT UNSIGNED NULL)에 마지막으로 수정한 관리자를 저장한다. 두 테이블 모두 `created_by` 다음 위치에 추가한다.
+- `created_by`는 최초 등록자로 그대로 두고, 수정할 때마다 `updated_by`만 갱신한다. `inquiries.answered_by`가 이미 같은 역할을 하고 있어 고객센터 3개 화면의 기록 방식을 맞춘다.
+- 각각 `fk_notices_updater`, `fk_faqs_updater`로 `users(user_id)`를 참조한다. 관리자 계정이 삭제되면 `ON DELETE SET NULL`로 기록만 비운다.
+- NULL 허용이다. 이 migration 이전에 수정된 행과, 등록 후 한 번도 수정하지 않은 행은 NULL로 남는다.
+- 기존 V15 DB에는 `V16__add_updated_by_to_notices_and_faqs.sql`을 한 번 실행한다. 단 **팀 공용 DB는 실행 블록이 다르다** — 위 "V16 적용 시 주의"를 먼저 읽을 것.
