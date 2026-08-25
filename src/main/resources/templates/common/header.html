@@ -2,12 +2,11 @@
         th:fragment="header"
         xmlns:th="http://www.thymeleaf.org"
         xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-        class="site-header"
-        th:with="headerSiteSetting=${@adminSiteSettingService.getSiteSettingView()}">
+        class="site-header">
     <div class="wrap header-inner">
         <a th:href="@{/}" class="header-logo" aria-label="첫출근 메인으로 이동">
-            <img th:src="@{${headerSiteSetting.headerLogoUrl != null && !#strings.isEmpty(headerSiteSetting.headerLogoUrl)}
-                            ? ${headerSiteSetting.headerLogoUrl}
+            <img th:src="@{${siteSetting.headerLogoUrl != null && !#strings.isEmpty(siteSetting.headerLogoUrl)}
+                            ? ${siteSetting.headerLogoUrl}
                             : '/images/header-logo.svg'}"
                  width="160" height="40"
                  alt="첫출근" class="header-logo__image"/>

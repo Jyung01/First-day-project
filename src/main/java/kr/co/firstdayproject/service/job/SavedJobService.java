@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 import kr.co.firstdayproject.entity.job.SavedJob;
 import kr.co.firstdayproject.entity.job.SavedJobId;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
+import kr.co.firstdayproject.repository.job.JobPostingRepository;
 import kr.co.firstdayproject.repository.job.SavedJobRepository;
 import kr.co.firstdayproject.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class SavedJobService {
     private static final String PERSONAL_ROLE = "ROLE_PERSONAL";
 
     private final SavedJobRepository savedJobRepository;
+    private final JobPostingRepository jobPostingRepository;
 
     @Transactional
     public boolean toggleSavedJob(
@@ -37,6 +40,18 @@ public class SavedJobService {
         if (savedJobRepository.existsById(savedJobId)) {
             savedJobRepository.deleteById(savedJobId);
             return false;
+        }
+
+        /*
+         * 등록 전에 공고 존재 여부를 확인한다.
+         * saved_jobs.job_posting_id에 외래키가 있어 없는 공고면 어차피 저장에 실패하지만,
+         * 그대로 두면 DataIntegrityViolationException이 500으로 나간다.
+         * 해제(위쪽 분기)는 이미 등록된 행을 지우는 것이라 이 확인이 필요 없다.
+         */
+        if (!jobPostingRepository.existsById(jobPostingId)) {
+            throw new ResourceNotFoundException(
+                    "조회할 수 없는 채용공고입니다."
+            );
         }
 
         SavedJob savedJob = SavedJob.builder()

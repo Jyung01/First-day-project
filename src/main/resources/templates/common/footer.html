@@ -1,20 +1,38 @@
+<!--
+  공통 푸터.
+  표시되는 문구·사업자정보·고객센터 연락처는 모두 관리자 > 사이트 설정 값이다.
+  siteSetting은 SiteSettingAdvice가 요청마다 넣어주는 model attribute다.
+
+  슬로건과 저작권 문구만 기본값을 두고, 사업자정보·연락처는 값이 비면 줄 자체를
+  감춘다. "사업자등록번호" 라벨만 덩그러니 남는 것보다 안 보이는 편이 낫다.
+-->
 <footer th:fragment="footer" xmlns:th="http://www.thymeleaf.org" class="site-footer"
-        th:with="footerSiteSetting=${@adminSiteSettingService.getSiteSettingView()}">
+        th:with="footerDescription=${#strings.isEmpty(siteSetting.serviceDescription)
+                     ? '설레는 첫 출근을 함께 준비합니다.' : siteSetting.serviceDescription},
+                 footerCopyright=${#strings.isEmpty(siteSetting.copyrightText)
+                     ? '© 2026 FirstWork Inc.' : siteSetting.copyrightText}">
   <div class="wrap footer-inner">
     <div class="footer-brand">
       <a th:href="@{/}" class="footer-logo" aria-label="첫출근 메인으로 이동">
         <img
-                th:src="@{${footerSiteSetting.footerLogoUrl != null && !#strings.isEmpty(footerSiteSetting.footerLogoUrl)}
-                            ? ${footerSiteSetting.footerLogoUrl}
+                th:src="@{${siteSetting.footerLogoUrl != null && !#strings.isEmpty(siteSetting.footerLogoUrl)}
+                            ? ${siteSetting.footerLogoUrl}
                             : '/images/footer-logo.svg'}"
                 width="190"
                 height="56"
                 alt="첫출근"
         />
       </a>
-      <div class="footer-slogan">
-        설레는 첫 출근을 함께 준비합니다.<br />
-        © 2026 FirstWork Inc.
+      <div class="footer-slogan" th:text="${footerDescription}">
+        설레는 첫 출근을 함께 준비합니다.
+      </div>
+      <div class="footer-business">
+        <span th:if="${!#strings.isEmpty(siteSetting.companyName)}"
+              th:text="${siteSetting.companyName}">첫출근</span>
+        <span th:if="${!#strings.isEmpty(siteSetting.businessNumber)}"
+              th:text="'사업자등록번호 ' + ${siteSetting.businessNumber}">사업자등록번호 000-00-00000</span>
+        <span th:if="${!#strings.isEmpty(siteSetting.companyAddress)}"
+              th:text="${siteSetting.companyAddress}">주소</span>
       </div>
     </div>
     <div class="footer-col">
@@ -29,11 +47,30 @@
       <a th:href="@{/cs/notice}">공지사항</a>
       <a th:href="@{/cs/faq}">자주 묻는 질문</a>
       <a th:href="@{/cs/qna}">1:1 문의</a>
+      <div class="footer-contact">
+        <p class="footer-contact__row" th:if="${!#strings.isEmpty(siteSetting.supportEmail)}">
+          <span class="footer-contact__label">이메일</span>
+          <a class="footer-contact__value"
+             th:href="'mailto:' + ${siteSetting.supportEmail}"
+             th:text="${siteSetting.supportEmail}">help@firstwork.co.kr</a>
+        </p>
+        <p class="footer-contact__row" th:if="${!#strings.isEmpty(siteSetting.supportPhone)}">
+          <span class="footer-contact__label">전화</span>
+          <a class="footer-contact__value"
+             th:href="'tel:' + ${#strings.replace(siteSetting.supportPhone, '-', '')}"
+             th:text="${siteSetting.supportPhone}">02-1234-5678</a>
+        </p>
+        <p class="footer-contact__row" th:if="${!#strings.isEmpty(siteSetting.serviceHours)}">
+          <span class="footer-contact__label">운영시간</span>
+          <span class="footer-contact__value" th:text="${siteSetting.serviceHours}">평일 09:00 ~ 18:00</span>
+        </p>
+      </div>
     </div>
   </div>
   <div class="wrap footer-bottom">
-    <div>
-      서비스 <span th:text="${siteVersionName}">v1.0.0</span>
+    <div class="footer-meta">
+      <span>서비스 <span th:text="${siteVersionName}">v1.0.0</span></span>
+      <span th:text="${footerCopyright}">© 2026 FirstWork Inc.</span>
     </div>
     <div class="legal">
       <a th:href="@{/policy/terms}">이용약관</a>
