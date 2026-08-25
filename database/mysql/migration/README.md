@@ -21,6 +21,17 @@
 | V13 | `V13__add_member_withdrawal_to_termination_reason.sql` | `applications.termination_reason` CHECK 허용값에 `회원탈퇴` 추가 |
 | V14 | `V14__add_review_requested_at_to_companies.sql` | `companies.review_requested_at` 추가, 심사 큐 인덱스 및 기존 승인대기 기업 백필 |
 | V15 | `V15__add_offer_declined_to_application_status.sql` | `applications.current_status` CHECK 허용값에 `입사포기` 추가 |
+| V16 | `V16__add_updated_by_to_notices_and_faqs.sql` | `notices.updated_by`, `faqs.updated_by`와 각 외래키 추가 (공지·FAQ 최종 수정자 기록) |
+
+### V16 적용 시 주의
+
+팀 공용 DB에는 `notices.updated_by`가 이 migration 없이 이미 추가되어 있다.
+타입이 `bigint`(signed)이고 COMMENT·외래키가 빠진 상태라, V16의 `[A]` 블록을
+그대로 실행하면 `Duplicate column name`으로 실패한다.
+
+- **공용 DB**: `[A]`를 건너뛰고 파일 안의 `[B]`(주석 해제 후 실행)로 타입을 교정하고
+  외래키를 추가한다. `faqs` 블록은 그대로 실행한다.
+- **새로 구축하는 환경**: V1부터 순서대로 돌리므로 `[A]`를 그대로 실행하면 된다.
 
 ## 적용 규칙
 

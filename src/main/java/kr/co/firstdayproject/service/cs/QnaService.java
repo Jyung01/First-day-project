@@ -410,9 +410,14 @@ public class QnaService {
             throw new IllegalStateException("아직 답변이 등록되지 않은 문의입니다.");
         }
 
+        // answeredBy/answeredAt은 "최종 답변자와 그 시각"으로 본다.
+        // 답변을 고친 사람이 현재 답변의 책임자이므로 둘을 함께 갱신한다.
+        // 한쪽만 바꾸면 "A가 답변했는데 시각은 B가 고친 때"처럼 어긋난다.
+        LocalDateTime now = LocalDateTime.now();
         inquiry.setAnswerContent(answerContent.trim());
         inquiry.setAnsweredBy(adminId);
-        inquiry.setUpdatedAt(LocalDateTime.now());
+        inquiry.setAnsweredAt(now);
+        inquiry.setUpdatedAt(now);
     }
 
     /** 관리자 - 답변 삭제 (미답변 상태로 되돌림) */
