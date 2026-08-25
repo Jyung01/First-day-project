@@ -31,7 +31,7 @@ function initializeRedesignPage() {
                 aiList.innerHTML = `
                     <div class="ai-empty-state">
                         <strong>추천할 공고가 아직 없어요.</strong>
-                        <a href="/my/profile-edit">희망 직무 설정하기 →</a>
+                        <a href="/my/profile-edit">희망 직무 설정하기 <span class="main-arrow" aria-hidden="true"></span></a>
                     </div>`;
                 return;
             }
@@ -46,7 +46,7 @@ function initializeRedesignPage() {
             aiList.innerHTML = `
                 <div class="ai-empty-state">
                     <strong>${escapeHtml(error.message)}</strong>
-                    <a href="/job/list">전체 공고 보기 →</a>
+                    <a href="/job/list">전체 공고 보기 <span class="main-arrow" aria-hidden="true"></span></a>
                 </div>`;
         });
 }

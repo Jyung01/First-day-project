@@ -342,15 +342,14 @@
 }
 
 .today-job-row .row-arrow::before {
-    color: currentColor;
-    font-size: 14px;
-    line-height: 1;
-    content: "→";
-    transform: translateY(1px);
+    content: none;
 }
 
 .today-job-row .row-arrow::after {
-    content: none;
+    top: 10px;
+    left: 9px;
+    width: 6px;
+    height: 6px;
 }
 
 .today-job-row:hover .row-arrow {
@@ -1136,15 +1135,15 @@ button:hover > .main-arrow,
 }
 
 .tool-card i::before {
-    color: currentColor;
-    font-size: 14px;
-    line-height: 1;
-    content: "→";
-    transform: translateY(1px);
+    content: none;
 }
 
-.tool-card i::after {
-    content: none;
+.tool-card i.main-arrow::after {
+    top: 11px;
+    left: 10px;
+    width: 6px;
+    height: 6px;
+    border-width: 2px;
 }
 
 .ai-empty-state a .main-arrow {
