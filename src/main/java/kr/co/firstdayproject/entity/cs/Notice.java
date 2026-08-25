@@ -53,6 +53,9 @@ public class Notice {
     @Column(name = "created_by", nullable = false)
     private Long createdBy;
 
+    @Column(name = "updated_by")
+    private Long updatedBy;
+
     // DB DEFAULT CURRENT_TIMESTAMP(6) 사용 -> insert 시 값 안 보냄
     @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private LocalDateTime createdAt;
@@ -63,7 +66,7 @@ public class Notice {
 
     // ===== 도메인 메서드 =====
 
-    public void update(String title, String content, Boolean isPinned, String status) {
+    public void update(String title, String content, Boolean isPinned, String status, Long updatedBy) {
         this.title = title;
         this.content = content;
         this.isPinned = isPinned;
@@ -72,6 +75,7 @@ public class Notice {
         if (!wasPublished && STATUS_PUBLISHED.equals(status) && this.publishedAt == null) {
             this.publishedAt = LocalDateTime.now();
         }
+        this.updatedBy = updatedBy;
     }
 
     @PrePersist

@@ -121,10 +121,12 @@ public class AdminQnaController {
     @PutMapping("/{inquiryId}/answer")
     @ResponseBody
     public ResponseEntity<Void> updateAnswer(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long inquiryId,
             @RequestBody Map<String, String> body
     ) {
-        qnaService.updateAnswer(inquiryId, body.get("answerContent"));
+        Long adminId = AdminPrincipal.requireAdminId(userDetails);
+        qnaService.updateAnswer(inquiryId, body.get("answerContent"), adminId);
         return ResponseEntity.ok().build();
     }
 

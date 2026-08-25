@@ -49,8 +49,9 @@ public class AdminFaqController {
 
     // FAQ 수정 -> 저장 즉시 반영
     @PutMapping("/{faqId}")
-    public ResponseEntity<?> update(@PathVariable Long faqId, @RequestBody FaqDto.SaveRequest request) {
-        faqService.update(faqId, request);
+    public ResponseEntity<?> update(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                    @PathVariable Long faqId, @RequestBody FaqDto.SaveRequest request) {
+        faqService.update(faqId, request, AdminPrincipal.requireAdminId(userDetails));
         return ResponseEntity.ok().build();
     }
 

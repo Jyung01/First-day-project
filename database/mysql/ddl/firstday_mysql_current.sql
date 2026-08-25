@@ -767,6 +767,8 @@ CREATE TABLE notices (
   status                VARCHAR(10) NOT NULL DEFAULT '임시저장',
   published_at          DATETIME(6) NULL,
   created_by            BIGINT UNSIGNED NOT NULL,
+  updated_by            BIGINT UNSIGNED NULL
+                         COMMENT '마지막으로 수정한 관리자; 최초 등록자는 created_by',
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
                          ON UPDATE CURRENT_TIMESTAMP(6),
@@ -776,7 +778,10 @@ CREATE TABLE notices (
   CONSTRAINT chk_notices_status
     CHECK (status IN ('임시저장','공개','숨김')),
   CONSTRAINT fk_notices_creator
-    FOREIGN KEY (created_by) REFERENCES users(user_id)
+    FOREIGN KEY (created_by) REFERENCES users(user_id),
+  CONSTRAINT fk_notices_updater
+    FOREIGN KEY (updated_by) REFERENCES users(user_id)
+    ON DELETE SET NULL
 ) ENGINE=InnoDB COMMENT='고객센터 공지사항';
 
 CREATE TABLE faq_categories (
@@ -804,6 +809,8 @@ CREATE TABLE faqs (
   display_order         INT NOT NULL DEFAULT 0,
   status                VARCHAR(10) NOT NULL DEFAULT '공개',
   created_by            BIGINT UNSIGNED NOT NULL,
+  updated_by            BIGINT UNSIGNED NULL
+                         COMMENT '마지막으로 수정한 관리자; 최초 등록자는 created_by',
   created_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at            DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
                          ON UPDATE CURRENT_TIMESTAMP(6),
@@ -816,7 +823,10 @@ CREATE TABLE faqs (
   CONSTRAINT fk_faqs_category
     FOREIGN KEY (faq_category_id) REFERENCES faq_categories(faq_category_id),
   CONSTRAINT fk_faqs_creator
-    FOREIGN KEY (created_by) REFERENCES users(user_id)
+    FOREIGN KEY (created_by) REFERENCES users(user_id),
+  CONSTRAINT fk_faqs_updater
+    FOREIGN KEY (updated_by) REFERENCES users(user_id)
+    ON DELETE SET NULL
 ) ENGINE=InnoDB COMMENT='자주 묻는 질문';
 
 CREATE TABLE inquiry_categories (

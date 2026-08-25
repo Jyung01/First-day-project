@@ -71,8 +71,10 @@ public class AdminNoticeController {
     // 수정 (JSON)
     @PostMapping("/{id}")
     @ResponseBody
-    public void update(@PathVariable Long id, @RequestBody NoticeDto.SaveRequest req) {
-        noticeService.update(id, req);
+    public void update(@PathVariable Long id,
+                       @AuthenticationPrincipal CustomUserDetails userDetails,
+                       @RequestBody NoticeDto.SaveRequest req) {
+        noticeService.update(id, req, AdminPrincipal.requireAdminId(userDetails));
     }
 
     // 삭제

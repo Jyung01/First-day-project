@@ -115,13 +115,14 @@ public class FaqService {
 
     // FAQ 수정 -> 수정 즉시 반영
     @Transactional
-    public void update(Long faqId, FaqDto.SaveRequest request) {
+    public void update(Long faqId, FaqDto.SaveRequest request, Long adminId) {
         Faq faq = faqRepository.findById(faqId)
                 .orElseThrow(() -> new EntityNotFoundException("FAQ를 찾을 수 없습니다. id=" + faqId));
         faq.setFaqCategoryId(request.getFaqCategoryId());
         faq.setQuestion(request.getQuestion());
         faq.setAnswer(request.getAnswer());
         faq.setUpdatedAt(LocalDateTime.now());
+        faq.setUpdatedBy(adminId);
     }
 
     // FAQ 삭제
