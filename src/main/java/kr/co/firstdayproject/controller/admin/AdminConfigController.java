@@ -20,13 +20,11 @@ public class AdminConfigController {
 
     private final AdminSiteSettingService adminSiteSettingService;
 
+    // "siteSetting" 모델 속성은 SiteSettingAdvice가 모든 요청에 넣어주므로
+    // 여기서 다시 담지 않는다. 담으면 같은 조회가 한 번 더 일어난다.
     @GetMapping("/site-setting")
     public String siteSetting(Model model) {
         model.addAttribute("activeMenu", "siteSetting");
-        model.addAttribute(
-                "siteSetting",
-                adminSiteSettingService.getSiteSettingView()
-        );
         return "admin/config/site-setting";
     }
 

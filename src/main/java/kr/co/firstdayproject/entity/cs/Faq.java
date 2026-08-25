@@ -42,6 +42,9 @@ public class Faq {
     private String status;
     @Column(name = "created_by", nullable = false)
     private Long createdBy;
+    /** 마지막으로 수정한 관리자. 최초 등록자는 createdBy로 남는다. */
+    @Column(name = "updated_by")
+    private Long updatedBy;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     @Column(name = "updated_at", nullable = false)

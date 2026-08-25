@@ -1,12 +1,11 @@
 <header class="corp-header"
         xmlns:th="http://www.thymeleaf.org"
-        th:fragment="corpHeader"
-        th:with="corpHeaderSiteSetting=${@adminSiteSettingService.getSiteSettingView()}">
+        th:fragment="corpHeader">
     <div class="corp-header__inner">
         <a class="corp-brand" th:href="@{/corp}" aria-label="첫출근 기업관리 홈">
             <img class="corp-brand__logo"
-                 th:src="@{${corpHeaderSiteSetting.headerLogoUrl != null && !#strings.isEmpty(corpHeaderSiteSetting.headerLogoUrl)}
-                         ? ${corpHeaderSiteSetting.headerLogoUrl}
+                 th:src="@{${siteSetting.headerLogoUrl != null && !#strings.isEmpty(siteSetting.headerLogoUrl)}
+                         ? ${siteSetting.headerLogoUrl}
                          : '/images/header-logo.svg'}"
                  width="160"
                  height="40"

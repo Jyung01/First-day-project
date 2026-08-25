@@ -15,9 +15,10 @@
 }
 
 .job-container {
-  width: calc(100% - 48px);
-  max-width: 1232px;
+  width: 100%;
+  max-width: 1280px;
   margin: 0 auto;
+  padding: 0 24px;
 }
 
 .job-hero {
@@ -682,10 +683,8 @@
 
 
 @media (max-width: 620px) {
-
   .job-container {
-    width: calc(100% - 24px);
-    max-width: 1232px;
+    padding: 0 16px;
   }
 
   .job-filter-row select {

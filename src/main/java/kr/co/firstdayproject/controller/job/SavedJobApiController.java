@@ -1,6 +1,7 @@
 package kr.co.firstdayproject.controller.job;
 
 import java.util.Map;
+import kr.co.firstdayproject.exception.ResourceNotFoundException;
 import kr.co.firstdayproject.service.job.SavedJobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -53,6 +54,26 @@ public class SavedJobApiController {
     ) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
+                .body(
+                        Map.of(
+                                "message",
+                                exception.getMessage()
+                        )
+                );
+    }
+
+    /**
+     * 존재하지 않는 공고 id로 요청한 경우.
+     *
+     * <p>GlobalExceptionHandler는 뷰 이름을 반환하는 화면용이라 이 컨트롤러가 그쪽으로 넘어가면
+     * 뷰 이름이 그대로 응답 본문이 된다. RestController에서는 여기서 직접 처리한다.
+     */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(
+            ResourceNotFoundException exception
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
                 .body(
                         Map.of(
                                 "message",

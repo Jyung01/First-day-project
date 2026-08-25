@@ -6,6 +6,7 @@
     <title>사이트 설정 | 첫출근 관리자</title>
     <link rel="stylesheet" th:href="@{/css/admin/common.css}" />
     <link rel="stylesheet" th:href="@{/css/admin/section-common.css}" />
+    <link rel="stylesheet" th:href="@{/css/common/toast.css}" />
 </head>
 <body>
 <div class="wrapper">
@@ -15,8 +16,6 @@
         <main class="admin-section">
             <div class="page-header"><h1>사이트 설정</h1><p>서비스 기본정보, 브랜드 이미지와 공통 푸터 정보를 관리합니다.</p></div>
 
-            <div th:if="${configMessage}" class="config-alert config-alert-success" th:text="${configMessage}"></div>
-            <div th:if="${configError}" class="config-alert config-alert-error" th:text="${configError}"></div>
             <div class="two-col">
                 <div>
                     <section class="panel">
@@ -73,7 +72,7 @@
                     </section>
                 </div>
                 <section class="panel">
-                    <div class="panel-head"><h2>브랜드 이미지 관리 · 테마별 적용</h2></div>
+                    <div class="panel-head"><h2>브랜드 이미지 관리</h2></div>
 
                     <span class="upload-label">헤더 로고 이미지</span>
                     <div class="upload-hint">투명 배경 PNG 권장 · 권장 190 × 40px</div>
@@ -87,8 +86,14 @@
                                onchange="uploadSiteImage(this, 'HEADER_LOGO')" />
                     </div>
 
-                    <span class="upload-label">푸터 이미지 로고</span>
-                    <div class="upload-hint">기업·발행 브랜드에 사용 · 권장 148 × 36px</div>
+                    <!--
+                        푸터 로고는 다크 배경 전용 이미지다.
+                        관리자 헤더도 동일한 다크 테마이므로 별도 이미지를 두지 않고
+                        이 푸터 로고를 그대로 공유한다. (common/admin-header.html 참고)
+                        따라서 이 칸의 이미지를 교체하면 공통 푸터와 관리자 헤더가 함께 바뀐다.
+                    -->
+                    <span class="upload-label">푸터 로고 이미지</span>
+                    <div class="upload-hint">다크 배경 전용 · 권장 190 × 56px</div>
                     <div class="upload-box">
                         <div class="preview">
                             <img th:if="${siteSetting.footerLogoUrl}" th:src="@{${siteSetting.footerLogoUrl}}" alt="푸터 로고" style="max-height:28px;" />
@@ -97,6 +102,9 @@
                         <button type="button" class="btn" onclick="document.getElementById('footerLogoInput').click()">파일 선택</button>
                         <input type="file" id="footerLogoInput" accept="image/png,image/jpeg,image/svg+xml" hidden
                                onchange="uploadSiteImage(this, 'FOOTER_LOGO')" />
+                    </div>
+                    <div class="upload-note">
+                        관리자 헤더 로고로도 함께 사용됩니다. 교체 시 공통 푸터와 관리자 헤더에 모두 반영됩니다.
                     </div>
 
                     <span class="upload-label">파비콘</span>
@@ -111,7 +119,7 @@
                                onchange="uploadSiteImage(this, 'FAVICON')" />
                     </div>
 
-                    <div class="upload-hint">투명 PNG·SVG 권장 · 라이트/다크 테마 이미지는 각각 저장</div>
+                    <div class="upload-hint">투명 배경 PNG·SVG 권장 · 저장 즉시 서비스 전체 화면에 반영됩니다</div>
                 </section>
             </div>
 
@@ -124,6 +132,27 @@
     </div>
     <footer th:replace="~{common/admin-footer :: adminFooter}"></footer>
 </div>
+
+<div th:replace="~{common/toast :: toast}"></div>
+
+<script th:src="@{/js/common/toast.js}"></script>
+<!--
+    저장 결과는 리다이렉트 + flash attribute로 전달된다.
+    th:inline="javascript"가 값을 JS 문자열 리터럴로 이스케이프해주므로
+    문구에 따옴표가 들어가도 스크립트가 깨지지 않는다.
+-->
+<script th:inline="javascript">
+    (function () {
+        var message = /*[[${configMessage}]]*/ null;
+        var error = /*[[${configError}]]*/ null;
+
+        if (error) {
+            showToast(error, "error");
+        } else if (message) {
+            showToast(message);
+        }
+    })();
+</script>
 
 <script>
     function uploadSiteImage(inputElement, imageType) {
