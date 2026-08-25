@@ -401,7 +401,7 @@ public class QnaService {
 
     /** 관리자 - 답변 수정 */
     @Transactional
-    public void updateAnswer(Long inquiryId, String answerContent) {
+    public void updateAnswer(Long inquiryId, String answerContent, Long adminId) {
         validateAnswerContent(answerContent);
 
         Inquiry inquiry = getInquiryOrThrow(inquiryId);
@@ -411,6 +411,7 @@ public class QnaService {
         }
 
         inquiry.setAnswerContent(answerContent.trim());
+        inquiry.setAnsweredBy(adminId);
         inquiry.setUpdatedAt(LocalDateTime.now());
     }
 

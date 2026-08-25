@@ -52,10 +52,10 @@ public class NoticeService {
     }
 
     @Transactional
-    public void update(Long noticeId, NoticeDto.SaveRequest req) {
+    public void update(Long noticeId, NoticeDto.SaveRequest req, Long adminId) {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지사항입니다. id=" + noticeId));
-        notice.update(req.getTitle(), req.getContent(), req.getIsPinned(), req.getStatus());
+        notice.update(req.getTitle(), req.getContent(), req.getIsPinned(), req.getStatus(), adminId);
     }
 
     @Transactional
