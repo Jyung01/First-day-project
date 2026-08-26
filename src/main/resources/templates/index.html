@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>첫출근 — 채용공고부터 첫 지원까지</title>
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
-    <link rel="stylesheet" th:href="@{/css/main.css(v='20260825-3')}"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/main.css(v='20260826-2')}"/>
 </head>
 <body>
 <header th:replace="~{common/header :: header}"></header>
@@ -87,20 +88,19 @@
     <section class="main-banner-section"
              th:if="${!#lists.isEmpty(banners)}"
              aria-label="첫출근 주요 소식">
-        <div class="main-banner" data-main-banner>
-            <div class="main-banner__viewport">
-                <a class="main-banner__slide"
-                   th:each="banner, stat : ${banners}"
-                   th:classappend="${stat.first} ? ' is-active'"
-                   th:href="${#strings.isEmpty(banner.linkUrl) ? null : banner.linkUrl}"
-                   th:attr="aria-hidden=${!stat.first},
-                            data-banner-index=${stat.index},
-                            aria-label=${banner.altText}">
-                    <img th:src="${banner.imageUrl}"
-                         th:alt="${banner.altText}"
-                         loading="lazy"
-                         decoding="async"/>
-                </a>
+        <div class="redesign-wrap">
+            <div class="main-banner swiper" data-main-banner>
+                <div class="main-banner__viewport swiper-wrapper">
+                    <a class="main-banner__slide swiper-slide"
+                       th:each="banner : ${banners}"
+                       th:href="${#strings.isEmpty(banner.linkUrl) ? null : banner.linkUrl}"
+                       th:attr="aria-label=${banner.altText}">
+                        <img th:src="${banner.imageUrl}"
+                             th:alt="${banner.altText}"
+                             loading="lazy"
+                             decoding="async"/>
+                    </a>
+                </div>
 
                 <button class="main-banner__arrow main-banner__arrow--prev"
                         th:if="${#lists.size(banners) > 1}"
@@ -114,18 +114,10 @@
                         aria-label="다음 배너">
                     <span aria-hidden="true"></span>
                 </button>
-            </div>
 
-            <div class="main-banner__dots"
-                 th:if="${#lists.size(banners) > 1}"
-                 aria-label="배너 선택">
-                <button th:each="banner, stat : ${banners}"
-                        type="button"
-                        th:classappend="${stat.first} ? ' is-active'"
-                        th:attr="data-banner-dot=${stat.index},
-                                 aria-label=${stat.count + '번째 배너'},
-                                 aria-current=${stat.first ? 'true' : 'false'}">
-                </button>
+                <div class="main-banner__dots swiper-pagination"
+                     th:if="${#lists.size(banners) > 1}"
+                     aria-label="배너 선택"></div>
             </div>
         </div>
     </section>
@@ -255,6 +247,7 @@
 
 <footer th:replace="~{common/footer :: footer}"></footer>
 <script th:src="@{/js/common.js}"></script>
-<script th:src="@{/js/main.js(v='20260820-6')}"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script th:src="@{/js/main.js(v='20260826-1')}"></script>
 </body>
 </html>

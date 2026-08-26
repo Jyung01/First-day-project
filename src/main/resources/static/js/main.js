@@ -54,79 +54,31 @@ function initializeRedesignPage() {
 function initializeMainBanner() {
     const banner = document.querySelector("[data-main-banner]");
     if (!banner) return;
+    if (typeof Swiper === "undefined") return;
 
-    const slides = Array.from(banner.querySelectorAll(".main-banner__slide"));
-    const dots = Array.from(banner.querySelectorAll("[data-banner-dot]"));
-    const previousButton = banner.querySelector(".main-banner__arrow--prev");
-    const nextButton = banner.querySelector(".main-banner__arrow--next");
-    if (slides.length < 2) return;
-
-    const previewClones = slides.length === 2
-        ? slides.map((slide) => {
-            const clone = slide.cloneNode(true);
-            clone.className = "main-banner__slide";
-            clone.removeAttribute("data-banner-index");
-            clone.setAttribute("aria-hidden", "true");
-            clone.tabIndex = -1;
-            banner.querySelector(".main-banner__viewport")?.appendChild(clone);
-            return clone;
-        })
-        : [];
-
-    let currentIndex = 0;
-    let timerId;
-
-    const show = (nextIndex) => {
-        currentIndex = (nextIndex + slides.length) % slides.length;
-        slides.forEach((slide, index) => {
-            const active = index === currentIndex;
-            const previous = slides.length > 2
-                && index === (currentIndex - 1 + slides.length) % slides.length;
-            const next = index === (currentIndex + 1) % slides.length;
-            slide.classList.toggle("is-active", active);
-            slide.classList.toggle("is-prev", previous);
-            slide.classList.toggle("is-next", next);
-            slide.setAttribute("aria-hidden", String(!active && !previous && !next));
-            slide.tabIndex = active ? 0 : -1;
-        });
-        previewClones.forEach((clone, index) => {
-            clone.classList.toggle(
-                "is-prev",
-                index === (currentIndex - 1 + slides.length) % slides.length
-            );
-        });
-        dots.forEach((dot, index) => {
-            const active = index === currentIndex;
-            dot.classList.toggle("is-active", active);
-            dot.setAttribute("aria-current", String(active));
-        });
-    };
-
-    const stop = () => window.clearInterval(timerId);
-    const start = () => {
-        stop();
-        timerId = window.setInterval(() => show(currentIndex + 1), 5000);
-    };
-
-    previousButton?.addEventListener("click", () => {
-        show(currentIndex - 1);
-        start();
+    const slideCount = banner.querySelectorAll(".swiper-slide").length;
+    new Swiper(banner, {
+        slidesPerView: 1,
+        spaceBetween: 0,
+        loop: slideCount > 1,
+        speed: 650,
+        autoplay: slideCount > 1 ? {
+            delay: 5000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true
+        } : false,
+        pagination: {
+            el: banner.querySelector(".swiper-pagination"),
+            clickable: true
+        },
+        navigation: {
+            prevEl: banner.querySelector(".main-banner__arrow--prev"),
+            nextEl: banner.querySelector(".main-banner__arrow--next")
+        },
+        keyboard: {
+            enabled: true
+        }
     });
-    nextButton?.addEventListener("click", () => {
-        show(currentIndex + 1);
-        start();
-    });
-    dots.forEach((dot) => dot.addEventListener("click", () => {
-        show(Number(dot.dataset.bannerDot));
-        start();
-    }));
-    banner.addEventListener("mouseenter", stop);
-    banner.addEventListener("mouseleave", start);
-    banner.addEventListener("focusin", stop);
-    banner.addEventListener("focusout", start);
-
-    show(0);
-    start();
 }
 
 function initializeHeroCopyFade() {
