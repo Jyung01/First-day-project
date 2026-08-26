@@ -53,7 +53,12 @@ public class JobService {
     private static final int MAIN_JOB_COUNT = 6;
     private static final int JOB_LIST_PAGE_SIZE = 12;
     private static final int JOB_DETAIL_LIST_PAGE_SIZE = 3;
-    private static final int JOB_PICKER_PAGE_SIZE = 10;
+    /*
+     * 자소서 AI 첨삭의 공고 선택 목록 페이지 크기.
+     * 위쪽 "관심 등록한 공고"(CoverLetterController.SAVED_JOB_PICKER_LIMIT = 5)와 같은 화면에
+     * 나란히 놓이므로 개수를 5로 맞춰 두 목록의 길이가 어긋나지 않게 한다.
+     */
+    private static final int JOB_PICKER_PAGE_SIZE = 5;
 
     private final JobPostingRepository jobPostingRepository;
     private final ApplicationRepository applicationRepository;
