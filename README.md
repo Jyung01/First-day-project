@@ -15,7 +15,11 @@ Spring AI와 OpenAI를 활용한 채용 지원 기능을 제공합니다.
 
 ## 🖥 서비스 미리보기
 
-> 🚧 GIF 및 스크린샷 추가 예정
+
+
+https://github.com/user-attachments/assets/a5f261b9-52eb-4a46-8058-9b3d4efd002f
+
+
 
 ---
 
