@@ -35,14 +35,22 @@
 <text x="36" y="48" class="page-title">첫출근 데이터베이스 ERD</text>
 <text x="36" y="75" class="page-subtitle">MySQL 8.0 · 37 tables · 66 foreign keys · PK / FK / 전체 컬럼</text>
 <g transform="translate(36 98)">
-  <rect width="1110" height="78" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <rect width="1110" height="130" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
   <text x="18" y="25" class="legend-title">관계 표기</text>
   <path d="M100 22 H175" class="relation identifying"/><text x="188" y="26" class="legend-text">식별 관계 (FK가 자식 PK에 포함)</text>
   <path d="M430 22 H505" class="relation non-identifying"/><text x="518" y="26" class="legend-text">비식별 관계</text>
   <path d="M30 55 H72" class="relation identifying" marker-end="url(#exactly-one)"/><text x="84" y="59" class="legend-text">1</text>
   <path d="M135 55 H177" class="relation identifying" marker-end="url(#zero-one)"/><text x="189" y="59" class="legend-text">0..1</text>
-  <path d="M270 55 H312" class="relation identifying" marker-end="url(#zero-many)"/><text x="324" y="59" class="legend-text">0..N (까마귀발)</text>
+  <path d="M270 55 H312" class="relation identifying" marker-end="url(#zero-many)"/><text x="324" y="59" class="legend-text">0개 이상 (0..N)</text>
   <text x="490" y="59" class="legend-text">연결 테이블의 두 1:N 관계가 M:N을 구성</text>
+  <text x="18" y="92" class="legend-title">기능 영역</text>
+  <rect x="100" y="78" width="18" height="18" rx="4" fill="#2563EB"/><text x="126" y="92" class="legend-text">회원·정책</text>
+  <rect x="220" y="78" width="18" height="18" rx="4" fill="#059669"/><text x="246" y="92" class="legend-text">기업·채용공고</text>
+  <rect x="390" y="78" width="18" height="18" rx="4" fill="#EA580C"/><text x="416" y="92" class="legend-text">지원·전형</text>
+  <rect x="520" y="78" width="18" height="18" rx="4" fill="#7C3AED"/><text x="546" y="92" class="legend-text">이력서·자기소개서</text>
+  <rect x="720" y="78" width="18" height="18" rx="4" fill="#E11D48"/><text x="746" y="92" class="legend-text">기업 콘텐츠</text>
+  <rect x="860" y="78" width="18" height="18" rx="4" fill="#0891B2"/><text x="886" y="92" class="legend-text">고객센터·신고</text>
+  <rect x="100" y="104" width="18" height="18" rx="4" fill="#475569"/><text x="126" y="118" class="legend-text">관리자 운영</text>
 </g>
 <path class="relation-halo" d="M 3807 2445 L 2896 2445 L 2896 2211 L 2868 2211"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-one)" marker-end="url(#zero-one)" d="M 3807 2445 L 2896 2445 L 2896 2211 L 2868 2211"><title>users.company_id → companies.company_id</title></path>
@@ -64,8 +72,8 @@
 <path class="relation identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 1977 1225 L 2032 1225 L 2032 4028 L 3752 4028 L 3752 2543 L 3807 2543"><title>user_desired_jobs.user_id → users.user_id</title></path>
 <path class="relation-halo" d="M 1977 1257 L 2109 1257 L 2109 614 L 2241 614"/>
 <path class="relation identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 1977 1257 L 2109 1257 L 2109 614 L 2241 614"><title>user_desired_jobs.job_category_id → job_categories.job_category_id</title></path>
-<path class="relation-halo" d="M 3672 923 L 3652 923 L 3652 2687 L 2868 2687"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 3672 923 L 3652 923 L 3652 2687 L 2868 2687"><title>job_postings.company_id → companies.company_id</title></path>
+<path class="relation-halo" d="M 3672 923 L 3644 923 L 3644 2687 L 2868 2687"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 3672 923 L 3644 923 L 3644 2687 L 2868 2687"><title>job_postings.company_id → companies.company_id</title></path>
 <path class="relation-halo" d="M 3672 955 L 3121.5 955 L 3121.5 632 L 2571 632"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 3672 955 L 3121.5 955 L 3121.5 632 L 2571 632"><title>job_postings.job_category_id → job_categories.job_category_id</title></path>
 <path class="relation-halo" d="M 4002 898 L 3904.5 898 L 3904.5 2562.6 L 3807 2562.6"/>
@@ -82,8 +90,8 @@
 <path class="relation identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 2976 3617 L 3779 3617 L 3779 2582.2 L 3807 2582.2"><title>saved_companies.user_id → users.user_id</title></path>
 <path class="relation-halo" d="M 2646 3640 L 2757 3640 L 2757 2925 L 2868 2925"/>
 <path class="relation identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 2646 3640 L 2757 3640 L 2757 2925 L 2868 2925"><title>saved_companies.company_id → companies.company_id</title></path>
-<path class="relation-halo" d="M 6156 1144 L 4900 1144 L 4900 2484.2 L 4137 2484.2"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 6156 1144 L 4900 1144 L 4900 2484.2 L 4137 2484.2"><title>resumes.user_id → users.user_id</title></path>
+<path class="relation-halo" d="M 6156 1144 L 5466 1144 L 5466 2484.2 L 4137 2484.2"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 6156 1144 L 5466 1144 L 5466 2484.2 L 4137 2484.2"><title>resumes.user_id → users.user_id</title></path>
 <path class="relation-halo" d="M 6804 494 L 6645 494 L 6645 1119 L 6486 1119"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 6804 494 L 6645 494 L 6645 1119 L 6486 1119"><title>resume_educations.resume_id → resumes.resume_id</title></path>
 <path class="relation-halo" d="M 7385 1066 L 6935.5 1066 L 6935.5 1226.66666666667 L 6486 1226.66666666667"/>
@@ -92,22 +100,22 @@
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 6885 1794 L 6685.5 1794 L 6685.5 1334.33333333333 L 6486 1334.33333333333"><title>resume_projects.resume_id → resumes.resume_id</title></path>
 <path class="relation-halo" d="M 7452 2265 L 6487 2265 L 6487 1442 L 6486 1442"/>
 <path class="relation identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7452 2265 L 6487 2265 L 6487 1442 L 6486 1442"><title>resume_skills.resume_id → resumes.resume_id</title></path>
-<path class="relation-halo" d="M 7452 2297 L 5286 2297 L 5286 463 L 5258 463"/>
-<path class="relation identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7452 2297 L 5286 2297 L 5286 463 L 5258 463"><title>resume_skills.skill_id → skills.skill_id</title></path>
+<path class="relation-halo" d="M 7452 2297 L 5852 2297 L 5852 463 L 5258 463"/>
+<path class="relation identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7452 2297 L 5852 2297 L 5852 463 L 5258 463"><title>resume_skills.skill_id → skills.skill_id</title></path>
 <path class="relation-halo" d="M 6129 2522 L 5133 2522 L 5133 2523.4 L 4137 2523.4"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 6129 2522 L 5133 2522 L 5133 2523.4 L 4137 2523.4"><title>cover_letters.user_id → users.user_id</title></path>
 <path class="relation-halo" d="M 6750 2938 L 6604.5 2938 L 6604.5 2499 L 6459 2499"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 6750 2938 L 6604.5 2938 L 6604.5 2499 L 6459 2499"><title>cover_letter_items.cover_letter_id → cover_letters.cover_letter_id</title></path>
 <path class="relation-halo" d="M 7344 3328 L 6487 3328 L 6487 2508 L 6459 2508"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7344 3328 L 6487 3328 L 6487 2508 L 6459 2508"><title>cover_letter_ai_reviews.cover_letter_id → cover_letters.cover_letter_id</title></path>
-<path class="relation-halo" d="M 7344 3360 L 4759 3360 L 4759 1554.25 L 4002 1554.25"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7344 3360 L 4759 3360 L 4759 1554.25 L 4002 1554.25"><title>cover_letter_ai_reviews.job_posting_id → job_postings.job_posting_id</title></path>
+<path class="relation-halo" d="M 7344 3360 L 5673 3360 L 5673 1554.25 L 4002 1554.25"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7344 3360 L 5673 3360 L 5673 1554.25 L 4002 1554.25"><title>cover_letter_ai_reviews.job_posting_id → job_postings.job_posting_id</title></path>
 <path class="relation-halo" d="M 4928 1951 L 4465 1951 L 4465 1773 L 4002 1773"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 4928 1951 L 4465 1951 L 4465 1773 L 4002 1773"><title>applications.job_posting_id → job_postings.job_posting_id</title></path>
 <path class="relation-halo" d="M 4928 2066.25 L 4532.5 2066.25 L 4532.5 2562.6 L 4137 2562.6"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 4928 2066.25 L 4532.5 2066.25 L 4532.5 2562.6 L 4137 2562.6"><title>applications.applicant_user_id → users.user_id</title></path>
-<path class="relation-halo" d="M 5258 2022 L 5707 2022 L 5707 1130 L 6156 1130"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 5258 2022 L 5707 2022 L 5707 1130 L 6156 1130"><title>applications.resume_id → resumes.resume_id</title></path>
+<path class="relation-halo" d="M 5258 2022 L 5286 2022 L 5286 1130 L 6156 1130"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 5258 2022 L 5286 2022 L 5286 1130 L 6156 1130"><title>applications.resume_id → resumes.resume_id</title></path>
 <path class="relation-halo" d="M 5258 2077 L 5693.5 2077 L 5693.5 2508 L 6129 2508"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 5258 2077 L 5693.5 2077 L 5693.5 2508 L 6129 2508"><title>applications.cover_letter_id → cover_letters.cover_letter_id</title></path>
 <path class="relation-halo" d="M 4650 2938 L 4789 2938 L 4789 2181.5 L 4928 2181.5"/>
@@ -116,44 +124,44 @@
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 4320 3030 L 4228.5 3030 L 4228.5 2601.8 L 4137 2601.8"><title>application_status_history.changed_by → users.user_id</title></path>
 <path class="relation-halo" d="M 5494 3471 L 5376 3471 L 5376 1971 L 5258 1971"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 5494 3471 L 5376 3471 L 5376 1971 L 5258 1971"><title>application_memos.application_id → applications.application_id</title></path>
-<path class="relation-halo" d="M 5494 3503 L 5355 3503 L 5355 3417 L 4276 3417 L 4276 2641 L 4137 2641"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 5494 3503 L 5355 3503 L 5355 3417 L 4276 3417 L 4276 2641 L 4137 2641"><title>application_memos.author_user_id → users.user_id</title></path>
+<path class="relation-halo" d="M 5494 3503 L 4815.5 3503 L 4815.5 2641 L 4137 2641"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 5494 3503 L 4815.5 3503 L 4815.5 2641 L 4137 2641"><title>application_memos.author_user_id → users.user_id</title></path>
 <path class="relation-halo" d="M 1990 3836 L 2264 3836 L 2264 2213 L 2538 2213"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 1990 3836 L 2264 3836 L 2264 2213 L 2538 2213"><title>company_reviews.company_id → companies.company_id</title></path>
 <path class="relation-halo" d="M 1990 3997.25 L 3266 3997.25 L 3266 2601.8 L 3807 2601.8"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 1990 3997.25 L 3266 3997.25 L 3266 2601.8 L 3807 2601.8"><title>company_reviews.author_user_id → users.user_id</title></path>
-<path class="relation-halo" d="M 1990 4158.5 L 2138 4158.5 L 2138 4431 L 4780 4431 L 4780 2296.75 L 4928 2296.75"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-one)" marker-end="url(#exactly-one)" d="M 1990 4158.5 L 2138 4158.5 L 2138 4431 L 4780 4431 L 4780 2296.75 L 4928 2296.75"><title>company_reviews.eligibility_application_id → applications.application_id</title></path>
+<path class="relation-halo" d="M 1990 4158.5 L 4900 4158.5 L 4900 2296.75 L 4928 2296.75"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-one)" marker-end="url(#exactly-one)" d="M 1990 4158.5 L 4900 4158.5 L 4900 2296.75 L 4928 2296.75"><title>company_reviews.eligibility_application_id → applications.application_id</title></path>
 <path class="relation-halo" d="M 1990 4319.75 L 2115.5 4319.75 L 2115.5 623 L 2241 623"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 1990 4319.75 L 2115.5 4319.75 L 2115.5 623 L 2241 623"><title>company_reviews.job_category_id → job_categories.job_category_id</title></path>
 <path class="relation-halo" d="M 1990 4481 L 3760 4481 L 3760 2621.4 L 3807 2621.4"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 1990 4481 L 3760 4481 L 3760 2621.4 L 3807 2621.4"><title>company_reviews.hidden_by → users.user_id</title></path>
 <path class="relation-halo" d="M 2638 4577 L 2588 4577 L 2588 2222 L 2538 2222"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 2638 4577 L 2588 4577 L 2588 2222 L 2538 2222"><title>interview_reviews.company_id → companies.company_id</title></path>
-<path class="relation-halo" d="M 2638 4692.25 L 3644 4692.25 L 3644 2641 L 3807 2641"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 2638 4692.25 L 3644 4692.25 L 3644 2641 L 3807 2641"><title>interview_reviews.author_user_id → users.user_id</title></path>
+<path class="relation-halo" d="M 2638 4692.25 L 3652 4692.25 L 3652 2641 L 3807 2641"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 2638 4692.25 L 3652 4692.25 L 3652 2641 L 3807 2641"><title>interview_reviews.author_user_id → users.user_id</title></path>
 <path class="relation-halo" d="M 2638 4807.5 L 3155 4807.5 L 3155 918 L 3672 918"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 2638 4807.5 L 3155 4807.5 L 3155 918 L 3672 918"><title>interview_reviews.job_posting_id → job_postings.job_posting_id</title></path>
-<path class="relation-halo" d="M 2638 4922.75 L 2804 4922.75 L 2804 4938 L 4762 4938 L 4762 2412 L 4928 2412"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-one)" marker-end="url(#exactly-one)" d="M 2638 4922.75 L 2804 4922.75 L 2804 4938 L 4762 4938 L 4762 2412 L 4928 2412"><title>interview_reviews.application_id → applications.application_id</title></path>
-<path class="relation-halo" d="M 2638 5038 L 3222.5 5038 L 3222.5 2660.6 L 3807 2660.6"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 2638 5038 L 3222.5 5038 L 3222.5 2660.6 L 3807 2660.6"><title>interview_reviews.hidden_by → users.user_id</title></path>
+<path class="relation-halo" d="M 2638 4922.75 L 4759 4922.75 L 4759 2412 L 4928 2412"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-one)" marker-end="url(#exactly-one)" d="M 2638 4922.75 L 4759 4922.75 L 4759 2412 L 4928 2412"><title>interview_reviews.application_id → applications.application_id</title></path>
+<path class="relation-halo" d="M 2638 5038 L 2807 5038 L 2807 4938 L 3638 4938 L 3638 2660.6 L 3807 2660.6"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 2638 5038 L 2807 5038 L 2807 4938 L 3638 4938 L 3638 2660.6 L 3807 2660.6"><title>interview_reviews.hidden_by → users.user_id</title></path>
 <path class="relation-halo" d="M 3732 5021 L 3769.5 5021 L 3769.5 2680.2 L 3807 2680.2"/>
 <path class="relation identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 3732 5021 L 3769.5 5021 L 3769.5 2680.2 L 3807 2680.2"><title>review_reactions.user_id → users.user_id</title></path>
-<path class="relation-halo" d="M 1302 4512 L 1498 4512 L 1498 2231 L 2538 2231"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 1302 4512 L 1498 4512 L 1498 2231 L 2538 2231"><title>salary_records.company_id → companies.company_id</title></path>
-<path class="relation-halo" d="M 1302 4650.33333333333 L 1480 4650.33333333333 L 1480 531 L 3629 531 L 3629 2699.8 L 3807 2699.8"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 1302 4650.33333333333 L 1480 4650.33333333333 L 1480 531 L 3629 531 L 3629 2699.8 L 3807 2699.8"><title>salary_records.author_user_id → users.user_id</title></path>
-<path class="relation-halo" d="M 1302 4788.66666666667 L 1483 4788.66666666667 L 1483 905 L 2060 905 L 2060 632 L 2241 632"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 1302 4788.66666666667 L 1483 4788.66666666667 L 1483 905 L 2060 905 L 2060 632 L 2241 632"><title>salary_records.job_category_id → job_categories.job_category_id</title></path>
-<path class="relation-halo" d="M 1302 4927 L 1486 4927 L 1486 1935 L 3623 1935 L 3623 2719.4 L 3807 2719.4"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 1302 4927 L 1486 4927 L 1486 1935 L 3623 1935 L 3623 2719.4 L 3807 2719.4"><title>salary_records.hidden_by → users.user_id</title></path>
+<path class="relation-halo" d="M 1302 4512 L 1330 4512 L 1330 2231 L 2538 2231"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 1302 4512 L 1330 4512 L 1330 2231 L 2538 2231"><title>salary_records.company_id → companies.company_id</title></path>
+<path class="relation-halo" d="M 1302 4650.33333333333 L 1480 4650.33333333333 L 1480 3365 L 3629 3365 L 3629 2699.8 L 3807 2699.8"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 1302 4650.33333333333 L 1480 4650.33333333333 L 1480 3365 L 3629 3365 L 3629 2699.8 L 3807 2699.8"><title>salary_records.author_user_id → users.user_id</title></path>
+<path class="relation-halo" d="M 1302 4788.66666666667 L 1498 4788.66666666667 L 1498 632 L 2241 632"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 1302 4788.66666666667 L 1498 4788.66666666667 L 1498 632 L 2241 632"><title>salary_records.job_category_id → job_categories.job_category_id</title></path>
+<path class="relation-halo" d="M 1302 4927 L 1486 4927 L 1486 531 L 3623 531 L 3623 2719.4 L 3807 2719.4"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 1302 4927 L 1486 4927 L 1486 531 L 3623 531 L 3623 2719.4 L 3807 2719.4"><title>salary_records.hidden_by → users.user_id</title></path>
 <path class="relation-halo" d="M 7992 1311 L 7805 1311 L 7805 2744 L 4324 2744 L 4324 2680.2 L 4137 2680.2"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7992 1311 L 7805 1311 L 7805 2744 L 4324 2744 L 4324 2680.2 L 4137 2680.2"><title>notices.created_by → users.user_id</title></path>
 <path class="relation-halo" d="M 7992 1343 L 7802 1343 L 7802 960 L 4327 960 L 4327 2719.4 L 4137 2719.4"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 7992 1343 L 7802 1343 L 7802 960 L 4327 960 L 4327 2719.4 L 4137 2719.4"><title>notices.updated_by → users.user_id</title></path>
-<path class="relation-halo" d="M 3172 2041 L 2896 2041 L 2896 445 L 438 445"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 3172 2041 L 2896 2041 L 2896 445 L 438 445"><title>faqs.faq_category_id → faq_categories.faq_category_id</title></path>
+<path class="relation-halo" d="M 3172 2041 L 2666 2041 L 2666 445 L 438 445"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 3172 2041 L 2666 2041 L 2666 445 L 438 445"><title>faqs.faq_category_id → faq_categories.faq_category_id</title></path>
 <path class="relation-halo" d="M 3502 2156 L 3530 2156 L 3530 2739 L 3807 2739"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 3502 2156 L 3530 2156 L 3530 2739 L 3807 2739"><title>faqs.created_by → users.user_id</title></path>
 <path class="relation-halo" d="M 3502 2188 L 3654.5 2188 L 3654.5 2758.6 L 3807 2758.6"/>
@@ -164,18 +172,18 @@
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 675 1479 L 556.5 1479 L 556.5 1225 L 438 1225"><title>inquiries.inquiry_category_id → inquiry_categories.inquiry_category_id</title></path>
 <path class="relation-halo" d="M 1005 1603 L 3004 1603 L 3004 2797.8 L 3807 2797.8"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 1005 1603 L 3004 1603 L 3004 2797.8 L 3807 2797.8"><title>inquiries.answered_by → users.user_id</title></path>
-<path class="relation-halo" d="M 438 1989 L 620 1989 L 620 1442 L 675 1442"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 438 1989 L 620 1989 L 620 1442 L 675 1442"><title>inquiry_attachments.inquiry_id → inquiries.inquiry_id</title></path>
-<path class="relation-halo" d="M 978 3289 L 2896 3289 L 2896 2817.4 L 3807 2817.4"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 978 3289 L 2896 3289 L 2896 2817.4 L 3807 2817.4"><title>reports.reporter_user_id → users.user_id</title></path>
-<path class="relation-halo" d="M 978 3482 L 3652 3482 L 3652 2837 L 3807 2837"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 978 3482 L 3652 3482 L 3652 2837 L 3807 2837"><title>reports.handled_by → users.user_id</title></path>
+<path class="relation-halo" d="M 438 1989 L 647 1989 L 647 1442 L 675 1442"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 438 1989 L 647 1989 L 647 1442 L 675 1442"><title>inquiry_attachments.inquiry_id → inquiries.inquiry_id</title></path>
+<path class="relation-halo" d="M 978 3289 L 3644 3289 L 3644 2817.4 L 3807 2817.4"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 978 3289 L 3644 3289 L 3644 2817.4 L 3807 2817.4"><title>reports.reporter_user_id → users.user_id</title></path>
+<path class="relation-halo" d="M 978 3482 L 1195 3482 L 1195 3222 L 3590 3222 L 3590 2837 L 3807 2837"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#zero-one)" d="M 978 3482 L 1195 3482 L 1195 3222 L 3590 3222 L 3590 2837 L 3807 2837"><title>reports.handled_by → users.user_id</title></path>
 <path class="relation-halo" d="M 7992 623 L 7964 623 L 7964 2758.6 L 4137 2758.6"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7992 623 L 7964 623 L 7964 2758.6 L 4137 2758.6"><title>banners.created_by → users.user_id</title></path>
 <path class="relation-halo" d="M 7992 1986 L 7810 1986 L 7810 2797.8 L 4137 2797.8"/>
 <path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7992 1986 L 7810 1986 L 7810 2797.8 L 4137 2797.8"><title>site_settings.updated_by → users.user_id</title></path>
-<path class="relation-halo" d="M 7992 2711 L 6857 2711 L 6857 2837 L 4137 2837"/>
-<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7992 2711 L 6857 2711 L 6857 2837 L 4137 2837"><title>site_versions.created_by → users.user_id</title></path>
+<path class="relation-halo" d="M 7992 2711 L 7316 2711 L 7316 2837 L 4137 2837"/>
+<path class="relation non-identifying" data-obstacle-hits="0" marker-start="url(#zero-many)" marker-end="url(#exactly-one)" d="M 7992 2711 L 7316 2711 L 7316 2837 L 4137 2837"><title>site_versions.created_by → users.user_id</title></path>
 <g filter="url(#shadow)">
 <rect x="3807" y="2392" width="330" height="456" rx="10" fill="white"/>
 <path d="M 3817 2392 H 4127 Q 4137 2392 4137 2402 V 2434 H 3807 V 2402 Q 3807 2392 3817 2392 Z" fill="#2563EB"/>

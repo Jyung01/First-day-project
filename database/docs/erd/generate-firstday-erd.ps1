@@ -198,14 +198,22 @@ $sb = [System.Text.StringBuilder]::new()
 [void]$sb.AppendLine("<text x=`"36`" y=`"75`" class=`"page-subtitle`">MySQL 8.0 · $($tables.Count) tables · $foreignKeyCount foreign keys · PK / FK / 전체 컬럼</text>")
 [void]$sb.AppendLine(@'
 <g transform="translate(36 98)">
-  <rect width="1110" height="78" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <rect width="1110" height="130" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
   <text x="18" y="25" class="legend-title">관계 표기</text>
   <path d="M100 22 H175" class="relation identifying"/><text x="188" y="26" class="legend-text">식별 관계 (FK가 자식 PK에 포함)</text>
   <path d="M430 22 H505" class="relation non-identifying"/><text x="518" y="26" class="legend-text">비식별 관계</text>
   <path d="M30 55 H72" class="relation identifying" marker-end="url(#exactly-one)"/><text x="84" y="59" class="legend-text">1</text>
   <path d="M135 55 H177" class="relation identifying" marker-end="url(#zero-one)"/><text x="189" y="59" class="legend-text">0..1</text>
-  <path d="M270 55 H312" class="relation identifying" marker-end="url(#zero-many)"/><text x="324" y="59" class="legend-text">0..N (까마귀발)</text>
+  <path d="M270 55 H312" class="relation identifying" marker-end="url(#zero-many)"/><text x="324" y="59" class="legend-text">0개 이상 (0..N)</text>
   <text x="490" y="59" class="legend-text">연결 테이블의 두 1:N 관계가 M:N을 구성</text>
+  <text x="18" y="92" class="legend-title">기능 영역</text>
+  <rect x="100" y="78" width="18" height="18" rx="4" fill="#2563EB"/><text x="126" y="92" class="legend-text">회원·정책</text>
+  <rect x="220" y="78" width="18" height="18" rx="4" fill="#059669"/><text x="246" y="92" class="legend-text">기업·채용공고</text>
+  <rect x="390" y="78" width="18" height="18" rx="4" fill="#EA580C"/><text x="416" y="92" class="legend-text">지원·전형</text>
+  <rect x="520" y="78" width="18" height="18" rx="4" fill="#7C3AED"/><text x="546" y="92" class="legend-text">이력서·자기소개서</text>
+  <rect x="720" y="78" width="18" height="18" rx="4" fill="#E11D48"/><text x="746" y="92" class="legend-text">기업 콘텐츠</text>
+  <rect x="860" y="78" width="18" height="18" rx="4" fill="#0891B2"/><text x="886" y="92" class="legend-text">고객센터·신고</text>
+  <rect x="100" y="104" width="18" height="18" rx="4" fill="#475569"/><text x="126" y="118" class="legend-text">관리자 운영</text>
 </g>
 '@)
 
