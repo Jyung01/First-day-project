@@ -80,57 +80,51 @@ foreach ($match in [regex]::Matches($ddl, $tablePattern)) {
     }
 }
 
-$cardWidth = 320
+$cardWidth = 330
 $headerHeight = 42
 $rowHeight = 23
-$cardGapX = 38
-$cardGapY = 34
-$domainPadding = 26
-$domainTitleHeight = 52
-$outerPadding = 36
-$domainColumns = 3
+$cardGapX = 54
+$cardGapY = 30
+$domainTitleHeight = 48
+$outerPadding = 40
+$cardsPerDomain = 2
+$domainGapX = 72
 
 $positions = @{}
 $domainLayouts = [System.Collections.Generic.List[object]]::new()
-$currentY = $outerPadding + 80
+$contentTop = $outerPadding + 128
+$maxBottom = 0
 
-foreach ($domain in $domainOrder) {
+# Each functional area occupies a two-card-wide lane. The lanes sit side by
+# side so the full schema can be followed horizontally at the SVG's native size.
+for ($domainIndex = 0; $domainIndex -lt $domainOrder.Count; $domainIndex++) {
+    $domain = $domainOrder[$domainIndex]
     $names = @($domainTables[$domain] | Where-Object { $tables.Contains($_) })
-    $rows = [math]::Ceiling($names.Count / $domainColumns)
-    $rowHeights = @()
-    for ($row = 0; $row -lt $rows; $row++) {
-        $maxHeight = 0
-        for ($col = 0; $col -lt $domainColumns; $col++) {
-            $index = $row * $domainColumns + $col
-            if ($index -ge $names.Count) { continue }
-            $table = $tables[$names[$index]]
-            $height = $headerHeight + (($table.Columns.Count + 1) * $rowHeight)
-            if ($height -gt $maxHeight) { $maxHeight = $height }
-        }
-        $rowHeights += $maxHeight
-    }
+    $domainWidth = ($cardsPerDomain * $cardWidth) + $cardGapX
+    $x = $outerPadding + ($domainIndex * ($domainWidth + $domainGapX))
+    $y = $contentTop + $domainTitleHeight
+    $domainLayouts.Add([pscustomobject]@{ Name=$domain; X=$x; Y=$contentTop; Width=$domainWidth; Height=$domainTitleHeight })
 
-    $domainWidth = ($domainColumns * $cardWidth) + (($domainColumns - 1) * $cardGapX) + (2 * $domainPadding)
-    $domainHeight = $domainTitleHeight + (2 * $domainPadding) + (($rowHeights | Measure-Object -Sum).Sum) + ([math]::Max(0, $rows - 1) * $cardGapY)
-    $domainLayouts.Add([pscustomobject]@{ Name=$domain; X=$outerPadding; Y=$currentY; Width=$domainWidth; Height=$domainHeight })
-
-    $rowY = $currentY + $domainTitleHeight + $domainPadding
-    for ($row = 0; $row -lt $rows; $row++) {
-        for ($col = 0; $col -lt $domainColumns; $col++) {
-            $index = $row * $domainColumns + $col
+    for ($row = 0; $row -lt [math]::Ceiling($names.Count / $cardsPerDomain); $row++) {
+        $rowHeightMax = 0
+        for ($col = 0; $col -lt $cardsPerDomain; $col++) {
+            $index = ($row * $cardsPerDomain) + $col
             if ($index -ge $names.Count) { continue }
-            $table = $tables[$names[$index]]
+            $name = $names[$index]
+            $table = $tables[$name]
             $height = $headerHeight + (($table.Columns.Count + 1) * $rowHeight)
-            $x = $outerPadding + $domainPadding + ($col * ($cardWidth + $cardGapX))
-            $positions[$table.Name] = [pscustomobject]@{ X=$x; Y=$rowY; Width=$cardWidth; Height=$height }
+            $tableX = $x + ($col * ($cardWidth + $cardGapX))
+            $positions[$name] = [pscustomobject]@{ X=$tableX; Y=$y; Width=$cardWidth; Height=$height }
+            if ($height -gt $rowHeightMax) { $rowHeightMax = $height }
         }
-        $rowY += $rowHeights[$row] + $cardGapY
+        $y += $rowHeightMax + $cardGapY
     }
-    $currentY += $domainHeight + 44
+    if ($y -gt $maxBottom) { $maxBottom = $y }
 }
 
-$svgWidth = $domainLayouts[0].Width + (2 * $outerPadding)
-$svgHeight = $currentY + $outerPadding
+$domainWidth = ($cardsPerDomain * $cardWidth) + $cardGapX
+$svgWidth = (2 * $outerPadding) + ($domainOrder.Count * $domainWidth) + (($domainOrder.Count - 1) * $domainGapX)
+$svgHeight = $maxBottom + $outerPadding
 $sb = [System.Text.StringBuilder]::new()
 [void]$sb.AppendLine("<svg xmlns=`"http://www.w3.org/2000/svg`" width=`"$svgWidth`" height=`"$svgHeight`" viewBox=`"0 0 $svgWidth $svgHeight`" role=`"img`" aria-labelledby=`"title desc`">")
 [void]$sb.AppendLine('<title id="title">첫출근 전체 데이터베이스 ERD</title>')
@@ -158,8 +152,8 @@ $sb = [System.Text.StringBuilder]::new()
 
 foreach ($layout in $domainLayouts) {
     $colors = $domainColors[$layout.Name]
-    [void]$sb.AppendLine("<rect x=`"$($layout.X)`" y=`"$($layout.Y)`" width=`"$($layout.Width)`" height=`"$($layout.Height)`" rx=`"18`" fill=`"$($colors[0])`" stroke=`"$($colors[1])`" stroke-opacity=`".25`"/>")
-    [void]$sb.AppendLine("<text x=`"$($layout.X + 26)`" y=`"$($layout.Y + 34)`" class=`"domain-title`" fill=`"$($colors[1])`">$(Escape-Xml $layout.Name)</text>")
+    [void]$sb.AppendLine("<rect x=`"$($layout.X)`" y=`"$($layout.Y)`" width=`"$($layout.Width)`" height=`"38`" rx=`"19`" fill=`"$($colors[0])`" stroke=`"$($colors[1])`" stroke-opacity=`".32`"/>")
+    [void]$sb.AppendLine("<text x=`"$($layout.X + 18)`" y=`"$($layout.Y + 26)`" class=`"domain-title`" fill=`"$($colors[1])`">$(Escape-Xml $layout.Name)</text>")
 }
 
 # Relations are drawn behind the table cards.
@@ -169,11 +163,23 @@ foreach ($table in $tables.Values) {
     foreach ($fk in $table.ForeignKeys) {
         if (-not $positions.ContainsKey($fk.Target)) { continue }
         $target = $positions[$fk.Target]
-        $x1 = $source.X + $source.Width
-        $y1 = $source.Y + 21
-        $x2 = $target.X
-        $y2 = $target.Y + 21
-        if ($source.X -ge $target.X) {
+        $sourceColumnIndex = [array]::IndexOf(@($table.Columns.Name), $fk.Column)
+        $targetTable = $tables[$fk.Target]
+        $targetColumnIndex = [array]::IndexOf(@($targetTable.Columns.Name), $fk.TargetColumn)
+        $y1 = $source.Y + $headerHeight + 13 + ($sourceColumnIndex * $rowHeight)
+        $y2 = $target.Y + $headerHeight + 13 + ($targetColumnIndex * $rowHeight)
+
+        if ($table.Name -eq $fk.Target) {
+            $x1 = $source.X + $source.Width
+            $loopX = $x1 + 24
+            [void]$sb.AppendLine("<path class=`"relation`" d=`"M $x1 $y1 C $loopX $y1, $loopX $y2, $x1 $y2`"><title>$(Escape-Xml "$($table.Name).$($fk.Column) → $($fk.Target).$($fk.TargetColumn)")</title></path>")
+            continue
+        }
+
+        if ($source.X -lt $target.X) {
+            $x1 = $source.X + $source.Width
+            $x2 = $target.X
+        } else {
             $x1 = $source.X
             $x2 = $target.X + $target.Width
         }
