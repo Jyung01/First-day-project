@@ -1,0 +1,1471 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="7909" viewBox="0 0 1160 7909" role="img" aria-labelledby="title desc">
+<title id="title">첫출근 전체 데이터베이스 ERD</title>
+<desc id="desc">37개 MySQL 테이블의 컬럼과 외래키 관계를 기능 영역별로 표현한 다이어그램</desc>
+<defs>
+  <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.12"/></filter>
+  <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#94A3B8"/></marker>
+  <style>
+    text { font-family: Pretendard, "Noto Sans KR", Arial, sans-serif; }
+    .page-title { font-size: 34px; font-weight: 800; fill: #0F172A; }
+    .page-subtitle { font-size: 15px; fill: #64748B; }
+    .domain-title { font-size: 20px; font-weight: 800; }
+    .table-title { font-size: 16px; font-weight: 800; fill: white; }
+    .column { font-size: 12px; fill: #334155; }
+    .key { font-size: 10px; font-weight: 800; }
+    .type { font-size: 10px; fill: #94A3B8; text-anchor: end; }
+    .relation { fill: none; stroke: #94A3B8; stroke-width: 1.25; opacity: .66; marker-end: url(#arrow); }
+  </style>
+</defs>
+<rect width="100%" height="100%" fill="#F8FAFC"/>
+<text x="36" y="48" class="page-title">첫출근 데이터베이스 ERD</text>
+<text x="36" y="75" class="page-subtitle">MySQL 8.0 · 37 tables · PK / FK / 전체 컬럼 · 기능 영역별 구분</text>
+<rect x="36" y="116" width="1088" height="981" rx="18" fill="#EAF3FF" stroke="#2563EB" stroke-opacity=".25"/>
+<text x="62" y="150" class="domain-title" fill="#2563EB">회원·정책</text>
+<rect x="36" y="1141" width="1088" height="2069" rx="18" fill="#ECFDF5" stroke="#059669" stroke-opacity=".25"/>
+<text x="62" y="1175" class="domain-title" fill="#059669">기업·채용공고</text>
+<rect x="36" y="3254" width="1088" height="629" rx="18" fill="#FFF7ED" stroke="#EA580C" stroke-opacity=".25"/>
+<text x="62" y="3288" class="domain-title" fill="#EA580C">지원·전형</text>
+<rect x="36" y="3927" width="1088" height="1126" rx="18" fill="#F5F3FF" stroke="#7C3AED" stroke-opacity=".25"/>
+<text x="62" y="3961" class="domain-title" fill="#7C3AED">이력서·자기소개서</text>
+<rect x="36" y="5097" width="1088" height="1027" rx="18" fill="#FFF1F2" stroke="#E11D48" stroke-opacity=".25"/>
+<text x="62" y="5131" class="domain-title" fill="#E11D48">기업 콘텐츠</text>
+<rect x="36" y="6168" width="1088" height="866" rx="18" fill="#ECFEFF" stroke="#0891B2" stroke-opacity=".25"/>
+<text x="62" y="6202" class="domain-title" fill="#0891B2">고객센터·신고</text>
+<rect x="36" y="7078" width="1088" height="751" rx="18" fill="#F8FAFC" stroke="#475569" stroke-opacity=".25"/>
+<text x="62" y="7112" class="domain-title" fill="#475569">관리자 운영</text>
+<path class="relation" d="M 420 215 C 401 215, 401 215, 382 215"><title>personal_profiles.user_id → users.user_id</title></path>
+<path class="relation" d="M 62 705 C 222 705, 222 215, 382 215"><title>policies.updated_by → users.user_id</title></path>
+<path class="relation" d="M 420 705 C 401 705, 401 215, 382 215"><title>user_policy_consents.user_id → users.user_id</title></path>
+<path class="relation" d="M 420 705 C 401 705, 401 705, 382 705"><title>user_policy_consents.policy_id → policies.policy_id</title></path>
+<path class="relation" d="M 62 1240 C 222 1240, 222 215, 382 215"><title>companies.reviewed_by → users.user_id</title></path>
+<path class="relation" d="M 420 1240 C 580 1240, 580 1240, 740 1240"><title>job_categories.parent_id → job_categories.job_category_id</title></path>
+<path class="relation" d="M 778 1240 C 938 1240, 938 1240, 1098 1240"><title>skills.parent_id → skills.skill_id</title></path>
+<path class="relation" d="M 778 215 C 580 215, 580 215, 382 215"><title>user_desired_jobs.user_id → users.user_id</title></path>
+<path class="relation" d="M 778 215 C 759 215, 759 1240, 740 1240"><title>user_desired_jobs.job_category_id → job_categories.job_category_id</title></path>
+<path class="relation" d="M 62 2052 C 222 2052, 222 1240, 382 1240"><title>job_postings.company_id → companies.company_id</title></path>
+<path class="relation" d="M 382 2052 C 401 2052, 401 1240, 420 1240"><title>job_postings.job_category_id → job_categories.job_category_id</title></path>
+<path class="relation" d="M 62 2052 C 222 2052, 222 215, 382 215"><title>job_postings.hidden_by → users.user_id</title></path>
+<path class="relation" d="M 420 2052 C 401 2052, 401 2052, 382 2052"><title>job_posting_skills.job_posting_id → job_postings.job_posting_id</title></path>
+<path class="relation" d="M 740 2052 C 759 2052, 759 1240, 778 1240"><title>job_posting_skills.skill_id → skills.skill_id</title></path>
+<path class="relation" d="M 778 2052 C 580 2052, 580 215, 382 215"><title>saved_jobs.user_id → users.user_id</title></path>
+<path class="relation" d="M 778 2052 C 580 2052, 580 2052, 382 2052"><title>saved_jobs.job_posting_id → job_postings.job_posting_id</title></path>
+<path class="relation" d="M 62 3025 C 222 3025, 222 215, 382 215"><title>saved_companies.user_id → users.user_id</title></path>
+<path class="relation" d="M 62 3025 C 222 3025, 222 1240, 382 1240"><title>saved_companies.company_id → companies.company_id</title></path>
+<path class="relation" d="M 62 4026 C 222 4026, 222 215, 382 215"><title>resumes.user_id → users.user_id</title></path>
+<path class="relation" d="M 420 4026 C 401 4026, 401 4026, 382 4026"><title>resume_educations.resume_id → resumes.resume_id</title></path>
+<path class="relation" d="M 778 4026 C 580 4026, 580 4026, 382 4026"><title>resume_careers.resume_id → resumes.resume_id</title></path>
+<path class="relation" d="M 62 4447 C 222 4447, 222 4026, 382 4026"><title>resume_projects.resume_id → resumes.resume_id</title></path>
+<path class="relation" d="M 420 4447 C 401 4447, 401 4026, 382 4026"><title>resume_skills.resume_id → resumes.resume_id</title></path>
+<path class="relation" d="M 740 4447 C 759 4447, 759 1240, 778 1240"><title>resume_skills.skill_id → skills.skill_id</title></path>
+<path class="relation" d="M 778 4447 C 580 4447, 580 215, 382 215"><title>cover_letters.user_id → users.user_id</title></path>
+<path class="relation" d="M 382 4776 C 580 4776, 580 4447, 778 4447"><title>cover_letter_items.cover_letter_id → cover_letters.cover_letter_id</title></path>
+<path class="relation" d="M 740 4776 C 759 4776, 759 4447, 778 4447"><title>cover_letter_ai_reviews.cover_letter_id → cover_letters.cover_letter_id</title></path>
+<path class="relation" d="M 420 4776 C 401 4776, 401 2052, 382 2052"><title>cover_letter_ai_reviews.job_posting_id → job_postings.job_posting_id</title></path>
+<path class="relation" d="M 62 3353 C 222 3353, 222 2052, 382 2052"><title>applications.job_posting_id → job_postings.job_posting_id</title></path>
+<path class="relation" d="M 62 3353 C 222 3353, 222 215, 382 215"><title>applications.applicant_user_id → users.user_id</title></path>
+<path class="relation" d="M 62 3353 C 222 3353, 222 4026, 382 4026"><title>applications.resume_id → resumes.resume_id</title></path>
+<path class="relation" d="M 382 3353 C 580 3353, 580 4447, 778 4447"><title>applications.cover_letter_id → cover_letters.cover_letter_id</title></path>
+<path class="relation" d="M 420 3353 C 401 3353, 401 3353, 382 3353"><title>application_status_history.application_id → applications.application_id</title></path>
+<path class="relation" d="M 420 3353 C 401 3353, 401 215, 382 215"><title>application_status_history.changed_by → users.user_id</title></path>
+<path class="relation" d="M 778 3353 C 580 3353, 580 3353, 382 3353"><title>application_memos.application_id → applications.application_id</title></path>
+<path class="relation" d="M 778 3353 C 580 3353, 580 215, 382 215"><title>application_memos.author_user_id → users.user_id</title></path>
+<path class="relation" d="M 62 5196 C 222 5196, 222 1240, 382 1240"><title>company_reviews.company_id → companies.company_id</title></path>
+<path class="relation" d="M 62 5196 C 222 5196, 222 215, 382 215"><title>company_reviews.author_user_id → users.user_id</title></path>
+<path class="relation" d="M 62 5196 C 222 5196, 222 3353, 382 3353"><title>company_reviews.eligibility_application_id → applications.application_id</title></path>
+<path class="relation" d="M 382 5196 C 401 5196, 401 1240, 420 1240"><title>company_reviews.job_category_id → job_categories.job_category_id</title></path>
+<path class="relation" d="M 62 5196 C 222 5196, 222 215, 382 215"><title>company_reviews.hidden_by → users.user_id</title></path>
+<path class="relation" d="M 420 5196 C 401 5196, 401 1240, 382 1240"><title>interview_reviews.company_id → companies.company_id</title></path>
+<path class="relation" d="M 420 5196 C 401 5196, 401 215, 382 215"><title>interview_reviews.author_user_id → users.user_id</title></path>
+<path class="relation" d="M 420 5196 C 401 5196, 401 2052, 382 2052"><title>interview_reviews.job_posting_id → job_postings.job_posting_id</title></path>
+<path class="relation" d="M 420 5196 C 401 5196, 401 3353, 382 3353"><title>interview_reviews.application_id → applications.application_id</title></path>
+<path class="relation" d="M 420 5196 C 401 5196, 401 215, 382 215"><title>interview_reviews.hidden_by → users.user_id</title></path>
+<path class="relation" d="M 62 5939 C 222 5939, 222 215, 382 215"><title>review_reactions.user_id → users.user_id</title></path>
+<path class="relation" d="M 778 5196 C 580 5196, 580 1240, 382 1240"><title>salary_records.company_id → companies.company_id</title></path>
+<path class="relation" d="M 778 5196 C 580 5196, 580 215, 382 215"><title>salary_records.author_user_id → users.user_id</title></path>
+<path class="relation" d="M 778 5196 C 759 5196, 759 1240, 740 1240"><title>salary_records.job_category_id → job_categories.job_category_id</title></path>
+<path class="relation" d="M 778 5196 C 580 5196, 580 215, 382 215"><title>salary_records.hidden_by → users.user_id</title></path>
+<path class="relation" d="M 420 7177 C 401 7177, 401 215, 382 215"><title>notices.created_by → users.user_id</title></path>
+<path class="relation" d="M 420 7177 C 401 7177, 401 215, 382 215"><title>notices.updated_by → users.user_id</title></path>
+<path class="relation" d="M 420 6267 C 401 6267, 401 6267, 382 6267"><title>faqs.faq_category_id → faq_categories.faq_category_id</title></path>
+<path class="relation" d="M 420 6267 C 401 6267, 401 215, 382 215"><title>faqs.created_by → users.user_id</title></path>
+<path class="relation" d="M 420 6267 C 401 6267, 401 215, 382 215"><title>faqs.updated_by → users.user_id</title></path>
+<path class="relation" d="M 62 6642 C 222 6642, 222 215, 382 215"><title>inquiries.user_id → users.user_id</title></path>
+<path class="relation" d="M 382 6642 C 580 6642, 580 6267, 778 6267"><title>inquiries.inquiry_category_id → inquiry_categories.inquiry_category_id</title></path>
+<path class="relation" d="M 62 6642 C 222 6642, 222 215, 382 215"><title>inquiries.answered_by → users.user_id</title></path>
+<path class="relation" d="M 420 6642 C 401 6642, 401 6642, 382 6642"><title>inquiry_attachments.inquiry_id → inquiries.inquiry_id</title></path>
+<path class="relation" d="M 778 6642 C 580 6642, 580 215, 382 215"><title>reports.reporter_user_id → users.user_id</title></path>
+<path class="relation" d="M 778 6642 C 580 6642, 580 215, 382 215"><title>reports.handled_by → users.user_id</title></path>
+<path class="relation" d="M 62 7177 C 222 7177, 222 215, 382 215"><title>banners.created_by → users.user_id</title></path>
+<path class="relation" d="M 778 7177 C 580 7177, 580 215, 382 215"><title>site_settings.updated_by → users.user_id</title></path>
+<path class="relation" d="M 62 7598 C 222 7598, 222 215, 382 215"><title>site_versions.created_by → users.user_id</title></path>
+<g filter="url(#shadow)">
+<rect x="62" y="194" width="320" height="456" rx="10" fill="white"/>
+<path d="M 72 194 H 372 Q 382 194 382 204 V 236 H 62 V 204 Q 62 194 72 194 Z" fill="#2563EB"/>
+<text x="76" y="221" class="table-title">users</text>
+<text x="74" y="253" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="253" class="column">user_id</text>
+<text x="370" y="253" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="260" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="276" class="column">company_id</text>
+<text x="370" y="276" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="299" class="column">login_id</text>
+<text x="370" y="299" class="type">VARCHAR(50)</text>
+<rect x="62" y="306" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="322" class="column">password_hash</text>
+<text x="370" y="322" class="type">VARCHAR(255)</text>
+<text x="122" y="345" class="column">name</text>
+<text x="370" y="345" class="type">VARCHAR(100)</text>
+<rect x="62" y="352" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="368" class="column">email</text>
+<text x="370" y="368" class="type">VARCHAR(255)</text>
+<text x="122" y="391" class="column">phone</text>
+<text x="370" y="391" class="type">VARCHAR(30)</text>
+<rect x="62" y="398" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="414" class="column">department</text>
+<text x="370" y="414" class="type">VARCHAR(100)</text>
+<text x="122" y="437" class="column">position_title</text>
+<text x="370" y="437" class="type">VARCHAR(100)</text>
+<rect x="62" y="444" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="460" class="column">user_type</text>
+<text x="370" y="460" class="type">VARCHAR(10)</text>
+<text x="122" y="483" class="column">account_status</text>
+<text x="370" y="483" class="type">VARCHAR(10)</text>
+<rect x="62" y="490" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="506" class="column">last_login_at</text>
+<text x="370" y="506" class="type">DATETIME(6)</text>
+<text x="122" y="529" class="column">password_changed_at</text>
+<text x="370" y="529" class="type">DATETIME(6)</text>
+<rect x="62" y="536" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="552" class="column">created_at</text>
+<text x="370" y="552" class="type">DATETIME(6)</text>
+<text x="122" y="575" class="column">updated_at</text>
+<text x="370" y="575" class="type">DATETIME(6)</text>
+<rect x="62" y="582" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="598" class="column">ON</text>
+<text x="370" y="598" class="type">UPDATE</text>
+<text x="122" y="621" class="column">withdrawn_at</text>
+<text x="370" y="621" class="type">DATETIME(6)</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="194" width="320" height="295" rx="10" fill="white"/>
+<path d="M 430 194 H 730 Q 740 194 740 204 V 236 H 420 V 204 Q 420 194 430 194 Z" fill="#2563EB"/>
+<text x="434" y="221" class="table-title">personal_profiles</text>
+<text x="432" y="253" class="key" fill="#F59E0B">PK·FK</text>
+<text x="480" y="253" class="column">user_id</text>
+<text x="728" y="253" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="260" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="276" class="column">postal_code</text>
+<text x="728" y="276" class="type">VARCHAR(20)</text>
+<text x="480" y="299" class="column">address_line1</text>
+<text x="728" y="299" class="type">VARCHAR(255)</text>
+<rect x="420" y="306" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="322" class="column">address_line2</text>
+<text x="728" y="322" class="type">VARCHAR(255)</text>
+<text x="480" y="345" class="column">profile_image_url</text>
+<text x="728" y="345" class="type">VARCHAR(1000)</text>
+<rect x="420" y="352" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="368" class="column">row_version</text>
+<text x="728" y="368" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="391" class="column">created_at</text>
+<text x="728" y="391" class="type">DATETIME(6)</text>
+<rect x="420" y="398" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="414" class="column">updated_at</text>
+<text x="728" y="414" class="type">DATETIME(6)</text>
+<text x="480" y="437" class="column">ON</text>
+<text x="728" y="437" class="type">UPDATE</text>
+<rect x="420" y="444" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="460" class="column">ON</text>
+<text x="728" y="460" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="778" y="194" width="320" height="180" rx="10" fill="white"/>
+<path d="M 788 194 H 1088 Q 1098 194 1098 204 V 236 H 778 V 204 Q 778 194 788 194 Z" fill="#2563EB"/>
+<text x="792" y="221" class="table-title">user_desired_jobs</text>
+<text x="790" y="253" class="key" fill="#F59E0B">PK·FK</text>
+<text x="838" y="253" class="column">user_id</text>
+<text x="1086" y="253" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="260" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="276" class="key" fill="#F59E0B">PK·FK</text>
+<text x="838" y="276" class="column">job_category_id</text>
+<text x="1086" y="276" class="type">BIGINT UNSIGNED</text>
+<text x="838" y="299" class="column">display_order</text>
+<text x="1086" y="299" class="type">TINYINT UNSIGNED</text>
+<rect x="778" y="306" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="322" class="column">created_at</text>
+<text x="1086" y="322" class="type">DATETIME(6)</text>
+<text x="838" y="345" class="column">ON</text>
+<text x="1086" y="345" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="684" width="320" height="387" rx="10" fill="white"/>
+<path d="M 72 684 H 372 Q 382 684 382 694 V 726 H 62 V 694 Q 62 684 72 684 Z" fill="#2563EB"/>
+<text x="76" y="711" class="table-title">policies</text>
+<text x="74" y="743" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="743" class="column">policy_id</text>
+<text x="370" y="743" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="750" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="766" class="column">policy_code</text>
+<text x="370" y="766" class="type">VARCHAR(50)</text>
+<text x="122" y="789" class="column">title</text>
+<text x="370" y="789" class="type">VARCHAR(200)</text>
+<rect x="62" y="796" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="812" class="column">audience</text>
+<text x="370" y="812" class="type">VARCHAR(10)</text>
+<text x="122" y="835" class="column">consent_type</text>
+<text x="370" y="835" class="type">VARCHAR(10)</text>
+<rect x="62" y="842" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="858" class="column">content</text>
+<text x="370" y="858" class="type">LONGTEXT</text>
+<text x="122" y="881" class="column">effective_from</text>
+<text x="370" y="881" class="type">DATETIME(6)</text>
+<rect x="62" y="888" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="904" class="column">display_order</text>
+<text x="370" y="904" class="type">INT</text>
+<text x="122" y="927" class="column">is_active</text>
+<text x="370" y="927" class="type">BOOLEAN</text>
+<rect x="62" y="934" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="950" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="950" class="column">updated_by</text>
+<text x="370" y="950" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="973" class="column">created_at</text>
+<text x="370" y="973" class="type">DATETIME(6)</text>
+<rect x="62" y="980" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="996" class="column">updated_at</text>
+<text x="370" y="996" class="type">DATETIME(6)</text>
+<text x="122" y="1019" class="column">ON</text>
+<text x="370" y="1019" class="type">UPDATE</text>
+<rect x="62" y="1026" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1042" class="column">ON</text>
+<text x="370" y="1042" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="684" width="320" height="249" rx="10" fill="white"/>
+<path d="M 430 684 H 730 Q 740 684 740 694 V 726 H 420 V 694 Q 420 684 430 684 Z" fill="#2563EB"/>
+<text x="434" y="711" class="table-title">user_policy_consents</text>
+<text x="432" y="743" class="key" fill="#F59E0B">PK</text>
+<text x="480" y="743" class="column">consent_id</text>
+<text x="728" y="743" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="750" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="766" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="766" class="column">user_id</text>
+<text x="728" y="766" class="type">BIGINT UNSIGNED</text>
+<text x="432" y="789" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="789" class="column">policy_id</text>
+<text x="728" y="789" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="796" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="812" class="column">consented</text>
+<text x="728" y="812" class="type">BOOLEAN</text>
+<text x="480" y="835" class="column">consented_at</text>
+<text x="728" y="835" class="type">DATETIME(6)</text>
+<rect x="420" y="842" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="858" class="column">withdrawn_at</text>
+<text x="728" y="858" class="type">DATETIME(6)</text>
+<text x="480" y="881" class="column">ip_address</text>
+<text x="728" y="881" class="type">VARCHAR(45)</text>
+<rect x="420" y="888" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="904" class="column">user_agent</text>
+<text x="728" y="904" class="type">VARCHAR(500)</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="1219" width="320" height="778" rx="10" fill="white"/>
+<path d="M 72 1219 H 372 Q 382 1219 382 1229 V 1261 H 62 V 1229 Q 62 1219 72 1219 Z" fill="#059669"/>
+<text x="76" y="1246" class="table-title">companies</text>
+<text x="74" y="1278" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="1278" class="column">company_id</text>
+<text x="370" y="1278" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="1285" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1301" class="column">business_number</text>
+<text x="370" y="1301" class="type">VARCHAR(20)</text>
+<text x="122" y="1324" class="column">company_name</text>
+<text x="370" y="1324" class="type">VARCHAR(200)</text>
+<rect x="62" y="1331" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1347" class="column">representative_name</text>
+<text x="370" y="1347" class="type">VARCHAR(100)</text>
+<text x="122" y="1370" class="column">established_date</text>
+<text x="370" y="1370" class="type">DATE</text>
+<rect x="62" y="1377" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1393" class="column">industry_name</text>
+<text x="370" y="1393" class="type">VARCHAR(100)</text>
+<text x="122" y="1416" class="column">company_size</text>
+<text x="370" y="1416" class="type">VARCHAR(50)</text>
+<rect x="62" y="1423" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1439" class="column">homepage_url</text>
+<text x="370" y="1439" class="type">VARCHAR(1000)</text>
+<text x="122" y="1462" class="column">logo_url</text>
+<text x="370" y="1462" class="type">VARCHAR(1000)</text>
+<rect x="62" y="1469" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1485" class="column">postal_code</text>
+<text x="370" y="1485" class="type">VARCHAR(20)</text>
+<text x="122" y="1508" class="column">address_line1</text>
+<text x="370" y="1508" class="type">VARCHAR(255)</text>
+<rect x="62" y="1515" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1531" class="column">address_line2</text>
+<text x="370" y="1531" class="type">VARCHAR(255)</text>
+<text x="122" y="1554" class="column">short_description</text>
+<text x="370" y="1554" class="type">VARCHAR(300)</text>
+<rect x="62" y="1561" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1577" class="column">introduction</text>
+<text x="370" y="1577" class="type">LONGTEXT</text>
+<text x="122" y="1600" class="column">benefits</text>
+<text x="370" y="1600" class="type">LONGTEXT</text>
+<rect x="62" y="1607" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1623" class="column">approval_status</text>
+<text x="370" y="1623" class="type">VARCHAR(10)</text>
+<text x="122" y="1646" class="column">company_status</text>
+<text x="370" y="1646" class="type">VARCHAR(10)</text>
+<rect x="62" y="1653" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1669" class="column">latest_rejection_code</text>
+<text x="370" y="1669" class="type">VARCHAR(50)</text>
+<text x="122" y="1692" class="column">latest_rejection_reason</text>
+<text x="370" y="1692" class="type">VARCHAR(1000)</text>
+<rect x="62" y="1699" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="1715" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="1715" class="column">reviewed_by</text>
+<text x="370" y="1715" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="1738" class="column">reviewed_at</text>
+<text x="370" y="1738" class="type">DATETIME(6)</text>
+<rect x="62" y="1745" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1761" class="column">reapply_requested_at</text>
+<text x="370" y="1761" class="type">DATETIME(6)</text>
+<text x="122" y="1784" class="column">review_requested_at</text>
+<text x="370" y="1784" class="type">DATETIME(6)</text>
+<rect x="62" y="1791" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1807" class="column">row_version</text>
+<text x="370" y="1807" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="1830" class="column">created_at</text>
+<text x="370" y="1830" class="type">DATETIME(6)</text>
+<rect x="62" y="1837" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1853" class="column">updated_at</text>
+<text x="370" y="1853" class="type">DATETIME(6)</text>
+<text x="122" y="1876" class="column">ON</text>
+<text x="370" y="1876" class="type">UPDATE</text>
+<rect x="62" y="1883" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1899" class="column">withdrawn_at</text>
+<text x="370" y="1899" class="type">DATETIME(6)</text>
+<text x="122" y="1922" class="column">latest_rejection_code</text>
+<text x="370" y="1922" class="type">IS</text>
+<rect x="62" y="1929" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="1945" class="column">OR</text>
+<text x="370" y="1945" class="type">latest</text>
+<text x="122" y="1968" class="column">ON</text>
+<text x="370" y="1968" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="1219" width="320" height="318" rx="10" fill="white"/>
+<path d="M 430 1219 H 730 Q 740 1219 740 1229 V 1261 H 420 V 1229 Q 420 1219 430 1219 Z" fill="#059669"/>
+<text x="434" y="1246" class="table-title">job_categories</text>
+<text x="432" y="1278" class="key" fill="#F59E0B">PK</text>
+<text x="480" y="1278" class="column">job_category_id</text>
+<text x="728" y="1278" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="1285" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="1301" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="1301" class="column">parent_id</text>
+<text x="728" y="1301" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="1324" class="column">category_name</text>
+<text x="728" y="1324" class="type">VARCHAR(100)</text>
+<rect x="420" y="1331" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="1347" class="column">slug</text>
+<text x="728" y="1347" class="type">VARCHAR(120)</text>
+<text x="480" y="1370" class="column">depth</text>
+<text x="728" y="1370" class="type">TINYINT UNSIGNED</text>
+<rect x="420" y="1377" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="1393" class="column">display_order</text>
+<text x="728" y="1393" class="type">INT</text>
+<text x="480" y="1416" class="column">is_active</text>
+<text x="728" y="1416" class="type">BOOLEAN</text>
+<rect x="420" y="1423" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="1439" class="column">created_at</text>
+<text x="728" y="1439" class="type">DATETIME(6)</text>
+<text x="480" y="1462" class="column">updated_at</text>
+<text x="728" y="1462" class="type">DATETIME(6)</text>
+<rect x="420" y="1469" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="1485" class="column">ON</text>
+<text x="728" y="1485" class="type">UPDATE</text>
+<text x="480" y="1508" class="column">ON</text>
+<text x="728" y="1508" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="778" y="1219" width="320" height="318" rx="10" fill="white"/>
+<path d="M 788 1219 H 1088 Q 1098 1219 1098 1229 V 1261 H 778 V 1229 Q 778 1219 788 1219 Z" fill="#059669"/>
+<text x="792" y="1246" class="table-title">skills</text>
+<text x="790" y="1278" class="key" fill="#F59E0B">PK</text>
+<text x="838" y="1278" class="column">skill_id</text>
+<text x="1086" y="1278" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="1285" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="1301" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="1301" class="column">parent_id</text>
+<text x="1086" y="1301" class="type">BIGINT UNSIGNED</text>
+<text x="838" y="1324" class="column">depth</text>
+<text x="1086" y="1324" class="type">TINYINT UNSIGNED</text>
+<rect x="778" y="1331" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="1347" class="column">skill_name</text>
+<text x="1086" y="1347" class="type">VARCHAR(100)</text>
+<text x="838" y="1370" class="column">slug</text>
+<text x="1086" y="1370" class="type">VARCHAR(120)</text>
+<rect x="778" y="1377" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="1393" class="column">display_order</text>
+<text x="1086" y="1393" class="type">INT</text>
+<text x="838" y="1416" class="column">is_active</text>
+<text x="1086" y="1416" class="type">BOOLEAN</text>
+<rect x="778" y="1423" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="1439" class="column">created_at</text>
+<text x="1086" y="1439" class="type">DATETIME(6)</text>
+<text x="838" y="1462" class="column">updated_at</text>
+<text x="1086" y="1462" class="type">DATETIME(6)</text>
+<rect x="778" y="1469" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="1485" class="column">ON</text>
+<text x="1086" y="1485" class="type">UPDATE</text>
+<text x="838" y="1508" class="column">ON</text>
+<text x="1086" y="1508" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="2031" width="320" height="939" rx="10" fill="white"/>
+<path d="M 72 2031 H 372 Q 382 2031 382 2041 V 2073 H 62 V 2041 Q 62 2031 72 2031 Z" fill="#059669"/>
+<text x="76" y="2058" class="table-title">job_postings</text>
+<text x="74" y="2090" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="2090" class="column">job_posting_id</text>
+<text x="370" y="2090" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="2097" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="2113" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="2113" class="column">company_id</text>
+<text x="370" y="2113" class="type">BIGINT UNSIGNED</text>
+<text x="74" y="2136" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="2136" class="column">job_category_id</text>
+<text x="370" y="2136" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="2143" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2159" class="column">title</text>
+<text x="370" y="2159" class="type">VARCHAR(255)</text>
+<text x="122" y="2182" class="column">employment_type</text>
+<text x="370" y="2182" class="type">VARCHAR(20)</text>
+<rect x="62" y="2189" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2205" class="column">career_type</text>
+<text x="370" y="2205" class="type">VARCHAR(20)</text>
+<text x="122" y="2228" class="column">min_experience_years</text>
+<text x="370" y="2228" class="type">TINYINT UNSIGNED</text>
+<rect x="62" y="2235" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2251" class="column">max_experience_years</text>
+<text x="370" y="2251" class="type">TINYINT UNSIGNED</text>
+<text x="122" y="2274" class="column">education_level</text>
+<text x="370" y="2274" class="type">VARCHAR(30)</text>
+<rect x="62" y="2281" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2297" class="column">work_region</text>
+<text x="370" y="2297" class="type">VARCHAR(100)</text>
+<text x="122" y="2320" class="column">work_address</text>
+<text x="370" y="2320" class="type">VARCHAR(500)</text>
+<rect x="62" y="2327" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2343" class="column">salary_text</text>
+<text x="370" y="2343" class="type">VARCHAR(100)</text>
+<text x="122" y="2366" class="column">salary_min</text>
+<text x="370" y="2366" class="type">INT UNSIGNED</text>
+<rect x="62" y="2373" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2389" class="column">salary_max</text>
+<text x="370" y="2389" class="type">INT UNSIGNED</text>
+<text x="122" y="2412" class="column">headcount</text>
+<text x="370" y="2412" class="type">SMALLINT UNSIGNED</text>
+<rect x="62" y="2419" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2435" class="column">apply_start_at</text>
+<text x="370" y="2435" class="type">DATETIME(6)</text>
+<text x="122" y="2458" class="column">apply_end_at</text>
+<text x="370" y="2458" class="type">DATETIME(6)</text>
+<rect x="62" y="2465" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2481" class="column">introduction</text>
+<text x="370" y="2481" class="type">LONGTEXT</text>
+<text x="122" y="2504" class="column">main_tasks</text>
+<text x="370" y="2504" class="type">LONGTEXT</text>
+<rect x="62" y="2511" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2527" class="column">qualifications</text>
+<text x="370" y="2527" class="type">LONGTEXT</text>
+<text x="122" y="2550" class="column">preferred_conditions</text>
+<text x="370" y="2550" class="type">LONGTEXT</text>
+<rect x="62" y="2557" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2573" class="column">benefits_json</text>
+<text x="370" y="2573" class="type">JSON</text>
+<text x="122" y="2596" class="column">process_text</text>
+<text x="370" y="2596" class="type">TEXT</text>
+<rect x="62" y="2603" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2619" class="column">status</text>
+<text x="370" y="2619" class="type">VARCHAR(10)</text>
+<text x="122" y="2642" class="column">close_reason</text>
+<text x="370" y="2642" class="type">VARCHAR(20)</text>
+<rect x="62" y="2649" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2665" class="column">hidden_reason</text>
+<text x="370" y="2665" class="type">VARCHAR(1000)</text>
+<text x="74" y="2688" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="2688" class="column">hidden_by</text>
+<text x="370" y="2688" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="2695" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2711" class="column">hidden_at</text>
+<text x="370" y="2711" class="type">DATETIME(6)</text>
+<text x="122" y="2734" class="column">view_count</text>
+<text x="370" y="2734" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="2741" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2757" class="column">published_at</text>
+<text x="370" y="2757" class="type">DATETIME(6)</text>
+<text x="122" y="2780" class="column">closed_at</text>
+<text x="370" y="2780" class="type">DATETIME(6)</text>
+<rect x="62" y="2787" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2803" class="column">row_version</text>
+<text x="370" y="2803" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="2826" class="column">created_at</text>
+<text x="370" y="2826" class="type">DATETIME(6)</text>
+<rect x="62" y="2833" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2849" class="column">updated_at</text>
+<text x="370" y="2849" class="type">DATETIME(6)</text>
+<text x="122" y="2872" class="column">ON</text>
+<text x="370" y="2872" class="type">UPDATE</text>
+<rect x="62" y="2879" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2895" class="column">OR</text>
+<text x="370" y="2895" class="type">apply</text>
+<text x="122" y="2918" class="column">OR</text>
+<text x="370" y="2918" class="type">salary</text>
+<rect x="62" y="2925" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="2941" class="column">ON</text>
+<text x="370" y="2941" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="2031" width="320" height="134" rx="10" fill="white"/>
+<path d="M 430 2031 H 730 Q 740 2031 740 2041 V 2073 H 420 V 2041 Q 420 2031 430 2031 Z" fill="#059669"/>
+<text x="434" y="2058" class="table-title">job_posting_skills</text>
+<text x="432" y="2090" class="key" fill="#F59E0B">PK·FK</text>
+<text x="480" y="2090" class="column">job_posting_id</text>
+<text x="728" y="2090" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="2097" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="2113" class="key" fill="#F59E0B">PK·FK</text>
+<text x="480" y="2113" class="column">skill_id</text>
+<text x="728" y="2113" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="2136" class="column">ON</text>
+<text x="728" y="2136" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="778" y="2031" width="320" height="180" rx="10" fill="white"/>
+<path d="M 788 2031 H 1088 Q 1098 2031 1098 2041 V 2073 H 778 V 2041 Q 778 2031 788 2031 Z" fill="#059669"/>
+<text x="792" y="2058" class="table-title">saved_jobs</text>
+<text x="790" y="2090" class="key" fill="#F59E0B">PK·FK</text>
+<text x="838" y="2090" class="column">user_id</text>
+<text x="1086" y="2090" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="2097" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="2113" class="key" fill="#F59E0B">PK·FK</text>
+<text x="838" y="2113" class="column">job_posting_id</text>
+<text x="1086" y="2113" class="type">BIGINT UNSIGNED</text>
+<text x="838" y="2136" class="column">created_at</text>
+<text x="1086" y="2136" class="type">DATETIME(6)</text>
+<rect x="778" y="2143" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="2159" class="column">ON</text>
+<text x="1086" y="2159" class="type">DELETE</text>
+<text x="838" y="2182" class="column">ON</text>
+<text x="1086" y="2182" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="3004" width="320" height="180" rx="10" fill="white"/>
+<path d="M 72 3004 H 372 Q 382 3004 382 3014 V 3046 H 62 V 3014 Q 62 3004 72 3004 Z" fill="#059669"/>
+<text x="76" y="3031" class="table-title">saved_companies</text>
+<text x="74" y="3063" class="key" fill="#F59E0B">PK·FK</text>
+<text x="122" y="3063" class="column">user_id</text>
+<text x="370" y="3063" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="3070" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="3086" class="key" fill="#F59E0B">PK·FK</text>
+<text x="122" y="3086" class="column">company_id</text>
+<text x="370" y="3086" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="3109" class="column">created_at</text>
+<text x="370" y="3109" class="type">DATETIME(6)</text>
+<rect x="62" y="3116" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="3132" class="column">ON</text>
+<text x="370" y="3132" class="type">DELETE</text>
+<text x="122" y="3155" class="column">ON</text>
+<text x="370" y="3155" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="3332" width="320" height="525" rx="10" fill="white"/>
+<path d="M 72 3332 H 372 Q 382 3332 382 3342 V 3374 H 62 V 3342 Q 62 3332 72 3332 Z" fill="#EA580C"/>
+<text x="76" y="3359" class="table-title">applications</text>
+<text x="74" y="3391" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="3391" class="column">application_id</text>
+<text x="370" y="3391" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="3398" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="3414" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="3414" class="column">job_posting_id</text>
+<text x="370" y="3414" class="type">BIGINT UNSIGNED</text>
+<text x="74" y="3437" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="3437" class="column">applicant_user_id</text>
+<text x="370" y="3437" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="3444" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="3460" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="3460" class="column">resume_id</text>
+<text x="370" y="3460" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="3483" class="column">resume_snapshot_json</text>
+<text x="370" y="3483" class="type">JSON</text>
+<rect x="62" y="3490" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="3506" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="3506" class="column">cover_letter_id</text>
+<text x="370" y="3506" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="3529" class="column">cover_letter_snapshot_json</text>
+<text x="370" y="3529" class="type">JSON</text>
+<rect x="62" y="3536" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="3552" class="column">current_status</text>
+<text x="370" y="3552" class="type">VARCHAR(20)</text>
+<text x="122" y="3575" class="column">applied_at</text>
+<text x="370" y="3575" class="type">DATETIME(6)</text>
+<rect x="62" y="3582" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="3598" class="column">cancelled_at</text>
+<text x="370" y="3598" class="type">DATETIME(6)</text>
+<text x="122" y="3621" class="column">termination_reason</text>
+<text x="370" y="3621" class="type">VARCHAR(20)</text>
+<rect x="62" y="3628" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="3644" class="column">terminated_at</text>
+<text x="370" y="3644" class="type">DATETIME(6)</text>
+<text x="122" y="3667" class="column">created_at</text>
+<text x="370" y="3667" class="type">DATETIME(6)</text>
+<rect x="62" y="3674" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="3690" class="column">updated_at</text>
+<text x="370" y="3690" class="type">DATETIME(6)</text>
+<text x="122" y="3713" class="column">ON</text>
+<text x="370" y="3713" class="type">UPDATE</text>
+<rect x="62" y="3720" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="3736" class="column">active_application_guard</text>
+<text x="370" y="3736" class="type">TINYINT</text>
+<text x="122" y="3759" class="column">GENERATED</text>
+<text x="370" y="3759" class="type">ALWAYS</text>
+<rect x="62" y="3766" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="3782" class="column">CASE</text>
+<text x="370" y="3782" class="type">WHEN</text>
+<text x="122" y="3805" class="column">ON</text>
+<text x="370" y="3805" class="type">DELETE</text>
+<rect x="62" y="3812" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="3828" class="column">ON</text>
+<text x="370" y="3828" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="3332" width="320" height="295" rx="10" fill="white"/>
+<path d="M 430 3332 H 730 Q 740 3332 740 3342 V 3374 H 420 V 3342 Q 420 3332 430 3332 Z" fill="#EA580C"/>
+<text x="434" y="3359" class="table-title">application_status_history</text>
+<text x="432" y="3391" class="key" fill="#F59E0B">PK</text>
+<text x="480" y="3391" class="column">application_status_id</text>
+<text x="728" y="3391" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="3398" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="3414" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="3414" class="column">application_id</text>
+<text x="728" y="3414" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="3437" class="column">from_status</text>
+<text x="728" y="3437" class="type">VARCHAR(20)</text>
+<rect x="420" y="3444" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="3460" class="column">to_status</text>
+<text x="728" y="3460" class="type">VARCHAR(20)</text>
+<text x="480" y="3483" class="column">change_reason</text>
+<text x="728" y="3483" class="type">VARCHAR(1000)</text>
+<rect x="420" y="3490" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="3506" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="3506" class="column">changed_by</text>
+<text x="728" y="3506" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="3529" class="column">actor_type</text>
+<text x="728" y="3529" class="type">VARCHAR(10)</text>
+<rect x="420" y="3536" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="3552" class="column">changed_at</text>
+<text x="728" y="3552" class="type">DATETIME(6)</text>
+<text x="480" y="3575" class="column">ON</text>
+<text x="728" y="3575" class="type">DELETE</text>
+<rect x="420" y="3582" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="3598" class="column">ON</text>
+<text x="728" y="3598" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="778" y="3332" width="320" height="249" rx="10" fill="white"/>
+<path d="M 788 3332 H 1088 Q 1098 3332 1098 3342 V 3374 H 778 V 3342 Q 778 3332 788 3332 Z" fill="#EA580C"/>
+<text x="792" y="3359" class="table-title">application_memos</text>
+<text x="790" y="3391" class="key" fill="#F59E0B">PK</text>
+<text x="838" y="3391" class="column">application_memo_id</text>
+<text x="1086" y="3391" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="3398" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="3414" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="3414" class="column">application_id</text>
+<text x="1086" y="3414" class="type">BIGINT UNSIGNED</text>
+<text x="790" y="3437" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="3437" class="column">author_user_id</text>
+<text x="1086" y="3437" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="3444" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="3460" class="column">memo</text>
+<text x="1086" y="3460" class="type">TEXT</text>
+<text x="838" y="3483" class="column">created_at</text>
+<text x="1086" y="3483" class="type">DATETIME(6)</text>
+<rect x="778" y="3490" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="3506" class="column">updated_at</text>
+<text x="1086" y="3506" class="type">DATETIME(6)</text>
+<text x="838" y="3529" class="column">ON</text>
+<text x="1086" y="3529" class="type">UPDATE</text>
+<rect x="778" y="3536" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="3552" class="column">ON</text>
+<text x="1086" y="3552" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="4005" width="320" height="387" rx="10" fill="white"/>
+<path d="M 72 4005 H 372 Q 382 4005 382 4015 V 4047 H 62 V 4015 Q 62 4005 72 4005 Z" fill="#7C3AED"/>
+<text x="76" y="4032" class="table-title">resumes</text>
+<text x="74" y="4064" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="4064" class="column">resume_id</text>
+<text x="370" y="4064" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="4071" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="4087" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="4087" class="column">user_id</text>
+<text x="370" y="4087" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="4110" class="column">title</text>
+<text x="370" y="4110" class="type">VARCHAR(200)</text>
+<rect x="62" y="4117" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4133" class="column">applicant_name</text>
+<text x="370" y="4133" class="type">VARCHAR(100)</text>
+<text x="122" y="4156" class="column">email</text>
+<text x="370" y="4156" class="type">VARCHAR(255)</text>
+<rect x="62" y="4163" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4179" class="column">phone</text>
+<text x="370" y="4179" class="type">VARCHAR(30)</text>
+<text x="122" y="4202" class="column">career_type</text>
+<text x="370" y="4202" class="type">VARCHAR(20)</text>
+<rect x="62" y="4209" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4225" class="column">summary</text>
+<text x="370" y="4225" class="type">TEXT</text>
+<text x="122" y="4248" class="column">status</text>
+<text x="370" y="4248" class="type">VARCHAR(10)</text>
+<rect x="62" y="4255" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4271" class="column">row_version</text>
+<text x="370" y="4271" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="4294" class="column">created_at</text>
+<text x="370" y="4294" class="type">DATETIME(6)</text>
+<rect x="62" y="4301" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4317" class="column">updated_at</text>
+<text x="370" y="4317" class="type">DATETIME(6)</text>
+<text x="122" y="4340" class="column">ON</text>
+<text x="370" y="4340" class="type">UPDATE</text>
+<rect x="62" y="4347" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4363" class="column">deleted_at</text>
+<text x="370" y="4363" class="type">DATETIME(6)</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="4005" width="320" height="341" rx="10" fill="white"/>
+<path d="M 430 4005 H 730 Q 740 4005 740 4015 V 4047 H 420 V 4015 Q 420 4005 430 4005 Z" fill="#7C3AED"/>
+<text x="434" y="4032" class="table-title">resume_educations</text>
+<text x="432" y="4064" class="key" fill="#F59E0B">PK</text>
+<text x="480" y="4064" class="column">education_id</text>
+<text x="728" y="4064" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="4071" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="4087" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="4087" class="column">resume_id</text>
+<text x="728" y="4087" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="4110" class="column">school_name</text>
+<text x="728" y="4110" class="type">VARCHAR(200)</text>
+<rect x="420" y="4117" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="4133" class="column">major</text>
+<text x="728" y="4133" class="type">VARCHAR(200)</text>
+<text x="480" y="4156" class="column">degree</text>
+<text x="728" y="4156" class="type">VARCHAR(100)</text>
+<rect x="420" y="4163" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="4179" class="column">admission_date</text>
+<text x="728" y="4179" class="type">DATE</text>
+<text x="480" y="4202" class="column">graduation_date</text>
+<text x="728" y="4202" class="type">DATE</text>
+<rect x="420" y="4209" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="4225" class="column">graduation_status</text>
+<text x="728" y="4225" class="type">VARCHAR(20)</text>
+<text x="480" y="4248" class="column">gpa_score</text>
+<text x="728" y="4248" class="type">DECIMAL(3,2)</text>
+<rect x="420" y="4255" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="4271" class="column">gpa_scale</text>
+<text x="728" y="4271" class="type">DECIMAL(3,2)</text>
+<text x="480" y="4294" class="column">display_order</text>
+<text x="728" y="4294" class="type">INT</text>
+<rect x="420" y="4301" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="4317" class="column">ON</text>
+<text x="728" y="4317" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="778" y="4005" width="320" height="341" rx="10" fill="white"/>
+<path d="M 788 4005 H 1088 Q 1098 4005 1098 4015 V 4047 H 778 V 4015 Q 778 4005 788 4005 Z" fill="#7C3AED"/>
+<text x="792" y="4032" class="table-title">resume_careers</text>
+<text x="790" y="4064" class="key" fill="#F59E0B">PK</text>
+<text x="838" y="4064" class="column">career_id</text>
+<text x="1086" y="4064" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="4071" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="4087" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="4087" class="column">resume_id</text>
+<text x="1086" y="4087" class="type">BIGINT UNSIGNED</text>
+<text x="838" y="4110" class="column">company_name</text>
+<text x="1086" y="4110" class="type">VARCHAR(200)</text>
+<rect x="778" y="4117" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="4133" class="column">department</text>
+<text x="1086" y="4133" class="type">VARCHAR(100)</text>
+<text x="838" y="4156" class="column">position_title</text>
+<text x="1086" y="4156" class="type">VARCHAR(100)</text>
+<rect x="778" y="4163" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="4179" class="column">employment_type</text>
+<text x="1086" y="4179" class="type">VARCHAR(50)</text>
+<text x="838" y="4202" class="column">start_date</text>
+<text x="1086" y="4202" class="type">DATE</text>
+<rect x="778" y="4209" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="4225" class="column">end_date</text>
+<text x="1086" y="4225" class="type">DATE</text>
+<text x="838" y="4248" class="column">is_current</text>
+<text x="1086" y="4248" class="type">BOOLEAN</text>
+<rect x="778" y="4255" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="4271" class="column">description</text>
+<text x="1086" y="4271" class="type">LONGTEXT</text>
+<text x="838" y="4294" class="column">display_order</text>
+<text x="1086" y="4294" class="type">INT</text>
+<rect x="778" y="4301" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="4317" class="column">ON</text>
+<text x="1086" y="4317" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="4426" width="320" height="295" rx="10" fill="white"/>
+<path d="M 72 4426 H 372 Q 382 4426 382 4436 V 4468 H 62 V 4436 Q 62 4426 72 4426 Z" fill="#7C3AED"/>
+<text x="76" y="4453" class="table-title">resume_projects</text>
+<text x="74" y="4485" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="4485" class="column">project_id</text>
+<text x="370" y="4485" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="4492" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="4508" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="4508" class="column">resume_id</text>
+<text x="370" y="4508" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="4531" class="column">project_name</text>
+<text x="370" y="4531" class="type">VARCHAR(200)</text>
+<rect x="62" y="4538" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4554" class="column">role_text</text>
+<text x="370" y="4554" class="type">VARCHAR(300)</text>
+<text x="122" y="4577" class="column">description</text>
+<text x="370" y="4577" class="type">LONGTEXT</text>
+<rect x="62" y="4584" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4600" class="column">start_date</text>
+<text x="370" y="4600" class="type">DATE</text>
+<text x="122" y="4623" class="column">end_date</text>
+<text x="370" y="4623" class="type">DATE</text>
+<rect x="62" y="4630" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4646" class="column">project_url</text>
+<text x="370" y="4646" class="type">VARCHAR(1000)</text>
+<text x="122" y="4669" class="column">display_order</text>
+<text x="370" y="4669" class="type">INT</text>
+<rect x="62" y="4676" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4692" class="column">ON</text>
+<text x="370" y="4692" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="4426" width="320" height="157" rx="10" fill="white"/>
+<path d="M 430 4426 H 730 Q 740 4426 740 4436 V 4468 H 420 V 4436 Q 420 4426 430 4426 Z" fill="#7C3AED"/>
+<text x="434" y="4453" class="table-title">resume_skills</text>
+<text x="432" y="4485" class="key" fill="#F59E0B">PK·FK</text>
+<text x="480" y="4485" class="column">resume_id</text>
+<text x="728" y="4485" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="4492" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="4508" class="key" fill="#F59E0B">PK·FK</text>
+<text x="480" y="4508" class="column">skill_id</text>
+<text x="728" y="4508" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="4531" class="column">display_order</text>
+<text x="728" y="4531" class="type">TINYINT UNSIGNED</text>
+<rect x="420" y="4538" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="4554" class="column">ON</text>
+<text x="728" y="4554" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="778" y="4426" width="320" height="272" rx="10" fill="white"/>
+<path d="M 788 4426 H 1088 Q 1098 4426 1098 4436 V 4468 H 778 V 4436 Q 778 4426 788 4426 Z" fill="#7C3AED"/>
+<text x="792" y="4453" class="table-title">cover_letters</text>
+<text x="790" y="4485" class="key" fill="#F59E0B">PK</text>
+<text x="838" y="4485" class="column">cover_letter_id</text>
+<text x="1086" y="4485" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="4492" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="4508" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="4508" class="column">user_id</text>
+<text x="1086" y="4508" class="type">BIGINT UNSIGNED</text>
+<text x="838" y="4531" class="column">title</text>
+<text x="1086" y="4531" class="type">VARCHAR(200)</text>
+<rect x="778" y="4538" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="4554" class="column">status</text>
+<text x="1086" y="4554" class="type">VARCHAR(10)</text>
+<text x="838" y="4577" class="column">row_version</text>
+<text x="1086" y="4577" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="4584" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="4600" class="column">created_at</text>
+<text x="1086" y="4600" class="type">DATETIME(6)</text>
+<text x="838" y="4623" class="column">updated_at</text>
+<text x="1086" y="4623" class="type">DATETIME(6)</text>
+<rect x="778" y="4630" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="4646" class="column">ON</text>
+<text x="1086" y="4646" class="type">UPDATE</text>
+<text x="838" y="4669" class="column">deleted_at</text>
+<text x="1086" y="4669" class="type">DATETIME(6)</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="4755" width="320" height="249" rx="10" fill="white"/>
+<path d="M 72 4755 H 372 Q 382 4755 382 4765 V 4797 H 62 V 4765 Q 62 4755 72 4755 Z" fill="#7C3AED"/>
+<text x="76" y="4782" class="table-title">cover_letter_items</text>
+<text x="74" y="4814" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="4814" class="column">cover_letter_item_id</text>
+<text x="370" y="4814" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="4821" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="4837" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="4837" class="column">cover_letter_id</text>
+<text x="370" y="4837" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="4860" class="column">question</text>
+<text x="370" y="4860" class="type">VARCHAR(1000)</text>
+<rect x="62" y="4867" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4883" class="column">answer</text>
+<text x="370" y="4883" class="type">LONGTEXT</text>
+<text x="122" y="4906" class="column">display_order</text>
+<text x="370" y="4906" class="type">INT</text>
+<rect x="62" y="4913" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4929" class="column">updated_at</text>
+<text x="370" y="4929" class="type">DATETIME(6)</text>
+<text x="122" y="4952" class="column">ON</text>
+<text x="370" y="4952" class="type">UPDATE</text>
+<rect x="62" y="4959" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="4975" class="column">ON</text>
+<text x="370" y="4975" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="4755" width="320" height="272" rx="10" fill="white"/>
+<path d="M 430 4755 H 730 Q 740 4755 740 4765 V 4797 H 420 V 4765 Q 420 4755 430 4755 Z" fill="#7C3AED"/>
+<text x="434" y="4782" class="table-title">cover_letter_ai_reviews</text>
+<text x="432" y="4814" class="key" fill="#F59E0B">PK</text>
+<text x="480" y="4814" class="column">cover_letter_ai_review_id</text>
+<text x="728" y="4814" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="4821" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="4837" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="4837" class="column">cover_letter_id</text>
+<text x="728" y="4837" class="type">BIGINT UNSIGNED</text>
+<text x="432" y="4860" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="4860" class="column">job_posting_id</text>
+<text x="728" y="4860" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="4867" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="4883" class="column">original_content</text>
+<text x="728" y="4883" class="type">JSON</text>
+<text x="480" y="4906" class="column">revised_content</text>
+<text x="728" y="4906" class="type">JSON</text>
+<rect x="420" y="4913" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="4929" class="column">feedback</text>
+<text x="728" y="4929" class="type">LONGTEXT</text>
+<text x="480" y="4952" class="column">rag_context</text>
+<text x="728" y="4952" class="type">JSON</text>
+<rect x="420" y="4959" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="4975" class="column">created_at</text>
+<text x="728" y="4975" class="type">DATETIME(6)</text>
+<text x="480" y="4998" class="column">ON</text>
+<text x="728" y="4998" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="5175" width="320" height="709" rx="10" fill="white"/>
+<path d="M 72 5175 H 372 Q 382 5175 382 5185 V 5217 H 62 V 5185 Q 62 5175 72 5175 Z" fill="#E11D48"/>
+<text x="76" y="5202" class="table-title">company_reviews</text>
+<text x="74" y="5234" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="5234" class="column">company_review_id</text>
+<text x="370" y="5234" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="5241" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="5257" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="5257" class="column">company_id</text>
+<text x="370" y="5257" class="type">BIGINT UNSIGNED</text>
+<text x="74" y="5280" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="5280" class="column">author_user_id</text>
+<text x="370" y="5280" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="5287" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="5303" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="5303" class="column">eligibility_application_id</text>
+<text x="370" y="5303" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="5326" class="column">employment_status</text>
+<text x="370" y="5326" class="type">VARCHAR(10)</text>
+<rect x="62" y="5333" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="5349" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="5349" class="column">job_category_id</text>
+<text x="370" y="5349" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="5372" class="column">career_growth_rating</text>
+<text x="370" y="5372" class="type">TINYINT UNSIGNED</text>
+<rect x="62" y="5379" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5395" class="column">work_satisfaction_rating</text>
+<text x="370" y="5395" class="type">TINYINT UNSIGNED</text>
+<text x="122" y="5418" class="column">compensation_rating</text>
+<text x="370" y="5418" class="type">TINYINT UNSIGNED</text>
+<rect x="62" y="5425" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5441" class="column">culture_rating</text>
+<text x="370" y="5441" class="type">TINYINT UNSIGNED</text>
+<text x="122" y="5464" class="column">overall_rating</text>
+<text x="370" y="5464" class="type">DECIMAL(2,1)</text>
+<rect x="62" y="5471" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5487" class="column">pros</text>
+<text x="370" y="5487" class="type">TEXT</text>
+<text x="122" y="5510" class="column">cons</text>
+<text x="370" y="5510" class="type">TEXT</text>
+<rect x="62" y="5517" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5533" class="column">summary</text>
+<text x="370" y="5533" class="type">VARCHAR(300)</text>
+<text x="122" y="5556" class="column">status</text>
+<text x="370" y="5556" class="type">VARCHAR(10)</text>
+<rect x="62" y="5563" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5579" class="column">hidden_reason</text>
+<text x="370" y="5579" class="type">VARCHAR(1000)</text>
+<text x="74" y="5602" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="5602" class="column">hidden_by</text>
+<text x="370" y="5602" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="5609" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5625" class="column">admin_memo</text>
+<text x="370" y="5625" class="type">VARCHAR(2000)</text>
+<text x="122" y="5648" class="column">created_at</text>
+<text x="370" y="5648" class="type">DATETIME(6)</text>
+<rect x="62" y="5655" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5671" class="column">updated_at</text>
+<text x="370" y="5671" class="type">DATETIME(6)</text>
+<text x="122" y="5694" class="column">ON</text>
+<text x="370" y="5694" class="type">UPDATE</text>
+<rect x="62" y="5701" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5717" class="column">career_growth_rating</text>
+<text x="370" y="5717" class="type">BETWEEN</text>
+<text x="122" y="5740" class="column">AND</text>
+<text x="370" y="5740" class="type">work</text>
+<rect x="62" y="5747" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5763" class="column">AND</text>
+<text x="370" y="5763" class="type">compensation</text>
+<text x="122" y="5786" class="column">AND</text>
+<text x="370" y="5786" class="type">culture</text>
+<rect x="62" y="5793" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5809" class="column">AND</text>
+<text x="370" y="5809" class="type">overall</text>
+<text x="122" y="5832" class="column">ON</text>
+<text x="370" y="5832" class="type">DELETE</text>
+<rect x="62" y="5839" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="5855" class="column">ON</text>
+<text x="370" y="5855" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="5175" width="320" height="525" rx="10" fill="white"/>
+<path d="M 430 5175 H 730 Q 740 5175 740 5185 V 5217 H 420 V 5185 Q 420 5175 430 5175 Z" fill="#E11D48"/>
+<text x="434" y="5202" class="table-title">interview_reviews</text>
+<text x="432" y="5234" class="key" fill="#F59E0B">PK</text>
+<text x="480" y="5234" class="column">interview_review_id</text>
+<text x="728" y="5234" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="5241" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="5257" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="5257" class="column">company_id</text>
+<text x="728" y="5257" class="type">BIGINT UNSIGNED</text>
+<text x="432" y="5280" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="5280" class="column">author_user_id</text>
+<text x="728" y="5280" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="5287" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="5303" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="5303" class="column">job_posting_id</text>
+<text x="728" y="5303" class="type">BIGINT UNSIGNED</text>
+<text x="432" y="5326" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="5326" class="column">application_id</text>
+<text x="728" y="5326" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="5333" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="5349" class="column">interview_month</text>
+<text x="728" y="5349" class="type">CHAR(7)</text>
+<text x="480" y="5372" class="column">interview_type</text>
+<text x="728" y="5372" class="type">VARCHAR(30)</text>
+<rect x="420" y="5379" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="5395" class="column">interview_result</text>
+<text x="728" y="5395" class="type">VARCHAR(10)</text>
+<text x="480" y="5418" class="column">difficulty</text>
+<text x="728" y="5418" class="type">VARCHAR(10)</text>
+<rect x="420" y="5425" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="5441" class="column">process_text</text>
+<text x="728" y="5441" class="type">TEXT</text>
+<text x="480" y="5464" class="column">content</text>
+<text x="728" y="5464" class="type">LONGTEXT</text>
+<rect x="420" y="5471" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="5487" class="column">tips</text>
+<text x="728" y="5487" class="type">TEXT</text>
+<text x="480" y="5510" class="column">status</text>
+<text x="728" y="5510" class="type">VARCHAR(10)</text>
+<rect x="420" y="5517" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="5533" class="column">hidden_reason</text>
+<text x="728" y="5533" class="type">VARCHAR(1000)</text>
+<text x="432" y="5556" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="5556" class="column">hidden_by</text>
+<text x="728" y="5556" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="5563" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="5579" class="column">admin_memo</text>
+<text x="728" y="5579" class="type">VARCHAR(2000)</text>
+<text x="480" y="5602" class="column">created_at</text>
+<text x="728" y="5602" class="type">DATETIME(6)</text>
+<rect x="420" y="5609" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="5625" class="column">updated_at</text>
+<text x="728" y="5625" class="type">DATETIME(6)</text>
+<text x="480" y="5648" class="column">ON</text>
+<text x="728" y="5648" class="type">UPDATE</text>
+<rect x="420" y="5655" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="5671" class="column">ON</text>
+<text x="728" y="5671" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="778" y="5175" width="320" height="479" rx="10" fill="white"/>
+<path d="M 788 5175 H 1088 Q 1098 5175 1098 5185 V 5217 H 778 V 5185 Q 778 5175 788 5175 Z" fill="#E11D48"/>
+<text x="792" y="5202" class="table-title">salary_records</text>
+<text x="790" y="5234" class="key" fill="#F59E0B">PK</text>
+<text x="838" y="5234" class="column">salary_record_id</text>
+<text x="1086" y="5234" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="5241" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="5257" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="5257" class="column">company_id</text>
+<text x="1086" y="5257" class="type">BIGINT UNSIGNED</text>
+<text x="790" y="5280" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="5280" class="column">author_user_id</text>
+<text x="1086" y="5280" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="5287" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="5303" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="5303" class="column">job_category_id</text>
+<text x="1086" y="5303" class="type">BIGINT UNSIGNED</text>
+<text x="838" y="5326" class="column">employment_status</text>
+<text x="1086" y="5326" class="type">VARCHAR(10)</text>
+<rect x="778" y="5333" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="5349" class="column">employment_type</text>
+<text x="1086" y="5349" class="type">VARCHAR(30)</text>
+<text x="838" y="5372" class="column">career_years</text>
+<text x="1086" y="5372" class="type">TINYINT UNSIGNED</text>
+<rect x="778" y="5379" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="5395" class="column">salary_year</text>
+<text x="1086" y="5395" class="type">SMALLINT UNSIGNED</text>
+<text x="838" y="5418" class="column">base_salary</text>
+<text x="1086" y="5418" class="type">INT UNSIGNED</text>
+<rect x="778" y="5425" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="5441" class="column">bonus_amount</text>
+<text x="1086" y="5441" class="type">INT UNSIGNED</text>
+<text x="838" y="5464" class="column">consented_at</text>
+<text x="1086" y="5464" class="type">DATETIME(6)</text>
+<rect x="778" y="5471" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="5487" class="column">status</text>
+<text x="1086" y="5487" class="type">VARCHAR(10)</text>
+<text x="838" y="5510" class="column">hidden_reason</text>
+<text x="1086" y="5510" class="type">VARCHAR(1000)</text>
+<rect x="778" y="5517" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="5533" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="5533" class="column">hidden_by</text>
+<text x="1086" y="5533" class="type">BIGINT UNSIGNED</text>
+<text x="838" y="5556" class="column">created_at</text>
+<text x="1086" y="5556" class="type">DATETIME(6)</text>
+<rect x="778" y="5563" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="5579" class="column">updated_at</text>
+<text x="1086" y="5579" class="type">DATETIME(6)</text>
+<text x="838" y="5602" class="column">ON</text>
+<text x="1086" y="5602" class="type">UPDATE</text>
+<rect x="778" y="5609" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="5625" class="column">ON</text>
+<text x="1086" y="5625" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="5918" width="320" height="180" rx="10" fill="white"/>
+<path d="M 72 5918 H 372 Q 382 5918 382 5928 V 5960 H 62 V 5928 Q 62 5918 72 5918 Z" fill="#E11D48"/>
+<text x="76" y="5945" class="table-title">review_reactions</text>
+<text x="74" y="5977" class="key" fill="#F59E0B">PK·FK</text>
+<text x="122" y="5977" class="column">user_id</text>
+<text x="370" y="5977" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="5984" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="6000" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="6000" class="column">review_type</text>
+<text x="370" y="6000" class="type">VARCHAR(10)</text>
+<text x="74" y="6023" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="6023" class="column">review_id</text>
+<text x="370" y="6023" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="6030" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="6046" class="column">created_at</text>
+<text x="370" y="6046" class="type">DATETIME(6)</text>
+<text x="122" y="6069" class="column">ON</text>
+<text x="370" y="6069" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="6246" width="320" height="157" rx="10" fill="white"/>
+<path d="M 72 6246 H 372 Q 382 6246 382 6256 V 6288 H 62 V 6256 Q 62 6246 72 6246 Z" fill="#0891B2"/>
+<text x="76" y="6273" class="table-title">faq_categories</text>
+<text x="74" y="6305" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="6305" class="column">faq_category_id</text>
+<text x="370" y="6305" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="6312" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="6328" class="column">category_name</text>
+<text x="370" y="6328" class="type">VARCHAR(100)</text>
+<text x="122" y="6351" class="column">display_order</text>
+<text x="370" y="6351" class="type">INT</text>
+<rect x="62" y="6358" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="6374" class="column">is_active</text>
+<text x="370" y="6374" class="type">BOOLEAN</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="6246" width="320" height="341" rx="10" fill="white"/>
+<path d="M 430 6246 H 730 Q 740 6246 740 6256 V 6288 H 420 V 6256 Q 420 6246 430 6246 Z" fill="#0891B2"/>
+<text x="434" y="6273" class="table-title">faqs</text>
+<text x="432" y="6305" class="key" fill="#F59E0B">PK</text>
+<text x="480" y="6305" class="column">faq_id</text>
+<text x="728" y="6305" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="6312" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="6328" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="6328" class="column">faq_category_id</text>
+<text x="728" y="6328" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="6351" class="column">question</text>
+<text x="728" y="6351" class="type">VARCHAR(500)</text>
+<rect x="420" y="6358" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="6374" class="column">answer</text>
+<text x="728" y="6374" class="type">LONGTEXT</text>
+<text x="480" y="6397" class="column">display_order</text>
+<text x="728" y="6397" class="type">INT</text>
+<rect x="420" y="6404" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="6420" class="column">status</text>
+<text x="728" y="6420" class="type">VARCHAR(10)</text>
+<text x="432" y="6443" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="6443" class="column">created_by</text>
+<text x="728" y="6443" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="6450" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="6466" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="6466" class="column">updated_by</text>
+<text x="728" y="6466" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="6489" class="column">created_at</text>
+<text x="728" y="6489" class="type">DATETIME(6)</text>
+<rect x="420" y="6496" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="6512" class="column">updated_at</text>
+<text x="728" y="6512" class="type">DATETIME(6)</text>
+<text x="480" y="6535" class="column">ON</text>
+<text x="728" y="6535" class="type">UPDATE</text>
+<rect x="420" y="6542" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="6558" class="column">ON</text>
+<text x="728" y="6558" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="778" y="6246" width="320" height="157" rx="10" fill="white"/>
+<path d="M 788 6246 H 1088 Q 1098 6246 1098 6256 V 6288 H 778 V 6256 Q 778 6246 788 6246 Z" fill="#0891B2"/>
+<text x="792" y="6273" class="table-title">inquiry_categories</text>
+<text x="790" y="6305" class="key" fill="#F59E0B">PK</text>
+<text x="838" y="6305" class="column">inquiry_category_id</text>
+<text x="1086" y="6305" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="6312" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="6328" class="column">category_name</text>
+<text x="1086" y="6328" class="type">VARCHAR(100)</text>
+<text x="838" y="6351" class="column">display_order</text>
+<text x="1086" y="6351" class="type">INT</text>
+<rect x="778" y="6358" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="6374" class="column">is_active</text>
+<text x="1086" y="6374" class="type">BOOLEAN</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="6621" width="320" height="387" rx="10" fill="white"/>
+<path d="M 72 6621 H 372 Q 382 6621 382 6631 V 6663 H 62 V 6631 Q 62 6621 72 6621 Z" fill="#0891B2"/>
+<text x="76" y="6648" class="table-title">inquiries</text>
+<text x="74" y="6680" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="6680" class="column">inquiry_id</text>
+<text x="370" y="6680" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="6687" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="6703" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="6703" class="column">user_id</text>
+<text x="370" y="6703" class="type">BIGINT UNSIGNED</text>
+<text x="74" y="6726" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="6726" class="column">inquiry_category_id</text>
+<text x="370" y="6726" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="6733" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="6749" class="column">title</text>
+<text x="370" y="6749" class="type">VARCHAR(100)</text>
+<text x="122" y="6772" class="column">content</text>
+<text x="370" y="6772" class="type">VARCHAR(1000)</text>
+<rect x="62" y="6779" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="6795" class="column">status</text>
+<text x="370" y="6795" class="type">VARCHAR(10)</text>
+<text x="122" y="6818" class="column">answer_content</text>
+<text x="370" y="6818" class="type">LONGTEXT</text>
+<rect x="62" y="6825" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="6841" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="6841" class="column">answered_by</text>
+<text x="370" y="6841" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="6864" class="column">answered_at</text>
+<text x="370" y="6864" class="type">DATETIME(6)</text>
+<rect x="62" y="6871" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="6887" class="column">created_at</text>
+<text x="370" y="6887" class="type">DATETIME(6)</text>
+<text x="122" y="6910" class="column">updated_at</text>
+<text x="370" y="6910" class="type">DATETIME(6)</text>
+<rect x="62" y="6917" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="6933" class="column">ON</text>
+<text x="370" y="6933" class="type">UPDATE</text>
+<text x="122" y="6956" class="column">REFERENCES</text>
+<text x="370" y="6956" class="type">inquiry</text>
+<rect x="62" y="6963" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="6979" class="column">ON</text>
+<text x="370" y="6979" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="6621" width="320" height="249" rx="10" fill="white"/>
+<path d="M 430 6621 H 730 Q 740 6621 740 6631 V 6663 H 420 V 6631 Q 420 6621 430 6621 Z" fill="#0891B2"/>
+<text x="434" y="6648" class="table-title">inquiry_attachments</text>
+<text x="432" y="6680" class="key" fill="#F59E0B">PK</text>
+<text x="480" y="6680" class="column">inquiry_attachment_id</text>
+<text x="728" y="6680" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="6687" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="6703" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="6703" class="column">inquiry_id</text>
+<text x="728" y="6703" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="6726" class="column">original_name</text>
+<text x="728" y="6726" class="type">VARCHAR(255)</text>
+<rect x="420" y="6733" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="6749" class="column">storage_key</text>
+<text x="728" y="6749" class="type">VARCHAR(1000)</text>
+<text x="480" y="6772" class="column">mime_type</text>
+<text x="728" y="6772" class="type">VARCHAR(100)</text>
+<rect x="420" y="6779" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="6795" class="column">file_size</text>
+<text x="728" y="6795" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="6818" class="column">created_at</text>
+<text x="728" y="6818" class="type">DATETIME(6)</text>
+<rect x="420" y="6825" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="6841" class="column">ON</text>
+<text x="728" y="6841" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="778" y="6621" width="320" height="364" rx="10" fill="white"/>
+<path d="M 788 6621 H 1088 Q 1098 6621 1098 6631 V 6663 H 778 V 6631 Q 778 6621 788 6621 Z" fill="#0891B2"/>
+<text x="792" y="6648" class="table-title">reports</text>
+<text x="790" y="6680" class="key" fill="#F59E0B">PK</text>
+<text x="838" y="6680" class="column">report_id</text>
+<text x="1086" y="6680" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="6687" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="6703" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="6703" class="column">reporter_user_id</text>
+<text x="1086" y="6703" class="type">BIGINT UNSIGNED</text>
+<text x="838" y="6726" class="column">target_type</text>
+<text x="1086" y="6726" class="type">VARCHAR(20)</text>
+<rect x="778" y="6733" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="6749" class="column">target_id</text>
+<text x="1086" y="6749" class="type">BIGINT UNSIGNED</text>
+<text x="838" y="6772" class="column">reason_code</text>
+<text x="1086" y="6772" class="type">VARCHAR(30)</text>
+<rect x="778" y="6779" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="6795" class="column">detail</text>
+<text x="1086" y="6795" class="type">VARCHAR(2000)</text>
+<text x="838" y="6818" class="column">status</text>
+<text x="1086" y="6818" class="type">VARCHAR(10)</text>
+<rect x="778" y="6825" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="6841" class="column">resolution_action</text>
+<text x="1086" y="6841" class="type">VARCHAR(10)</text>
+<text x="838" y="6864" class="column">resolution_note</text>
+<text x="1086" y="6864" class="type">VARCHAR(2000)</text>
+<rect x="778" y="6871" width="320" height="23" fill="#F8FAFC"/>
+<text x="790" y="6887" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="6887" class="column">handled_by</text>
+<text x="1086" y="6887" class="type">BIGINT UNSIGNED</text>
+<text x="838" y="6910" class="column">created_at</text>
+<text x="1086" y="6910" class="type">DATETIME(6)</text>
+<rect x="778" y="6917" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="6933" class="column">handled_at</text>
+<text x="1086" y="6933" class="type">DATETIME(6)</text>
+<text x="838" y="6956" class="column">ON</text>
+<text x="1086" y="6956" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="7156" width="320" height="387" rx="10" fill="white"/>
+<path d="M 72 7156 H 372 Q 382 7156 382 7166 V 7198 H 62 V 7166 Q 62 7156 72 7156 Z" fill="#475569"/>
+<text x="76" y="7183" class="table-title">banners</text>
+<text x="74" y="7215" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="7215" class="column">banner_id</text>
+<text x="370" y="7215" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="7222" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="7238" class="column">banner_name</text>
+<text x="370" y="7238" class="type">VARCHAR(200)</text>
+<text x="122" y="7261" class="column">placement</text>
+<text x="370" y="7261" class="type">VARCHAR(30)</text>
+<rect x="62" y="7268" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="7284" class="column">image_url</text>
+<text x="370" y="7284" class="type">VARCHAR(1000)</text>
+<text x="122" y="7307" class="column">link_url</text>
+<text x="370" y="7307" class="type">VARCHAR(1000)</text>
+<rect x="62" y="7314" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="7330" class="column">alt_text</text>
+<text x="370" y="7330" class="type">VARCHAR(255)</text>
+<text x="122" y="7353" class="column">display_order</text>
+<text x="370" y="7353" class="type">INT</text>
+<rect x="62" y="7360" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="7376" class="column">starts_at</text>
+<text x="370" y="7376" class="type">DATETIME(6)</text>
+<text x="122" y="7399" class="column">ends_at</text>
+<text x="370" y="7399" class="type">DATETIME(6)</text>
+<rect x="62" y="7406" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="7422" class="column">is_active</text>
+<text x="370" y="7422" class="type">BOOLEAN</text>
+<text x="74" y="7445" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="7445" class="column">created_by</text>
+<text x="370" y="7445" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="7452" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="7468" class="column">created_at</text>
+<text x="370" y="7468" class="type">DATETIME(6)</text>
+<text x="122" y="7491" class="column">updated_at</text>
+<text x="370" y="7491" class="type">DATETIME(6)</text>
+<rect x="62" y="7498" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="7514" class="column">ON</text>
+<text x="370" y="7514" class="type">UPDATE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="420" y="7156" width="320" height="341" rx="10" fill="white"/>
+<path d="M 430 7156 H 730 Q 740 7156 740 7166 V 7198 H 420 V 7166 Q 420 7156 430 7156 Z" fill="#475569"/>
+<text x="434" y="7183" class="table-title">notices</text>
+<text x="432" y="7215" class="key" fill="#F59E0B">PK</text>
+<text x="480" y="7215" class="column">notice_id</text>
+<text x="728" y="7215" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="7222" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="7238" class="column">title</text>
+<text x="728" y="7238" class="type">VARCHAR(255)</text>
+<text x="480" y="7261" class="column">content</text>
+<text x="728" y="7261" class="type">LONGTEXT</text>
+<rect x="420" y="7268" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="7284" class="column">is_pinned</text>
+<text x="728" y="7284" class="type">BOOLEAN</text>
+<text x="480" y="7307" class="column">status</text>
+<text x="728" y="7307" class="type">VARCHAR(10)</text>
+<rect x="420" y="7314" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="7330" class="column">published_at</text>
+<text x="728" y="7330" class="type">DATETIME(6)</text>
+<text x="432" y="7353" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="7353" class="column">created_by</text>
+<text x="728" y="7353" class="type">BIGINT UNSIGNED</text>
+<rect x="420" y="7360" width="320" height="23" fill="#F8FAFC"/>
+<text x="432" y="7376" class="key" fill="#0EA5E9">FK</text>
+<text x="480" y="7376" class="column">updated_by</text>
+<text x="728" y="7376" class="type">BIGINT UNSIGNED</text>
+<text x="480" y="7399" class="column">created_at</text>
+<text x="728" y="7399" class="type">DATETIME(6)</text>
+<rect x="420" y="7406" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="7422" class="column">updated_at</text>
+<text x="728" y="7422" class="type">DATETIME(6)</text>
+<text x="480" y="7445" class="column">ON</text>
+<text x="728" y="7445" class="type">UPDATE</text>
+<rect x="420" y="7452" width="320" height="23" fill="#F8FAFC"/>
+<text x="480" y="7468" class="column">ON</text>
+<text x="728" y="7468" class="type">DELETE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="778" y="7156" width="320" height="180" rx="10" fill="white"/>
+<path d="M 788 7156 H 1088 Q 1098 7156 1098 7166 V 7198 H 778 V 7166 Q 778 7156 788 7156 Z" fill="#475569"/>
+<text x="792" y="7183" class="table-title">site_settings</text>
+<text x="790" y="7215" class="key" fill="#F59E0B">PK</text>
+<text x="838" y="7215" class="column">setting_key</text>
+<text x="1086" y="7215" class="type">VARCHAR(100)</text>
+<rect x="778" y="7222" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="7238" class="column">setting_value</text>
+<text x="1086" y="7238" class="type">JSON</text>
+<text x="790" y="7261" class="key" fill="#0EA5E9">FK</text>
+<text x="838" y="7261" class="column">updated_by</text>
+<text x="1086" y="7261" class="type">BIGINT UNSIGNED</text>
+<rect x="778" y="7268" width="320" height="23" fill="#F8FAFC"/>
+<text x="838" y="7284" class="column">updated_at</text>
+<text x="1086" y="7284" class="type">DATETIME(6)</text>
+<text x="838" y="7307" class="column">ON</text>
+<text x="1086" y="7307" class="type">UPDATE</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="62" y="7577" width="320" height="226" rx="10" fill="white"/>
+<path d="M 72 7577 H 372 Q 382 7577 382 7587 V 7619 H 62 V 7587 Q 62 7577 72 7577 Z" fill="#475569"/>
+<text x="76" y="7604" class="table-title">site_versions</text>
+<text x="74" y="7636" class="key" fill="#F59E0B">PK</text>
+<text x="122" y="7636" class="column">site_version_id</text>
+<text x="370" y="7636" class="type">BIGINT UNSIGNED</text>
+<rect x="62" y="7643" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="7659" class="column">version_name</text>
+<text x="370" y="7659" class="type">VARCHAR(50)</text>
+<text x="122" y="7682" class="column">change_notes</text>
+<text x="370" y="7682" class="type">LONGTEXT</text>
+<rect x="62" y="7689" width="320" height="23" fill="#F8FAFC"/>
+<text x="74" y="7705" class="key" fill="#0EA5E9">FK</text>
+<text x="122" y="7705" class="column">created_by</text>
+<text x="370" y="7705" class="type">BIGINT UNSIGNED</text>
+<text x="122" y="7728" class="column">created_at</text>
+<text x="370" y="7728" class="type">DATETIME(6)</text>
+<rect x="62" y="7735" width="320" height="23" fill="#F8FAFC"/>
+<text x="122" y="7751" class="column">updated_at</text>
+<text x="370" y="7751" class="type">DATETIME(6)</text>
+<text x="122" y="7774" class="column">ON</text>
+<text x="370" y="7774" class="type">UPDATE</text>
+</g>
+</svg>
