@@ -53,13 +53,23 @@ foreach ($match in [regex]::Matches($ddl, $tablePattern)) {
     foreach ($line in ($body -split "`r?`n")) {
         if ($line -match '^\s*`?(?<name>[A-Za-z][A-Za-z0-9_]*)`?\s+(?<type>[A-Za-z]+(?:\([^\)]*\))?(?:\s+UNSIGNED)?)' -and
             $Matches.name -notin @('PRIMARY','UNIQUE','KEY','CONSTRAINT','CHECK','FULLTEXT','FOREIGN')) {
-            $columns.Add([pscustomobject]@{ Name = $Matches.name; Type = $Matches.type })
+            $columns.Add([pscustomobject]@{
+                Name = $Matches.name
+                Type = $Matches.type
+                Nullable = ($line -notmatch '\bNOT\s+NULL\b')
+            })
         }
     }
 
     $primaryKeys = @()
     if ($body -match 'PRIMARY KEY\s*\((?<keys>[^\)]+)\)') {
         $primaryKeys = ($Matches.keys -split ',') | ForEach-Object { $_.Trim().Trim('`') }
+    }
+
+    $uniqueKeys = [System.Collections.Generic.List[object]]::new()
+    $uniquePattern = '(?:UNIQUE\s+(?:KEY|INDEX)?\s*(?:`?[A-Za-z0-9_]+`?)?\s*)\((?<keys>[^\)]+)\)'
+    foreach ($unique in [regex]::Matches($body, $uniquePattern)) {
+        $uniqueKeys.Add(@(($unique.Groups['keys'].Value -split ',') | ForEach-Object { $_.Trim().Trim('`') }))
     }
 
     $foreignKeys = [System.Collections.Generic.List[object]]::new()
@@ -76,63 +86,95 @@ foreach ($match in [regex]::Matches($ddl, $tablePattern)) {
         Name = $name
         Columns = $columns
         PrimaryKeys = @($primaryKeys)
+        UniqueKeys = $uniqueKeys
         ForeignKeys = $foreignKeys
     }
+}
+
+# Circular dependencies can be added after table creation (for example,
+# users.company_id -> companies.company_id), so include ALTER TABLE FKs too.
+$alterFkPattern = '(?ms)ALTER TABLE\s+`?(?<table>[A-Za-z0-9_]+)`?.*?FOREIGN KEY\s*\(`?(?<column>[A-Za-z0-9_]+)`?\)\s*REFERENCES\s*`?(?<target>[A-Za-z0-9_]+)`?\s*\(`?(?<targetColumn>[A-Za-z0-9_]+)`?\)\s*;'
+foreach ($alterFk in [regex]::Matches($ddl, $alterFkPattern)) {
+    $tableName = $alterFk.Groups['table'].Value
+    if (-not $tables.Contains($tableName)) { continue }
+    $columnName = $alterFk.Groups['column'].Value
+    $alreadyExists = @($tables[$tableName].ForeignKeys | Where-Object {
+        $_.Column -eq $columnName -and $_.Target -eq $alterFk.Groups['target'].Value
+    }).Count -gt 0
+    if ($alreadyExists) { continue }
+    $tables[$tableName].ForeignKeys.Add([pscustomobject]@{
+        Column = $columnName
+        Target = $alterFk.Groups['target'].Value
+        TargetColumn = $alterFk.Groups['targetColumn'].Value
+    })
 }
 
 $cardWidth = 330
 $headerHeight = 42
 $rowHeight = 23
-$cardGapX = 54
-$cardGapY = 30
-$domainTitleHeight = 48
 $outerPadding = 40
-$cardsPerDomain = 2
-$domainGapX = 72
 
 $positions = @{}
-$domainLayouts = [System.Collections.Generic.List[object]]::new()
-$contentTop = $outerPadding + 128
-$maxBottom = 0
 
-# Each functional area occupies a two-card-wide lane. The lanes sit side by
-# side so the full schema can be followed horizontally at the SVG's native size.
-for ($domainIndex = 0; $domainIndex -lt $domainOrder.Count; $domainIndex++) {
-    $domain = $domainOrder[$domainIndex]
-    $names = @($domainTables[$domain] | Where-Object { $tables.Contains($_) })
-    $domainWidth = ($cardsPerDomain * $cardWidth) + $cardGapX
-    $x = $outerPadding + ($domainIndex * ($domainWidth + $domainGapX))
-    $y = $contentTop + $domainTitleHeight
-    $domainLayouts.Add([pscustomobject]@{ Name=$domain; X=$x; Y=$contentTop; Width=$domainWidth; Height=$domainTitleHeight })
-
-    for ($row = 0; $row -lt [math]::Ceiling($names.Count / $cardsPerDomain); $row++) {
-        $rowHeightMax = 0
-        for ($col = 0; $col -lt $cardsPerDomain; $col++) {
-            $index = ($row * $cardsPerDomain) + $col
-            if ($index -ge $names.Count) { continue }
-            $name = $names[$index]
-            $table = $tables[$name]
-            $height = $headerHeight + (($table.Columns.Count + 1) * $rowHeight)
-            $tableX = $x + ($col * ($cardWidth + $cardGapX))
-            $positions[$name] = [pscustomobject]@{ X=$tableX; Y=$y; Width=$cardWidth; Height=$height }
-            if ($height -gt $rowHeightMax) { $rowHeightMax = $height }
-        }
-        $y += $rowHeightMax + $cardGapY
-    }
-    if ($y -gt $maxBottom) { $maxBottom = $y }
+# Network-style placement: core tables form the center and related tables fan
+# out around them. This avoids long aligned lanes and distributes FK paths.
+$preferredPositions = @{
+    'users' = @(2820, 1840); 'companies' = @(1880, 1660)
+    'job_postings' = @(2720, 650); 'applications' = @(3650, 1460)
+    'job_categories' = @(1660, 430); 'skills' = @(3650, 300)
+    'job_posting_skills' = @(3170, 230); 'saved_jobs' = @(3260, 2650)
+    'saved_companies' = @(1960, 2740); 'personal_profiles' = @(2440, 2850)
+    'user_desired_jobs' = @(1220, 900); 'policies' = @(720, 1570)
+    'user_policy_consents' = @(1130, 2150)
+    'application_status_history' = @(3200, 2200); 'application_memos' = @(4070, 2610)
+    'resumes' = @(4560, 820); 'resume_educations' = @(5040, 320)
+    'resume_careers' = @(5470, 760); 'resume_projects' = @(5100, 1320)
+    'resume_skills' = @(5520, 1700); 'cover_letters' = @(4540, 1880)
+    'cover_letter_items' = @(5000, 2200); 'cover_letter_ai_reviews' = @(5440, 2500)
+    'company_reviews' = @(1230, 2910); 'interview_reviews' = @(1710, 3480)
+    'salary_records' = @(720, 3430); 'review_reactions' = @(2520, 3820)
+    'faq_categories' = @(80, 300); 'faqs' = @(2350, 1510)
+    'inquiry_categories' = @(80, 900); 'inquiries' = @(500, 1060)
+    'inquiry_attachments' = @(80, 1470); 'reports' = @(480, 2470)
+    'banners' = @(5920, 260); 'notices' = @(5920, 860)
+    'site_settings' = @(5920, 1450); 'site_versions' = @(5920, 1990)
 }
 
-$domainWidth = ($cardsPerDomain * $cardWidth) + $cardGapX
-$svgWidth = (2 * $outerPadding) + ($domainOrder.Count * $domainWidth) + (($domainOrder.Count - 1) * $domainGapX)
-$svgHeight = $maxBottom + $outerPadding
+$layoutScaleX = 1.35
+$layoutScaleY = 1.30
+foreach ($table in $tables.Values) {
+    if (-not $preferredPositions.ContainsKey($table.Name)) { continue }
+    $point = $preferredPositions[$table.Name]
+    $height = $headerHeight + (($table.Columns.Count + 1) * $rowHeight)
+    $positions[$table.Name] = [pscustomobject]@{
+        X=[math]::Round($point[0] * $layoutScaleX)
+        Y=[math]::Round($point[1] * $layoutScaleY)
+        Width=$cardWidth
+        Height=$height
+    }
+}
+
+$svgWidth = 8500
+$svgHeight = 5750
+$foreignKeyCount = ($tables.Values | ForEach-Object { $_.ForeignKeys.Count } | Measure-Object -Sum).Sum
 $sb = [System.Text.StringBuilder]::new()
 [void]$sb.AppendLine("<svg xmlns=`"http://www.w3.org/2000/svg`" width=`"$svgWidth`" height=`"$svgHeight`" viewBox=`"0 0 $svgWidth $svgHeight`" role=`"img`" aria-labelledby=`"title desc`">")
 [void]$sb.AppendLine('<title id="title">첫출근 전체 데이터베이스 ERD</title>')
-[void]$sb.AppendLine('<desc id="desc">37개 MySQL 테이블의 컬럼과 외래키 관계를 기능 영역별로 표현한 다이어그램</desc>')
+[void]$sb.AppendLine('<desc id="desc">37개 MySQL 테이블의 컬럼과 외래키 관계를 네트워크 형태로 표현한 다이어그램</desc>')
 [void]$sb.AppendLine(@'
 <defs>
   <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.12"/></filter>
-  <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#94A3B8"/></marker>
+  <marker id="zero-many" markerWidth="19" markerHeight="16" refX="17" refY="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <circle cx="3" cy="8" r="2.5" fill="#F8FAFC" stroke="#64748B" stroke-width="1.4"/>
+    <path d="M8 8 L17 2 M8 8 L17 8 M8 8 L17 14" fill="none" stroke="#64748B" stroke-width="1.4"/>
+  </marker>
+  <marker id="zero-one" markerWidth="18" markerHeight="16" refX="16" refY="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <circle cx="3" cy="8" r="2.5" fill="#F8FAFC" stroke="#64748B" stroke-width="1.4"/>
+    <path d="M11 2 L11 14 M16 2 L16 14" fill="none" stroke="#64748B" stroke-width="1.4"/>
+  </marker>
+  <marker id="exactly-one" markerWidth="13" markerHeight="16" refX="9" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M3 2 L3 14 M9 2 L9 14" fill="none" stroke="#64748B" stroke-width="1.4"/>
+  </marker>
   <style>
     text { font-family: Pretendard, "Noto Sans KR", Arial, sans-serif; }
     .page-title { font-size: 34px; font-weight: 800; fill: #0F172A; }
@@ -142,37 +184,172 @@ $sb = [System.Text.StringBuilder]::new()
     .column { font-size: 12px; fill: #334155; }
     .key { font-size: 10px; font-weight: 800; }
     .type { font-size: 10px; fill: #94A3B8; text-anchor: end; }
-    .relation { fill: none; stroke: #94A3B8; stroke-width: 1.25; opacity: .66; marker-end: url(#arrow); }
+    .relation { fill: none; stroke: #64748B; stroke-width: 1.35; opacity: .76; }
+    .relation-halo { fill: none; stroke: #F8FAFC; stroke-width: 5.5; opacity: 1; }
+    .relation.identifying { stroke-width: 1.8; }
+    .relation.non-identifying { stroke-dasharray: 8 6; }
+    .legend-title { font-size: 13px; font-weight: 800; fill: #334155; }
+    .legend-text { font-size: 12px; fill: #64748B; }
   </style>
 </defs>
 '@)
 [void]$sb.AppendLine('<rect width="100%" height="100%" fill="#F8FAFC"/>')
 [void]$sb.AppendLine('<text x="36" y="48" class="page-title">첫출근 데이터베이스 ERD</text>')
-[void]$sb.AppendLine('<text x="36" y="75" class="page-subtitle">MySQL 8.0 · 37 tables · PK / FK / 전체 컬럼 · 기능 영역별 구분</text>')
+[void]$sb.AppendLine("<text x=`"36`" y=`"75`" class=`"page-subtitle`">MySQL 8.0 · $($tables.Count) tables · $foreignKeyCount foreign keys · PK / FK / 전체 컬럼</text>")
+[void]$sb.AppendLine(@'
+<g transform="translate(36 98)">
+  <rect width="1110" height="78" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <text x="18" y="25" class="legend-title">관계 표기</text>
+  <path d="M100 22 H175" class="relation identifying"/><text x="188" y="26" class="legend-text">식별 관계 (FK가 자식 PK에 포함)</text>
+  <path d="M430 22 H505" class="relation non-identifying"/><text x="518" y="26" class="legend-text">비식별 관계</text>
+  <path d="M30 55 H72" class="relation identifying" marker-end="url(#exactly-one)"/><text x="84" y="59" class="legend-text">1</text>
+  <path d="M135 55 H177" class="relation identifying" marker-end="url(#zero-one)"/><text x="189" y="59" class="legend-text">0..1</text>
+  <path d="M270 55 H312" class="relation identifying" marker-end="url(#zero-many)"/><text x="324" y="59" class="legend-text">0..N (까마귀발)</text>
+  <text x="490" y="59" class="legend-text">연결 테이블의 두 1:N 관계가 M:N을 구성</text>
+</g>
+'@)
 
-foreach ($layout in $domainLayouts) {
-    $colors = $domainColors[$layout.Name]
-    [void]$sb.AppendLine("<rect x=`"$($layout.X)`" y=`"$($layout.Y)`" width=`"$($layout.Width)`" height=`"38`" rx=`"19`" fill=`"$($colors[0])`" stroke=`"$($colors[1])`" stroke-opacity=`".32`"/>")
-    [void]$sb.AppendLine("<text x=`"$($layout.X + 18)`" y=`"$($layout.Y + 26)`" class=`"domain-title`" fill=`"$($colors[1])`">$(Escape-Xml $layout.Name)</text>")
+function Test-RouteSegmentHitsRectangle($a, $b, $rectangle) {
+    $padding = 8
+    $left = $rectangle.X - $padding
+    $right = $rectangle.X + $rectangle.Width + $padding
+    $top = $rectangle.Y - $padding
+    $bottom = $rectangle.Y + $rectangle.Height + $padding
+    if ($a.X -eq $b.X) {
+        $minY = [math]::Min($a.Y, $b.Y)
+        $maxY = [math]::Max($a.Y, $b.Y)
+        return $a.X -gt $left -and $a.X -lt $right -and $maxY -gt $top -and $minY -lt $bottom
+    }
+    $minX = [math]::Min($a.X, $b.X)
+    $maxX = [math]::Max($a.X, $b.X)
+    return $a.Y -gt $top -and $a.Y -lt $bottom -and $maxX -gt $left -and $minX -lt $right
 }
 
-# Relations are drawn behind the table cards.
+function Get-RouteScore($points, [string]$sourceName, [string]$targetName) {
+    $hits = 0
+    $length = 0
+    $relationPenalty = 0
+    for ($i = 0; $i -lt $points.Count - 1; $i++) {
+        $a = $points[$i]
+        $b = $points[$i + 1]
+        $length += [math]::Abs($a.X - $b.X) + [math]::Abs($a.Y - $b.Y)
+        foreach ($otherName in $positions.Keys) {
+            if ($otherName -eq $sourceName -or $otherName -eq $targetName) { continue }
+            if (Test-RouteSegmentHitsRectangle $a $b $positions[$otherName]) { $hits++ }
+        }
+        foreach ($used in $usedRouteSegments) {
+            $horizontal = $a.Y -eq $b.Y
+            $usedHorizontal = $used.A.Y -eq $used.B.Y
+            if ($horizontal -and $usedHorizontal -and $a.Y -eq $used.A.Y) {
+                $overlap = [math]::Min([math]::Max($a.X,$b.X), [math]::Max($used.A.X,$used.B.X)) - [math]::Max([math]::Min($a.X,$b.X), [math]::Min($used.A.X,$used.B.X))
+                if ($overlap -gt 1) { $relationPenalty += 80000000 + ($overlap * 1000) }
+            } elseif (-not $horizontal -and -not $usedHorizontal -and $a.X -eq $used.A.X) {
+                $overlap = [math]::Min([math]::Max($a.Y,$b.Y), [math]::Max($used.A.Y,$used.B.Y)) - [math]::Max([math]::Min($a.Y,$b.Y), [math]::Min($used.A.Y,$used.B.Y))
+                if ($overlap -gt 1) { $relationPenalty += 80000000 + ($overlap * 1000) }
+            } elseif ($horizontal -ne $usedHorizontal) {
+                $h = if ($horizontal) { [pscustomobject]@{A=$a;B=$b} } else { $used }
+                $v = if ($horizontal) { $used } else { [pscustomobject]@{A=$a;B=$b} }
+                $withinX = $v.A.X -gt [math]::Min($h.A.X,$h.B.X) -and $v.A.X -lt [math]::Max($h.A.X,$h.B.X)
+                $withinY = $h.A.Y -gt [math]::Min($v.A.Y,$v.B.Y) -and $h.A.Y -lt [math]::Max($v.A.Y,$v.B.Y)
+                if ($withinX -and $withinY) { $relationPenalty += 2000000 }
+            }
+        }
+    }
+    return ($hits * 1000000000000) + $relationPenalty + $length
+}
+
+function Convert-RouteToPath($points) {
+    $path = "M $($points[0].X) $($points[0].Y)"
+    for ($i = 1; $i -lt $points.Count; $i++) { $path += " L $($points[$i].X) $($points[$i].Y)" }
+    return $path
+}
+
+$routeXChannels = [System.Collections.Generic.List[double]]::new()
+$routeYChannels = [System.Collections.Generic.List[double]]::new()
+$usedRouteSegments = [System.Collections.Generic.List[object]]::new()
+$portTotals = @{}
+$portIndexes = @{}
+$routeXChannels.Add(28); $routeXChannels.Add($svgWidth - 28)
+$routeYChannels.Add(205); $routeYChannels.Add($svgHeight - 28)
+foreach ($rectangle in $positions.Values) {
+    $routeXChannels.Add($rectangle.X - 28)
+    $routeXChannels.Add($rectangle.X + $rectangle.Width + 28)
+    $routeYChannels.Add($rectangle.Y - 28)
+    $routeYChannels.Add($rectangle.Y + $rectangle.Height + 28)
+}
+
+function Add-PortTotal([string]$key) {
+    $portTotals[$key] = $(if ($portTotals.ContainsKey($key)) { $portTotals[$key] + 1 } else { 1 })
+}
+
+# Count every endpoint first so high-degree tables can use their full height.
 foreach ($table in $tables.Values) {
     if (-not $positions.ContainsKey($table.Name)) { continue }
     $source = $positions[$table.Name]
     foreach ($fk in $table.ForeignKeys) {
         if (-not $positions.ContainsKey($fk.Target)) { continue }
         $target = $positions[$fk.Target]
+        $sourceSide = if ($table.Name -eq $fk.Target -or $source.X -lt $target.X) { 'right' } else { 'left' }
+        $targetSide = if ($table.Name -eq $fk.Target) { 'right' } elseif ($source.X -lt $target.X) { 'left' } else { 'right' }
+        Add-PortTotal "$($table.Name).$sourceSide"
+        Add-PortTotal "$($fk.Target).$targetSide"
+    }
+}
+
+function Get-PortY([string]$key, [string]$tableName, [double]$baseY) {
+    $index = if ($portIndexes.ContainsKey($key)) { $portIndexes[$key] } else { 0 }
+    $portIndexes[$key] = $index + 1
+    $total = $portTotals[$key]
+    if ($total -lt 4) { return $baseY + ($index * 9) }
+
+    $rectangle = $positions[$tableName]
+    $top = $rectangle.Y + $headerHeight + 11
+    $bottom = $rectangle.Y + $rectangle.Height - 11
+    if ($total -eq 1) { return ($top + $bottom) / 2 }
+    return $top + (($bottom - $top) * $index / ($total - 1))
+}
+
+$relationSb = [System.Text.StringBuilder]::new()
+$relationOrdinal = 0
+
+# Relations are drawn behind the table cards.
+foreach ($table in $tables.Values) {
+    if (-not $positions.ContainsKey($table.Name)) { continue }
+    $source = $positions[$table.Name]
+    foreach ($fk in $table.ForeignKeys) {
+        $relationOrdinal++
+        if (-not $positions.ContainsKey($fk.Target)) { continue }
+        $target = $positions[$fk.Target]
         $sourceColumnIndex = [array]::IndexOf(@($table.Columns.Name), $fk.Column)
         $targetTable = $tables[$fk.Target]
         $targetColumnIndex = [array]::IndexOf(@($targetTable.Columns.Name), $fk.TargetColumn)
-        $y1 = $source.Y + $headerHeight + 13 + ($sourceColumnIndex * $rowHeight)
-        $y2 = $target.Y + $headerHeight + 13 + ($targetColumnIndex * $rowHeight)
+        $sourceColumn = @($table.Columns | Where-Object Name -eq $fk.Column)[0]
+        $isIdentifying = $table.PrimaryKeys -contains $fk.Column
+        $isSinglePrimaryKey = $table.PrimaryKeys.Count -eq 1 -and $table.PrimaryKeys[0] -eq $fk.Column
+        $isSingleUniqueKey = $false
+        foreach ($uniqueKey in $table.UniqueKeys) {
+            if ($uniqueKey.Count -eq 1 -and $uniqueKey[0] -eq $fk.Column) { $isSingleUniqueKey = $true; break }
+        }
+        $childMarker = if ($isSinglePrimaryKey -or $isSingleUniqueKey) { 'zero-one' } else { 'zero-many' }
+        $parentMarker = if ($sourceColumn.Nullable) { 'zero-one' } else { 'exactly-one' }
+        $relationClass = if ($isIdentifying) { 'identifying' } else { 'non-identifying' }
+        $markerAttributes = "marker-start=`"url(#$childMarker)`" marker-end=`"url(#$parentMarker)`""
+        $sourceSide = if ($table.Name -eq $fk.Target -or $source.X -lt $target.X) { 'right' } else { 'left' }
+        $targetSide = if ($table.Name -eq $fk.Target) { 'right' } elseif ($source.X -lt $target.X) { 'left' } else { 'right' }
+        $sourceBaseY = $source.Y + $headerHeight + 13 + ($sourceColumnIndex * $rowHeight)
+        $targetBaseY = $target.Y + $headerHeight + 13 + ($targetColumnIndex * $rowHeight)
+        $y1 = Get-PortY "$($table.Name).$sourceSide" $table.Name $sourceBaseY
+        $y2 = Get-PortY "$($fk.Target).$targetSide" $fk.Target $targetBaseY
 
         if ($table.Name -eq $fk.Target) {
             $x1 = $source.X + $source.Width
-            $loopX = $x1 + 24
-            [void]$sb.AppendLine("<path class=`"relation`" d=`"M $x1 $y1 C $loopX $y1, $loopX $y2, $x1 $y2`"><title>$(Escape-Xml "$($table.Name).$($fk.Column) → $($fk.Target).$($fk.TargetColumn)")</title></path>")
+            $x2 = $source.X + $source.Width
+            $loopX = $x1 + 42
+            $selfRoute = @([pscustomobject]@{X=$x1;Y=$y1},[pscustomobject]@{X=$loopX;Y=$y1},[pscustomobject]@{X=$loopX;Y=$y2},[pscustomobject]@{X=$x2;Y=$y2})
+            for($segmentIndex=0;$segmentIndex -lt $selfRoute.Count-1;$segmentIndex++){$usedRouteSegments.Add([pscustomobject]@{A=$selfRoute[$segmentIndex];B=$selfRoute[$segmentIndex+1]})}
+            $selfPathData = Convert-RouteToPath $selfRoute
+            [void]$relationSb.AppendLine("<path class=`"relation-halo`" d=`"$selfPathData`"/>")
+            [void]$relationSb.AppendLine("<path class=`"relation $relationClass`" $markerAttributes d=`"$selfPathData`"><title>$(Escape-Xml "$($table.Name).$($fk.Column) → $($fk.Target).$($fk.TargetColumn)")</title></path>")
             continue
         }
 
@@ -183,10 +360,49 @@ foreach ($table in $tables.Values) {
             $x1 = $source.X
             $x2 = $target.X + $target.Width
         }
+        $candidates = [System.Collections.Generic.List[object]]::new()
         $midX = ($x1 + $x2) / 2
-        [void]$sb.AppendLine("<path class=`"relation`" d=`"M $x1 $y1 C $midX $y1, $midX $y2, $x2 $y2`"><title>$(Escape-Xml "$($table.Name).$($fk.Column) → $($fk.Target).$($fk.TargetColumn)")</title></path>")
+        $candidates.Add(@(
+            [pscustomobject]@{X=$x1;Y=$y1}, [pscustomobject]@{X=$midX;Y=$y1},
+            [pscustomobject]@{X=$midX;Y=$y2}, [pscustomobject]@{X=$x2;Y=$y2}
+        ))
+        foreach ($channelX in $routeXChannels) {
+            $minimumEndpointX = [math]::Min($x1, $x2)
+            $maximumEndpointX = [math]::Max($x1, $x2)
+            if ($channelX -le $minimumEndpointX -or $channelX -ge $maximumEndpointX) { continue }
+            $candidates.Add(@(
+                [pscustomobject]@{X=$x1;Y=$y1}, [pscustomobject]@{X=$channelX;Y=$y1},
+                [pscustomobject]@{X=$channelX;Y=$y2}, [pscustomobject]@{X=$x2;Y=$y2}
+            ))
+        }
+        $direction = if ($source.X -lt $target.X) { 1 } else { -1 }
+        $stubDistance = 28 + ($relationOrdinal * 3)
+        $sourceStubX = $x1 + ($direction * $stubDistance)
+        $targetStubX = $x2 - ($direction * $stubDistance)
+        foreach ($channelY in $routeYChannels) {
+            $candidates.Add(@(
+                [pscustomobject]@{X=$x1;Y=$y1}, [pscustomobject]@{X=$sourceStubX;Y=$y1},
+                [pscustomobject]@{X=$sourceStubX;Y=$channelY}, [pscustomobject]@{X=$targetStubX;Y=$channelY},
+                [pscustomobject]@{X=$targetStubX;Y=$y2}, [pscustomobject]@{X=$x2;Y=$y2}
+            ))
+        }
+        $bestRoute = $null
+        $bestScore = [double]::PositiveInfinity
+        foreach ($candidate in $candidates) {
+            $score = Get-RouteScore $candidate $table.Name $fk.Target
+            if ($score -lt $bestScore) { $bestScore = $score; $bestRoute = $candidate }
+        }
+        $pathData = Convert-RouteToPath $bestRoute
+        $obstacleHits = [math]::Floor($bestScore / 1000000000000)
+        for($segmentIndex=0;$segmentIndex -lt $bestRoute.Count-1;$segmentIndex++){$usedRouteSegments.Add([pscustomobject]@{A=$bestRoute[$segmentIndex];B=$bestRoute[$segmentIndex+1]})}
+        [void]$relationSb.AppendLine("<path class=`"relation-halo`" d=`"$pathData`"/>")
+        [void]$relationSb.AppendLine("<path class=`"relation $relationClass`" data-obstacle-hits=`"$obstacleHits`" $markerAttributes d=`"$pathData`"><title>$(Escape-Xml "$($table.Name).$($fk.Column) → $($fk.Target).$($fk.TargetColumn)")</title></path>")
     }
 }
+
+# Relationships stay behind table cards. Routes are obstacle-aware, and marker
+# reference points place their tips on the border while the shapes remain out.
+[void]$sb.Append($relationSb.ToString())
 
 foreach ($domain in $domainOrder) {
     $colors = $domainColors[$domain]

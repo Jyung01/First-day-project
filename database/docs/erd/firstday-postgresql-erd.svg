@@ -44,7 +44,7 @@
     <text x="628" y="357" class="type">jsonb · default {}</text>
 
     <text x="112" y="404" class="badge" fill="#7C3AED">VECTOR</text>
-    <text x="190" y="404" class="column">embedding</text>
+    <text x="164" y="404" class="column">embedding</text>
     <text x="628" y="404" class="type">public.vector · NOT NULL</text>
 
     <text x="164" y="451" class="column">created_at</text>
