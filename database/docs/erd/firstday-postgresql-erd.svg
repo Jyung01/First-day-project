@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" role="img" aria-labelledby="title desc">
+  <title id="title">첫출근 PostgreSQL AI 스키마 ERD</title>
+  <desc id="desc">ai.vector_store 테이블과 pgvector 타입 및 인덱스 구성</desc>
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="7" flood-color="#0F172A" flood-opacity="0.13"/>
+    </filter>
+    <style>
+      text { font-family: Pretendard, "Noto Sans KR", Arial, sans-serif; }
+      .title { font-size: 32px; font-weight: 800; fill: #0F172A; }
+      .subtitle { font-size: 15px; fill: #64748B; }
+      .table-title { font-size: 21px; font-weight: 800; fill: #FFFFFF; }
+      .column { font-size: 15px; fill: #334155; }
+      .type { font-size: 13px; fill: #64748B; text-anchor: end; }
+      .badge { font-size: 11px; font-weight: 800; }
+      .box-title { font-size: 17px; font-weight: 800; fill: #5B21B6; }
+      .box-text { font-size: 13px; fill: #475569; }
+    </style>
+  </defs>
+
+  <rect width="1100" height="620" fill="#F8FAFC"/>
+  <text x="48" y="55" class="title">첫출근 PostgreSQL AI 스키마</text>
+  <text x="48" y="83" class="subtitle">PostgreSQL · schema: ai · pgvector 기반 임베딩 저장소</text>
+
+  <rect x="48" y="120" width="650" height="438" rx="18" fill="#F5F3FF" stroke="#7C3AED" stroke-opacity=".28"/>
+  <text x="72" y="155" class="box-title">AI Vector Store</text>
+
+  <g filter="url(#shadow)">
+    <rect x="92" y="184" width="560" height="326" rx="12" fill="#FFFFFF"/>
+    <path d="M104 184 H640 Q652 184 652 196 V232 H92 V196 Q92 184 104 184 Z" fill="#7C3AED"/>
+    <text x="112" y="216" class="table-title">ai.vector_store</text>
+
+    <rect x="92" y="278" width="560" height="47" fill="#F8FAFC"/>
+    <rect x="92" y="372" width="560" height="47" fill="#F8FAFC"/>
+
+    <text x="112" y="263" class="badge" fill="#F59E0B">PK</text>
+    <text x="164" y="263" class="column">id</text>
+    <text x="628" y="263" class="type">uuid · gen_random_uuid()</text>
+
+    <text x="164" y="310" class="column">content</text>
+    <text x="628" y="310" class="type">text · NOT NULL</text>
+
+    <text x="164" y="357" class="column">metadata</text>
+    <text x="628" y="357" class="type">jsonb · default {}</text>
+
+    <text x="112" y="404" class="badge" fill="#7C3AED">VECTOR</text>
+    <text x="164" y="404" class="column">embedding</text>
+    <text x="628" y="404" class="type">public.vector · NOT NULL</text>
+
+    <text x="164" y="451" class="column">created_at</text>
+    <text x="628" y="451" class="type">timestamptz · CURRENT_TIMESTAMP</text>
+
+    <line x1="112" y1="475" x2="632" y2="475" stroke="#E2E8F0"/>
+    <text x="112" y="496" class="box-text">PK: vector_store_pkey (id)</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="772" y="142" width="280" height="168" rx="14" fill="#FFFFFF" stroke="#DDD6FE"/>
+    <text x="794" y="177" class="box-title">pgvector 확장</text>
+    <text x="794" y="208" class="box-text">타입: public.vector</text>
+    <text x="794" y="235" class="box-text">유사도: cosine distance</text>
+    <text x="794" y="262" class="box-text">용도: AI 문맥 검색</text>
+    <text x="794" y="289" class="box-text">FK 관계 없음</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="772" y="340" width="280" height="190" rx="14" fill="#FFFFFF" stroke="#DDD6FE"/>
+    <text x="794" y="375" class="box-title">인덱스</text>
+    <text x="794" y="409" class="box-text">HNSW · embedding</text>
+    <text x="794" y="434" class="box-text">vector_cosine_ops</text>
+    <text x="794" y="459" class="box-text">m=16 · ef_construction=64</text>
+    <line x1="794" y1="478" x2="1028" y2="478" stroke="#E2E8F0"/>
+    <text x="794" y="507" class="box-text">GIN · metadata (jsonb)</text>
+  </g>
+
+  <text x="48" y="594" class="subtitle">※ MySQL 서비스 데이터와 물리적 FK 없이 분리 운영</text>
+</svg>

@@ -478,9 +478,34 @@ flowchart TB
 ---
 
 <details>
-<summary><strong>🗄 ERD</strong></summary>
+<summary><strong>🗄 MySQL 전체 ERD 펼쳐보기</strong></summary>
 
-> 🚧 ERD 이미지 추가 예정
+<br>
+
+<a href="./database/docs/erd/firstday-mysql-erd.svg?raw=1">
+  <img src="./database/docs/erd/firstday-mysql-erd.svg" alt="첫출근 MySQL 전체 데이터베이스 ERD" width="100%">
+</a>
+
+<p align="center">
+  이미지를 클릭하면 원본 SVG를 확대해 확인할 수 있습니다.<br>
+  MySQL 8.0 기준 37개 테이블의 PK·FK 및 전체 컬럼을 기능 영역별로 구분했습니다.
+</p>
+
+</details>
+
+<details>
+<summary><strong>🧠 PostgreSQL AI 스키마 펼쳐보기</strong></summary>
+
+<br>
+
+<a href="./database/docs/erd/firstday-postgresql-erd.svg?raw=1">
+  <img src="./database/docs/erd/firstday-postgresql-erd.svg" alt="첫출근 PostgreSQL AI 스키마 ERD" width="100%">
+</a>
+
+<p align="center">
+  이미지를 클릭하면 원본 SVG를 확대해 확인할 수 있습니다.<br>
+  PostgreSQL의 <code>ai.vector_store</code>, pgvector 타입과 HNSW·GIN 인덱스 구성을 표시했습니다.
+</p>
 
 </details>
 
